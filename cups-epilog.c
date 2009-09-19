@@ -122,6 +122,7 @@
 #include "laser_config.h"
 #include "printer_connection.h"
 #include "cups_epilog.h"
+#include "pcl.h"
 
 /** The printer job **/
 printer_job pjob;
@@ -272,22 +273,22 @@ generate_raster(printer_job pjob, laser_config lconf ,FILE *bitmap_file)
         }
 
         /* Raster Orientation */
-        fprintf(pjob.pjl_file, "\e*r0F");
+        fprintf(pjob.pjl_file, R_ORIENTATION);
         /* Raster power */
-        fprintf(pjob.pjl_file, "\e&y%dP",
+        fprintf(pjob.pjl_file, R_POWER,
                 (lconf.raster_mode == 'c' ||
                 		lconf.raster_mode == 'g') ? 100 : lconf.raster_power);
         /* Raster speed */
-        fprintf(pjob.pjl_file, "\e&z%dS", lconf.raster_speed);
-        fprintf(pjob.pjl_file, "\e*r%dT", lconf.height * lconf.y_repeat);
-        fprintf(pjob.pjl_file, "\e*r%dS", lconf.width * lconf.x_repeat);
+        fprintf(pjob.pjl_file, R_SPEED, lconf.raster_speed);
+        fprintf(pjob.pjl_file, R_HEIGHT, lconf.height * lconf.y_repeat);
+        fprintf(pjob.pjl_file, R_WIDTH, lconf.width * lconf.x_repeat);
         /* Raster compression */
-        fprintf(pjob.pjl_file, "\e*b%dM", (lconf.raster_mode == 'c' || lconf.raster_mode == 'g')
+        fprintf(pjob.pjl_file, R_COMPRESSION, (lconf.raster_mode == 'c' || lconf.raster_mode == 'g')
                 ? 7 : 2);
         /* Raster direction (1 = up) */
-        fprintf(pjob.pjl_file, "\e&y1O");
+        fprintf(pjob.pjl_file, R_DIRECTION_UP);
         /* start at current position */
-        fprintf(pjob.pjl_file, "\e*r1A");
+        fprintf(pjob.pjl_file, R_START_AT_POS);
         for (offx = lconf.width * (lconf.x_repeat - 1); offx >= 0; offx -= lconf.width) {
             for (offy = lconf.height * (lconf.y_repeat - 1); offy >= 0; offy -= lconf.height) {
                 for (pass = 0; pass < passes; pass++) {
@@ -399,11 +400,11 @@ generate_raster(printer_job pjob, laser_config lconf ,FILE *bitmap_file)
                                 ;
                             }
                             r++;
-                            fprintf(pjob.pjl_file, "\e*p%dY", lconf.basey + offy + y);
-                            fprintf(pjob.pjl_file, "\e*p%dX", lconf.basex + offx +
+                            fprintf(pjob.pjl_file, POS_Y, lconf.basey + offy + y);
+                            fprintf(pjob.pjl_file, POS_X, lconf.basex + offx +
                                     ((lconf.raster_mode == 'c' || lconf.raster_mode == 'g') ? l : l * 8));
                             if (dir) {
-                                fprintf(pjob.pjl_file, "\e*b%dA", -(r - l));
+                                fprintf(pjob.pjl_file, R_INTENSITY, -(r - l));
                                 // reverse bytes!
                                 for (n = 0; n < (r - l) / 2; n++){
                                     unsigned char t = buf[l + n];
@@ -411,7 +412,7 @@ generate_raster(printer_job pjob, laser_config lconf ,FILE *bitmap_file)
                                     buf[r - n - 1] = t;
                                 }
                             } else {
-                                fprintf(pjob.pjl_file, "\e*b%dA", (r - l));
+                                fprintf(pjob.pjl_file, R_INTENSITY, (r - l));
                             }
                             dir = 1 - dir;
                             // pack
@@ -442,7 +443,7 @@ generate_raster(printer_job pjob, laser_config lconf ,FILE *bitmap_file)
                                     }
                                 }
                             }
-                            fprintf(pjob.pjl_file, "\e*b%dW", (n + 7) / 8 * 8);
+                            fprintf(pjob.pjl_file, R_ROW_BYTES, (n + 7) / 8 * 8);
                             r = 0;
                             while (r < n)
                                 fputc(pack[r++], pjob.pjl_file);
@@ -493,10 +494,10 @@ generate_vector(printer_job pjob, laser_config lconf, FILE *vector_file)
                         y;
                     if (!passstart) {
                         passstart = 1;
-                        fprintf(pjob.pjl_file, "IN;");
-                        fprintf(pjob.pjl_file, "XR%04d;", lconf.vector_freq);
-                        fprintf(pjob.pjl_file, "YP%03d;", lconf.vector_power);
-                        fprintf(pjob.pjl_file, "ZS%03d;", lconf.vector_speed);
+                        fprintf(pjob.pjl_file, V_INIT);
+                        fprintf(pjob.pjl_file, V_FREQUENCY, lconf.vector_freq);
+                        fprintf(pjob.pjl_file, V_POWER, lconf.vector_power);
+                        fprintf(pjob.pjl_file, V_SPEED, lconf.vector_speed);
 
 
                     }
@@ -532,9 +533,9 @@ generate_vector(printer_job pjob, laser_config lconf, FILE *vector_file)
                             if (!up) {
 								if(firstdown){
 									firstdown = 0;
-									fprintf(pjob.pjl_file, ";LTPU");
+									fprintf(pjob.pjl_file, V_PEN_UP_INIT);
 								} else {
-									fprintf(pjob.pjl_file, ";PU");
+									fprintf(pjob.pjl_file, V_PEN_UP);
 								}
                             }
                             up = 1;

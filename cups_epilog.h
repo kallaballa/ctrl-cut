@@ -7,7 +7,7 @@
 
 #ifndef CUPS_EPILOG_H_
 #define CUPS_EPILOG_H_
-
+#include <string.h>
 /** Default for debug mode. */
 #define DEBUG (1)
 
@@ -39,6 +39,7 @@ extern bool generate_pjl(printer_job pjob, laser_config lconf, FILE *bitmap_file
 extern bool ps_to_eps(FILE *ps_file, FILE *eps_file);
 extern bool process_job_title_commands(printer_job pjob);
 extern bool process_queue_options(laser_config *lconf, char *queue_options);
+
 
 
 #endif
