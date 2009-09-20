@@ -2,6 +2,7 @@ CC=gcc
 CCFLAGS=-g `cups-config --cflags` `cups-config --libs`
 OBJ=printer_connection.o
 
+#TODO: REMOVE INSTALL FROM TARGET
 all: ${OBJ} epilog install
 
 epilog: cups-epilog.c
@@ -12,7 +13,8 @@ epilog: cups-epilog.c
 
         
 install: epilog
-	./install.sh
+	cp epilog /usr/lib/cups/backend/
+	sudo /etc/init.d/cups restart
 	
 clean: 
 	rm -rf epilog

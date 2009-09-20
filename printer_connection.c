@@ -119,7 +119,7 @@ printer_disconnect(int socket_descriptor)
  *
  */
 extern bool
-printer_send(const char *host, printer_job pjob)
+printer_send(const char *host, printer_job *pjob)
 {
     char localhost[HOSTNAME_NCHARS] = "";
     unsigned char lpdres;
@@ -137,7 +137,7 @@ printer_send(const char *host, printer_job pjob)
     socket_descriptor = printer_connect(host, PRINTER_MAX_WAIT);
 
     // talk to printer
-    sprintf(buf, "\002%s\n", pjob.queue);
+    sprintf(buf, "\002%s\n", (*pjob).options);
     write(socket_descriptor, (char *)buf, strlen(buf));
     read(socket_descriptor, &lpdres, 1);
     if (lpdres) {
@@ -145,12 +145,12 @@ printer_send(const char *host, printer_job pjob)
         return false;
     }
     sprintf(buf, "H%s\n", localhost);
-    sprintf(buf + strlen(buf) + 1, "P%s\n", pjob.user);
-    sprintf(buf + strlen(buf) + 1, "J%s\n", pjob.title);
-    sprintf(buf + strlen(buf) + 1, "ldfA%s%s\n", pjob.name, localhost);
-    sprintf(buf + strlen(buf) + 1, "UdfA%s%s\n", pjob.name, localhost);
-    sprintf(buf + strlen(buf) + 1, "N%s\n", pjob.title);
-    sprintf(buf + strlen(buf) + 1, "\002%d cfA%s%s\n", (int)strlen(buf), pjob.name, localhost);
+    sprintf(buf + strlen(buf) + 1, "P%s\n", (*pjob).user);
+    sprintf(buf + strlen(buf) + 1, "J%s\n", (*pjob).title);
+    sprintf(buf + strlen(buf) + 1, "ldfA%s%s\n", (*pjob).name, localhost);
+    sprintf(buf + strlen(buf) + 1, "UdfA%s%s\n", (*pjob).name, localhost);
+    sprintf(buf + strlen(buf) + 1, "N%s\n", (*pjob).title);
+    sprintf(buf + strlen(buf) + 1, "\002%d cfA%s%s\n", (int)strlen(buf), (*pjob).name, localhost);
     write(socket_descriptor, buf + strlen(buf) + 1, strlen(buf + strlen(buf) + 1));
     read(socket_descriptor, &lpdres, 1);
     if (lpdres) {
@@ -166,11 +166,11 @@ printer_send(const char *host, printer_job pjob)
     {
         {
             struct stat file_stat;
-            if (fstat(fileno(pjob.pjl_file), &file_stat)) {
+            if (fstat(fileno((*pjob).pjl_file), &file_stat)) {
                 perror(buf);
                 return false;
             }
-            sprintf((char *) buf, "\003%u dfA%s%s\n", (int) file_stat.st_size, pjob.name, localhost);
+            sprintf((char *) buf, "\003%u dfA%s%s\n", (int) file_stat.st_size, (*pjob).name, localhost);
         }
         write(socket_descriptor, (char *)buf, strlen(buf));
         read(socket_descriptor, &lpdres, 1);
@@ -180,7 +180,7 @@ printer_send(const char *host, printer_job pjob)
         }
         {
             int l;
-            while ((l = fread((char *)buf, 1, sizeof (buf), pjob.pjl_file)) > 0) {
+            while ((l = fread((char *)buf, 1, sizeof (buf), (*pjob).pjl_file)) > 0) {
                 write(socket_descriptor, (char *)buf, l);
             }
         }

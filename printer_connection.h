@@ -41,7 +41,7 @@ typedef struct
 
 int printer_connect(__const char *host, __const int timeout);
 bool printer_disconnect(int socket_descriptor);
-bool printer_send(__const char *host, printer_job job);
+bool printer_send(__const char *host, printer_job *job);
 
 
 #endif /* PRINTER_CONNECTION_H_ */

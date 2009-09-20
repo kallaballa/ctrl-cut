@@ -8,12 +8,23 @@
 #ifndef PJL_H_
 #define PJL_H_
 
+const char* SEP = ";";
+
+/**
+ * PJL COMMANDS
+ * **/
+
 /* Print the printer job language header. */
 const char* PJL_HEADER =
-		"\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL \r\n\x09";
+		"\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL \r\n";
 
 /* End job. */
 const char* PJL_FOOTER = "@PJL EOJ \r\n";
+
+
+/**
+ * PCL COMMANDS
+ * **/
 
 /* Set autofocus on or off. */
 const char* PCL_AUTOFOCUS = "\e&y%dA";
@@ -34,8 +45,14 @@ const char* PCL_PRINT_RESOLUTION = "\e&u%dD";
 /* PCL resolution. */
 const char* PCL_RESOLUTION = "\e*t%dR";
 
-/* FIXME unknown purpose. */
+/* FIXME: unknown purpose. */
 const char* PCL_UNKNOWN_BLAFOO =  "\e&y0C";
+
+/* FIXME: unknown purpose. */
+const char* PCL_UNKNOWN_BLAFOO2 =  "\e&y0Z";
+
+/* FIXME: unknown purpose. */
+const char* PCL_UNKNOWN_BLAFOO3 =  "\e&z2A";
 
 /* Postition cursor absolute on the X-axis */
 const char* PCL_POS_X = "\e*p%dY";
@@ -48,8 +65,14 @@ const char* PCL_SECTION_END = "\e%%1B";
 
 /* Reset PCL */
 const char* PCL_RESET = "\eE";
-/* Exit language. */
+
+/* Exit PCL */
 const char* PCL_EXIT = "\e%%-12345X";
+
+
+/**
+ * PCL RASTER COMMANDS
+ * **/
 
 /* Raster Orientation */
 const char* R_ORIENTATION = "\e*r%dF";
@@ -84,6 +107,11 @@ const char* R_ROW_BYTES = "\e*b%dW";
 /* Guessed: resets raster job */
 const char* R_RESET = "\e*rC";
 
+
+/**
+ * PCL VECTOR COMMANDS
+ * **/
+
 /* Intialize vector mode */
 const char* V_INIT = "IN";
 
@@ -95,6 +123,11 @@ const char* V_POWER = "YP%03d";
 
 /* Set laser speed */
 const char* V_SPEED = "ZS%03d";
+
+
+/**
+ * HPGL COMMANDS
+ * **/
 
 /**
  * Pen up. This command doesnt comform to PCL/HPGL and is only used on the first issue of PU
@@ -111,8 +144,5 @@ const char* HPGL_PEN_DOWN = "PD";
 
 /* HPGL section end */
 const char* HPGL_END = "\e%%0B";
-
-const char* SEP = ";";
-
 
 #endif /* PCL_H_ */

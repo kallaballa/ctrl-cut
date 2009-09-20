@@ -33,12 +33,12 @@ extern bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
                                 char *filename_vector,
                                 char *bmp_mode, int resolution,
                                 int height, int width);
-extern bool generate_raster(printer_job pjob, laser_config lconf, FILE *bitmap_file);
-extern bool generate_vector(printer_job pjob, laser_config lconf, FILE *vector_file);
-extern bool generate_pjl(printer_job pjob, laser_config lconf, FILE *bitmap_file, FILE *vector_file);
+extern bool generate_raster(printer_job *pjob, laser_config *lconf, FILE *bitmap_file);
+extern bool generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file);
+extern bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
 extern bool ps_to_eps(FILE *ps_file, FILE *eps_file);
-extern bool process_job_title_commands(printer_job pjob);
-extern bool process_queue_options(laser_config *lconf, char *queue_options);
+extern bool uri_parameters(printer_job pjob);
+extern bool process_uri_options(laser_config *lconf, char *queue_options);
 
 
 
