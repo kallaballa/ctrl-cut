@@ -6,7 +6,7 @@
  */
 
 #ifndef LASER_CONFIG_H_
-#define LASER_CONFIG_H_
+#define LASER_CONFIG_H_ 1
 
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)

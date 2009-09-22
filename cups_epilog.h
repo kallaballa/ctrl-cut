@@ -7,7 +7,7 @@
 
 #ifndef CUPS_EPILOG_H_
 #define CUPS_EPILOG_H_
-#include <string.h>
+
 /** Default for debug mode. */
 #define DEBUG (1)
 

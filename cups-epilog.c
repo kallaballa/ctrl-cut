@@ -106,23 +106,16 @@
 /*************************************************************************
  * includes
  */
-#include <ctype.h>
-#include <errno.h>
 #include <netdb.h>
-#include <netinet/in.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/signal.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include "laser_config.h"
 #include "printer_connection.h"
 #include "cups_epilog.h"
 #include "pjl.h"
+#include "cutting_optimizer.h"
 
 /** The printer job **/
 printer_job pjob;
@@ -698,10 +691,7 @@ generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *ve
     /* If raster power is enabled and raster mode is not 'n' then add that
      * information to the print job.
      */
-    fprintf(stderr, "##### ENTERED1");
-
     if (lconf->raster_power && lconf->raster_mode != 'n') {
-    	fprintf(stderr, "##### ENTERED");
         /* We're going to perform a raster print. */
         generate_raster(pjob, lconf, bitmap_file);
     }
@@ -747,26 +737,22 @@ generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *ve
  * @return Return true if the function completes its task, false otherwise.
  */
 bool
-ps_to_eps(laser_config *lconf,  FILE *ps_file, FILE *eps_file)
+ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file)
 {
     int xoffset = 0;
     int yoffset = 0;
-	int lower_left_x = 0;
-    int lower_left_y = 0;
-    int upper_right_x = 0;
-    int upper_right_y = 0;
-    char bbPattern1[100];
-    char bbPattern2[100];
-    char bbPattern3[100];
-    int nbbPattern1;
-    int nbbPattern2;
-    int nbbPattern3;
+
     int l;
     while (fgets((char *)buf, sizeof (buf), ps_file)) {
-        /*if (*buf != '%') {
+        fprintf(eps_file, "%s", (char *)buf);
+        if (*buf != '%') {
             break;
-        }*/
+        }
         if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
+            int lower_left_x;
+            int lower_left_y;
+            int upper_right_x;
+            int upper_right_y;
             if (sscanf((char *)buf + 14, "%d %d %d %d",
                        &lower_left_x,
                        &lower_left_y,
@@ -774,45 +760,19 @@ ps_to_eps(laser_config *lconf,  FILE *ps_file, FILE *eps_file)
                        &upper_right_y) == 4) {
                 xoffset = lower_left_x;
                 yoffset = lower_left_y;
-
-                fprintf(eps_file, "%%%BoundingBox: %d %d %d %d\n", lower_left_x, lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
-/*                lconf->width = (upper_right_x - lower_left_x);
-                lconf->height = (upper_right_y - lower_left_y);*/
+                lconf->width = (upper_right_x - lower_left_x);
+                lconf->height = (upper_right_y - lower_left_y);
                 fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
                 fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
-
                 if (xoffset || yoffset) {
                     fprintf(eps_file, "%d %d translate\n", -xoffset, -yoffset);
                 }
                 if (lconf->flip) {
                     fprintf(eps_file, "%d 0 translate -1 1 scale\n", lconf->width);
                 }
-
-                nbbPattern1 = sprintf(bbPattern1, "%d %d %d %d re W\n", lower_left_x, lower_left_y, upper_right_x, upper_right_y);
-                nbbPattern2 = sprintf(bbPattern2, "%d %d %d %d re\n", lower_left_x, lower_left_y, upper_right_x, upper_right_y);
-                nbbPattern3 = sprintf(bbPattern3, "%d %d false pdfSetup\n", upper_right_x, upper_right_y);
             }
         }
-        else if (!strncasecmp((char *) buf, "%%PageBoundingBox:", 18)) {
-        	fprintf(eps_file, "%%%BoundingBox: %d %d %d %d\n", lower_left_x, lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-        else if (!strncasecmp((char *) buf, "%%DocumentMedia:", 16)) {
-        	fprintf(eps_file, "%%DocumentMedia: plain %d %d 0 () ()\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-        else if (!strncasecmp((char *) buf, "<</PageSize", 11)) {
-        	fprintf(eps_file, "<</PageSize [%d %d]>> setpagedevice\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-        else if (!strncasecmp((char *) buf, bbPattern1, nbbPattern1)) {
-                	fprintf(eps_file, "%d %d %d %d re W\n", lower_left_x , lower_left_y , lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-        else if (!strncasecmp((char *) buf, bbPattern2, nbbPattern2)) {
-                	fprintf(eps_file, "%d %d %d %d re\n", lower_left_x , lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-        else if (!strncasecmp((char *) buf, bbPattern3, nbbPattern3)) {
-                	fprintf(eps_file, "%d %d false pdfSetup\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
-        }
-
-        else if (!strncasecmp((char *) buf, "%!", 2)) {
+        if (!strncasecmp((char *) buf, "%!", 2)) {
             fprintf
                 (eps_file,
                  "/==={(        )cvs print}def/stroke{currentrgbcolor 0.0 \
@@ -839,9 +799,6 @@ newpath}{stroke}ifelse}bind def/showpage{(X)= showpage}bind def\n");
                             "180 mul cos exch 180 mul cos add 2 div");
                 }
             }
-        }
-        else {
-        	fprintf(eps_file, "%s", (char *)buf);
         }
     }
     while ((l = fread ((char *) buf, 1, sizeof (buf), ps_file)) > 0) {
@@ -1325,6 +1282,8 @@ main(int argc, char *argv[])
         return 1;
     }
 
+    optimize_vectors(file_vector,((lconf.width * lconf.resolution) / POINTS_PER_INCH) / 2, ((lconf.height * lconf.resolution) / POINTS_PER_INCH) / 2);
+    return 0;
     /* Execute the generation of the printer job language (pjl) file. */
     if (!generate_pjl(&pjob, &lconf, file_bitmap, file_vector)) {
         perror("Generation of pjl file failed.\n");
