@@ -26,9 +26,14 @@
 /** Temporary directory to store files. */
 #define TMP_DIRECTORY "/tmp"
 
+#define PRINTER_NAME "EpilogLaser"
+
+#define GTKLP_CONF_DIR "/home/amir/dev/Epilog/gtklpconf/"
+
 
 int big_to_little_endian(uint8_t *position, int bytes);
 void range_checks(void);
+extern bool execute_gtklp(char *printer_name,char *filename_cups, char *gtkconfdir);
 extern bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
                                 char *filename_vector,
                                 char *bmp_mode, int resolution,
@@ -36,9 +41,10 @@ extern bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
 extern bool generate_raster(printer_job *pjob, laser_config *lconf, FILE *bitmap_file);
 extern bool generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file);
 extern bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
-extern bool ps_to_eps(FILE *ps_file, FILE *eps_file);
+extern bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file);
 extern bool uri_parameters(printer_job pjob);
 extern bool process_uri_options(laser_config *lconf, char *queue_options);
+extern FILE* save_cups_file(FILE *file_cups_in, char* filename_cups_save);
 
 
 

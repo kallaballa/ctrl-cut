@@ -55,10 +55,10 @@ const char* PCL_UNKNOWN_BLAFOO2 =  "\e&y0Z";
 const char* PCL_UNKNOWN_BLAFOO3 =  "\e&z2A";
 
 /* Postition cursor absolute on the X-axis */
-const char* PCL_POS_X = "\e*p%dY";
+const char* PCL_POS_X = "\e*p%dX";
 
 /* Postition cursor absolute on the Y-axis */
-const char* PCL_POS_Y = "\e*p%dX";
+const char* PCL_POS_Y = "\e*p%dY";
 
 /* PCL section end */
 const char* PCL_SECTION_END = "\e%%1B";

@@ -77,7 +77,7 @@
 
 *OpenUI *Resolution/Resolution: PickOne
 *OrderDependency: 40 AnySetup *Resolution
-*DefaultResolution: 600
+*DefaultResolution: 75
 *Resolution 1200/1200dpi: "mark {
 	<< /HWResolution [1200.0 1200.0]
 	   /DeviceRenderingInfo <</Type 29 /ValuesPerColorComponent 2>> 
@@ -165,7 +165,7 @@ restore
 
 *%******** FlipX ********
 *OpenUI *FlipX/FlipX: Boolean
-*DefaultFlipX: True
+*DefaultFlipX: False
 *OrderDependency: 140 AnySetup *FlipX
 *FlipX True: " "
 *FlipX False: " "
@@ -215,7 +215,7 @@ restore
 
 *%******** RasterPower ********
 *OpenUI *RasterPower/RasterPower: PickOne
-*DefaultRasterPower: 100
+*DefaultRasterPower: 10
 *OrderDependency: 140 AnySetup *RasterPower
 *RasterPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /RasterPower 1>> >>
@@ -621,7 +621,7 @@ restore
 
 *%******** RasterSpeed ********
 *OpenUI *RasterSpeed/RasterSpeed: PickOne
-*DefaultRasterSpeed: 10
+*DefaultRasterSpeed: 100
 *OrderDependency: 140 AnySetup *RasterSpeed
 *RasterSpeed 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /RasterSpeed 1>> >>
@@ -1150,7 +1150,7 @@ restore
 
 *%******** VectorPower ********
 *OpenUI *VectorPower/VectorPower: PickOne
-*DefaultVectorPower: 100
+*DefaultVectorPower: 10
 *OrderDependency: 140 AnySetup *VectorPower
 *VectorPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorPower 1>> >>
@@ -1556,7 +1556,7 @@ restore
 
 *%******** VectorSpeed ********
 *OpenUI *VectorSpeed/VectorSpeed: PickOne
-*DefaultVectorSpeed: 10
+*DefaultVectorSpeed: 100
 *OrderDependency: 140 AnySetup *VectorSpeed
 *VectorSpeed 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 1>> >>

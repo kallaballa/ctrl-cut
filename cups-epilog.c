@@ -139,9 +139,6 @@ char debug = DEBUG;
 /** The DEVICE_URI for the printer. */
 char *device_uri = "";
 
-/** Variable to track whether or not the X axis should be flipped. */
-char flip = FLIP;
-
 char *queue_options = "";
 
 
@@ -214,6 +211,22 @@ execute_ghostscript(char *filename_bitmap,
     return true;
 }
 
+/*bool
+execute_gtklp(char *printer_name,char *filename_cups, char *gtkconfdir)
+{
+    char buf[8192];
+    setenv("DISPLAY", ":20.0", 1);
+    sprintf(buf,"/usr/bin/gtklp -c %s -P %s < %s", gtkconfdir, printer_name, filename_cups);
+
+    if (debug) {
+        fprintf(stderr, "%s\n", buf);
+    }
+    if (system(buf)) {
+        return false;
+    }
+    return true;
+}*/
+
 /**
  *
  */
@@ -279,6 +292,7 @@ generate_raster(printer_job *pjob, laser_config *lconf ,FILE *bitmap_file)
                 (lconf->raster_mode == 'c' ||
                 		lconf->raster_mode == 'g') ? 100 : lconf->raster_power);
         /* Raster speed */
+        fprintf(pjob->pjl_file, PCL_UNKNOWN_BLAFOO3);
         fprintf(pjob->pjl_file, R_SPEED, lconf->raster_speed);
         fprintf(pjob->pjl_file, R_HEIGHT, lconf->height * lconf->y_repeat);
         fprintf(pjob->pjl_file, R_WIDTH, lconf->width * lconf->x_repeat);
@@ -684,8 +698,10 @@ generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *ve
     /* If raster power is enabled and raster mode is not 'n' then add that
      * information to the print job.
      */
-    if (lconf->raster_power && lconf->raster_mode != 'n') {
+    fprintf(stderr, "##### ENTERED1");
 
+    if (lconf->raster_power && lconf->raster_mode != 'n') {
+    	fprintf(stderr, "##### ENTERED");
         /* We're going to perform a raster print. */
         generate_raster(pjob, lconf, bitmap_file);
     }
@@ -731,22 +747,26 @@ generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *ve
  * @return Return true if the function completes its task, false otherwise.
  */
 bool
-ps_to_eps(FILE *ps_file, FILE *eps_file)
+ps_to_eps(laser_config *lconf,  FILE *ps_file, FILE *eps_file)
 {
     int xoffset = 0;
     int yoffset = 0;
-
+	int lower_left_x = 0;
+    int lower_left_y = 0;
+    int upper_right_x = 0;
+    int upper_right_y = 0;
+    char bbPattern1[100];
+    char bbPattern2[100];
+    char bbPattern3[100];
+    int nbbPattern1;
+    int nbbPattern2;
+    int nbbPattern3;
     int l;
     while (fgets((char *)buf, sizeof (buf), ps_file)) {
-        fprintf(eps_file, "%s", (char *)buf);
-        if (*buf != '%') {
+        /*if (*buf != '%') {
             break;
-        }
-        if (!strncasecmp((char *) buf, "%%PageBoundingBox:", 18)) {
-            int lower_left_x;
-            int lower_left_y;
-            int upper_right_x;
-            int upper_right_y;
+        }*/
+        if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
             if (sscanf((char *)buf + 14, "%d %d %d %d",
                        &lower_left_x,
                        &lower_left_y,
@@ -754,18 +774,45 @@ ps_to_eps(FILE *ps_file, FILE *eps_file)
                        &upper_right_y) == 4) {
                 xoffset = lower_left_x;
                 yoffset = lower_left_y;
-                lconf.width = (upper_right_x - lower_left_x);
-                lconf.height = (upper_right_y - lower_left_y);
+
+                fprintf(eps_file, "%%%BoundingBox: %d %d %d %d\n", lower_left_x, lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
+/*                lconf->width = (upper_right_x - lower_left_x);
+                lconf->height = (upper_right_y - lower_left_y);*/
                 fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
+                fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
+
                 if (xoffset || yoffset) {
                     fprintf(eps_file, "%d %d translate\n", -xoffset, -yoffset);
                 }
-                if (flip) {
-                    fprintf(eps_file, "%d 0 translate -1 1 scale\n", lconf.width);
+                if (lconf->flip) {
+                    fprintf(eps_file, "%d 0 translate -1 1 scale\n", lconf->width);
                 }
+
+                nbbPattern1 = sprintf(bbPattern1, "%d %d %d %d re W\n", lower_left_x, lower_left_y, upper_right_x, upper_right_y);
+                nbbPattern2 = sprintf(bbPattern2, "%d %d %d %d re\n", lower_left_x, lower_left_y, upper_right_x, upper_right_y);
+                nbbPattern3 = sprintf(bbPattern3, "%d %d false pdfSetup\n", upper_right_x, upper_right_y);
             }
         }
-        if (!strncasecmp((char *) buf, "%!", 2)) {
+        else if (!strncasecmp((char *) buf, "%%PageBoundingBox:", 18)) {
+        	fprintf(eps_file, "%%%BoundingBox: %d %d %d %d\n", lower_left_x, lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+        else if (!strncasecmp((char *) buf, "%%DocumentMedia:", 16)) {
+        	fprintf(eps_file, "%%DocumentMedia: plain %d %d 0 () ()\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+        else if (!strncasecmp((char *) buf, "<</PageSize", 11)) {
+        	fprintf(eps_file, "<</PageSize [%d %d]>> setpagedevice\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+        else if (!strncasecmp((char *) buf, bbPattern1, nbbPattern1)) {
+                	fprintf(eps_file, "%d %d %d %d re W\n", lower_left_x , lower_left_y , lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+        else if (!strncasecmp((char *) buf, bbPattern2, nbbPattern2)) {
+                	fprintf(eps_file, "%d %d %d %d re\n", lower_left_x , lower_left_y, lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+        else if (!strncasecmp((char *) buf, bbPattern3, nbbPattern3)) {
+                	fprintf(eps_file, "%d %d false pdfSetup\n", lconf->width - lower_left_x, lconf->height - lower_left_y);
+        }
+
+        else if (!strncasecmp((char *) buf, "%!", 2)) {
             fprintf
                 (eps_file,
                  "/==={(        )cvs print}def/stroke{currentrgbcolor 0.0 \
@@ -773,25 +820,28 @@ eq exch 0.0 eq and exch 0.0 ne and{(P)=== currentrgbcolor pop pop 100 mul \
 round  cvi = flattenpath{transform(M)=== round cvi ===(,)=== round cvi \
 =}{transform(L)=== round cvi ===(,)=== round cvi =}{}{(C)=}pathforall \
 newpath}{stroke}ifelse}bind def/showpage{(X)= showpage}bind def\n");
-            if (lconf.raster_mode != 'c' && lconf.raster_mode != 'g') {
-                if (lconf.screen == 0) {
+            if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
+                if (lconf->screen == 0) {
                     fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
                 } else {
-                    int s = lconf.screen;
+                    int s = lconf->screen;
                     if (s < 0) {
                         s = 0 - s;
                     }
-                    if (lconf.resolution >= 600) {
+                    if (lconf->resolution >= 600) {
                         // adjust for overprint
                         fprintf(eps_file,
                                 "{dup 0 ne{%d %d div add}if}settransfer\n",
-                                lconf.resolution / 600, s);
+                                lconf->resolution / 600, s);
                     }
-                    fprintf(eps_file, "%d 30{%s}setscreen\n", lconf.resolution / s,
-                            (lconf.screen > 0) ? "pop abs 1 exch sub" :
+                    fprintf(eps_file, "%d 30{%s}setscreen\n", lconf->resolution / s,
+                            (lconf->screen > 0) ? "pop abs 1 exch sub" :
                             "180 mul cos exch 180 mul cos add 2 div");
                 }
             }
+        }
+        else {
+        	fprintf(eps_file, "%s", (char *)buf);
         }
     }
     while ((l = fread ((char *) buf, 1, sizeof (buf), ps_file)) > 0) {
@@ -801,73 +851,7 @@ newpath}{stroke}ifelse}bind def/showpage{(X)= showpage}bind def\n");
 }
 
 
-/**
- * The print job title can affect the functioning of the software. Job titles
- * can take three forms:
- * xRXxRYx specify that the execution of the job should repeat.
- * cCXcCYc specify the center location for the print (in inches).
- * nofocus if autofocus is to be disabled.
- *
- * @param the print job title.
- * @return True if the system is able to process the job title, false otherwise.
- */
-bool
-process_job_title_commands(printer_job pjob)
-{
-    // xRXxRYx for repeat, cCXcCYc is centre (mm)
-    char *p = pjob.title;
-    char *d;
-    if (*p++ == 'x') {
-        if (isdigit(*p)) {
-            d = p;
-            while (isdigit(*p)) {
-                p++;
-            }
-            if (*p++ == 'x') {
-            	lconf.x_repeat = atoi(d);
-            	pjob.title = p;
-                if (isdigit(*p)) {
-                    d = p;
-                    while (isdigit(*p)) {
-                        p++;
-                    }
-                    if (*p++ == 'x') {
-                    	lconf.y_repeat = atoi(d);
-                    	pjob.title = p;
-                    }
-                }
-            }
-        }
-    }
-    p = pjob.title;
-    if (*p++ == 'c') {
-        if (isdigit(*p)) {
-            d = p;
-            while (isdigit(*p)) {
-                p++;
-            }
-            if (*p++ == 'c') {
-            	lconf.x_center = atoi(d) * POINTS_PER_INCH;
-            	pjob.title = p;
-                if (isdigit(*p)) {
-                    d = p;
-                    while (isdigit(*p)) {
-                        p++;
-                    }
-                    if (*p++ == 'c') {
-                    	lconf.y_center = atoi(d) * POINTS_PER_INCH;
-                    	pjob.title = p;
-                    }
-                }
-            }
-        }
-    }
-    if (!strncmp(pjob.title, "nofocus", 7)) {
-    	pjob.title += 7;
-        lconf.focus = 0;
-    }
-    return true;
-}
+
 
 /**
  * Process the queue options which take a form akin to:
@@ -951,7 +935,7 @@ process_uri_options(laser_config *lconf, char *queue_options)
             	lconf->height = atoi(v);
             }
             if (!strcasecmp(t, "flip")) {
-            	flip = 1;
+            	lconf->flip = 1;
             }
             if (!strcasecmp(t, "debug")) {
             	debug = 1;
@@ -1002,6 +986,7 @@ process_print_job_options(printer_job *pjob, laser_config *lconf)
             }
             if (!strcasecmp(t, "RasterMode")) {
             	lconf->raster_mode = tolower(*v);
+            	lconf->raster_mode = 'g';
             }
             if (!strcasecmp(t, "RasterRepeat")) {
             	lconf->raster_repeat = atoi(v);
@@ -1011,7 +996,6 @@ process_print_job_options(printer_job *pjob, laser_config *lconf)
             }
             if (!strcasecmp(t, "VectorPower")) {
             	lconf->vector_power = atoi(v);
-            	fprintf(stderr, "########## VP: %d ########", lconf->vector_power);
             }
             if (!strcasecmp(t, "VectorFrequency")) {
             	lconf->vector_freq = atoi(v);
@@ -1026,7 +1010,7 @@ process_print_job_options(printer_job *pjob, laser_config *lconf)
             	lconf->height = atoi(v);
             }*/
             if (!strcasecmp(t, "FlipX")) {
-            	flip = 1;
+            	lconf->flip = 1;
             }
             if (!strcasecmp(t, "Debug")) {
             	debug = 1;
@@ -1135,8 +1119,6 @@ main(int argc, char *argv[])
     FILE *file_vector;
     FILE *file_template;
 
-
-
     /* Temporary variables. */
     int l;
 
@@ -1194,7 +1176,6 @@ main(int argc, char *argv[])
         return 0;
     }
 
-    fprintf(stderr, "######### %d #########", lconf.vector_power);
     /* Perform a check over the global values to ensure that they have values
      * that are within a tolerated range.
      */
@@ -1245,6 +1226,15 @@ main(int argc, char *argv[])
         fclose(file_cups);
         file_cups = fopen(filename_cups_debug, "r");
     }
+
+/*    if(argc < 6 || strcasecmp(argv[5], "=A4") == 0)
+    {
+    	fprintf(stderr, "########## GTKLP");
+    	if(!execute_gtklp(PRINTER_NAME, filename_cups_debug, GTKLP_CONF_DIR)) {
+			perror("Failure to gtklp ghostscript command.\n");
+			return 1;
+		}
+    }*/
 
     /* Check whether the incoming data is ps or pdf data. */
     fread((char *)buf, 1, 4, file_cups);
@@ -1300,7 +1290,7 @@ main(int argc, char *argv[])
         return 1;
     }
     /* Convert postscript to encapsulated postscript. */
-    if (!ps_to_eps(file_ps, file_eps)) {
+    if (!ps_to_eps(&lconf, file_ps, file_eps)) {
         perror("Error converting postscript to encapsulated postscript.");
         fclose(file_eps);
         return 1;
@@ -1322,18 +1312,6 @@ main(int argc, char *argv[])
                             		lconf.resolution, lconf.height, lconf.width)) {
         perror("Failure to execute ghostscript command.\n");
         return 1;
-    }
-
-    /* The print job title has the capability to modify characteristics of the
-     * print. Check for embedded information and possibly update the job title
-     * before sending the title to the printer.
-     */
-    if (!pjob.title || !strcasecmp(pjob.title, "_stdin_") ||
-        !strcasecmp(pjob.title, "(stdin)") || !strncasecmp (pjob.title, "print ", 6)) {
-        sprintf(pjob.title, "%dx%din", lconf.width / POINTS_PER_INCH,
-        		lconf.height / POINTS_PER_INCH);
-    } else {
-        process_job_title_commands(pjob);
     }
 
     /* Open file handles needed by generation of the printer job language

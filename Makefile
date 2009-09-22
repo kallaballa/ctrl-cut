@@ -1,5 +1,6 @@
 CC=gcc
-CCFLAGS=-g `cups-config --cflags` `cups-config --libs`
+#TODO: REMOVE no-format. just there to keep eclipse from bugging me
+CCFLAGS=-Wno-format -g `cups-config --cflags` `cups-config --libs`
 OBJ=printer_connection.o
 
 #TODO: REMOVE INSTALL FROM TARGET
