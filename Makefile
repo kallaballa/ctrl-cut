@@ -4,7 +4,7 @@ CCFLAGS=-Wno-format -g `cups-config --cflags` `cups-config --libs`
 OBJ=printer_connection.o cutting_optimizer.o
 
 #TODO: REMOVE INSTALL FROM TARGET
-all: ${OBJ} epilog install
+all: clean ${OBJ} epilog install
 
 epilog: cups-epilog.c
 	${CC} ${CCFLAGS} -o epilog ${OBJ} cups-epilog.c 

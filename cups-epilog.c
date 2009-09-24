@@ -115,7 +115,7 @@
 #include "printer_connection.h"
 #include "cups_epilog.h"
 #include "pjl.h"
-#include "cutting_optimizer.h"
+#include "geom.h"
 
 /** The printer job **/
 printer_job pjob;
