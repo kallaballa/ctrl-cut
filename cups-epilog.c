@@ -113,9 +113,11 @@
 #include <string.h>
 #include "laser_config.h"
 #include "printer_connection.h"
-#include "cups_epilog.h"
 #include "pjl.h"
 #include "geom.h"
+#include "cutting_optimizer.h"
+#include "cups_epilog.h"
+
 
 /** The printer job **/
 printer_job pjob;

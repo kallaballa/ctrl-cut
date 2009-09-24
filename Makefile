@@ -1,7 +1,7 @@
 CC=gcc
 #TODO: REMOVE no-format. just there to keep eclipse from bugging me
 CCFLAGS=-Wno-format -g `cups-config --cflags` `cups-config --libs`
-OBJ=printer_connection.o cutting_optimizer.o
+OBJ=printer_connection.o cutting_optimizer.o geom.o
 
 #TODO: REMOVE INSTALL FROM TARGET
 all: clean ${OBJ} epilog install
