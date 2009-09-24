@@ -202,11 +202,10 @@ int intersect(struct line *line1, struct line *line2,
 
 	if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
 		// Get the intersection point.
-		int x = line1->head_point->x + ua * (line1->end_point->x
+		intersection->x = line1->head_point->x + ua * (line1->end_point->x
 				- line1->head_point->x);
-		int y = line1->head_point->y + ua * (line1->end_point->y
+		intersection->y = line1->head_point->y + ua * (line1->end_point->y
 				- line1->head_point->y);
-		intersection = init_point(x, y);
 		return INTERSECTING;
 	}
 
@@ -217,7 +216,7 @@ int split_intersections(struct line** lines, int *cnt_lines, int *len_lines) {
 
 	int i;
 	int j;
-	struct point *intersec;
+	struct point *intersec = init_point(-1,-1);
 	struct line *l1, *l2;
 	struct line *split1, *split2, *split3, *split4;
 	for (i = 0; i < *cnt_lines; i++) {
@@ -233,14 +232,14 @@ int split_intersections(struct line** lines, int *cnt_lines, int *len_lines) {
 					continue;
 				printf("%d %d\n", i,j);
 				if (intersect(l1, l2, intersec) == INTERSECTING) {
-					lines[i] = (struct line *) NULL;
-					lines[j] = (struct line *) NULL;
+
 
 					if ((l1 ->head_point->x != intersec->x || l1 ->head_point->y
 							!= intersec->y) && (l1 ->end_point->x != intersec->x || l1 ->end_point->y
 									!= intersec->y)) {
 
-						check_realloc(lines, cnt_lines + 2, len_lines, sizeof(struct line));
+						int ralloc = (*cnt_lines) + 2;
+						check_realloc(lines, &ralloc , len_lines, sizeof(struct line));
 
 						split1 = init_line(l1->head_point, intersec, l1->power);
 						lines[*cnt_lines] = split1;
@@ -249,11 +248,13 @@ int split_intersections(struct line** lines, int *cnt_lines, int *len_lines) {
 						split2 = init_line(intersec, l1->end_point, l1->power);
 						lines[*cnt_lines] = split2;
 						(*cnt_lines)++;
+						lines[i] = (struct line *) NULL;
 					}
 					if ((l2 ->head_point->x != intersec->x || l2 ->head_point->y
 							!= intersec->y) && (l2 ->end_point->x != intersec->x || l2 ->end_point->y
 									!= intersec->y)) {
-						check_realloc(lines, cnt_lines + 2, len_lines, sizeof(struct line));
+						int ralloc = (*cnt_lines) + 2;
+						check_realloc(lines, &ralloc, len_lines, sizeof(struct line));
 
 						split3 = init_line(l2->head_point, intersec, l2->power);
 						lines[*cnt_lines] = split3;
@@ -262,6 +263,7 @@ int split_intersections(struct line** lines, int *cnt_lines, int *len_lines) {
 						split4 = init_line(intersec, l2->end_point, l2->power);
 						lines[*cnt_lines] = split4;
 						(*cnt_lines)++;
+						lines[j] = (struct line *) NULL;
 					}
 					//printf("%d %d\n", *cnt_lines, *len_lines);
 
