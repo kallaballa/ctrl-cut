@@ -1,0 +1,3 @@
+#Sat Sep 26 05:30:21 CEST 2009
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.config.gnu.exe.debug.250644359=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<environment append\="true" appendContributed\="true">\n<variable delimiter\=";" name\="DEVICE_URI" operation\="append" value\="epilog\://10.20.30.27/Legend/vs\=100/vp\=10/r\=600/af\=1/vf\=5000/rs\=100/rp\=20/rm\=g"/>\n</environment>\n

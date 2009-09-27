@@ -1,0 +1,17 @@
+KallaBalla (kʌl.ʌ bʌl.ʌ)
+Proving the existence of God. (Equalizing the color space of map tiles, by the way.)
+
+History:
+On the first day, he created significant color differences in map tiles taken from different satellites, in varying light conditions and seasons. 
+On the second day, he created the eagerness to equalize it programmatically.
+On the third day, he created misconception.
+On the fourth day, he created bugs.
+On the fifth day, he created inductive reasoning (along with false positives).
+On the sixth day, he created Club-Mate.
+On the seventh day, he created a program explaining the relationship between an infinite, eternal and essentially unknowable Creator with the finite and mortal universe of His creation (and of course equalizing map tiles as well).
+
+How to use it:
+1. In the "Equalizer Passes" panel select conversion passes one by one (enjoy description & visualization).
+2. Press "animate" to see the whole conversion process gradually visualized.
+3. Experience divine enlightenment.
+
