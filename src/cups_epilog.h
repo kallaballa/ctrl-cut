@@ -30,22 +30,26 @@
 
 #define GTKLP_CONF_DIR "/home/amir/dev/Epilog/gtklpconf/"
 
+class CupsEpilog {
+public:
+	CupsEpilog();
+	virtual ~CupsEpilog();
 
 int big_to_little_endian(uint8_t *position, int bytes);
 void range_checks(void);
-extern bool execute_gtklp(char *printer_name,char *filename_cups, char *gtkconfdir);
-extern bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
+bool execute_gtklp(char *printer_name,char *filename_cups, char *gtkconfdir);
+bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
                                 char *filename_vector,
                                 char *bmp_mode, int resolution,
                                 int height, int width);
-extern bool generate_raster(printer_job *pjob, laser_config *lconf, FILE *bitmap_file);
-extern bool generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file);
-extern bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
-extern bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file);
-extern bool uri_parameters(printer_job pjob);
-extern bool process_uri_options(laser_config *lconf, char *queue_options);
-extern FILE* save_cups_file(FILE *file_cups_in, char* filename_cups_save);
+bool generate_raster(printer_job *pjob, laser_config *lconf, FILE *bitmap_file);
+bool generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file);
+bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
+bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file);
+bool uri_parameters(printer_job pjob);
+bool process_uri_options(laser_config *lconf, char *queue_options);
+FILE* save_cups_file(FILE *file_cups_in, char* filename_cups_save);
 
-
+};
 
 #endif

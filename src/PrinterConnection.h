@@ -8,8 +8,13 @@
 #ifndef PRINTER_CONNECTION_H_
 #define PRINTER_CONNECTION_H
 
+using namespace std;
+
 /** Maximum allowable hostname characters. */
 #define HOSTNAME_NCHARS (1024)
+
+/** default port number for printer connections **/
+#define DEFAULT_PORT (515)
 
 /** Maximum wait before timing out on connecting to the printer (in seconds). */
 #define PRINTER_MAX_WAIT (300)
@@ -21,27 +26,41 @@
 typedef struct
 {
 	/** The pjl file for the print. */
-	FILE *pjl_file;
+	string *pjl_filename;
 
 	/** Job name for the print. */
-	char *name;
+	string *name;
 
 	/** User name that submitted the print job. */
-	char *user;
+	string *user;
 
 	/** Title for the job print. */
-	char *title;
+	string *title;
 
 	/** Stub: Copies of the job print. */
-	char *copies;
+	string *copies;
 
 	/** Stub: Options for the job print. */
-	char *options;
+	string *options;
 } printer_job;
 
-int printer_connect(__const char *host, __const int timeout);
-bool printer_disconnect(int socket_descriptor);
-bool printer_send(__const char *host, printer_job *job);
+class PrinterConnection {
+private:
+	int socket_descriptor;
+	string *host;
+	int timeout;
+	ClientSocket *clientSocket;
+	bool connected;
 
+public:
+	PrinterConnection(string *host, int timeout);
+	virtual ~PrinterConnection();
+
+	bool connect();
+	bool disconnect();
+	bool send(printer_job *pjob);
+};
+
+extern "C" bool do_print(char *host, int timeout, printer_job *pjob);
 
 #endif /* PRINTER_CONNECTION_H_ */

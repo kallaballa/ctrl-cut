@@ -204,11 +204,11 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 			 outfile << ",";
 			 outfile << ls->getEnd()->y;
 			 outfile << "\n";
-			 outfile << "M";
+/*			 outfile << "M";
 			 outfile << ls->getEnd()->x;
 			 outfile << ",";
 			 outfile << ls->getEnd()->y;
-			 outfile << "\n";
+			 outfile << "\n";*/
 		}
 
 	}
