@@ -16,7 +16,7 @@ const char* SEP = ";";
 
 /* Print the printer job language header. */
 const char* PJL_HEADER =
-		"\e%%-12345X at PJL JOB NAME=%s\r\n\eE at PJL ENTER LANGUAGE=PCL \r\n";
+		"\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL\r\n";
 
 /* End job. */
 const char* PJL_FOOTER = "@PJL EOJ \r\n";

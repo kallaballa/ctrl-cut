@@ -38,7 +38,7 @@ class Socket
   // Data Transimission
   bool send ( const std::string ) const;
   int recv ( std::string&, int len) const;
-
+  bool write ( const char* c , int len) const;
 
   void set_non_blocking ( const bool );
 

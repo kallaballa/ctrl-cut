@@ -661,7 +661,7 @@ bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file,
 	int i;
 
 	/* Print the printer job language header. */
-	fprintf(pjl_file, PJL_HEADER, pjob->title);
+	fprintf(pjl_file, PJL_HEADER, pjob->title->data());
 	/* Set autofocus on or off. */
 	fprintf(pjl_file, PCL_AUTOFOCUS, lconf->focus);
 	/* FIXME unknown purpose. */
@@ -695,6 +695,7 @@ bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file,
 
 	/* If vector power is > 0 then add vector information to the print job. */
 	if (lconf->vector_power) {
+		fprintf(pjl_file, "\eE@PJL ENTER LANGUAGE=PCL\r\n");
 		fprintf(pjl_file, R_ORIENTATION, 0);
 		fprintf(pjl_file, R_POWER, 50);
 		fprintf(pjl_file, R_SPEED, 50);
@@ -1084,8 +1085,8 @@ int main(int argc, char *argv[]) {
 	}
 	if (argc > 5) {
 		pjob.options = new string(argv[5]);
-	}
-
+	}else
+		pjob.options = new string();
 	/* Gather the site information from the user's environment variable. */
 	device_uri = getenv("DEVICE_URI");
 	if (!device_uri) {
@@ -1124,7 +1125,7 @@ int main(int argc, char *argv[]) {
 	sprintf(filename_eps, "%s.eps", file_basename);
 	sprintf(filename_pjl, "%s.pjl", file_basename);
 	sprintf(filename_vector, "%s.vector", file_basename);
-
+	pjob.pjl_filename = new string(filename_pjl);
 	/* Gather the postscript file from either standard input or a filename
 	 * specified as a command line argument.
 	 */
@@ -1301,8 +1302,9 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	/* Send print job to printer. */
-
-	if (!do_print(host, PRINTER_MAX_WAIT, &pjob)) {
+	PrinterConnection pc(new string(host), PRINTER_MAX_WAIT);
+	if(!pc.connect() || !pc.send(&pjob))
+	{
 		perror("Could not send pjl file to printer.\n");
 		return 1;
 	}

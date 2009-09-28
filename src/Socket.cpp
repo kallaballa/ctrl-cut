@@ -109,6 +109,21 @@ bool Socket::accept ( Socket& new_socket ) const
 bool Socket::send ( const std::string s ) const
 {
   int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
+
+  if ( status == -1 )
+    {
+      return false;
+    }
+  else
+    {
+      return true;
+    }
+}
+
+bool Socket::write ( const char *c, int len ) const
+{
+  int status = ::write( m_sock, c, len);
+
   if ( status == -1 )
     {
       return false;
@@ -122,11 +137,11 @@ bool Socket::send ( const std::string s ) const
 
 int Socket::recv ( std::string& s , int len) const
 {
-  char buf [ MAXRECV + 1 ];
+  char buf [ len];
 
   s = "";
 
-  memset ( buf, 0, MAXRECV + 1 );
+  memset ( buf, 0, len );
 
   int status = ::recv ( m_sock, buf, len, 0 );
 
@@ -145,8 +160,6 @@ int Socket::recv ( std::string& s , int len) const
       return status;
     }
 }
-
-
 
 bool Socket::connect ( const std::string host, const int port )
 {

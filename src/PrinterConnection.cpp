@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #include "PrinterConnection.h"
 
@@ -64,10 +65,11 @@ bool PrinterConnection::connect() {
 		} catch (SocketException& e) {
 			cerr << "Exception caught on connection attempt:"
 					<< e.description() << "\n";
+			sleep(1);
 		}
-
+		break;
 		/* Sleep for a second then try again. */
-		sleep(1);
+
 	}
 	if (i >= timeout) {
 		fprintf(stderr, "Cannot connect to %s\n", host);
@@ -85,10 +87,10 @@ bool PrinterConnection::connect() {
 /**
  *
  */
-bool send(printer_job *pjob) {
+bool PrinterConnection::send(printer_job *pjob) {
 	if (!connected)
 		perror("No connection established.");
-	char nl = '\n';
+	string nl = "\n";
 	char localhost[HOSTNAME_NCHARS] = "";
 	int file_size;
 	ifstream if_pjl(pjob->pjl_filename->data(), ios::in | ios::binary
@@ -101,37 +103,52 @@ bool send(printer_job *pjob) {
 			*d = 0;
 		}
 	}
-
+	string str_localhost(localhost);
 	// talk to printer
-	string send_buffer = "\002" + *(pjob->options) + '\n';
+
+	string send_buffer;
+	cout << pjob->options->length() << endl;
+	if(pjob->options->length() < 2)
+		send_buffer = "\002\n";
+	else
+		send_buffer = "\002" + *(pjob->options) + '\n';
+
 	string recv_buffer;
 
-	*clientSocket << send_buffer;
+	clientSocket->write(send_buffer.data(), send_buffer.length());
 	clientSocket->receive(recv_buffer, 1);
 
-	if (recv_buffer.data()) {
+	if (recv_buffer.data()[0]) {
 		cerr << "Bad response from " << host->data() << ", "
 				<< recv_buffer.data() << endl;
-		return false;
+		//return false;
 	}
-	send_buffer = 'H' + localhost + nl + 'P' + *(pjob->user) + nl + 'J'
-			+ *(pjob->title) + nl + "ldfA" + *(pjob->name) + localhost + nl
-			+ "UdfA" + *(pjob->name) + localhost + nl + 'N' + *(pjob->title)
-			+ nl;
+	send_buffer = "H" + str_localhost + nl;
+	/*+ "P" + *(pjob->user) + nl + "J"
+			+ *(pjob->title) + nl + "ldfA" + *(pjob->name) + str_loclhost + nl
+			+ "UdfA" + *(pjob->name) + str_loclhost + nl + "N" + *(pjob->title)
+			+ nl;*/
 
-	*clientSocket << '\002' + send_buffer.length() + " cfA" + *(pjob->name)
-			+ localhost + nl;
+
+	std::stringstream ss;
+	ss <<  send_buffer.length();
+	string tmp = '\002' + ss.str() + " cfA" + *(pjob->name)+ str_localhost + nl;
+
+	clientSocket->write(tmp.data(), tmp.length()) ;
 	clientSocket->receive(recv_buffer, 1);
-	if (recv_buffer.data()) {
+
+	if (recv_buffer.data()[0]) {
 		cerr << "Bad response from " << host->data() << ", "
 				<< recv_buffer.data() << endl;
-		return false;
+		//return false;
 	}
-	*clientSocket << send_buffer;
-	if (recv_buffer.data()) {
+
+	clientSocket->write(send_buffer.data(), send_buffer.length());
+	clientSocket->receive(recv_buffer, 1);
+	if (recv_buffer.data()[0]) {
 		cerr << "Bad response from " << host->data() << ", "
 				<< recv_buffer.data() << endl;
-		return false;
+		//return false;
 	}
 	{
 		{
@@ -142,26 +159,32 @@ bool send(printer_job *pjob) {
 				return false;
 			}
 
-			send_buffer = '\003' + file_size + " dfA" + *(pjob->name)
-					+ localhost;
+			stringstream ss2;
+			ss2 <<  file_size;
+			string tmp = ss2.str();
+
+			send_buffer = "\003" + tmp + " dfA" + *(pjob->name)
+					+ localhost + nl;
 		}
-		*clientSocket << send_buffer;
-		if (recv_buffer.data()) {
+
+		clientSocket->write("\000", 1);
+		clientSocket->write(send_buffer.data(), send_buffer.length());
+		clientSocket->receive(recv_buffer, 1);
+
+		if (recv_buffer.data()[0]) {
 			cerr << "Bad response from " << host->data() << ", "
 					<< recv_buffer.data() << endl;
-			return false;
+			//return false;
 		}
 		{
-
+			printf("sending file");
 			char * memblock;
-
 			if (if_pjl.is_open()) {
-				file_size = if_pjl.tellg();
 				memblock = new char[file_size];
 				if_pjl.seekg(0, ios::beg);
 				if_pjl.read(memblock, file_size);
 				if_pjl.close();
-				*clientSocket << memblock;
+				clientSocket->write(memblock, file_size);
 			} else {
 				cerr << "Error: file could not be opened" << endl;
 				return false;
@@ -175,11 +198,3 @@ bool send(printer_job *pjob) {
 }
 
 
-bool do_print(char *host, int timeout, printer_job *pjob)
-{
-	PrinterConnection pc(new string(host), timeout);
-	if(!pc.connect() || pc.send(pjob))
-		return false;
-
-	return true;
-}

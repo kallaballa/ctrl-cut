@@ -61,6 +61,4 @@ public:
 	bool send(printer_job *pjob);
 };
 
-extern "C" bool do_print(char *host, int timeout, printer_job *pjob);
-
 #endif /* PRINTER_CONNECTION_H_ */
