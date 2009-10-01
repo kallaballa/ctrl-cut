@@ -5,8 +5,10 @@
  *      Author: amir
  */
 
+#include <set>
 #include "LSPoint.h"
-#include <vector>
+
+
 
 LSPoint::LSPoint(int x, int y)
 : Point(x,y) {
@@ -17,20 +19,17 @@ LSPoint::~LSPoint() {
 	// TODO Auto-generated destructor stub
 }
 
-void LSPoint::addParent(LineSegment* ls)
+void LSPoint::addConnector(LineSegment* ls)
 {
-	parents.push_back(ls);
+	connectors.insert(ls);
 }
 
-void LSPoint::removeParent(LineSegment* ls)
+void LSPoint::removeConnector(LineSegment* ls)
 {
-	unsigned int i;
+	connectors.erase(ls);
+}
 
-	for(i = 0; i < parents.size(); i++)
-	{
-		if(parents.at(i) == ls)	{
-			parents.erase(parents.begin() + i);
-			break;
-		}
-	}
+std::set<LineSegment*> LSPoint::getConnectors()
+{
+	return connectors;
 }

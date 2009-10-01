@@ -13,11 +13,10 @@ class ClientSocket : private Socket
   ClientSocket ( std::string host, int port );
   virtual ~ClientSocket(){};
 
-  const ClientSocket& write ( const char *c, int len ) const;
   const ClientSocket& operator << ( const std::string& ) const;
   const ClientSocket& operator >> ( std::string& ) const;
-  const ClientSocket& receive ( std::string& s, int len ) const;
-
+  bool write ( const char* s, int len ) const;
+  int read ( char* s, int len) const;
 };
 
 

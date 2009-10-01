@@ -32,13 +32,12 @@ class Socket
   // Client initialization
   bool connect ( const std::string host, const int port );
 
-  // Disconnect
-  bool disconnect ();
-
   // Data Transimission
-  bool send ( const std::string ) const;
-  int recv ( std::string&, int len) const;
-  bool write ( const char* c , int len) const;
+  bool send ( const std::string s) const;
+  bool send ( const char* s, int len ) const;
+  int recv ( std::string& ) const;
+  int recv ( char* s, int len) const;
+
 
   void set_non_blocking ( const bool );
 

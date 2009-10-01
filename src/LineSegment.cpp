@@ -8,6 +8,7 @@
 #include "Point.h"
 #include "LineSegment.h"
 #include <algorithm>
+#include <cmath>
 
 using namespace std;
 
@@ -46,20 +47,29 @@ int LineSegment::getPower()
 	return this->power;
 }
 
+
+float LineSegment::getSlope() {
+	int d_x =  end->getX() - start->getX();
+	int d_y = end->getY() - start->getY();
+
+
+	return atan2(d_y, d_x);
+}
+
 LineSegment::IntersectResult LineSegment::intersects(LineSegment *otherLine,
 		Point *intersection) {
-	float denom = ((otherLine->end->y - otherLine->start->y) * (this->end->x
-			- this->start->x)) - ((otherLine->end->x - otherLine->start->x)
-			* (this->end->y - this->start->y));
+	float denom = ((otherLine->end->getY() - otherLine->start->getY()) * (this->end->getX()
+			- this->start->getX())) - ((otherLine->end->getX() - otherLine->start->getX())
+			* (this->end->getY() - this->start->getY()));
 
-	float nume_a = ((otherLine->end->x - otherLine->start->x) * (this->start->y
-			- otherLine->start->y))
-			- ((otherLine->end->y - otherLine->start->y) * (this->start->x
-					- otherLine->start->x));
+	float nume_a = ((otherLine->end->getX() - otherLine->start->getX()) * (this->start->getY()
+			- otherLine->start->getY()))
+			- ((otherLine->end->getY() - otherLine->start->getY()) * (this->start->getX()
+					- otherLine->start->getX()));
 
-	float nume_b = ((this->end->x - this->start->x) * (this->start->y
-			- otherLine->start->y)) - ((this->end->y - this->start->y)
-			* (this->start->x - otherLine->start->x));
+	float nume_b = ((this->end->getX() - this->start->getX()) * (this->start->getY()
+			- otherLine->start->getY())) - ((this->end->getY() - this->start->getY())
+			* (this->start->getX() - otherLine->start->getX()));
 
 	if (denom == 0.0f) {
 		if (nume_a == 0.0f && nume_b == 0.0f) {
@@ -73,23 +83,24 @@ LineSegment::IntersectResult LineSegment::intersects(LineSegment *otherLine,
 
 	if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
 		// Get the intersection point.
-		int min_x = min(this->start->x, this->end->x);
-		int max_x = max(this->start->x, this->end->x);
-		int min_y = min(this->start->y, this->end->y);
-		int max_y = max(this->start->y, this->end->y);
+		int min_x = min(this->start->getX(), this->end->getX());
+		int max_x = max(this->start->getX(), this->end->getX());
+		int min_y = min(this->start->getY(), this->end->getY());
+		int max_y = max(this->start->getY(), this->end->getY());
 
-		int min_ox = min(otherLine->start->x, otherLine->end->x);
-		int max_ox = max(otherLine->start->x, otherLine->end->x);
-		int min_oy = min(otherLine->start->y, otherLine->end->y);
-		int max_oy = max(otherLine->start->y, otherLine->end->y);
+		int min_ox = min(otherLine->start->getX(), otherLine->end->getX());
+		int max_ox = max(otherLine->start->getX(), otherLine->end->getX());
+		int min_oy = min(otherLine->start->getY(), otherLine->end->getY());
+		int max_oy = max(otherLine->start->getY(), otherLine->end->getY());
 
-		int ix = this->start->x + ua * (this->end->x - this->start->x);
-		int iy = this->start->y + ua * (this->end->y - this->start->y);
+		int ix = this->start->getX() + ua * (this->end->getX() - this->start->getX());
+		int iy = this->start->getY() + ua * (this->end->getY() - this->start->getY());
 
-		if (ix > min_x && ix > min_ox && ix < max_x && ix < max_ox && iy
-				> min_y && iy > min_oy && iy < max_y && iy < max_oy) {
-			intersection->x = ix;
-			intersection->y = iy;
+		if (ix >= min_x && ix >= min_ox && ix <= max_x && ix <= max_ox && iy
+				>= min_y && iy >= min_oy && iy <= max_y && iy <= max_oy) {
+
+
+			intersection = new Point(ix,iy);
 			return INTERSECTING;
 		}
 

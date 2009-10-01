@@ -10,17 +10,18 @@
 
 #include "Point.h"
 #include "LineSegment.h"
-#include <vector>
-using namespace std;
+#include <set>
 
 class LSPoint: public Point {
 private:
-	vector<LineSegment*> parents;
+	std::set<LineSegment*> connectors;
 public:
 	LSPoint(int x, int y);
 	virtual ~LSPoint();
-	void addParent(LineSegment *ls);
-	void removeParent(LineSegment *ls);
+	void addConnector(LineSegment *ls);
+	void removeConnector(LineSegment *ls);
+	std::set<LineSegment*> getConnectors();
+
 };
 
 #endif /* LSPOINT_H_ */

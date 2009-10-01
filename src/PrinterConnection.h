@@ -56,7 +56,7 @@ public:
 	PrinterConnection(string *host, int timeout);
 	virtual ~PrinterConnection();
 
-	bool connect();
+	int connect();
 	bool disconnect();
 	bool send(printer_job *pjob);
 };

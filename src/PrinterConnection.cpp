@@ -53,33 +53,53 @@ PrinterConnection::~PrinterConnection() {
  * @return true if the connection was successfully established
  */
 
-bool PrinterConnection::connect() {
-	int i;
+int PrinterConnection::connect() {
+    socket_descriptor = -1;
+    int i;
 
-	for (i = 0; i < timeout; i++) {
-		/* Set an alarm to go off if the program has gone out to lunch. */
-		alarm(SECONDS_PER_MIN);
+    for (i = 0; i < timeout; i++) {
+        struct addrinfo *res;
+        struct addrinfo *addr;
+        struct addrinfo base = { 0, PF_UNSPEC, SOCK_STREAM };
+        int error_code = getaddrinfo(host->data(), "printer", &base, &res);
 
-		try {
-			clientSocket = new ClientSocket(*host, DEFAULT_PORT);
-		} catch (SocketException& e) {
-			cerr << "Exception caught on connection attempt:"
-					<< e.description() << "\n";
-			sleep(1);
-		}
-		break;
-		/* Sleep for a second then try again. */
+        /* Set an alarm to go off if the program has gone out to lunch. */
+        alarm(SECONDS_PER_MIN);
 
-	}
-	if (i >= timeout) {
-		fprintf(stderr, "Cannot connect to %s\n", host);
-		this->connected = false;
-	} else {
-		this->connected = true;
-	}
-	/* Disable the timeout alarm. */
-	alarm(0);
-	return this->connected;
+        /* If getaddrinfo did not return an error code then we attempt to
+         * connect to the printer and establish a socket.
+         */
+        if (!error_code) {
+            for (addr = res; addr; addr = addr->ai_next) {
+                socket_descriptor = socket(addr->ai_family, addr->ai_socktype,
+                                           addr->ai_protocol);
+                if (socket_descriptor >= 0) {
+                    if (!::connect(socket_descriptor, addr->ai_addr,
+                                 addr->ai_addrlen)) {
+                        break;
+                    } else {
+                        close(socket_descriptor);
+                        socket_descriptor = -1;
+                    }
+                }
+            }
+            freeaddrinfo(res);
+        }
+        if (socket_descriptor >= 0) {
+            break;
+        }
+
+        /* Sleep for a second then try again. */
+        sleep(1);
+    }
+    if (i >= timeout) {
+        fprintf(stderr, "Cannot connect to %s\n", host);
+        return -1;
+    }
+    /* Disable the timeout alarm. */
+    alarm(0);
+    /* Return the newly opened socket descriptor */
+    return socket_descriptor;
 }
 
 
@@ -88,112 +108,78 @@ bool PrinterConnection::connect() {
  *
  */
 bool PrinterConnection::send(printer_job *pjob) {
-	if (!connected)
-		perror("No connection established.");
-	string nl = "\n";
+    /* Open printer job language file. */
+	char buf[102400];
+	FILE* pjl_file = fopen(pjob->pjl_filename->data(), "r");
+    if (!pjl_file) {
+        perror(pjob->pjl_filename->data());
+        return 1;
+    }
 	char localhost[HOSTNAME_NCHARS] = "";
-	int file_size;
-	ifstream if_pjl(pjob->pjl_filename->data(), ios::in | ios::binary
-			| ios::ate);
+    unsigned char lpdres;
 
-	gethostname(localhost, sizeof(localhost));
-	{
-		char *d = strchr(localhost, '.');
-		if (d) {
-			*d = 0;
-		}
-	}
-	string str_localhost(localhost);
-	// talk to printer
+    gethostname(localhost, sizeof(localhost));
+    {
+        char *d = strchr(localhost, '.');
+        if (d) {
+            *d = 0;
+        }
+    }
 
-	string send_buffer;
-	cout << pjob->options->length() << endl;
-	if(pjob->options->length() < 2)
-		send_buffer = "\002\n";
-	else
-		send_buffer = "\002" + *(pjob->options) + '\n';
+    /* Connect to the printer. */
+    //socket_descriptor = connect();
 
-	string recv_buffer;
-
-	clientSocket->write(send_buffer.data(), send_buffer.length());
-	clientSocket->receive(recv_buffer, 1);
-
-	if (recv_buffer.data()[0]) {
-		cerr << "Bad response from " << host->data() << ", "
-				<< recv_buffer.data() << endl;
-		//return false;
-	}
-	send_buffer = "H" + str_localhost + nl;
-	/*+ "P" + *(pjob->user) + nl + "J"
-			+ *(pjob->title) + nl + "ldfA" + *(pjob->name) + str_loclhost + nl
-			+ "UdfA" + *(pjob->name) + str_loclhost + nl + "N" + *(pjob->title)
-			+ nl;*/
-
-
-	std::stringstream ss;
-	ss <<  send_buffer.length();
-	string tmp = '\002' + ss.str() + " cfA" + *(pjob->name)+ str_localhost + nl;
-
-	clientSocket->write(tmp.data(), tmp.length()) ;
-	clientSocket->receive(recv_buffer, 1);
-
-	if (recv_buffer.data()[0]) {
-		cerr << "Bad response from " << host->data() << ", "
-				<< recv_buffer.data() << endl;
-		//return false;
-	}
-
-	clientSocket->write(send_buffer.data(), send_buffer.length());
-	clientSocket->receive(recv_buffer, 1);
-	if (recv_buffer.data()[0]) {
-		cerr << "Bad response from " << host->data() << ", "
-				<< recv_buffer.data() << endl;
-		//return false;
-	}
-	{
-		{
-			if (if_pjl.is_open()) {
-				file_size = if_pjl.tellg();
-			} else {
-				cerr << "Error: file could not be opened" << endl;
-				return false;
-			}
-
-			stringstream ss2;
-			ss2 <<  file_size;
-			string tmp = ss2.str();
-
-			send_buffer = "\003" + tmp + " dfA" + *(pjob->name)
-					+ localhost + nl;
-		}
-
-		clientSocket->write("\000", 1);
-		clientSocket->write(send_buffer.data(), send_buffer.length());
-		clientSocket->receive(recv_buffer, 1);
-
-		if (recv_buffer.data()[0]) {
-			cerr << "Bad response from " << host->data() << ", "
-					<< recv_buffer.data() << endl;
-			//return false;
-		}
-		{
-			printf("sending file");
-			char * memblock;
-			if (if_pjl.is_open()) {
-				memblock = new char[file_size];
-				if_pjl.seekg(0, ios::beg);
-				if_pjl.read(memblock, file_size);
-				if_pjl.close();
-				clientSocket->write(memblock, file_size);
-			} else {
-				cerr << "Error: file could not be opened" << endl;
-				return false;
-			}
-
-			if_pjl.close();
-		}
-	}
-
+    // talk to printer
+    sprintf(buf, "\002%s\n", pjob->options->data());
+    write(socket_descriptor, (char *)buf, strlen(buf));
+    read(socket_descriptor, &lpdres, 1);
+    if (lpdres) {
+        fprintf (stderr, "Bad response from %s, %u\n", host, lpdres);
+        //return false;
+    }
+    sprintf(buf, "H%s\n", localhost);
+    sprintf(buf + strlen(buf) + 1, "P%s\n", pjob->user);
+    sprintf(buf + strlen(buf) + 1, "J%s\n", pjob->title);
+    sprintf(buf + strlen(buf) + 1, "ldfA%s%s\n", pjob->name, localhost);
+    sprintf(buf + strlen(buf) + 1, "UdfA%s%s\n", pjob->name, localhost);
+    sprintf(buf + strlen(buf) + 1, "N%s\n", pjob->title);
+    sprintf(buf + strlen(buf) + 1, "\002%d cfA%s%s\n", (int)strlen(buf), pjob->name, localhost);
+    write(socket_descriptor, buf + strlen(buf) + 1, strlen(buf + strlen(buf) + 1));
+    read(socket_descriptor, &lpdres, 1);
+    if (lpdres) {
+        fprintf(stderr, "Bad response from %s, %u\n", host, lpdres);
+        //return false;
+    }
+    write(socket_descriptor, (char *)buf, strlen(buf) + 1);
+    read(socket_descriptor, &lpdres, 1);
+    if (lpdres) {
+        fprintf(stderr, "Bad response from %s, %u\n", host, lpdres);
+        //return false;
+    }
+    {
+        {
+            struct stat file_stat;
+            if (fstat(fileno(pjl_file), &file_stat)) {
+                perror(buf);
+                return false;
+            }
+            sprintf((char *) buf, "\003%u dfA%s%s\n", (int) file_stat.st_size, pjob->name, localhost);
+        }
+        write(socket_descriptor, (char *)buf, strlen(buf));
+        read(socket_descriptor, &lpdres, 1);
+        if (lpdres) {
+            fprintf(stderr, "Bad response from %s, %u\n", host, lpdres);
+            //return false;
+        }
+        {
+            int l;
+            while ((l = fread((char *)buf, 1, sizeof (buf), pjl_file)) > 0) {
+                write(socket_descriptor, (char *)buf, l);
+            }
+        }
+    }
+    // dont wait for a response...
+    close(socket_descriptor);
 	return true;
 }
 

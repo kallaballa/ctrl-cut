@@ -27,6 +27,7 @@ public:
 	Point* getEnd();
 	void setPower(int power);
 	int getPower();
+	float getSlope();
 	IntersectResult intersects(LineSegment *otherLine, Point *intersection);
 };
 

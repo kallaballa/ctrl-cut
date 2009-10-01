@@ -2,9 +2,11 @@
 
 
 #include "Socket.h"
+#include "string.h"
 #include <string.h>
-#include <iostream>
 #include <errno.h>
+#include <stdio.h>
+#include <iostream>
 #include <fcntl.h>
 
 using namespace std;
@@ -109,7 +111,6 @@ bool Socket::accept ( Socket& new_socket ) const
 bool Socket::send ( const std::string s ) const
 {
   int status = ::send ( m_sock, s.c_str(), s.size(), MSG_NOSIGNAL );
-
   if ( status == -1 )
     {
       return false;
@@ -120,10 +121,9 @@ bool Socket::send ( const std::string s ) const
     }
 }
 
-bool Socket::write ( const char *c, int len ) const
+bool Socket::send ( const char* s, int len ) const
 {
-  int status = ::write( m_sock, c, len);
-
+  int status = ::send ( m_sock, s, len, MSG_NOSIGNAL );
   if ( status == -1 )
     {
       return false;
@@ -134,20 +134,45 @@ bool Socket::write ( const char *c, int len ) const
     }
 }
 
-
-int Socket::recv ( std::string& s , int len) const
+int Socket::recv ( std::string& s ) const
 {
-  char buf [ len];
+  char buf [ MAXRECV + 1 ];
 
   s = "";
 
-  memset ( buf, 0, len );
+  memset ( buf, 0, MAXRECV + 1 );
+
+  int status = ::recv ( m_sock, buf, MAXRECV, 0 );
+
+  if ( status == -1 )
+    {
+      std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
+      return 0;
+    }
+  else if ( status == 0 )
+    {
+      return 0;
+    }
+  else
+    {
+      s = buf;
+      return status;
+    }
+}
+
+int Socket::recv ( char* s, int len ) const
+{
+  char buf [ len + 1 ];
+
+  s = new char[0];
+
+  memset ( buf, 0, len + 1 );
 
   int status = ::recv ( m_sock, buf, len, 0 );
 
   if ( status == -1 )
     {
-      cerr << "status == -1   errno == " << errno << "  in Socket::recv\n";
+      std::cout << "status == -1   errno == " << errno << "  in Socket::recv\n";
       return 0;
     }
   else if ( status == 0 )
@@ -180,31 +205,6 @@ bool Socket::connect ( const std::string host, const int port )
     return false;
 }
 
-bool Socket::disconnect() {
-	int status = close(m_sock);
-	/* Report on possible errors to standard error. */
-	if (status == -1) {
-		switch (errno) {
-		case EBADF:
-			cerr << "Socket descriptor given was not valid.";
-			break;
-		case EINTR:
-			cerr << "Closing socket descriptor was interrupted by a signal.";
-			break;
-		case EIO:
-			cerr << "I/O error occurred during closing of socket descriptor.";
-			break;
-		}
-	}
-
-	/* Return status of disconnect operation to the calling function. */
-	if (status) {
-		return false;
-	} else {
-		return true;
-	}
-
-}
 void Socket::set_non_blocking ( const bool b )
 {
 

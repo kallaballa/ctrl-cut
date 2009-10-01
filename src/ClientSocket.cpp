@@ -24,21 +24,27 @@ const ClientSocket& ClientSocket::operator <<(const std::string& s) const {
 }
 
 const ClientSocket& ClientSocket::operator >>(std::string& s) const {
-	return receive(s, MAXRECV);
-}
-
-const ClientSocket& ClientSocket::receive(std::string& s, int len) const {
-	if (!Socket::recv(s, len)) {
+	if (!Socket::recv(s)) {
 		throw SocketException("Could not read from socket.");
 	}
 
 	return *this;
 }
 
-const ClientSocket& ClientSocket::write(const char * c, int len) const {
-	if (!Socket::write(c, len)) {
+bool ClientSocket::write(const char* s, int len) const {
+	if (!Socket::send(s, len)) {
 		throw SocketException("Could not write to socket.");
 	}
 
-	return *this;
+	return true;
 }
+
+int ClientSocket::read(char* s, int len) const {
+	int r = Socket::recv(s, len);
+	if (!r) {
+		throw SocketException("Could not write to socket.");
+	}
+
+	return r;
+}
+
