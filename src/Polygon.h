@@ -7,7 +7,6 @@
 
 #ifndef POLYGON_H_
 #define POLYGON_H_
-#include "Point.h"
 #include "LineSegment.h"
 #include <vector>
 using namespace std;
