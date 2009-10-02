@@ -10,6 +10,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <set>
 #include <map>
 #include <fstream>
 #include <iostream>
@@ -83,8 +84,6 @@ list<LineSegment*>::iterator eraseLine(list<LineSegment*>::iterator it_ls) {
 void splitAtIntersections() {
 	LineSegment::LSPoint *intersec = new LineSegment::LSPoint(-1000, -1000);
 	LineSegment *ls1, *ls2;
-	printf("lines: %d\n", lines.size());
-	printf("points: %d\n", points.size());
 
 	list<LineSegment*>::iterator it_i;
 	list<LineSegment*>::iterator it_j;
@@ -93,6 +92,9 @@ void splitAtIntersections() {
 		for (it_j = lines.begin(); it_j != lines.end(); it_j++) {
 			ls2 = *it_j;
 			ls1 = *it_i;
+
+			if(it_i == lines.end())
+				break;
 
 			if (ls1 == ls2)
 				continue;
@@ -122,15 +124,81 @@ void splitAtIntersections() {
 	}
 }
 
-bool find_line(vector<LineSegment*> *list, LineSegment* ls) {
-	unsigned int i;
-	for (i = 0; i < list->size(); i++) {
-		if (list->at(i) == ls)
-			return true;
+/*LineSegment* find_next(vector<LineSegment*> occupied, LineSegment* current) {
+ vector<LineSegment*> connectors = ((LSPoint*)current->getEnd())->getConnectors();
+
+ LineSegment* candidate;
+ LineSegment* best = NULL;
+
+ float current_slope = current->getSlope();
+ float best_slope_diff = 0.0f;
+ float slop_diff;
+
+ unsigned int i;
+ for (i = 0; i < connectors.size(); i++) {
+ candidate = connectors.at(i);
+
+ if (!find_line(occupied, candidate)) {
+ if(candidate->getStart() != current->getEnd())
+ {
+ candidate->setEnd(candidate->getStart());
+ candidate->setStart(current->getEnd());
+ }
+
+ slop_diff = fabs(current_slope - candidate->getSlope());
+ if (slop_diff > best_slope_diff){
+ best = candidate;
+ best_slope_diff = slop_diff;
+ }
+ }
+ }
+
+ return best;
+ }*/
+
+void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
+		LineSegment* current) {
+	set<LineSegment*> connectors = current->getEnd()->getConnectors();
+	set<LineSegment*>::iterator it;
+	LineSegment* candidate;
+
+	occupied->insert(current);
+
+	for (it = connectors.begin(); it != connectors.end(); it++) {
+		candidate = *it;
+		if (candidate == current || occupied->find(candidate) != occupied->end())
+			continue;
+
+		if (candidate->getStart() != current->getEnd()) {
+			candidate->setEnd(candidate->getStart());
+			candidate->setStart(current->getEnd());
+		}
+		polygon->addLineSegment(candidate);
+		find_connected(occupied, polygon, candidate);
 	}
-	return false;
 }
 
+vector<Polygon*> find_polygons() {
+
+	vector<Polygon*> polygons;
+	set<LineSegment*> *occupied = new set<LineSegment*>();
+
+	LineSegment* ls;
+	list<LineSegment*>::iterator it;
+
+	for (it = lines.begin(); it != lines.end(); it++) {
+		ls = *it;
+
+		Polygon *polygon = new Polygon();
+
+		if (occupied->find(ls) == occupied->end()) {
+			polygon->addLineSegment(ls);
+			find_connected(occupied, polygon, ls);
+			polygons.push_back(polygon);
+		}
+	}
+	return polygons;
+}
 
 void optimize_vectors(char *vector_file, int x_center, int y_center) {
 	string line;
@@ -183,27 +251,41 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 		}
 	}
 	infile.close();
+
+
+	printf("points: %d\n", points.size());
+
 	map<string, LineSegment::LSPoint*>::iterator it_p;
 
 	for (it_p = points.begin(); it_p != points.end(); it_p++) {
 		print_point(it_p->second);
 	}
 
+	printf("lines: %d\n", lines.size());
+
+	list<LineSegment*>::iterator it;
+
+	for (it = lines.begin(); it != lines.end(); it++) {
+			print_line(*it);
+	}
+
 	splitAtIntersections();
 	unsigned int i, j;
 
-	/*	vector<Polygon*> polygones = find_polygons();
-	 vector<LineSegment*> segments;
+	vector<Polygon*> polygones = find_polygons();
+	vector<LineSegment*> segments;
 
-	 for (i = 0; i < polygones.size(); i++) {
-	 segments = polygones.at(i)->getLineSegments();
-	 printf("Polygon: %d\n", polygones.size());
+	for (i = 0; i < polygones.size(); i++) {
+		segments = polygones.at(i)->getLineSegments();
+		printf("Polygon: %d\n", polygones.size());
 
-	 for (j = 0; j < segments.size(); j++) {
-	 print_line(segments.at(j));
-	 }
-	 printf("\n");
-	 }*/
+		for (j = 0; j < segments.size(); j++) {
+			print_line(segments.at(j));
+		}
+		printf("\n");
+	}
+
+	return;
 
 	ofstream outfile;
 	outfile.open(vector_file, ofstream::out | ofstream::trunc);
