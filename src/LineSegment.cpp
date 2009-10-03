@@ -37,37 +37,50 @@ void LineSegment::setEnd(LSPoint* end) {
 	this->end = end;
 }
 
-void LineSegment::setPower(int power)
-{
+void LineSegment::setPower(int power) {
 	this->power = power;
 }
-int LineSegment::getPower()
-{
+
+int LineSegment::getPower() {
 	return this->power;
 }
 
+void LineSegment::swapPoints() {
+	LSPoint* tmp = getStart();
+	setStart(getEnd());
+	setEnd(tmp);
+}
 
-float LineSegment::getSlope() {
-	int d_x =  end->getX() - start->getX();
-	int d_y = end->getY() - start->getY();
+float LineSegment::getSlope(bool swap) {
+	int d_x;
+	int d_y;
+	if (swap) {
+		d_x = start->getX() - end->getX();
+		d_y = start->getY() - end->getY();
+	} else {
+		d_x = end->getX() - start->getX();
+		d_y = end->getY() - start->getY();
+	}
 
-
-	return atan2(d_y, d_x);
+	//TODO Y flipped
+	return atan2(-d_y, d_x);
 }
 
 LineSegment::LSPoint* LineSegment::intersects(LineSegment *otherLine) {
-	float denom = ((otherLine->end->getY() - otherLine->start->getY()) * (this->end->getX()
-			- this->start->getX())) - ((otherLine->end->getX() - otherLine->start->getX())
-			* (this->end->getY() - this->start->getY()));
+	float denom = ((otherLine->end->getY() - otherLine->start->getY())
+			* (this->end->getX() - this->start->getX()))
+			- ((otherLine->end->getX() - otherLine->start->getX())
+					* (this->end->getY() - this->start->getY()));
 
-	float nume_a = ((otherLine->end->getX() - otherLine->start->getX()) * (this->start->getY()
-			- otherLine->start->getY()))
-			- ((otherLine->end->getY() - otherLine->start->getY()) * (this->start->getX()
+	float nume_a = ((otherLine->end->getX() - otherLine->start->getX())
+			* (this->start->getY() - otherLine->start->getY()))
+			- ((otherLine->end->getY() - otherLine->start->getY())
+					* (this->start->getX() - otherLine->start->getX()));
+
+	float nume_b = ((this->end->getX() - this->start->getX())
+			* (this->start->getY() - otherLine->start->getY()))
+			- ((this->end->getY() - this->start->getY()) * (this->start->getX()
 					- otherLine->start->getX()));
-
-	float nume_b = ((this->end->getX() - this->start->getX()) * (this->start->getY()
-			- otherLine->start->getY())) - ((this->end->getY() - this->start->getY())
-			* (this->start->getX() - otherLine->start->getX()));
 
 	if (denom == 0.0f) {
 		if (nume_a == 0.0f && nume_b == 0.0f) {
@@ -81,11 +94,15 @@ LineSegment::LSPoint* LineSegment::intersects(LineSegment *otherLine) {
 
 	if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
 		// Get the intersection LSPoint.
-		int ix = this->start->getX() + ua * (this->end->getX() - this->start->getX());
-		int iy = this->start->getY() + ua * (this->end->getY() - this->start->getY());
+		int ix = this->start->getX() + ua * (this->end->getX()
+				- this->start->getX());
+		int iy = this->start->getY() + ua * (this->end->getY()
+				- this->start->getY());
 
-		LineSegment::LSPoint* intersection = new LSPoint(ix,iy);
-		if ((this->start->equals(intersection) || this->end->equals(intersection)) && (otherLine->start->equals(intersection) || otherLine->end->equals(intersection)))
+		LineSegment::LSPoint* intersection = new LSPoint(ix, iy);
+		if ((this->start->equals(intersection) || this->end->equals(
+				intersection)) && (otherLine->start->equals(intersection)
+				|| otherLine->end->equals(intersection)))
 			return NULL; //tip intersection
 		else
 			return intersection;
@@ -94,5 +111,4 @@ LineSegment::LSPoint* LineSegment::intersects(LineSegment *otherLine) {
 
 	return NULL; //NOT_INTERSECTING;
 }
-
 

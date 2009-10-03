@@ -10,8 +10,10 @@
 
 #include <set>
 #include <string>
+#include <cmath>
 
 using namespace std;
+const float pi = atan2(0, -1);
 
 class LineSegment {
 public:
@@ -46,7 +48,8 @@ public:
 	LSPoint* getEnd();
 	void setPower(int power);
 	int getPower();
-	float getSlope();
+	float getSlope(bool swap=false);
+	void swapPoints();
 	LSPoint* intersects(LineSegment *otherLine);
 
 private:

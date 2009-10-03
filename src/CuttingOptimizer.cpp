@@ -19,6 +19,7 @@
 #include <cmath>
 #include "LineSegment.h"
 #include "Polygon.h"
+#include "OnionSkin.h"
 #include "CuttingOptimizer.h"
 
 using namespace std;
@@ -93,7 +94,7 @@ void splitAtIntersections() {
 			ls2 = *it_j;
 			ls1 = *it_i;
 
-			if(it_i == lines.end())
+			if (it_i == lines.end())
 				break;
 
 			if (ls1 == ls2)
@@ -122,39 +123,7 @@ void splitAtIntersections() {
 			}
 		}
 	}
-}
 
-/*LineSegment* find_next(vector<LineSegment*> occupied, LineSegment* current) {
- vector<LineSegment*> connectors = ((LSPoint*)current->getEnd())->getConnectors();
-
- LineSegment* candidate;
- LineSegment* best = NULL;
-
- float current_slope = current->getSlope();
- float best_slope_diff = 0.0f;
- float slop_diff;
-
- unsigned int i;
- for (i = 0; i < connectors.size(); i++) {
- candidate = connectors.at(i);
-
- if (!find_line(occupied, candidate)) {
- if(candidate->getStart() != current->getEnd())
- {
- candidate->setEnd(candidate->getStart());
- candidate->setStart(current->getEnd());
- }
-
- slop_diff = fabs(current_slope - candidate->getSlope());
- if (slop_diff > best_slope_diff){
- best = candidate;
- best_slope_diff = slop_diff;
- }
- }
- }
-
- return best;
- }*/
 
 void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 		LineSegment* current) {
@@ -166,7 +135,8 @@ void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 
 	for (it = connectors.begin(); it != connectors.end(); it++) {
 		candidate = *it;
-		if (candidate == current || occupied->find(candidate) != occupied->end())
+		if (candidate == current || occupied->find(candidate)
+				!= occupied->end())
 			continue;
 
 		if (candidate->getStart() != current->getEnd()) {
@@ -181,7 +151,7 @@ void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 vector<Polygon*> find_polygons() {
 
 	vector<Polygon*> polygons;
-	set<LineSegment*> *occupied = new set<LineSegment*>();
+	set<LineSegment*> *occupied = new set<LineSegment*> ();
 
 	LineSegment* ls;
 	list<LineSegment*>::iterator it;
@@ -198,6 +168,75 @@ vector<Polygon*> find_polygons() {
 		}
 	}
 	return polygons;
+}
+
+void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
+	set<LineSegment*> connectors = edge->getEnd()->getConnectors();
+	set<LineSegment*>::iterator it;
+	LineSegment* candidate;
+	LineSegment* next_edge = NULL;
+
+	float edge_slope = edge->getSlope(true);
+	float candidate_slope;
+
+	float slope_diff;
+	float min_slope_diff = 2 * pi;
+
+	//TODO resolve double check
+	if(p->hasLineSegment(edge))
+		skin->addLineSegment(edge);
+
+	p->eraseLineSegment(edge);
+
+	for (it = connectors.begin(); it != connectors.end(); it++) {
+		candidate = *it;
+
+		if (candidate == edge || !p->hasLineSegment(candidate))
+			continue;
+
+		if (candidate->getStart() != edge->getEnd())
+			candidate->swapPoints();
+
+		candidate_slope = candidate->getSlope();
+
+		slope_diff = edge_slope - candidate_slope;
+		if(slope_diff < 0)
+			slope_diff+=2*pi;
+		else if(slope_diff > 2*pi)
+			slope_diff-=2*pi;
+
+		if (slope_diff < min_slope_diff) {
+			min_slope_diff = slope_diff;
+			next_edge = candidate;
+		}
+	}
+
+
+	if (next_edge == NULL && cw) {
+		edge->swapPoints();
+		walkTheEdge(p, skin, edge, !cw);
+	} else if (next_edge != NULL)
+		walkTheEdge(p, skin, next_edge, cw);
+}
+
+vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
+	unsigned int i;
+
+	Polygon* p;
+	vector<OnionSkin*> skins;
+
+	for (i = 0; i < polygons.size(); i++) {
+		p = polygons.at(i);
+
+		while (p->getSegmentCount() > 0) {
+			OnionSkin* s = new OnionSkin();
+			walkTheEdge(p, s, p->findEdge(), true);
+			skins.push_back(s);
+		}
+
+	}
+
+	return skins;
 }
 
 void optimize_vectors(char *vector_file, int x_center, int y_center) {
@@ -252,7 +291,6 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 	}
 	infile.close();
 
-
 	printf("points: %d\n", points.size());
 
 	map<string, LineSegment::LSPoint*>::iterator it_p;
@@ -266,62 +304,73 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 	list<LineSegment*>::iterator it;
 
 	for (it = lines.begin(); it != lines.end(); it++) {
-			print_line(*it);
+		print_line(*it);
 	}
 
 	splitAtIntersections();
-	unsigned int i, j;
+
+	int i, j;
 
 	vector<Polygon*> polygones = find_polygons();
-	vector<LineSegment*> segments;
+	set<LineSegment*> segments;
+	set<LineSegment*>::iterator it_s;
 
 	for (i = 0; i < polygones.size(); i++) {
 		segments = polygones.at(i)->getLineSegments();
 		printf("Polygon: %d\n", polygones.size());
 
-		for (j = 0; j < segments.size(); j++) {
-			print_line(segments.at(j));
+		for (it_s = segments.begin(); it_s != segments.end(); it_s++) {
+			print_line(*it_s);
 		}
 		printf("\n");
 	}
 
-	return;
+	vector<OnionSkin*> skins = deonion(polygones);
+	list<LineSegment*> skin_segm;
+	list<LineSegment*>::reverse_iterator it_i;
+
 
 	ofstream outfile;
 	outfile.open(vector_file, ofstream::out | ofstream::trunc);
-	printf("%d\n", lines.size());
 
-	list<LineSegment*>::iterator it_i;
+	printf("Skins: %d\n", skins.size());
 
-	for (it_i = lines.begin(); it_i != lines.end(); it_i++) {
-		ls = *it_i;
-		if (ls != NULL) {
-			print_line(ls);
-			outfile << "P";
-			outfile << ls->getPower();
-			outfile << "\n";
-			outfile << "M";
-			outfile << ls->getStart()->getX();
-			outfile << ",";
-			outfile << ls->getStart()->getY();
-			outfile << "\n";
-			outfile << "L";
-			outfile << ls->getStart()->getX();
-			outfile << ",";
-			outfile << ls->getStart()->getY();
-			outfile << "\n";
-			outfile << "L";
-			outfile << ls->getEnd()->getX();
-			outfile << ",";
-			outfile << ls->getEnd()->getY();
-			outfile << "\n";
-			/*			 outfile << "M";
-			 outfile << ls->getEnd()->getX();
-			 outfile << ",";
-			 outfile << ls->getEnd()->getY();
-			 outfile << "\n";*/
+	for (i = skins.size() - 1; i >= 0; i--) {
+		skin_segm = skins.at(i)->getLineSegments();
+		printf("s: %d\n", skin_segm.size());
+
+		for (it_i = skin_segm.rbegin(); it_i != skin_segm.rend(); it_i++) {
+			ls = *it_i;
+			if(it_i != skin_segm.rbegin())
+				ls->swapPoints();
+			if (ls != NULL) {
+				print_line(ls);
+				outfile << "P";
+				outfile << ls->getPower();
+				outfile << "\n";
+				outfile << "M";
+				outfile << ls->getStart()->getX();
+				outfile << ",";
+				outfile << ls->getStart()->getY();
+				outfile << "\n";
+				outfile << "L";
+				outfile << ls->getStart()->getX();
+				outfile << ",";
+				outfile << ls->getStart()->getY();
+				outfile << "\n";
+				outfile << "L";
+				outfile << ls->getEnd()->getX();
+				outfile << ",";
+				outfile << ls->getEnd()->getY();
+				outfile << "\n";
+				/*			 outfile << "M";
+				 outfile << ls->getEnd()->getX();
+				 outfile << ",";
+				 outfile << ls->getEnd()->getY();
+				 outfile << "\n";*/
+			}
+
 		}
-
 	}
 	outfile << "X\n";
 	outfile.close();

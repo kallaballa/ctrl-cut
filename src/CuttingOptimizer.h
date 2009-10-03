@@ -7,11 +7,14 @@
 
 #ifndef CUTTINGOPTIMIZER_H_
 #define CUTTINGOPTIMIZER_H_
+#include "cmath"
 
 extern "C" void optimize_vectors(char *vector_file, int x_center, int y_center);
 
+
 class CuttingOptimizer {
 public:
+
 	CuttingOptimizer();
 	virtual ~CuttingOptimizer();
 
