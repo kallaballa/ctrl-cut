@@ -123,6 +123,7 @@ void splitAtIntersections() {
 			}
 		}
 	}
+}
 
 
 void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
@@ -375,4 +376,5 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 	outfile << "X\n";
 	outfile.close();
 
+	cout << "LINES:" << lines.size() << endl;
 }
