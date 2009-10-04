@@ -4,6 +4,7 @@
  *  Created on: 26.09.2009
  *      Author: amir
  */
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -216,8 +217,11 @@ void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 	if (next_edge == NULL && cw) {
 		edge->swapPoints();
 		walkTheEdge(p, skin, edge, !cw);
-	} else if (next_edge != NULL)
+	} else if (next_edge != NULL) {
+		if(!cw)
+			cw = true;
 		walkTheEdge(p, skin, next_edge, cw);
+	}
 }
 
 vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
@@ -241,6 +245,7 @@ vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
 }
 
 void optimize_vectors(char *vector_file, int x_center, int y_center) {
+	time_t start_time = time(NULL);
 	string line;
 	ifstream infile(vector_file, ios_base::in);
 	char first;
@@ -297,31 +302,30 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 	map<string, LineSegment::LSPoint*>::iterator it_p;
 
 	for (it_p = points.begin(); it_p != points.end(); it_p++) {
-		print_point(it_p->second);
+		//print_point(it_p->second);
 	}
-
-	printf("lines: %d\n", lines.size());
 
 	list<LineSegment*>::iterator it;
 
 	for (it = lines.begin(); it != lines.end(); it++) {
-		print_line(*it);
+		//print_line(*it);
 	}
 
 	splitAtIntersections();
-
+	printf("lines: %d\n", lines.size());
 	int i, j;
 
 	vector<Polygon*> polygones = find_polygons();
 	set<LineSegment*> segments;
 	set<LineSegment*>::iterator it_s;
 
+	printf("Polygons: %d\n", polygones.size());
 	for (i = 0; i < polygones.size(); i++) {
 		segments = polygones.at(i)->getLineSegments();
-		printf("Polygon: %d\n", polygones.size());
+		printf("segments: %d\n", segments.size());
 
 		for (it_s = segments.begin(); it_s != segments.end(); it_s++) {
-			print_line(*it_s);
+			//print_line(*it_s);
 		}
 		printf("\n");
 	}
@@ -345,7 +349,7 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 			if(it_i != skin_segm.rbegin())
 				ls->swapPoints();
 			if (ls != NULL) {
-				print_line(ls);
+				//print_line(ls);
 				outfile << "P";
 				outfile << ls->getPower();
 				outfile << "\n";

@@ -13,8 +13,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "ClientSocket.h"
-#include "SocketException.h"
+#include <netdb.h>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -26,7 +25,6 @@ using namespace std;
 int socket_descriptor = -1;
 string *host;
 int timeout;
-ClientSocket *clientSocket;
 bool connected = false;
 
 /**

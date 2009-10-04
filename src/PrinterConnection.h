@@ -49,7 +49,6 @@ private:
 	int socket_descriptor;
 	string *host;
 	int timeout;
-	ClientSocket *clientSocket;
 	bool connected;
 
 public:

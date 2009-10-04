@@ -120,8 +120,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "Socket.h"
-#include "ClientSocket.h"
 #include "laser_config.h"
 #include "PrinterConnection.h"
 #include "cups_epilog.h"
@@ -702,10 +700,9 @@ generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *ve
     /* If raster power is enabled and raster mode is not 'n' then add that
      * information to the print job.
      */
-    fprintf(stderr, "##### ENTERED1");
+
 
     if (lconf->raster_power && lconf->raster_mode != 'n') {
-    	fprintf(stderr, "##### ENTERED");
         /* We're going to perform a raster print. */
         generate_raster(pjob, lconf, bitmap_file);
     }
@@ -1083,9 +1080,7 @@ main(int argc, char *argv[])
     FILE *file_cups;
     FILE *file_pdf;
     FILE *file_ps;
-    FILE *file_ps_output;
     FILE *file_vector;
-    FILE *file_template;
 
     /* Temporary variables. */
     int l;
