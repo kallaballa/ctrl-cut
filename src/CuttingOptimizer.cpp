@@ -21,22 +21,22 @@
 #include "LineSegment.h"
 #include "Polygon.h"
 #include "OnionSkin.h"
+#include "VectorCut.h"
 #include "CuttingOptimizer.h"
 
 using namespace std;
 
-map<string, LineSegment::LSPoint*> points;
-list<LineSegment*> lines;
+VectorCut *cut = new VectorCut;
 
 CuttingOptimizer::CuttingOptimizer() {
-	// TODO Auto-generated constructor stub
+
 }
 
 CuttingOptimizer::~CuttingOptimizer() {
 	// TODO Auto-generated destructor stub
 }
 
-void print_point(LineSegment::LSPoint *pnt) {
+void print_point(Joint *pnt) {
 	printf("x ->%d\ty ->%d\t%d\t%s\t%d\n", pnt->getX(), pnt->getY(),
 			pnt->getConnectors().size(), pnt->getKey().data(), pnt);
 }
@@ -45,47 +45,15 @@ void print_line(LineSegment *ls) {
 	if (ls == NULL)
 		return;
 	printf("Line:%d\n", ls);
-	print_point((LineSegment::LSPoint*) ls->getStart());
-	print_point((LineSegment::LSPoint*) ls->getEnd());
+	print_point((Joint*) ls->getStart());
+	print_point((Joint*) ls->getEnd());
 	printf("\n");
 }
 
-LineSegment::LSPoint* addPoint(LineSegment::LSPoint* p) {
-	map<string, LineSegment::LSPoint*>::iterator it = points.find(p->getKey());
-
-	if (it != points.end()) {
-		return (LineSegment::LSPoint*) it->second;
-	}
-
-	points.insert(pair<string, LineSegment::LSPoint*> (p->getKey(), p));
-	return p;
-}
-
-void addLine(LineSegment::LSPoint *start, LineSegment::LSPoint *end, int power) {
-	LineSegment *ls = new LineSegment(start, end, power);
-
-	start = addPoint(start);
-	ls->setStart(start);
-	start->addConnector(ls);
-
-	end = addPoint(end);
-	ls->setEnd(end);
-	end->addConnector(ls);
-
-	lines.push_back(ls);
-}
-
-list<LineSegment*>::iterator eraseLine(list<LineSegment*>::iterator it_ls) {
-	LineSegment *ls = *it_ls;
-	ls->getStart()->removeConnector(ls);
-	ls->getEnd()->removeConnector(ls);
-
-	return lines.erase(it_ls);
-}
-
 void splitAtIntersections() {
-	LineSegment::LSPoint *intersec = new LineSegment::LSPoint(-1000, -1000);
+	Joint *intersec = new Joint(-1000, -1000);
 	LineSegment *ls1, *ls2;
+	list<LineSegment*> lines = cut->getLineSegements();
 
 	list<LineSegment*>::iterator it_i;
 	list<LineSegment*>::iterator it_j;
@@ -102,30 +70,29 @@ void splitAtIntersections() {
 				continue;
 
 			if ((intersec = ls1->intersects(ls2)) != NULL) {
-				intersec = addPoint(intersec);
+				intersec = cut->addPoint(intersec);
 
 				if (!ls1->getStart()->equals(intersec)
 						&& !ls1->getEnd()->equals(intersec)) {
-					it_i = eraseLine(it_i);
-					addLine((LineSegment::LSPoint*) ls1->getStart(), intersec,
+					it_i = cut->eraseLine(it_i);
+					cut->addLine((Joint*) ls1->getStart(), intersec,
 							ls1->getPower());
-					addLine((LineSegment::LSPoint*) ls1->getEnd(), intersec,
+					cut->addLine((Joint*) ls1->getEnd(), intersec,
 							ls1->getPower());
 				}
 
 				if (!ls2->getStart()->equals(intersec)
 						&& !ls2->getEnd()->equals(intersec)) {
-					it_j = eraseLine(it_j);
-					addLine((LineSegment::LSPoint*) ls2->getStart(), intersec,
+					it_j = cut->eraseLine(it_j);
+					cut->addLine((Joint*) ls2->getStart(), intersec,
 							ls2->getPower());
-					addLine((LineSegment::LSPoint*) ls2->getEnd(), intersec,
+					cut->addLine((Joint*) ls2->getEnd(), intersec,
 							ls2->getPower());
 				}
 			}
 		}
 	}
 }
-
 
 void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 		LineSegment* current) {
@@ -140,7 +107,6 @@ void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 		if (candidate == current || occupied->find(candidate)
 				!= occupied->end())
 			continue;
-
 		if (candidate->getStart() != current->getEnd()) {
 			candidate->setEnd(candidate->getStart());
 			candidate->setStart(current->getEnd());
@@ -157,6 +123,7 @@ vector<Polygon*> find_polygons() {
 
 	LineSegment* ls;
 	list<LineSegment*>::iterator it;
+	list<LineSegment*> lines = cut->getLineSegements();
 
 	for (it = lines.begin(); it != lines.end(); it++) {
 		ls = *it;
@@ -197,7 +164,7 @@ void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 			continue;
 
 		if (candidate->getStart() != edge->getEnd())
-			candidate->swapPoints();
+			candidate->invertDirection();
 
 		candidate_slope = candidate->getSlope();
 
@@ -215,7 +182,7 @@ void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 
 
 	if (next_edge == NULL && cw) {
-		edge->swapPoints();
+		edge->invertDirection();
 		walkTheEdge(p, skin, edge, !cw);
 	} else if (next_edge != NULL) {
 		if(!cw)
@@ -244,62 +211,15 @@ vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
 	return skins;
 }
 
-void optimize_vectors(char *vector_file, int x_center, int y_center) {
-	time_t start_time = time(NULL);
-	string line;
-	ifstream infile(vector_file, ios_base::in);
-	char first;
-	int power, x, y;
-	int lx, ly;
-	int mx, my;
-	LineSegment::LSPoint *start;
-	LineSegment::LSPoint *end;
-	LineSegment *ls;
-
-	while (getline(infile, line, '\n')) {
-		first = *line.begin();
-
-		if (first == 'X')
-			break;
-
-		if (isalpha(first)) {
-			switch (first) {
-			case 'M': // move
-				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
-					lx = x;
-					ly = y;
-					mx = x;
-					my = y;
-				}
-				break;
-			case 'C': // close
-				if (lx != mx || ly != my) {
-					addLine(new LineSegment::LSPoint(lx, ly),
-							new LineSegment::LSPoint(mx, my), power);
-				}
-				break;
-			case 'P': // power
-				if (sscanf((char *) line.data() + 1, "%d", &x) == 1) {
-					power = x;
-				}
-				break;
-			case 'L': // line
-				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
-					start = new LineSegment::LSPoint(lx, ly);
-					end = new LineSegment::LSPoint(x, y);
-					addLine(start, end, power);
-					lx = x;
-					ly = y;
-				}
-				break;
-			}
-		}
-	}
-	infile.close();
+void optimize_vectors(char *vector_file) {
+	string fn(vector_file);
+	cut->load(&fn);
+	map<string, Joint*> points;
+	list<LineSegment*> lines = cut->getLineSegements();
 
 	printf("points: %d\n", points.size());
 
-	map<string, LineSegment::LSPoint*>::iterator it_p;
+	map<string, Joint*>::iterator it_p;
 
 	for (it_p = points.begin(); it_p != points.end(); it_p++) {
 		//print_point(it_p->second);
@@ -313,7 +233,7 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 
 	splitAtIntersections();
 	printf("lines: %d\n", lines.size());
-	int i, j;
+	unsigned int i;
 
 	vector<Polygon*> polygones = find_polygons();
 	set<LineSegment*> segments;
@@ -332,6 +252,7 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 
 	vector<OnionSkin*> skins = deonion(polygones);
 	list<LineSegment*> skin_segm;
+	LineSegment* ls;
 	list<LineSegment*>::reverse_iterator it_i;
 
 
@@ -347,7 +268,7 @@ void optimize_vectors(char *vector_file, int x_center, int y_center) {
 		for (it_i = skin_segm.rbegin(); it_i != skin_segm.rend(); it_i++) {
 			ls = *it_i;
 			if(it_i != skin_segm.rbegin())
-				ls->swapPoints();
+				ls->invertDirection();
 			if (ls != NULL) {
 				//print_line(ls);
 				outfile << "P";

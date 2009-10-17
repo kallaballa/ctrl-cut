@@ -46,7 +46,7 @@ LineSegment* Polygon::findEdge() {
 	set<LineSegment*> segments = this->getLineSegments();
 	LineSegment* ls;
 	int min_x = INT_MAX;
-	LineSegment::LSPoint* most_left = NULL;
+	Joint* most_left = NULL;
 	set<LineSegment*>::iterator it;
 	int sx;
 	int ex;
@@ -73,21 +73,15 @@ LineSegment* Polygon::findEdge() {
 	float slope;
 	float steapest = pi;
 
-
 	for (it = connected.begin(); it != connected.end(); it++) {
 		ls = *it;
 
 		if (ls->getStart()->getY() > ls->getEnd()->getY())
-			ls->swapPoints();
+			ls->invertDirection();
 
 		slope = abs(ls->getSlope() - (pi / 2));
-		if(slope >= 3.1415f)
+		if (slope >= 3.1415f)
 			slope = 0;
-
-		//TODO remove sanity check
-//		if (slope > vertical && slope < ((2*pi) - vertical)) {
-//			cerr << "Slope above vertical!!";
-//		}
 
 		if (slope < steapest) {
 			steapest = slope;
@@ -95,8 +89,8 @@ LineSegment* Polygon::findEdge() {
 		}
 	}
 
-	if(ls->getSlope() < 0)
-		ls->swapPoints();
+	if (ls->getSlope() < 0)
+		ls->invertDirection();
 
 	return edge;
 }

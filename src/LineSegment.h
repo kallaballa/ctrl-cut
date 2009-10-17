@@ -11,54 +11,31 @@
 #include <set>
 #include <string>
 #include <cmath>
+#include "Joint.h"
 
 using namespace std;
 const float pi = atan2(0, -1);
 
 class LineSegment {
 public:
-	class LSPoint {
-	private:
-		int x;
-		int y;
-		string key;
-		void updateKey();
-		std::set<LineSegment*> connectors;
-	public:
-		LSPoint(int x, int y);
-		virtual ~LSPoint();
-		int getX();
-		int getY();
-		void setX(int x);
-		void setY(int y);
-		void setX(int x, bool updateKey);
-		void setY(int y, bool updateKey);
-		bool equals(LSPoint *other);
-		string getKey();
-		void addConnector(LineSegment *ls);
-		void removeConnector(LineSegment *ls);
-		std::set<LineSegment*> getConnectors();
-	};
+
 	enum IntersectResult { PARALLEL, COINCIDENT, NOT_INTERSECTING, INTERSECTING };
-	LineSegment(LSPoint *start,LSPoint *end, int power);
+	LineSegment(Joint *start,Joint *end, int power);
 	virtual ~LineSegment();
-	void setStart(LSPoint* start);
-	void setEnd(LSPoint* end);
-	LSPoint* getStart();
-	LSPoint* getEnd();
+	void setStart(Joint* start);
+	void setEnd(Joint* end);
+	Joint* getStart();
+	Joint* getEnd();
 	void setPower(int power);
 	int getPower();
 	float getSlope(bool swap=false);
-	void swapPoints();
-	LSPoint* intersects(LineSegment *otherLine);
+	void invertDirection();
+	Joint* intersects(LineSegment *otherLine);
 
 private:
-	LSPoint *start;
-	LSPoint *end;
+	Joint *start;
+	Joint *end;
 	int power;
 };
-
-
-
 
 #endif /* LINE_H_ */

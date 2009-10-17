@@ -11,7 +11,7 @@
 
 using namespace std;
 
-LineSegment::LineSegment(LSPoint *start, LSPoint *end, int power) {
+LineSegment::LineSegment(Joint *start, Joint *end, int power) {
 	this->start = start;
 	this->end = end;
 	this->power = power;
@@ -21,19 +21,19 @@ LineSegment::~LineSegment() {
 	// TODO Auto-generated destructor stub
 }
 
-LineSegment::LSPoint* LineSegment::getStart() {
+Joint* LineSegment::getStart() {
 	return this->start;
 }
 
-LineSegment::LSPoint* LineSegment::getEnd() {
+Joint* LineSegment::getEnd() {
 	return this->end;
 }
 
-void LineSegment::setStart(LSPoint* start) {
+void LineSegment::setStart(Joint* start) {
 	this->start = start;
 }
 
-void LineSegment::setEnd(LSPoint* end) {
+void LineSegment::setEnd(Joint* end) {
 	this->end = end;
 }
 
@@ -45,8 +45,8 @@ int LineSegment::getPower() {
 	return this->power;
 }
 
-void LineSegment::swapPoints() {
-	LSPoint* tmp = getStart();
+void LineSegment::invertDirection() {
+	Joint* tmp = getStart();
 	setStart(getEnd());
 	setEnd(tmp);
 }
@@ -66,7 +66,7 @@ float LineSegment::getSlope(bool swap) {
 	return atan2(-d_y, d_x);
 }
 
-LineSegment::LSPoint* LineSegment::intersects(LineSegment *otherLine) {
+Joint* LineSegment::intersects(LineSegment *otherLine) {
 	float denom = ((otherLine->end->getY() - otherLine->start->getY())
 			* (this->end->getX() - this->start->getX()))
 			- ((otherLine->end->getX() - otherLine->start->getX())
@@ -99,7 +99,7 @@ LineSegment::LSPoint* LineSegment::intersects(LineSegment *otherLine) {
 		int iy = this->start->getY() + ua * (this->end->getY()
 				- this->start->getY());
 
-		LineSegment::LSPoint* intersection = new LSPoint(ix, iy);
+		Joint* intersection = new Joint(ix, iy);
 		if ((this->start->equals(intersection) || this->end->equals(
 				intersection)) && (otherLine->start->equals(intersection)
 				|| otherLine->end->equals(intersection)))

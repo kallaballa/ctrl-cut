@@ -9,7 +9,7 @@
 #define CUTTINGOPTIMIZER_H_
 #include "cmath"
 
-extern "C" void optimize_vectors(char *vector_file, int x_center, int y_center);
+extern "C" void optimize_vectors(char *vector_file);
 
 
 class CuttingOptimizer {

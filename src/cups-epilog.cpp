@@ -1296,9 +1296,7 @@ main(int argc, char *argv[])
         perror(filename_pjl);
         return 1;
     }
-	optimize_vectors(filename_vector, ((lconf.width * lconf.resolution)
-			/ POINTS_PER_INCH) / 2, ((lconf.height * lconf.resolution)
-			/ POINTS_PER_INCH) / 2);
+	optimize_vectors(filename_vector);
 	//return 0;
 	file_vector = fopen(filename_vector, "r");
 	/* Execute the generation of the printer job language (pjl) file. */
