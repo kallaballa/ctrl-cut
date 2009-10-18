@@ -102,14 +102,8 @@
  *
  */
 
-
-/*************************************************************************
- * includes
- */
 #include <ctype.h>
 #include <errno.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -120,11 +114,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "laser_config.h"
-#include "PrinterConnection.h"
-#include "cups_epilog.h"
+#include <fstream>
+
 #include "CuttingOptimizer.h"
-#include "pjl.h"
+#include "Driver.h"
+#include "CupsParser.h"
+
 
 /** The printer job **/
 printer_config pconf;
@@ -210,509 +205,6 @@ execute_ghostscript(char *filename_bitmap,
     }
     if (system(buf)) {
         return false;
-    }
-    return true;
-}
-
-bool
-generate_raster(printer_config *pjob, laser_config *lconf ,FILE *bitmap_file)
-{
-    int h;
-    int d;
-    int offx;
-    int offy;
-    int repeat;
-    uint8_t bitmap_header[BITMAP_HEADER_NBYTES];
-
-    repeat = lconf->raster_repeat;
-    while (repeat--) {
-        /* repeated (over printed) */
-        int pass;
-        int passes;
-        long base_offset;
-        if (lconf->raster_mode == 'c') {
-            passes = 7;
-        } else {
-            passes = 1;
-        }
-
-        /* Read in the bitmap header. */
-        fread(bitmap_header, 1, BITMAP_HEADER_NBYTES, bitmap_file);
-
-        /* Re-load width/height from bmp as it is possible that someone used
-         * setpagedevice or some such
-         */
-        /* Bytes 18 - 21 are the bitmap width (little endian format). */
-        lconf->width = big_to_little_endian(bitmap_header + 18, 4);
-
-        /* Bytes 22 - 25 are the bitmap height (little endian format). */
-        lconf->height = big_to_little_endian(bitmap_header + 22, 4);
-
-        /* Bytes 10 - 13 base offset for the beginning of the bitmap data. */
-        base_offset = big_to_little_endian(bitmap_header + 10, 4);
-
-
-        if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
-            /* colour/grey are byte per pixel power levels */
-            h = lconf->width;
-            /* BMP padded to 4 bytes per scan line */
-            d = (h * 3 + 3) / 4 * 4;
-        } else {
-            /* mono */
-            h = (lconf->width + 7) / 8;
-            /* BMP padded to 4 bytes per scan line */
-            d = (h + 3) / 4 * 4;
-        }
-        if (debug) {
-            fprintf(stderr, "Width %d Height %d Bytes %d Line %d\n",
-            		lconf->width, lconf->height, h, d);
-        }
-
-        /* Raster Orientation */
-        fprintf(pjl_file, R_ORIENTATION, 0);
-        /* Raster power */
-        fprintf(pjl_file, R_POWER,
-                (lconf->raster_mode == 'c' ||
-                		lconf->raster_mode == 'g') ? 100 : lconf->raster_power);
-        /* Raster speed */
-        fprintf(pjl_file, PCL_UNKNOWN_BLAFOO3);
-        fprintf(pjl_file, R_SPEED, lconf->raster_speed);
-        fprintf(pjl_file, R_HEIGHT, lconf->height * lconf->y_repeat);
-        fprintf(pjl_file, R_WIDTH, lconf->width * lconf->x_repeat);
-        /* Raster compression */
-        fprintf(pjl_file, R_COMPRESSION, (lconf->raster_mode == 'c' || lconf->raster_mode == 'g')
-                ? 7 : 2);
-        /* Raster direction (1 = up) */
-        fprintf(pjl_file, R_DIRECTION_UP);
-        /* start at current position */
-        fprintf(pjl_file, R_START_AT_POS);
-        for (offx = lconf->width * (lconf->x_repeat - 1); offx >= 0; offx -= lconf->width) {
-            for (offy = lconf->height * (lconf->y_repeat - 1); offy >= 0; offy -= lconf->height) {
-                for (pass = 0; pass < passes; pass++) {
-                    // raster (basic)
-                    int y;
-                    char dir = 0;
-
-                    fseek(bitmap_file, base_offset, SEEK_SET);
-                    for (y = lconf->height - 1; y >= 0; y--) {
-                        int l;
-
-                        switch (lconf->raster_mode) {
-                        case 'c':      // colour (passes)
-                        {
-                            char *f = buf;
-                            char *t = buf;
-                            if (d > sizeof (buf)) {
-                                perror("Too wide");
-                                return false;
-                            }
-                            l = fread ((char *)buf, 1, d, bitmap_file);
-                            if (l != d) {
-                                fprintf(stderr, "Bad bit data from gs %d/%d (y=%d)\n", l, d, y);
-                                return false;
-                            }
-                            while (l--) {
-                                // pack and pass check RGB
-                                int n = 0;
-                                int v = 0;
-                                int p = 0;
-                                int c = 0;
-                                for (c = 0; c < 3; c++) {
-                                    if (*f > 240) {
-                                        p |= (1 << c);
-                                    } else {
-                                        n++;
-                                        v += *f;
-                                    }
-                                    f++;
-                                }
-                                if (n) {
-                                    v /= n;
-                                } else {
-                                    p = 0;
-                                    v = 255;
-                                }
-                                if (p != pass) {
-                                    v = 255;
-                                }
-                                *t++ = 255 - v;
-                            }
-                        }
-                        break;
-                        case 'g':      // grey level
-                        {
-                            /* BMP padded to 4 bytes per scan line */
-                            int d = (h + 3) / 4 * 4;
-                            if (d > sizeof (buf)) {
-                                fprintf(stderr, "Too wide\n");
-                                return false;
-                            }
-                            l = fread((char *)buf, 1, d, bitmap_file);
-                            if (l != d) {
-                                fprintf (stderr, "Bad bit data from gs %d/%d (y=%d)\n", l, d, y);
-                                return false;
-                            }
-                            for (l = 0; l < h; l++) {
-                                buf[l] = (255 - (uint8_t)buf[l]);
-                            }
-                        }
-                        break;
-                        default:       // mono
-                        {
-                            int d = (h + 3) / 4 * 4;  // BMP padded to 4 bytes per scan line
-                            if (d > sizeof (buf))
-                            {
-                                perror("Too wide");
-                                return false;
-                            }
-                            l = fread((char *) buf, 1, d, bitmap_file);
-                            if (l != d)
-                            {
-                                fprintf(stderr, "Bad bit data from gs %d/%d (y=%d)\n", l, d, y);
-                                return false;
-                            }
-                        }
-                        }
-
-                        if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
-                            for (l = 0; l < h; l++) {
-                                /* Raster value is multiplied by the
-                                 * power scale.
-                                 */
-                                buf[l] = (uint8_t)buf[l] * lconf->raster_power / 255;
-                            }
-                        }
-
-                        /* find left/right of data */
-                        for (l = 0; l < h && !buf[l]; l++) {
-                            ;
-                        }
-
-                        if (l < h) {
-                            /* a line to print */
-                            int r;
-                            int n;
-                            unsigned char pack[sizeof (buf) * 5 / 4 + 1];
-                            for (r = h - 1; r > l && !buf[r]; r--) {
-                                ;
-                            }
-                            r++;
-                            fprintf(pjl_file, PCL_POS_Y, lconf->basey + offy + y);
-                            fprintf(pjl_file, PCL_POS_X, lconf->basex + offx +
-                                    ((lconf->raster_mode == 'c' || lconf->raster_mode == 'g') ? l : l * 8));
-                            if (dir) {
-                                fprintf(pjl_file, R_INTENSITY, -(r - l));
-                                // reverse bytes!
-                                for (n = 0; n < (r - l) / 2; n++){
-                                    unsigned char t = buf[l + n];
-                                    buf[l + n] = buf[r - n - 1];
-                                    buf[r - n - 1] = t;
-                                }
-                            } else {
-                                fprintf(pjl_file, R_INTENSITY, (r - l));
-                            }
-                            dir = 1 - dir;
-                            // pack
-                            n = 0;
-                            while (l < r) {
-                                int p;
-                                for (p = l; p < r && p < l + 128 && buf[p]
-                                         == buf[l]; p++) {
-                                    ;
-                                }
-                                if (p - l >= 2) {
-                                    // run length
-                                    pack[n++] = 257 - (p - l);
-                                    pack[n++] = buf[l];
-                                    l = p;
-                                } else {
-                                    for (p = l;
-                                         p < r && p < l + 127 &&
-                                             (p + 1 == r || buf[p] !=
-                                              buf[p + 1]);
-                                         p++) {
-                                        ;
-                                    }
-
-                                    pack[n++] = p - l - 1;
-                                    while (l < p) {
-                                        pack[n++] = buf[l++];
-                                    }
-                                }
-                            }
-                            fprintf(pjl_file, R_ROW_BYTES, (n + 7) / 8 * 8);
-                            r = 0;
-                            while (r < n)
-                                fputc(pack[r++], pjl_file);
-                            while (r & 7)
-                            {
-                                r++;
-                                fputc(0x80, pjl_file);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        fprintf(pjl_file, "\e*rC");       // end raster
-        fputc(26, pjl_file);      // some end of file markers
-        fputc(4, pjl_file);
-    }
-    return true;
-}
-
-/**
- *
- */
-bool
-generate_vector(printer_config *pjob, laser_config *lconf, FILE *vector_file)
-{
-    char up = 1;           // output status
-    char firstdown=1;
-    char newline = 1;      // input status (last was M)
-    char started = 0;
-    int sx = 0;
-    int sy = 0;
-    int lx = 0;
-    int ly = 0;
-    int power = 100;
-    int offx;
-    int offy;
-
-
-    for (offy = lconf->height * (lconf->y_repeat - 1); offy >= 0; offy -= lconf->height) {
-        for (offx = lconf->width * (lconf->x_repeat - 1); offx >= 0; offx -= lconf->width) {
-            char passstart = 0;
-            rewind(vector_file);
-            while (fgets((char *) buf, sizeof (buf), vector_file)) {
-                if (isalpha(*buf)) {
-                    int x,
-                        y;
-                    if (!passstart) {
-                        passstart = 1;
-                        fprintf(pjl_file, V_INIT);
-                        fprintf(pjl_file, SEP);
-                        fprintf(pjl_file, V_FREQUENCY, lconf->vector_freq);
-                        fprintf(pjl_file, SEP);
-                        fprintf(pjl_file, V_POWER, lconf->vector_power);
-                        fprintf(pjl_file, SEP);
-                        fprintf(pjl_file, V_SPEED, lconf->vector_speed);
-                        fprintf(pjl_file, SEP);
-                    }
-                    switch (*buf) {
-                    case 'M': // move
-                        if (sscanf((char *) buf + 1, "%d,%d", &y, &x)
-                            == 2) {
-                            sx = x;
-                            sy = y;
-                            newline = 1;
-                        }
-                        break;
-                    case 'C': // close - only makes sense after an "L"
-                        if (newline == 0 && up == 0 && (lx != sx || ly
-                                                        != sy)) {
-                            fprintf(pjl_file, ",%d,%d", lconf->basex + offx + sx +
-                                    HPGLX, lconf->basey + offy + sy + HPGLY);
-                        }
-                        break;
-                    case 'P': // power
-                        if (sscanf((char *)buf + 1, "%d", &x) == 1
-                            && x != power) {
-                            int epower;
-                            power = x;
-                            if (!started) {
-                                started = 1;
-                                /* XXX disabled as current code path inserts
-                                 *  this statement AFTER the IN; statement.
-                                 */
-                                /* start HPGL */
-/*                                 fprintf(pjl_file, "\e%%1B");     */
-                            }
-                            if (!up) {
-								if(firstdown){
-									firstdown = 0;
-									fprintf(pjl_file, SEP);
-									fprintf(pjl_file, HPGL_PEN_UP_INIT);
-								} else {
-									fprintf(pjl_file, SEP);
-									fprintf(pjl_file, HPGL_PEN_UP);
-								}
-                            }
-                            up = 1;
-                            epower = (power * lconf->vector_power + 50) / 100;
-                            if (lconf->vector_speed && lconf->vector_speed < 100) {
-                                int espeed = lconf->vector_speed;
-                                int efreq = lconf->vector_freq;
-                                if (epower && x < 100) {
-                                    int r;
-                                    int q;
-                                    r = 10000 / x; // power, up to set power level (i.e. x=100)
-                                    q = 10000 / espeed;
-                                    if (q < r)
-                                        r = q;
-                                    q = 500000 / efreq;
-                                    if (q < r)
-                                        r = q;
-                                    epower = (50 + epower * r) / 100;
-                                    espeed = (50 + espeed * r) / 100;
-                                    efreq = (50 + espeed * r) / 100;
-                                }
-
-                                fprintf(pjl_file, SEP);
-								fprintf(pjl_file, V_SPEED, espeed);
-	                            fprintf(pjl_file, SEP);
-								fprintf(pjl_file, V_FREQUENCY, efreq);
-	                            fprintf(pjl_file, SEP);
-                            }
-							fprintf(pjl_file, V_POWER, epower);
-                            fprintf(pjl_file, SEP);
-                        }
-                        break;
-                    case 'L': // line
-						if (!started) {
-							started = 1;
-							//fprintf(pjl_file, "\e%%1B;");      // start HPGL
-						}
-						if (newline) {
-							if (!up)
-								fprintf(pjl_file, SEP);
-
-							if (firstdown) {
-								firstdown = 0;
-								fprintf(pjl_file, HPGL_PEN_UP_INIT);
-								fprintf(pjl_file, "%d,%d", lconf->basex + offx
-										+ sx + HPGLX, lconf->basey + offy + sy + HPGLY);
-							} else {
-								fprintf(pjl_file, HPGL_PEN_UP);
-								fprintf(pjl_file, "%d,%d", lconf->basex + offx + sx
-										+ HPGLX, lconf->basey + offy + sy + HPGLY);
-							}
-							//fprintf(pjl_file, SEP);
-							//fprintf(pjl_file, V_POWER, lconf->vector_power);
-							/*if(i % 5 == 0)
-							{
-								if (lconf->vector_power < 100)
-								{
-									fprintf(pjl_file, SEP);
-									fprintf(pjl_file, V_POWER, lconf->vector_power++);
-								}
-								else if(lconf->vector_speed > 1)
-								{
-									fprintf(pjl_file, SEP);
-									fprintf(pjl_file, V_SPEED, lconf->vector_speed--);
-								}
-								else {
-									lconf->vector_power = 1;
-									lconf->vector_speed = 100;
-								}
-							}
-							i++; */
-							up = 1;
-							newline = 0;
-						}
-						if (up) {
-							fprintf(pjl_file, SEP);
-							fprintf(pjl_file, HPGL_PEN_DOWN);
-						} else {
-							fprintf(pjl_file, ",");
-						}
-						up = 0;
-						if (sscanf((char *) buf + 1, "%d,%d", &y, &x) == 2) {
-							fprintf(pjl_file, "%d,%d",
-									lconf->basex + offx + x + HPGLX, lconf->basey + offy + y
-											+ HPGLY);
-
-						}
-						lx = x;
-						ly = y;
-						break;
-					}
-
-					if (*buf == 'X')
-						break;
-				}
-            }
-        }
-    }
-    if (started) {
-        if (up == 0)
-            fprintf(pjl_file, ";");
-        fprintf(pjl_file, HPGL_END);      // end HLGL
-    }
-    fprintf(pjl_file, PCL_SECTION_END);
-    fprintf(pjl_file, HPGL_PEN_UP);
-    return true;
-}
-
-
-/**
- *
- */
-bool
-generate_pjl(printer_config *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file)
-{
-    int i;
-
-    /* Print the printer job language header. */
-    fprintf(pjl_file, PJL_HEADER, pjob->title->data());
-    /* Set autofocus on or off. */
-    fprintf(pjl_file, PCL_AUTOFOCUS, lconf->focus);
-    /* FIXME unknown purpose. */
-    fprintf(pjl_file, PCL_UNKNOWN_BLAFOO);
-    /* FIXME unknown purpose. */
-    fprintf(pjl_file, PCL_UNKNOWN_BLAFOO2);
-    /* Left (long-edge) offset registration.  Adjusts the position of the
-     * logical page across the width of the page.
-     */
-    fprintf(pjl_file, PCL_OFF_X, 0);
-    /* Top (short-edge) offset registration.  Adjusts the position of the
-     * logical page across the length of the page.
-     */
-    fprintf(pjl_file, PCL_OFF_Y, 0);
-    /* Resolution of the print. */
-    fprintf(pjl_file, PCL_PRINT_RESOLUTION, lconf->resolution);
-    /* X position = 0 */
-    fprintf(pjl_file, PCL_POS_X, 0);
-    /* Y position = 0 */
-    fprintf(pjl_file, PCL_POS_Y, 0);
-    /* PCL resolution. */
-    fprintf(pjl_file, PCL_RESOLUTION, lconf->resolution);
-
-    /* If raster power is enabled and raster mode is not 'n' then add that
-     * information to the print job.
-     */
-
-
-    if (lconf->raster_power && lconf->raster_mode != 'n') {
-        /* We're going to perform a raster print. */
-        generate_raster(pjob, lconf, bitmap_file);
-    }
-
-    /* If vector power is > 0 then add vector information to the print job. */
-    if (lconf->vector_power) {
-    	fprintf(pjl_file, R_ORIENTATION, 0);
-    	fprintf(pjl_file, R_POWER, 50);
-        fprintf(pjl_file, R_SPEED, 50);
-        fprintf(pjl_file, PCL_UNKNOWN_BLAFOO3);
-        fprintf(pjl_file, R_HEIGHT, lconf->height * lconf->y_repeat);
-        fprintf(pjl_file, R_WIDTH, lconf->width * lconf->x_repeat);
-
-    	/* seems to be obsolete, but windows driver does it*/
-    	fprintf(pjl_file, R_COMPRESSION);
-        fprintf(pjl_file, PCL_SECTION_END);
-
-
-        /* We're going to perform a vector print. */
-        generate_vector(pjob, lconf, vector_file);
-    }
-
-    fprintf(pjl_file, PCL_RESET);
-    fprintf(pjl_file, PCL_EXIT);
-    fprintf(pjl_file, PJL_FOOTER);
-
-    /* Pad out the remainder of the file with 0 characters. */
-    for(i = 0; i < 4096; i++) {
-        fputc(0, pjl_file);
     }
     return true;
 }
@@ -1026,6 +518,101 @@ range_checks(void)
 
 
 
+VectorPass loadVectorPass(char *file_name) {
+	VectorPass vpass;
+	string line;
+	ifstream infile(file_name, ios_base::in);
+	char first;
+	int power, x, y;
+	int lx, ly;
+	int mx, my;
+	Joint *start;
+	Joint *end;
+
+	while (getline(infile, line, '\n')) {
+		first = *line.begin();
+
+		if (first == 'X')
+			break;
+
+		if (isalpha(first)) {
+			switch (first) {
+			case 'M': // move
+				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
+					lx = x;
+					ly = y;
+					mx = x;
+					my = y;
+				}
+				break;
+			case 'C': // close
+				if (lx != mx || ly != my) {
+					vpass.addLine(new Joint(lx, ly), new Joint(mx, my), power);
+				}
+				break;
+			case 'P': // power
+				if (sscanf((char *) line.data() + 1, "%d", &x) == 1) {
+					power = x;
+				}
+				break;
+			case 'L': // line
+				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
+					start = new Joint(lx, ly);
+					end = new Joint(x, y);
+					vpass.addLine(start, end, power);
+					lx = x;
+					ly = y;
+				}
+				break;
+			}
+		}
+	}
+	infile.close();
+
+	return vpass;
+}
+
+void calculate_base_position(laser_config *lconf)
+{
+	if (lconf->x_center) {
+    	lconf->basex = lconf->x_center - lconf->width / 2;
+    }
+    if (lconf->y_center) {
+    	lconf->basey = lconf->y_center - lconf->height / 2;
+    }
+    if (lconf->basex < 0) {
+    	lconf->basex = 0;
+    }
+    if (lconf->basey < 0) {
+    	lconf->basey = 0;
+    }
+    // rasterises
+    lconf->basex = lconf->basex * lconf->resolution / POINTS_PER_INCH;
+    lconf->basey = lconf->basey * lconf->resolution / POINTS_PER_INCH;
+}
+
+void init_laser_config(laser_config *lconf)
+{
+	lconf->focus = AUTO_FOCUS;
+	lconf->height = BED_HEIGHT;
+	lconf->resolution = RESOLUTION_DEFAULT;
+	lconf->raster_mode = RASTER_MODE_DEFAULT;
+	lconf->raster_speed = RASTER_SPEED_DEFAULT;
+	lconf->raster_power = RASTER_POWER_DEFAULT;
+	lconf->raster_repeat = RASTER_REPEAT;
+	lconf->screen = SCREEN_DEFAULT;
+	lconf->vector_speed = VECTOR_SPEED_DEFAULT;
+	lconf->vector_power = VECTOR_POWER_DEFAULT;
+	lconf->vector_freq = VECTOR_FREQUENCY_DEFAULT;
+	lconf->width = BED_WIDTH;
+	lconf->x_repeat = 1;
+	lconf->y_repeat = 1;
+	lconf->basex = 0;
+	lconf->basey = 0;
+	lconf->flip = FLIP;
+	calculate_base_position(lconf);
+}
+
 /**
  * Main entry point for the program.
  *
@@ -1050,7 +637,6 @@ main(int argc, char *argv[])
     char filename_cups_debug[FILENAME_NCHARS];
     char filename_eps[FILENAME_NCHARS];
     char filename_pdf[FILENAME_NCHARS];
-    char filename_pjl[FILENAME_NCHARS];
     char filename_ps[FILENAME_NCHARS];
     char filename_vector[FILENAME_NCHARS];
 
@@ -1133,9 +719,7 @@ main(int argc, char *argv[])
     sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
     sprintf(filename_bitmap, "%s.bmp", file_basename);
     sprintf(filename_eps, "%s.eps", file_basename);
-    sprintf(filename_pjl, "%s.pjl", file_basename);
     sprintf(filename_vector, "%s.vector", file_basename);
-    pconf.pjl_filename = new string(filename_pjl);
 
     /* Gather the postscript file from either standard input or a filename
      * specified as a command line argument.
@@ -1173,15 +757,6 @@ main(int argc, char *argv[])
         fclose(file_cups);
         file_cups = fopen(filename_cups_debug, "r");
     }
-
-/*    if(argc < 6 || strcasecmp(argv[5], "=A4") == 0)
-    {
-    	fprintf(stderr, "########## GTKLP");
-    	if(!execute_gtklp(PRINTER_NAME, filename_cups_debug, GTKLP_CONF_DIR)) {
-			perror("Failure to gtklp ghostscript command.\n");
-			return 1;
-		}
-    }*/
 
     /* Check whether the incoming data is ps or pdf data. */
     fread((char *)buf, 1, 4, file_cups);
@@ -1274,24 +849,16 @@ main(int argc, char *argv[])
      */
     file_bitmap = fopen(filename_bitmap, "r");
 
-    pjl_file = fopen(filename_pjl, "w");
-    if (!pjl_file) {
-        perror(filename_pjl);
-        return 1;
-    }
-	optimize_vectors(filename_vector);
-	//return 0;
-	file_vector = fopen(filename_vector, "r");
-	/* Execute the generation of the printer job language (pjl) file. */
-    if (!generate_pjl(&pconf, &lconf, file_bitmap, file_vector)) {
-        perror("Generation of pjl file failed.\n");
-        fclose(pjl_file);
-        return 1;
-    }
+    VectorPass vpass = loadVectorPass(filename_vector);
+    //Raster ignored at the moment
+    RasterPass rpass;
+    LaserJob job(&lconf,&pconf);
+    job.addPass(&vpass);
+    job.addPass(&rpass);
+
     /* Close open file handles. */
     fclose(file_bitmap);
     fclose(file_vector);
-    fclose(pjl_file);
 
     /* Cleanup unneeded files provided that debug mode is disabled. */
     if (!debug) {
@@ -1306,26 +873,8 @@ main(int argc, char *argv[])
         }
     }
 
-    /* Open printer job language file. */
-    pjl_file = fopen(filename_pjl, "r");
-    if (!pjl_file) {
-        perror(filename_pjl);
-        return 1;
-    }
-    /* Send print job to printer. */
-
-    PrinterConnection pc(new string(host), PRINTER_MAX_WAIT);
-
-    if (!pc.connect() || !pc.send(&pconf)) {
-        perror("Could not send pjl file to printer.\n");
-        return 1;
-    }
-    fclose(pjl_file);
-    if (!debug) {
-        if (unlink(filename_pjl)) {
-            perror(filename_pjl);
-        }
-    }
+    Driver drv;
+    drv.process(job);
 
     return 0;
 }

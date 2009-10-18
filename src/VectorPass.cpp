@@ -4,11 +4,9 @@
  *  Created on: 04.10.2009
  *      Author: amir
  */
-
-#include "VectorPass.h"
 #include <fstream>
 #include <iostream>
-
+#include "LaserJob.h"
 
 map<string, Joint*> VectorPass::getJoints() {
 	return this->joints;
@@ -58,57 +56,6 @@ vector<OnionSkin*> VectorPass::getOnionSkins() {
 
 void VectorPass::addOnionSkin(OnionSkin* skin) {
 	skins.push_back(skin);
-}
-
-void VectorPass::load(const string *file_name) {
-	string line;
-	ifstream infile(file_name->data(), ios_base::in);
-	char first;
-	int power, x, y;
-	int lx, ly;
-	int mx, my;
-	Joint *start;
-	Joint *end;
-
-	while (getline(infile, line, '\n')) {
-		first = *line.begin();
-
-		if (first == 'X')
-			break;
-
-		if (isalpha(first)) {
-			switch (first) {
-			case 'M': // move
-				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
-					lx = x;
-					ly = y;
-					mx = x;
-					my = y;
-				}
-				break;
-			case 'C': // close
-				if (lx != mx || ly != my) {
-					addLine(new Joint(lx, ly), new Joint(mx, my), power);
-				}
-				break;
-			case 'P': // power
-				if (sscanf((char *) line.data() + 1, "%d", &x) == 1) {
-					power = x;
-				}
-				break;
-			case 'L': // line
-				if (sscanf((char *) line.data() + 1, "%d,%d", &y, &x) == 2) {
-					start = new Joint(lx, ly);
-					end = new Joint(x, y);
-					addLine(start, end, power);
-					lx = x;
-					ly = y;
-				}
-				break;
-			}
-		}
-	}
-	infile.close();
 }
 
 void VectorPass::write(const string* file_name) {

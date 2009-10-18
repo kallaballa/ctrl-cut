@@ -21,12 +21,12 @@
 #include "LineSegment.h"
 #include "Polygon.h"
 #include "OnionSkin.h"
-#include "VectorPass.h"
+#include "LaserJob.h"
 #include "CuttingOptimizer.h"
 
 using namespace std;
 
-VectorPass *cut;
+VectorPass *vpass;
 
 CuttingOptimizer::CuttingOptimizer() {
 
@@ -53,7 +53,7 @@ void print_line(LineSegment *ls) {
 void splitAtIntersections() {
 	Joint *intersec = new Joint(-1000, -1000);
 	LineSegment *ls1, *ls2;
-	list<LineSegment*> lines = cut->getLineSegements();
+	list<LineSegment*> lines = vpass->getLineSegements();
 
 	list<LineSegment*>::iterator it_i;
 	list<LineSegment*>::iterator it_j;
@@ -70,23 +70,23 @@ void splitAtIntersections() {
 				continue;
 
 			if ((intersec = ls1->intersects(ls2)) != NULL) {
-				intersec = cut->addJoint(intersec);
+				intersec = vpass->addJoint(intersec);
 
 				if (!ls1->getStart()->equals(intersec)
 						&& !ls1->getEnd()->equals(intersec)) {
-					it_i = cut->eraseLine(it_i);
-					cut->addLine((Joint*) ls1->getStart(), intersec,
+					it_i = vpass->eraseLine(it_i);
+					vpass->addLine((Joint*) ls1->getStart(), intersec,
 							ls1->getPower());
-					cut->addLine((Joint*) ls1->getEnd(), intersec,
+					vpass->addLine((Joint*) ls1->getEnd(), intersec,
 							ls1->getPower());
 				}
 
 				if (!ls2->getStart()->equals(intersec)
 						&& !ls2->getEnd()->equals(intersec)) {
-					it_j = cut->eraseLine(it_j);
-					cut->addLine((Joint*) ls2->getStart(), intersec,
+					it_j = vpass->eraseLine(it_j);
+					vpass->addLine((Joint*) ls2->getStart(), intersec,
 							ls2->getPower());
-					cut->addLine((Joint*) ls2->getEnd(), intersec,
+					vpass->addLine((Joint*) ls2->getEnd(), intersec,
 							ls2->getPower());
 				}
 			}
@@ -123,7 +123,7 @@ vector<Polygon*> find_polygons() {
 
 	LineSegment* ls;
 	list<LineSegment*>::iterator it;
-	list<LineSegment*> lines = cut->getLineSegements();
+	list<LineSegment*> lines = vpass->getLineSegements();
 
 	for (it = lines.begin(); it != lines.end(); it++) {
 		ls = *it;
@@ -201,22 +201,20 @@ void deonion(vector<Polygon*> polygons) {
 		while (p->getSegmentCount() > 0) {
 			OnionSkin* s = new OnionSkin();
 			walkTheEdge(p, s, p->findEdge(), true);
-			cut->addOnionSkin(s);
+			vpass->addOnionSkin(s);
 		}
 	}
 }
 
-void optimize_vectors(char *vector_file) {
-	string fn(vector_file);
-	cut->load(&fn);
-	map<string, Joint*> points;
-	list<LineSegment*> lines = cut->getLineSegements();
+void optimizeVectorPass(VectorPass *vpass) {
+	map<string, Joint*> joints = vpass->getJoints();
+	list<LineSegment*> lines = vpass->getLineSegements();
 
-	printf("points: %d\n", points.size());
+	printf("points: %d\n", joints.size());
 
 	map<string, Joint*>::iterator it_p;
 
-	for (it_p = points.begin(); it_p != points.end(); it_p++) {
+	for (it_p = joints.begin(); it_p != joints.end(); it_p++) {
 		//print_point(it_p->second);
 	}
 
@@ -245,6 +243,5 @@ void optimize_vectors(char *vector_file) {
 		printf("\n");
 	}
 
-	cut->write(&fn);
 	cout << "LINES:" << lines.size() << endl;
 }

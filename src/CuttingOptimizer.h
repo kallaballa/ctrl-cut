@@ -7,9 +7,9 @@
 
 #ifndef CUTTINGOPTIMIZER_H_
 #define CUTTINGOPTIMIZER_H_
-#include "cmath"
+#include "LaserJob.h"
 
-extern "C" void optimize_vectors(char *vector_file);
+void optimizeVectorsPass(VectorPass *vpass);
 
 
 class CuttingOptimizer {

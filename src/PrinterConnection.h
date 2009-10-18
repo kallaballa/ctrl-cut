@@ -8,6 +8,8 @@
 #ifndef PRINTER_CONNECTION_H_
 #define PRINTER_CONNECTION_H
 
+#include <string>
+
 using namespace std;
 
 /** Maximum allowable hostname characters. */

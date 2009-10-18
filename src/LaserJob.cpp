@@ -7,11 +7,16 @@
 
 #include "LaserJob.h"
 
-LaserJob::LaserJob() {
-	// TODO Auto-generated constructor stub
-
+LaserJob::LaserJob(laser_config *lconf, printer_config *pconf){
+	this->lconf = lconf;
+	this->pconf = pconf;
 }
 
 LaserJob::~LaserJob() {
 	// TODO Auto-generated destructor stub
+}
+
+void LaserJob::addPass(LaserPass* pass)
+{
+	this->passes.push_back(pass);
 }
