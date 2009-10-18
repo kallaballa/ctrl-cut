@@ -28,7 +28,7 @@ public:
 	Joint* getEnd();
 	void setPower(int power);
 	int getPower();
-	float getSlope(bool swap=false);
+	float getSlope(bool invert=false);
 	void invertDirection();
 	Joint* intersects(LineSegment *otherLine);
 

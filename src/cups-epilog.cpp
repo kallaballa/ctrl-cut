@@ -127,7 +127,7 @@
 #include "pjl.h"
 
 /** The printer job **/
-printer_job pjob;
+printer_config pconf;
 
 /** The laser cutter configuration **/
 laser_config lconf;
@@ -214,27 +214,8 @@ execute_ghostscript(char *filename_bitmap,
     return true;
 }
 
-/*bool
-execute_gtklp(char *printer_name,char *filename_cups, char *gtkconfdir)
-{
-    char buf[8192];
-    setenv("DISPLAY", ":20.0", 1);
-    sprintf(buf,"/usr/bin/gtklp -c %s -P %s < %s", gtkconfdir, printer_name, filename_cups);
-
-    if (debug) {
-        fprintf(stderr, "%s\n", buf);
-    }
-    if (system(buf)) {
-        return false;
-    }
-    return true;
-}*/
-
-/**
- *
- */
 bool
-generate_raster(printer_job *pjob, laser_config *lconf ,FILE *bitmap_file)
+generate_raster(printer_config *pjob, laser_config *lconf ,FILE *bitmap_file)
 {
     int h;
     int d;
@@ -484,7 +465,7 @@ generate_raster(printer_job *pjob, laser_config *lconf ,FILE *bitmap_file)
  *
  */
 bool
-generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file)
+generate_vector(printer_config *pjob, laser_config *lconf, FILE *vector_file)
 {
     char up = 1;           // output status
     char firstdown=1;
@@ -668,7 +649,7 @@ generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file)
  *
  */
 bool
-generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file)
+generate_pjl(printer_config *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file)
 {
     int i;
 
@@ -913,7 +894,7 @@ process_uri_options(laser_config *lconf, char *queue_options)
  * VectorPower=98 PageSize=LaserBed Resolution=75 RasterSpeed=9 AutoFocus number-up=1 RasterPower=99 VectorMode=Engrave VectorSpeed=8 RasterMode=Color
  */
 bool
-process_print_job_options(printer_job *pjob, laser_config *lconf)
+process_print_job_options(printer_config *pjob, laser_config *lconf)
 {
     char *o = strchr(pjob->options->data(), ' ');
 
@@ -1099,21 +1080,23 @@ main(int argc, char *argv[])
         return 1;
     }
     if (argc > 1) {
-    	pjob.name = new string(argv[1]);
+    	pconf.name = new string(argv[1]);
     }
     if (argc > 2) {
-    	pjob.user = new string(argv[2]);
+    	pconf.user = new string(argv[2]);
     }
     if (argc > 3) {
-    	pjob.title = new string(argv[3]);
+    	pconf.title = new string(argv[3]);
     }
     if (argc > 4) {
-    	pjob.copies = new string(argv[4]);
+    	pconf.copies = new string(argv[4]);
     }
     if (argc > 5) {
-    	pjob.options = new string(argv[5]);
+    	pconf.options = new string(argv[5]);
     }else
-    	pjob.options = new string();
+    	pconf.options = new string();
+
+
     /* Gather the site information from the user's environment variable. */
     device_uri = getenv("DEVICE_URI");
     if (!device_uri) {
@@ -1134,7 +1117,7 @@ main(int argc, char *argv[])
         return 0;
     }
 
-    if (argc > 5 && !process_print_job_options(&pjob, &lconf)) {
+    if (argc > 5 && !process_print_job_options(&pconf, &lconf)) {
         fprintf(stderr, "Error processing epilog printer options.");
         return 0;
     }
@@ -1152,7 +1135,7 @@ main(int argc, char *argv[])
     sprintf(filename_eps, "%s.eps", file_basename);
     sprintf(filename_pjl, "%s.pjl", file_basename);
     sprintf(filename_vector, "%s.vector", file_basename);
-    pjob.pjl_filename = new string(filename_pjl);
+    pconf.pjl_filename = new string(filename_pjl);
 
     /* Gather the postscript file from either standard input or a filename
      * specified as a command line argument.
@@ -1300,7 +1283,7 @@ main(int argc, char *argv[])
 	//return 0;
 	file_vector = fopen(filename_vector, "r");
 	/* Execute the generation of the printer job language (pjl) file. */
-    if (!generate_pjl(&pjob, &lconf, file_bitmap, file_vector)) {
+    if (!generate_pjl(&pconf, &lconf, file_bitmap, file_vector)) {
         perror("Generation of pjl file failed.\n");
         fclose(pjl_file);
         return 1;
@@ -1333,7 +1316,7 @@ main(int argc, char *argv[])
 
     PrinterConnection pc(new string(host), PRINTER_MAX_WAIT);
 
-    if (!pc.connect() || !pc.send(&pjob)) {
+    if (!pc.connect() || !pc.send(&pconf)) {
         perror("Could not send pjl file to printer.\n");
         return 1;
     }

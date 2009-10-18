@@ -42,7 +42,7 @@ typedef struct
 
 	/** Stub: Options for the job print. */
 	string *options;
-} printer_job;
+} printer_config;
 
 class PrinterConnection {
 private:
@@ -57,7 +57,7 @@ public:
 
 	int connect();
 	bool disconnect();
-	bool send(printer_job *pjob);
+	bool send(printer_config *pjob);
 };
 
 #endif /* PRINTER_CONNECTION_H_ */

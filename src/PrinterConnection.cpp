@@ -105,7 +105,7 @@ int PrinterConnection::connect() {
 /**
  *
  */
-bool PrinterConnection::send(printer_job *pjob) {
+bool PrinterConnection::send(printer_config *pjob) {
     /* Open printer job language file. */
 	char buf[102400];
 	FILE* pjl_file = fopen(pjob->pjl_filename->data(), "r");

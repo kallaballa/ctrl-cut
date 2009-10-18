@@ -51,10 +51,10 @@ void LineSegment::invertDirection() {
 	setEnd(tmp);
 }
 
-float LineSegment::getSlope(bool swap) {
+float LineSegment::getSlope(bool invert) {
 	int d_x;
 	int d_y;
-	if (swap) {
+	if (invert) {
 		d_x = start->getX() - end->getX();
 		d_y = start->getY() - end->getY();
 	} else {

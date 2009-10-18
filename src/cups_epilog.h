@@ -42,11 +42,11 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
                                 char *filename_vector,
                                 char *bmp_mode, int resolution,
                                 int height, int width);
-bool generate_raster(printer_job *pjob, laser_config *lconf, FILE *bitmap_file);
-bool generate_vector(printer_job *pjob, laser_config *lconf, FILE *vector_file);
-bool generate_pjl(printer_job *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
+bool generate_raster(printer_config *pjob, laser_config *lconf, FILE *bitmap_file);
+bool generate_vector(printer_config *pjob, laser_config *lconf, FILE *vector_file);
+bool generate_pjl(printer_config *pjob, laser_config *lconf, FILE *bitmap_file, FILE *vector_file);
 bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file);
-bool uri_parameters(printer_job pjob);
+bool uri_parameters(printer_config pjob);
 bool process_uri_options(laser_config *lconf, char *queue_options);
 FILE* save_cups_file(FILE *file_cups_in, char* filename_cups_save);
 

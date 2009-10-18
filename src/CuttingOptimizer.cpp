@@ -21,12 +21,12 @@
 #include "LineSegment.h"
 #include "Polygon.h"
 #include "OnionSkin.h"
-#include "VectorCut.h"
+#include "VectorPass.h"
 #include "CuttingOptimizer.h"
 
 using namespace std;
 
-VectorCut *cut = new VectorCut;
+VectorPass *cut;
 
 CuttingOptimizer::CuttingOptimizer() {
 
@@ -70,7 +70,7 @@ void splitAtIntersections() {
 				continue;
 
 			if ((intersec = ls1->intersects(ls2)) != NULL) {
-				intersec = cut->addPoint(intersec);
+				intersec = cut->addJoint(intersec);
 
 				if (!ls1->getStart()->equals(intersec)
 						&& !ls1->getEnd()->equals(intersec)) {
@@ -191,11 +191,9 @@ void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 	}
 }
 
-vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
+void deonion(vector<Polygon*> polygons) {
 	unsigned int i;
-
 	Polygon* p;
-	vector<OnionSkin*> skins;
 
 	for (i = 0; i < polygons.size(); i++) {
 		p = polygons.at(i);
@@ -203,12 +201,9 @@ vector<OnionSkin*> deonion(vector<Polygon*> polygons) {
 		while (p->getSegmentCount() > 0) {
 			OnionSkin* s = new OnionSkin();
 			walkTheEdge(p, s, p->findEdge(), true);
-			skins.push_back(s);
+			cut->addOnionSkin(s);
 		}
-
 	}
-
-	return skins;
 }
 
 void optimize_vectors(char *vector_file) {
@@ -250,56 +245,6 @@ void optimize_vectors(char *vector_file) {
 		printf("\n");
 	}
 
-	vector<OnionSkin*> skins = deonion(polygones);
-	list<LineSegment*> skin_segm;
-	LineSegment* ls;
-	list<LineSegment*>::reverse_iterator it_i;
-
-
-	ofstream outfile;
-	outfile.open(vector_file, ofstream::out | ofstream::trunc);
-
-	printf("Skins: %d\n", skins.size());
-
-	for (i = skins.size() - 1; i >= 0; i--) {
-		skin_segm = skins.at(i)->getLineSegments();
-		printf("s: %d\n", skin_segm.size());
-
-		for (it_i = skin_segm.rbegin(); it_i != skin_segm.rend(); it_i++) {
-			ls = *it_i;
-			if(it_i != skin_segm.rbegin())
-				ls->invertDirection();
-			if (ls != NULL) {
-				//print_line(ls);
-				outfile << "P";
-				outfile << ls->getPower();
-				outfile << "\n";
-				outfile << "M";
-				outfile << ls->getStart()->getX();
-				outfile << ",";
-				outfile << ls->getStart()->getY();
-				outfile << "\n";
-				outfile << "L";
-				outfile << ls->getStart()->getX();
-				outfile << ",";
-				outfile << ls->getStart()->getY();
-				outfile << "\n";
-				outfile << "L";
-				outfile << ls->getEnd()->getX();
-				outfile << ",";
-				outfile << ls->getEnd()->getY();
-				outfile << "\n";
-				/*			 outfile << "M";
-				 outfile << ls->getEnd()->getX();
-				 outfile << ",";
-				 outfile << ls->getEnd()->getY();
-				 outfile << "\n";*/
-			}
-
-		}
-	}
-	outfile << "X\n";
-	outfile.close();
-
+	cut->write(&fn);
 	cout << "LINES:" << lines.size() << endl;
 }
