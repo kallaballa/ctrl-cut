@@ -26,10 +26,6 @@ void Polygon::addLineSegment(LineSegment* ls) {
 	this->segments.insert(ls);
 }
 
-set<LineSegment*> Polygon::getLineSegments() {
-	return this->segments;
-}
-
 void Polygon::eraseLineSegment(LineSegment* ls) {
 	this->segments.erase(ls);
 }
@@ -43,7 +39,6 @@ int Polygon::getSegmentCount() {
 }
 
 LineSegment* Polygon::findEdge() {
-	set<LineSegment*> segments = this->getLineSegments();
 	LineSegment* ls;
 	int min_x = INT_MAX;
 	Joint* most_left = NULL;

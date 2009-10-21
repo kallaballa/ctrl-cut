@@ -12,9 +12,8 @@
 #include "Polygon.h"
 
 class OnionSkin: public Polygon {
-	private:
-	list<LineSegment*> segments;
 public:
+	list<LineSegment*> segments;
 	OnionSkin();
 	virtual ~OnionSkin();
 	void addLineSegment(LineSegment* ls);

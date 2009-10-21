@@ -15,7 +15,7 @@ class Driver {
 public:
 	Driver();
 	virtual ~Driver();
-	void process(LaserJob job);
+	void process(LaserJob *job);
 };
 
 #endif /* DRIVER_H_ */

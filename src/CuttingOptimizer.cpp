@@ -26,8 +26,6 @@
 
 using namespace std;
 
-VectorPass *vpass;
-
 CuttingOptimizer::CuttingOptimizer() {
 
 }
@@ -50,20 +48,19 @@ void print_line(LineSegment *ls) {
 	printf("\n");
 }
 
-void splitAtIntersections() {
+void splitAtIntersections(VectorPass *vpass) {
 	Joint *intersec = new Joint(-1000, -1000);
 	LineSegment *ls1, *ls2;
-	list<LineSegment*> lines = vpass->getLineSegements();
 
 	list<LineSegment*>::iterator it_i;
 	list<LineSegment*>::iterator it_j;
 
-	for (it_i = lines.begin(); it_i != lines.end(); it_i++) {
-		for (it_j = lines.begin(); it_j != lines.end(); it_j++) {
+	for (it_i = vpass->lines.begin(); it_i != vpass->lines.end(); it_i++) {
+		for (it_j = vpass->lines.begin(); it_j != vpass->lines.end(); it_j++) {
 			ls2 = *it_j;
 			ls1 = *it_i;
 
-			if (it_i == lines.end())
+			if (it_i == vpass->lines.end())
 				break;
 
 			if (ls1 == ls2)
@@ -116,16 +113,15 @@ void find_connected(set<LineSegment*> *occupied, Polygon *polygon,
 	}
 }
 
-vector<Polygon*> find_polygons() {
+vector<Polygon*> find_polygons(VectorPass *vpass) {
 
 	vector<Polygon*> polygons;
 	set<LineSegment*> *occupied = new set<LineSegment*> ();
 
 	LineSegment* ls;
 	list<LineSegment*>::iterator it;
-	list<LineSegment*> lines = vpass->getLineSegements();
 
-	for (it = lines.begin(); it != lines.end(); it++) {
+	for (it = vpass->lines.begin(); it != vpass->lines.end(); it++) {
 		ls = *it;
 
 		Polygon *polygon = new Polygon();
@@ -191,7 +187,7 @@ void walkTheEdge(Polygon* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 	}
 }
 
-void deonion(vector<Polygon*> polygons) {
+void deonion(VectorPass *vpass, vector<Polygon*> polygons) {
 	unsigned int i;
 	Polygon* p;
 
@@ -206,42 +202,26 @@ void deonion(vector<Polygon*> polygons) {
 	}
 }
 
-void optimizeVectorPass(VectorPass *vpass) {
-	map<string, Joint*> joints = vpass->getJoints();
-	list<LineSegment*> lines = vpass->getLineSegements();
-
-	printf("points: %d\n", joints.size());
-
-	map<string, Joint*>::iterator it_p;
-
-	for (it_p = joints.begin(); it_p != joints.end(); it_p++) {
-		//print_point(it_p->second);
-	}
-
-	list<LineSegment*>::iterator it;
-
-	for (it = lines.begin(); it != lines.end(); it++) {
-		//print_line(*it);
-	}
-
-	splitAtIntersections();
-	printf("lines: %d\n", lines.size());
+void CuttingOptimizer::optimizeVectorPass(VectorPass *vpass) {
+	printf("points: %d\n", vpass->joints.size());
+	splitAtIntersections(vpass);
+	printf("lines: %d\n", vpass->lines.size());
 	unsigned int i;
 
-	vector<Polygon*> polygones = find_polygons();
+	vector<Polygon*> polygones = find_polygons(vpass);
 	set<LineSegment*> segments;
 	set<LineSegment*>::iterator it_s;
 
 	printf("Polygons: %d\n", polygones.size());
 	for (i = 0; i < polygones.size(); i++) {
-		segments = polygones.at(i)->getLineSegments();
-		printf("segments: %d\n", segments.size());
+		printf("segments: %d\n", polygones.at(i)->segments.size());
 
-		for (it_s = segments.begin(); it_s != segments.end(); it_s++) {
+		for (it_s = polygones.at(i)->segments.begin(); it_s != polygones.at(i)->segments.end(); it_s++) {
 			//print_line(*it_s);
 		}
 		printf("\n");
 	}
 
-	cout << "LINES:" << lines.size() << endl;
+	cout << "LINES:" << vpass->lines.size() << endl;
+	deonion(vpass, polygones);
 }

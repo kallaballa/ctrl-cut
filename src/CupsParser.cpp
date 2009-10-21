@@ -138,32 +138,7 @@ char *device_uri = "";
 
 char *queue_options = "";
 
-FILE* pjl_file;
 
-/*************************************************************************/
-
-/**
- * Convert a big endian value stored in the array starting at the given pointer
- * position to its little endian value.
- *
- * @param position the starting location for the conversion. Each successive
- * unsigned byte is upto nbytes is considered part of the value.
- * @param nbytes the number of successive bytes to convert.
- *
- * @return An integer containing the little endian value of the successive
- * bytes.
- */
-int
-big_to_little_endian(uint8_t *position, int nbytes)
-{
-    int i;
-    int result = 0;
-
-    for (i = 0; i < nbytes; i++) {
-        result += *(position + i) << (8 * i);
-    }
-    return result;
-}
 
 /**
  * Execute ghostscript feeding it an ecapsulated postscript file which is then
@@ -858,7 +833,7 @@ main(int argc, char *argv[])
 
     /* Close open file handles. */
     fclose(file_bitmap);
-    fclose(file_vector);
+    //fclose(file_vector);
 
     /* Cleanup unneeded files provided that debug mode is disabled. */
     if (!debug) {
@@ -874,7 +849,7 @@ main(int argc, char *argv[])
     }
 
     Driver drv;
-    drv.process(job);
+    drv.process(&job);
 
     return 0;
 }

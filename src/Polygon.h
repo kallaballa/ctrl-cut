@@ -12,9 +12,8 @@
 using namespace std;
 
 class Polygon {
-private:
-	set<LineSegment*> segments;
 public:
+	set<LineSegment*> segments;
 	Polygon();
 	virtual ~Polygon();
 	void addLineSegment(LineSegment* ls);

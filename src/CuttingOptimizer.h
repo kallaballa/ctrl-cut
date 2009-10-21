@@ -9,15 +9,12 @@
 #define CUTTINGOPTIMIZER_H_
 #include "LaserJob.h"
 
-void optimizeVectorsPass(VectorPass *vpass);
-
-
 class CuttingOptimizer {
 public:
 
 	CuttingOptimizer();
 	virtual ~CuttingOptimizer();
-
+	void optimizeVectorPass(VectorPass *vpass);
 };
 
 #endif /* CUTTINGOPTIMIZER_H_ */

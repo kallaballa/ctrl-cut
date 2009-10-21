@@ -8,14 +8,6 @@
 #include <iostream>
 #include "LaserJob.h"
 
-map<string, Joint*> VectorPass::getJoints() {
-	return this->joints;
-}
-
-list<LineSegment*> VectorPass::getLineSegements() {
-	return this->lines;
-}
-
 Joint* VectorPass::addJoint(Joint* p) {
 	map<string, Joint*>::iterator it = joints.find(p->getKey());
 
@@ -48,10 +40,6 @@ list<LineSegment*>::iterator VectorPass::eraseLine(
 	ls->getEnd()->removeConnector(ls);
 
 	return lines.erase(it_ls);
-}
-
-vector<OnionSkin*> VectorPass::getOnionSkins() {
-	return skins;
 }
 
 void VectorPass::addOnionSkin(OnionSkin* skin) {
