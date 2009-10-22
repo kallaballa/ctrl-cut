@@ -17,6 +17,8 @@ LaserJob::~LaserJob() {
 }
 
 void LaserJob::addPass(LaserPass* pass) {
+	pass->lconf = this->lconf;
+	pass->pconf = this->pconf;
 	this->passes.push_back(pass);
 }
 
