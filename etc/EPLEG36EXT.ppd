@@ -37,7 +37,7 @@
 *FileVersion: "1.0"
 *LanguageEncoding: ISOLatin1
 *LanguageVersion: English
-*PCFileName: "EPLEG36EXT.PPD"
+*PCFileName: "LEG36EXT.PPD"
 *PSVersion:	"(3010.000) 651"
 *PSVersion:	"(3010.000) 652"
 *PSVersion:	"(3010.000) 653"
@@ -48,16 +48,15 @@
 *PSVersion:	"(3010.000) 815"
 *PSVersion:	"(3010.000) 850"
 *PSVersion:	"(3010.000) 81501"
-*Product: "(LEG-36EXT)"
-*ModelName: "EPSON Legend 36EXT"
-*ShortNickName: "EPSON Legend 36EXT"
-*NickName: "EPSON Legend 36EXT"
-*Manufacturer: "Epson"
+*Product: "(Epilog Legend 36EXT)"
+*ModelName: "Epilog Legend 36EXT"
+*ShortNickName: "Epilog Legend 36EXT"
+*NickName: "Epilog Legend 36EXT"
+*Manufacturer: "Epilog"
 *DriverType: "custom"
 *cupsFilter: "application/vnd.cups-raw        0       -"
 *cupsFilter: "application/octet-stream        0       -"
 *cupsFilter: "application/postscript          0       -"
-*VariablePaperSize: false
 
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
@@ -1964,9 +1963,10 @@ restore
 
 *% Input Sources (format: %%[ status: <stat>; source: <one of these> ]%% ) 
 *Source: "Ethernet"
+*Source: "USB"
 
 *%%%%%%%%%%%% LandscapeOrientation: ???
 
-*% End of PPD file for EPSON Legend 36EXT
+*% End of PPD file for Epilog Legend 36EXT
 
 
