@@ -120,7 +120,6 @@
 #include <cups/cups.h>
 
 #include "LaserJob.h"
-#include "CuttingOptimizer.h"
 #include "Driver.h"
 #include "CupsParser.h"
 #include "Raster.h"
