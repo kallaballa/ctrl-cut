@@ -16,26 +16,24 @@ using namespace std;
 
 class LineSegment;
 class Joint {
-	private:
-		int x;
-		int y;
-		string key;
-		void updateKey();
-		std::set<LineSegment*> connectors;
-	public:
-		Joint(int x, int y);
-		virtual ~Joint();
-		int getX();
-		int getY();
-		void setX(int x);
-		void setY(int y);
-		void setX(int x, bool updateKey);
-		void setY(int y, bool updateKey);
-		bool equals(Joint *other);
-		string getKey();
-		void addConnector(LineSegment *ls);
-		void removeConnector(LineSegment *ls);
-		std::set<LineSegment*> getConnectors();
-	};
+    private:
+        int x;
+        int y;
+        string key;
+        void updateKey();
+        std::set<LineSegment*> connectors;
+    public:
+        Joint(int x, int y);
+        virtual ~Joint();
+        int getX();
+        int getY();
+        void setX(int x, bool updateKey=true);
+        void setY(int y, bool updateKey=true);
+        bool equals(Joint *other);
+        string getKey();
+        void addConnector(LineSegment *ls);
+        void removeConnector(LineSegment *ls);
+        std::set<LineSegment*> getConnectors();
+    };
 
 #endif /* LSPOINT_H_ */
