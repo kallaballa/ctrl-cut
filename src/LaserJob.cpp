@@ -7,7 +7,6 @@
 
 #define PJL_PARAM
 #include "LaserJob.h"
-#include "CuttingOptimizer.h"
 
 #include <iostream>
 #include "boost/format.hpp"
