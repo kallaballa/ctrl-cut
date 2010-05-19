@@ -2,3 +2,5 @@ Graphics are clipped against the Printer media rectangle
 
 Conversion from 72 DPI postscript to point-based integers:
 round(n * DPI / 72 - 1)
+
+Closed polylines somehow have their last coordinate duplicated -> Unknown what the boundary conditions are
