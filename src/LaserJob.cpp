@@ -111,8 +111,9 @@ void LaserJob::serializeTo(ostream &out) {
   out << PCL_RESET;
   out << PJL_FOOTER;
 
-  /* Pad out the remainder of the file with 0 characters. */
-  for (i = 0; i < 4096; i++) {
-    out << '\0';
+  /* Pad out the remainder of the file with spaces and 'footer'. */
+  for (i = 0; i < 4092; i++) {
+    out << ' ';
   }
+  out << "Mini]";
 }
