@@ -23,7 +23,7 @@ class DeonionFilter: public VectorFilter {
       this->postFilters.insert(SER_OS_FILTER_ID);
     }
   virtual ~DeonionFilter();
-  void filter(VectorPass* vpass);
+  void filter(LaserPass *pass);
 };
 
 #endif /* DEONIONFILTER_H_ */

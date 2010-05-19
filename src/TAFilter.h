@@ -21,7 +21,7 @@ class TAFilter: public RasterFilter {
   }
 
   virtual ~TAFilter(){}
-  virtual void filter(RasterPass* p);
+  virtual void filter(LaserPass *pass);
 };
 
 #endif /* TAFILTER_H_ */

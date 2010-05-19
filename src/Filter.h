@@ -1,10 +1,3 @@
-/*
- * RasterFilter.h
- *
- *  Created on: 10.11.2009
- *      Author: amir
- */
-
 #ifndef FILTER_H_
 #define FILTER_H_
 
@@ -19,27 +12,23 @@
 #define DO_FILTER_ID "DeonionFilter"
 #define SER_OS_FILTER_ID "SerializeOnionSkinsFilter"
 
-#include <map>
-#include <list>
+#include <set>
 #include <string>
-#include <iostream>
-#include "VectorPass.h"
-#include "RasterPass.h"
+#include "LaserPass.h"
 
-using std::map;
 using std::list;
 using std::string;
-using std::cerr;
-using std::endl;
 
 typedef string FilterID;
-typedef set<FilterID > FilterList;
+typedef set<FilterID> FilterIDList;
 
 class Filter {
  public:
-  FilterList provides;
-  FilterList preFilters;
-  FilterList postFilters;
+  FilterIDList provides;
+  FilterIDList preFilters;
+  FilterIDList postFilters;
+  virtual bool supports(LaserPass *p) = 0;
+  virtual void filter(LaserPass *p) = 0;
 };
 
 class RasterFilter: public Filter {
@@ -47,7 +36,8 @@ class RasterFilter: public Filter {
 
   RasterFilter(){}
   virtual ~RasterFilter(){};
-  virtual void filter(RasterPass* p) = 0;
+  virtual bool supports(LaserPass *p);
+  virtual void filter(LaserPass *p) = 0;
 };
 
 class VectorFilter: public Filter {
@@ -55,7 +45,8 @@ class VectorFilter: public Filter {
 
   VectorFilter(){}
   virtual ~VectorFilter(){};
-  virtual void filter(VectorPass* p) = 0;
+  virtual bool supports(LaserPass *p);
+  virtual void filter(LaserPass *p) = 0;
 };
 
 #endif /* FILTER_H_ */

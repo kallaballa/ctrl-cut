@@ -4,11 +4,11 @@
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)
 
-/** Default bed height (y-axis) in pts. */
-#define BED_HEIGHT (1728)
-
 /** Default bed width (x-axis) in pts. */
-#define BED_WIDTH (2592)
+#define BED_WIDTH 21600
+
+/** Default bed height (y-axis) in pts. */
+#define BED_HEIGHT 14400
 
 /**
  * Default on whether or not the result is supposed to be flipped along the X
@@ -66,8 +66,14 @@ struct laser_config
   /** Variable to track auto-focus. */
   int focus;
 
+  // FIXME: What is width, height actually used for? The object bbox
+  // is stored here and used to be incorrectly sent as PCL R_WIDTH,
+  // R_HEIGHT (which should really get bed size in all cases)
   /** Height of the image (y-axis). By default this is the bed's height. */
   int height;
+
+  /** Width of the image (x-axis). By default this is the bed's width. */
+  int width;
 
   /** Variable to track the resolution of the print. */
   int resolution;
@@ -97,9 +103,6 @@ struct laser_config
 
   /** Variable to track the vector frequency. FIXME */
   int vector_freq;
-
-  /** Width of the image (x-axis). By default this is the bed's width. */
-  int width;
 
   /** X re-center (0 = not). */
   int x_center;

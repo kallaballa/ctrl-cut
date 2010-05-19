@@ -1,10 +1,3 @@
-/*
- * TPFilter.h
- *
- *  Created on: 10.11.2009
- *      Author: amir
- */
-
 #ifndef TPFILTER_H_
 #define TPFILTER_H_
 
@@ -20,7 +13,7 @@ class TPFilter: public RasterFilter {
   }
 
   virtual ~TPFilter(){}
-  virtual void filter(RasterPass* rpass);
+  virtual void filter(class LaserPass* rpass);
 };
 
 #endif /* TPFILTER_H_ */

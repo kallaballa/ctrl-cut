@@ -1,10 +1,3 @@
-/*
- * FindPolylinesFilter.h
- *
- *  Created on: 12.11.2009
- *      Author: amir
- */
-
 #ifndef FINDPOLYLINESFILTER_H_
 #define FINDPOLYLINESFILTER_H_
 
@@ -19,7 +12,7 @@ class FindPolylinesFilter: public VectorFilter {
   }
 
   virtual ~FindPolylinesFilter();
-  void filter(VectorPass* vpass);
+  void filter(LaserPass *pass);
 };
 
 #endif /* FINDPOLYLINESFILTER_H_ */

@@ -1,13 +1,8 @@
-/*
- * FindPolylinesFilter.cpp
- *
- *  Created on: 12.11.2009
- *      Author: amir
- */
-
 #include "FindPolylinesFilter.h"
+#include "VectorPass.h"
 #include "LineSegment.h"
 #include "Polyline.h"
+
 #include <list>
 #include <set>
 
@@ -36,9 +31,11 @@ void find_connected(set<LineSegment*> *occupied, Polyline *polyline,
   }
 }
 
-
-void FindPolylinesFilter::filter(VectorPass* vpass) {
+void FindPolylinesFilter::filter(LaserPass *pass)
+{
   std::cerr << "FindPolyLines" << std::endl;
+  VectorPass *vpass = dynamic_cast<VectorPass*>(pass);
+
   set<LineSegment*> *occupied = new set<LineSegment*> ();
 
   LineSegment* ls;

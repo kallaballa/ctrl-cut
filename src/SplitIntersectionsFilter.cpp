@@ -1,25 +1,23 @@
-/*
- * SplitIntersectionsFilter.cpp
- *
- *  Created on: 12.11.2009
- *      Author: amir
- */
-#include <string>
-#include <iostream>
-#include <list>
+#include "SplitIntersectionsFilter.h"
+
 #include "LineSegment.h"
 #include "LaserJob.h"
 #include "Filter.h"
+#include "VectorPass.h"
 
-#include "SplitIntersectionsFilter.h"
+#include <string>
+#include <list>
 
 
 SplitIntersectionsFilter::~SplitIntersectionsFilter() {
   // TODO Auto-generated destructor stub
 }
 
-void SplitIntersectionsFilter::filter(VectorPass* vpass){
+void SplitIntersectionsFilter::filter(LaserPass *pass)
+{
   std::cerr << "Split" << std::endl;
+  VectorPass *vpass = dynamic_cast<VectorPass*>(pass);
+
   Joint *intersec = NULL;
   LineSegment *ls1, *ls2;
 

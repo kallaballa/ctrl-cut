@@ -13,7 +13,6 @@
 #include "Polyline.h"
 #include "Joint.h"
 
-typedef map<string, class Joint *> JointMap;
 typedef list<class LineSegment*> LineSegmentList;
 typedef vector<class OnionSkin*> OnionSkinVector;
 typedef vector<Polyline*> PolylineVector;

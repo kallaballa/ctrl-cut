@@ -1,17 +1,14 @@
-/*
- * SerializeOnionSkinsFilter.cpp
- *
- *  Created on: 15.11.2009
- *      Author: amir
- */
-
 #include "SerializeOnionSkinsFilter.h"
+#include "VectorPass.h"
 #include "Primitives.h"
 
 SerializeOnionSkinsFilter::~SerializeOnionSkinsFilter() {}
 
-void SerializeOnionSkinsFilter::filter(VectorPass* vpass) {
+void SerializeOnionSkinsFilter::filter(LaserPass *pass)
+{
   std::cerr << "Serialize" << std::endl;
+  VectorPass *vpass = dynamic_cast<VectorPass*>(pass);
+
   vpass->lines.clear();
 
   OnionSkin* skin;

@@ -23,6 +23,7 @@ SOURCES = \
           src/Polygon.cpp \
           src/Polyline.cpp \
           src/RasterPass.cpp \
+          src/Filter.cpp \
           src/SerializeOnionSkinsFilter.cpp \
           src/SplitIntersectionsFilter.cpp \
           src/TAFilter.cpp \

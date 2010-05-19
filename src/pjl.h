@@ -1,10 +1,3 @@
-/*
- * pcl.h
- *
- *  Created on: 19.09.2009
- *      Author: amir
- */
-
 #ifndef PJL_H_
 #define PJL_H_
 
@@ -131,17 +124,17 @@ PJL_STRING(V_SPEED, "ZS%03d");
  * **/
 
 /**
- * Pen up. This command doesn't conform to PCL/HPGL and is only used on
- * the first issue of PU. There seems to be no difference to using the
- * standard command also for the first issue, so I use it only because
- * the windows driver does.
+ * Pen up. This command doesn't conform to PCL/HPGL and is only used
+ * on the first issue of PU in a job. There seems to be no difference
+ * to using the standard command also for the first issue, so I use it
+ * only because the windows driver does.
  */
 PJL_STRING(HPGL_PEN_UP_INIT, "LTPU");
 
-/* Pen up. */
+/* Pen up */
 PJL_STRING(HPGL_PEN_UP, "PU");
 
-/* Pen up. */
+/* Pen down */
 PJL_STRING(HPGL_PEN_DOWN, "PD");
 
 /* HPGL section end */

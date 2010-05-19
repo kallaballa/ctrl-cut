@@ -22,7 +22,8 @@ Driver::~Driver() {
   // TODO Auto-generated destructor stub
 }
 
-void Driver::filter(LaserJob *job) {
+void Driver::filter(LaserJob *job)
+{
   FilterChain fc;
 
   if (!fc.evaluate()) {
@@ -31,24 +32,16 @@ void Driver::filter(LaserJob *job) {
 
   LaserPassList &passes = job->getPasses();
 
-  LaserPassList::iterator it;
-  VectorPass *vpass;
-  RasterPass *rpass;
-
-  for (it = passes.begin(); it != passes.end(); it++) {
-    if ((vpass = dynamic_cast<VectorPass*> (*it)))
-      fc.filterVectorPass(vpass);
-//     else if ((rpass = dynamic_cast<RasterPass*> (*it)))
-//       fc.filterRasterPass(rpass);
-   }
+  for (LaserPassList::iterator it = passes.begin(); it != passes.end(); it++) {
+    fc.filterPass(*it);
+  }
 }
 
-void Driver::process(LaserJob *job) {
-  filter(job);
+void Driver::process(LaserJob *job)
+{
+  //  filter(job);
   stringstream ss;
   job->serializeTo(ss);
-  cerr << ss.str().size();
-  ofstream out("/tmp/job.dump");
-  out << ss.rdbuf();
-  out.close();
+  std::cerr << ss.str().size();
+  std::cout << ss.rdbuf();
 }

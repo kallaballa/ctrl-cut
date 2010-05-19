@@ -38,22 +38,17 @@ static int big_to_little_endian(uint8_t *position, int nbytes) {
 
 typedef list<LaserPass*> LaserPassList;
 
-class LaserJob {
+class LaserJob
+{
  public:
-  /** Job name for the print. */
-  string name;
-
-  /** User name that submitted the print job. */
-  string user;
-
-  /** Title for the job print. */
-  string title;
-
+  string name;   /*! Job name for the print. */
+  string user;   /*! User name that submitted the print job. */
+  string title;  /*! Title for the print job. */
 
   LaserPassList passes;
   laser_config *lconf;
 
-  LaserJob(laser_config *lconf,
+  LaserJob(laser_config *lconf, 
            const string &user, const string &name, const string &title);
   virtual ~LaserJob();
 

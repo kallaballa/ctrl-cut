@@ -18,7 +18,7 @@ class SerializeOnionSkinsFilter: public VectorFilter {
   }
 
   virtual ~SerializeOnionSkinsFilter();
-  void filter(VectorPass* vpass);
+  void filter(LaserPass *pass);
 };
 
 #endif /* SERIALIZEONIONSKINSFILTER_H_ */

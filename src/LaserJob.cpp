@@ -83,11 +83,15 @@ void LaserJob::serializeTo(ostream &out) {
     out << format(R_POWER) % 50;
     out << format(R_SPEED) % 50;
     out << PCL_UNKNOWN_BLAFOO3;
-    out << format(R_HEIGHT) % (this->lconf->height * this->lconf->y_repeat);
-    out << format(R_WIDTH) % (this->lconf->width * this->lconf->x_repeat);
+    // New version; always use bed size until the Windows driver tells us smth. else..
+    out << format(R_HEIGHT) % (BED_HEIGHT);
+    out << format(R_WIDTH) % (BED_WIDTH);
+    // FIXME: Old version, kept for reference
+//     out << format(R_HEIGHT) % (this->lconf->height * this->lconf->y_repeat);
+//     out << format(R_WIDTH) % (this->lconf->width * this->lconf->x_repeat);
 
     /* seems to be obsolete, but windows driver does it*/
-    //out << R_COMPRESSION;
+    out << format(R_COMPRESSION) % 2;
     out << PCL_SECTION_END;
 
     /* We're going to perform a vector print. */

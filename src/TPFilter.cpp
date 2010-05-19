@@ -1,19 +1,16 @@
-/*
- * TPFilter.cpp
- *
- *  Created on: 10.11.2009
- *      Author: amir
- */
-
-#include <list>
 #include "TPFilter.h"
-#include "LaserPass.h"
+#include "RasterPass.h"
 #include "Raster.h"
 #include "TilePartitioner.h"
 
+#include <list>
+
 using std::list;
 
-void TPFilter::filter(RasterPass* rpass) {
+void TPFilter::filter(LaserPass *pass)
+{
+  RasterPass* rpass = dynamic_cast<RasterPass*>(pass);
+
   unsigned char pixel = 0;
 
   list<TilePartitioner*>::iterator it_tp;

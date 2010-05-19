@@ -1,19 +1,16 @@
-/*
- * TAFilter.cpp
- *
- *  Created on: 10.11.2009
- *      Author: amir
- */
-
-#include <list>
 #include "TAFilter.h"
-#include "LaserPass.h"
+#include "RasterPass.h"
 #include "Raster.h"
 #include "TilePartitioner.h"
 
+#include <list>
+
 using std::list;
 
-void TAFilter::filter(RasterPass* rpass) {
+void TAFilter::filter(LaserPass *pass)
+{
+  RasterPass* rpass = dynamic_cast<RasterPass*>(pass);
+
   list<Cell*> markedCells;
   list<Cell*>::iterator it_c;
   Cell* c;

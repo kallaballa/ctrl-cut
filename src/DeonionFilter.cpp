@@ -1,12 +1,6 @@
-/*
- * DeonionFilter.cpp
- *
- *  Created on: 15.11.2009
- *      Author: amir
- */
-
 #include "DeonionFilter.h"
 #include "Primitives.h"
+#include "VectorPass.h"
 #include <math.h>
 
 DeonionFilter::~DeonionFilter() {
@@ -64,10 +58,13 @@ void walkTheEdge(Polyline* p, OnionSkin* skin, LineSegment* edge, bool cw) {
   }
 }
 
-void DeonionFilter::filter(VectorPass* vpass) {
-    std::cerr << "Deonion" << std::endl;
-    unsigned int i;
-    Polyline* p;
+void DeonionFilter::filter(LaserPass *pass)
+{
+  std::cerr << "Deonion" << std::endl;
+  VectorPass *vpass = dynamic_cast<VectorPass*>(pass);
+  
+  unsigned int i;
+  Polyline* p;
 
   for (i = 0; i < vpass->polylines.size(); i++) {
     p = vpass->polylines.at(i);
