@@ -14,7 +14,7 @@ PJL_STRING(SEP, ";");
  */
 
 /* Print the printer job language header. */
-PJL_STRING(PJL_HEADER, "\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL\r\n");
+PJL_STRING(PJL_HEADER, "\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL \r\n");
 
 /* End job -> go back to PJL */
 PJL_STRING(PJL_FOOTER, "\e%-12345X@PJL EOJ \r\n")

@@ -53,13 +53,13 @@
 #define SCREEN_DEFAULT (8)
 
 /** FIXME */
-#define VECTOR_FREQUENCY_DEFAULT (5000)
+#define VECTOR_FREQUENCY_DEFAULT (1053)
 
 /** Default power level for vector cutting. */
-#define VECTOR_POWER_DEFAULT (10)
+#define VECTOR_POWER_DEFAULT (80)
 
 /** Default speed level for vector cutting. */
-#define VECTOR_SPEED_DEFAULT (100)
+#define VECTOR_SPEED_DEFAULT (33)
 
 struct laser_config
 {
