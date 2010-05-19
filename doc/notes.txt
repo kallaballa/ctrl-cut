@@ -1,0 +1,52 @@
+Remember to restart cupsd after changing cupsd.conf:
+ /etc/init.d/cups restart
+ or
+ sudo launchctl unload /System/Library/LaunchDaemons/org.cups.cupsd.plist
+ sudo launchctl load /System/Library/LaunchDaemons/org.cups.cupsd.plist
+
+Display raw Epilog driver output:
+  # This is necessary because the Epilog driver at the end of the job tries to repeatedly
+  # Enter HP/GL2 mode while already in HP/GL2 mode (the sequence '^[%0B^[%1BPU').
+  # This confuses GhostPDL, so we filter it away
+  awk '{gsub(/\x1b%0B\x1b%1BPU/,"");print}' < output.prn > filtered.prn
+  # Render lazzzor output to PDF for quick visualization
+  pcl6 -Zi -PRTL -sDEVICE=pdfwrite -sOutputFile=filtered.pdf filtered.prn 
+
+Convert from postscript to custom vector output (only works with red vectors atm.):
+  # This is to fix a problem when exporting from Corel Draw; red is not exported as pure red
+  sed -ie "s/1\.00 0\.00 0\.99 0\.95 0\.00 null/1.00 0.00 1.00 1.00 0.00 null/" test-data/corel/test_xpos_mm.ps
+  test-code/ps_to_eps ps-file > eps-file
+  gs -sDEVICE=nullpage -q -dBATCH -dNOPAUSE -r600 -g21600x14400 eps-file
+
+Convert from postscript to bitmap output (removes all red vectors atm.):
+  # This is to fix a problem when exporting from Corel Draw; red is not exported as pure red
+  sed -ie "s/1\.00 0\.00 0\.99 0\.95 0\.00 null/1.00 0.00 1.00 1.00 0.00 null/" test-data/corel/test_xpos_mm.ps
+  test-code/ps_to_eps ps-file > eps-file
+  gs -sDEVICE=bmpgray -sOutputFile=out.bmp -q -dBATCH -dNOPAUSE -r600 -g21600x14400 circle.eps
+
+How to create a test case in Corel Draw:
+o Draw shape as normal for laser cutting
+o Save corel draw file -> copy to test-data/corel/ as .cdr
+o Print as "Device Independent PostScript File" -> copy to test-data/corel/ as .ps
+o Print to file using Epilog driver (or to lazzzor-capture printer) -> copy to test-data/corel/ as .prn
+
+Env. variables:
+http://www.cups.org/documentation.php/doc-1.4/man-filter.html
+
+ CHARSET
+ CLASS
+ CONTENT_TYPE
+ CUPS_CACHEDIR
+ CUPS_DATADIR
+ CUPS_FILETYPE
+ CUPS_SERVERROOT
+ DEVICE_URI
+ FINAL_CONTENT_TYPE
+ LANG
+ PATH
+ PPD
+ PRINTER
+ RIP_CACHE
+ SOFTWARE
+ TZ
+ USER

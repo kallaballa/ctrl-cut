@@ -1,0 +1,53 @@
+cupsd.conf:
+LogLevel debug
+FileDevice Yes
+
+Set up printer drivers:
+
+1) Print to file based on a postscript printer
+
+This is just for testing/debugging.
+  cd etc
+  ppdc metapostscript.drv
+  sudo ln -s /Users/kintel/code/metalab/checkout/EpilogCups.git/etc/ppd/metapostscript.ppd /etc/cups/ppd
+  copy&paste <Printer fileprinter> from etc/printers.conf.txt to /etc/cups/printers.conf
+  Print a test page and check that it succeeds; verify output in /tmp/metapostscript.ps
+
+2) Set up a local shared printer for capturing raw data from the Windows driver
+
+  copy&paste <Printer lazzzor-capture> from etc/printers.conf.txt to /etc/cups/printers.conf
+  sudo ln -s /Users/kintel/code/metalab/checkout/EpilogCups.git/etc/ppd/lazzzor-capture.ppd /etc/cups/ppd
+  Print a local test page and check that it succeeds; verify output in /tmp/capture.prn
+  Make sure printer sharing is on and that lazzzor-capture is shared
+  On a remote Windows box, add an Epilog printer as //<myserver>/lazzzor-capture
+  Print a test page from Corel Draw and check that it succeeds; verify output in /tmp/capture.prn
+  To be on the super-safe side, check that the contents of "print to file" with the actual lazzzor drivers on the Lazzzor PC are the same as with this test setup
+
+3) Test local driver forwarding to the lazzzor
+
+Test cmd-line lpr
+set up a forwarding driver. This is for testing that the lpd subsystem works and can transfer jobs to the Epilog.
+FIXME: Document setup and job testing
+Test-run a synthesized Epilog output example and send to the lazzzor using the local forwarding driver
+
+4) Add a pass-through filter for driver development debugging
+
+  Make sure LogLevel is set to debug in cupsd.conf
+  Build test-code/passthroughfilter
+  sudo chown root passthroughfilter
+  cd etc
+  ppdc passthrough.drv
+  Update filter path in ppd/passthrough.ppd
+  sudo ln -s /Users/kintel/code/metalab/checkout/EpilogCups.git/etc/ppd/passthrough.ppd /etc/cups/ppd
+  copy&paste <Printer passthrough> from etc/printers.conf.txt to /etc/cups/printers.conf
+  Print a test page and verify:
+  o Look for "passthroughfilter" in /var/log/cups/error_log. This should print info about environment variables set by CUPS, as well as CUPS options passed on the command-line to the filter.
+  o Look for /tmp/passthrough.ps - verify contents
+
+5) Set up a front-end for the Epilog CUPS drivers on Windows
+
+This is to be able to capture device-dependent Postscript from Windows
+apps to be able to test our code and compare the output to that of the
+Epilog Windows drivers.
+
+6) Set up the Epilog CUPS driver for local printing

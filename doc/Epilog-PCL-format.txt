@@ -1,0 +1,49 @@
+PCL commands:                                                           GUI
+-------------
+
+Epilog-specific:
+&y#A (#=1)            Autofocus                                       Autofocus
+&y#C (#=0,1)          unknown
+&y0Z                  unknown
+&y#P (#=power)        Raster power
+&z#S (#=speed)        Raster speed
+&z#A (#=1,2)          Start raster operation at current position
+&y#O (#=0,1)          Raster direction                                Engrave Direction
+
+PCL standard:
+*p0X                  Position cursor absolute on the X-axis
+*p0Y                  Position cursor absolute on the X-axis
+&l0U                  Left (long-edge) offset registration
+&l0Z                  Top (short-edge) offset registration
+&u600D                Unit of measure (DPI)                           Resolution
+*t600R                Raster graphics resolution (DPI)                Resolution
+*r0F                  Raster Orientation
+*r14400T              Raster height in dots                           Piece Size H * Res
+*r21600S              Raster width in dots                            Piece Size V * Res
+*b2M                  Raster compression
+E                     Reset printer (used at end of HPGL section)
+%#B (#=0,1)           Enter HP-GL/2
+*rC                   End Raster Graphics
+
+Unknown:
+*p and *b cmds
+*r#A
+
+HPGL commands:
+--------------
+
+Epilog-specific:
+YP [power]       (e.g. YP080)                                           Vector power
+ZS [speed]       (e.g. ZS033)                                           Vector speed
+XR [freq]        (e.g. XR5000)                                          Vector freq.
+
+Standard commands:
+IN              Initialize
+PU              Pen Up
+PD              Pen Down
+LT              Line Type
+
+Unknown:
+WA [???]         (e.g. WA1)
+
+
