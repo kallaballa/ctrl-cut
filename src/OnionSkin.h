@@ -1,10 +1,3 @@
-/*
- * OnionSkin.h
- *
- *  Created on: 03.10.2009
- *      Author: amir
- */
-
 #ifndef ONIONSKIN_H_
 #define ONIONSKIN_H_
 

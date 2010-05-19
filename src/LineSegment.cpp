@@ -1,10 +1,3 @@
-/*
- * Line.cpp
- *
- *  Created on: 26.09.2009
- *      Author: amir
- */
-
 #include "LineSegment.h"
 #include <algorithm>
 #include <cmath>

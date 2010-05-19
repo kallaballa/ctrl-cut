@@ -1,9 +1,3 @@
-/*
- * TilePartitioner.cpp
- *
- *  Created on: 25.10.2009
- *      Author: amir
- */
 #include "boost/multi_array.hpp"
 #include <algorithm>
 #include <list>

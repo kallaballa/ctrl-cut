@@ -1,10 +1,3 @@
-/*
- * DeonionFilter.h
- *
- *  Created on: 15.11.2009
- *      Author: amir
- */
-
 #ifndef DEONIONFILTER_H_
 #define DEONIONFILTER_H_
 

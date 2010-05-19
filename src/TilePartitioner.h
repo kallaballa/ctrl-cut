@@ -1,10 +1,3 @@
-/*
- * TilePartitioner.h
- *
- *  Created on: 25.10.2009
- *      Author: amir
- */
-
 #ifndef TILEPARTITIONER_H_
 #define TILEPARTITIONER_H_
 

@@ -1,10 +1,3 @@
-/*
- * LSPoint.cpp
- *
- *  Created on: 26.09.2009
- *      Author: amir
- */
-
 #include <set>
 #include <string>
 #include <sstream>
@@ -12,50 +5,50 @@
 #include "LineSegment.h"
 
 Joint::Joint(int x, int y) {
-    setX(x, false);
-    setY(y);
+  setX(x, false);
+  setY(y);
 }
 
 void Joint::updateKey() {
-    this->key = "";
+  this->key = "";
 
-    std::stringstream out;
-    out << this->x;
-    this->key += out.str();
-    out.str("");
-    this->key += "/";
-    out << this->y;
-    this->key += out.str();
+  std::stringstream out;
+  out << this->x;
+  this->key += out.str();
+  out.str("");
+  this->key += "/";
+  out << this->y;
+  this->key += out.str();
 }
 
 Joint::~Joint() {
-    // TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 void Joint::addConnector(LineSegment* ls) {
-    connectors.insert(ls);
+  connectors.insert(ls);
 }
 
 void Joint::removeConnector(LineSegment* ls) {
-    connectors.erase(ls);
+  connectors.erase(ls);
 }
 
 std::set<LineSegment*> Joint::getConnectors() {
-    return connectors;
+  return connectors;
 }
 
 int Joint::getX() {
-    return this->x;
+  return this->x;
 }
 
 int Joint::getY() {
-    return this->y;
+  return this->y;
 }
 
 void Joint::setX(int x, bool update) {
-    this->x = x;
-    if (update)
-        updateKey();
+  this->x = x;
+  if (update)
+    updateKey();
 }
 
 void Joint::setY(int y, bool update) {

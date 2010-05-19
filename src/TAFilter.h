@@ -1,10 +1,3 @@
-/*
- * TAFilter.h
- *
- *  Created on: 10.11.2009
- *      Author: amir
- */
-
 #ifndef TAFILTER_H_
 #define TAFILTER_H_
 

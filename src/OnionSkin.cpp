@@ -1,10 +1,3 @@
-/*
- * OnionSkin.cpp
- *
- *  Created on: 03.10.2009
- *      Author: amir
- */
-
 #include "OnionSkin.h"
 
 OnionSkin::OnionSkin() {

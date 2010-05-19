@@ -1,9 +1,3 @@
-/*
- * Polygon.cpp
- *
- *  Created on: 01.10.2009
- *      Author: amir
- */
 #include <vector>
 #include "LineSegment.h"
 #include "Polygon.h"

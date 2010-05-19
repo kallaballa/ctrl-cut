@@ -1,10 +1,3 @@
-/*
- * SerializeOnionSkinsFilter.h
- *
- *  Created on: 15.11.2009
- *      Author: amir
- */
-
 #ifndef SERIALIZEONIONSKINSFILTER_H_
 #define SERIALIZEONIONSKINSFILTER_H_
 

@@ -1,10 +1,3 @@
-/*
- * Polygon.h
- *
- *  Created on: 01.10.2009
- *      Author: amir
- */
-
 #ifndef POLYGON_H_
 #define POLYGON_H_
 #include "LineSegment.h"

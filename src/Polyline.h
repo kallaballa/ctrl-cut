@@ -1,10 +1,3 @@
-/*
- * polyline.h
- *
- *  Created on: 01.10.2009
- *      Author: amir
- */
-
 #ifndef polyline_H_
 #define polyline_H_
 

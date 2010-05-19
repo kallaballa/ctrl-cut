@@ -1,10 +1,3 @@
-/*
- * Driver.cpp
- *
- *  Created on: 18.10.2009
- *      Author: amir
- */
-
 #include "Driver.h"
 #include "FilterChain.h"
 #include "LaserJob.h"

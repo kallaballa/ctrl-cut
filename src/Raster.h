@@ -1,10 +1,3 @@
-/*
- * Raster.h
- *
- *  Created on: 28.10.2009
- *      Author: amir
- */
-
 #ifndef RASTER_H_
 #define RASTER_H_
 

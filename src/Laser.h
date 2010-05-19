@@ -1,10 +1,3 @@
-/*
- * Laser.h
- *
- *  Created on: 19.09.2009
- *      Author: amir
- */
-
 #ifndef LASER_CONFIG_H_
 #define LASER_CONFIG_H_
 
