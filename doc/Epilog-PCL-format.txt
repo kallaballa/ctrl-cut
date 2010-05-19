@@ -46,4 +46,3 @@ LT              Line Type
 Unknown:
 WA [???]         (e.g. WA1)
 
-
