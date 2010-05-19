@@ -48,7 +48,9 @@ VectorPass *VectorPass::createFromFile(const string &filename)
         break;
       case 'P': // power
         if (sscanf(line.c_str() + 1, "%d", &x) == 1) {
-          power = x;
+          // FIXME: While testing, ignore the strange color-intensity-is-power convension
+          //          power = x;
+          power = VECTOR_POWER_DEFAULT;
         }
         break;
       case 'L': // line to
@@ -179,6 +181,7 @@ void VectorPass::serializeTo(ostream &out)
   out << format(V_FREQUENCY) % this->lconf->vector_freq << SEP;
 
   LineSegment* ls;
+  int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
   for (LineSegmentList::iterator it_s = this->lines.begin(); 
@@ -220,6 +223,11 @@ void VectorPass::serializeTo(ostream &out)
     int endX = this->lconf->basex + ls->getEnd()->getX() + HPGLX;
     int endY = this->lconf->basey + ls->getEnd()->getY() + HPGLY;
     
+    if (beginX < 0) {
+      beginX = startX;
+      beginY = startY;
+    }
+
     // After a power change, always issue a PU, even if the current
     // coordinate doesn't change.
     if (lastX != startX || lastY != startY || lastPower != power) {
@@ -242,6 +250,13 @@ void VectorPass::serializeTo(ostream &out)
     lastY = endY;
     lastPower = power;
   }
+
+  // FIXME: This is a temporary hack to emulate the Epilog Windows driver,
+  // which appears to repeat the first vertex in a closed polyline twice at the end.
+  if (beginX >= 0) {
+    out << format(",%d,%d") % beginX % beginY;
+  }
+
 
   out << SEP << HPGL_END << PCL_SECTION_END << HPGL_PEN_UP;
 }
