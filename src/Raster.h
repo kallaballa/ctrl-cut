@@ -21,32 +21,6 @@ struct Marker {
 
 typedef CImg<unsigned char> Image;
 
-//TODO make it a subclass of rectangle
-class Tile: public Image {
-private:
-	int xoff, yoff;
-public:
-	Tile(int xoff, int yoff, int width, int height) :
-			Image(width, height) {
-		this->xoff = xoff;
-		this->yoff = yoff;
-	}
-
-	Tile(char* file_name) :
-			Image(file_name) {
-		this->xoff = 0;
-		this->yoff = 0;
-	}
-
-	int offsetX() {
-		return xoff;
-	}
-
-	int offsetY() {
-		return yoff;
-	}
-};
-
 class Rectangle {
 public:
 	int ul_x, ul_y, lr_x, lr_y, width, height;
@@ -66,5 +40,37 @@ public:
 				< (lr_y + tolerance) && m->y > (ul_y - tolerance));
 	}
 };
+
+//TODO make it a subclass of rectangle
+class Tile: public Image {
+private:
+	int xoff, yoff;
+public:
+	Tile(int xoff, int yoff, int width, int height) :
+			Image(width, height) {
+		this->xoff = xoff;
+		this->yoff = yoff;
+	}
+
+	Tile(Image img, int xoff = 0, int yoff = 0) : Image(img) {
+		this->xoff = xoff;
+		this->yoff = yoff;
+	}
+
+	Tile(char* file_name, int xoff = 0, int yoff = 0) :
+			Image(file_name) {
+		this->xoff = xoff;
+		this->yoff = yoff;
+	}
+
+	int offsetX() {
+		return xoff;
+	}
+
+	int offsetY() {
+		return yoff;
+	}
+};
+
 
 #endif /* RASTER_H_ */

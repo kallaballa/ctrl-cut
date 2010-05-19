@@ -38,6 +38,7 @@ void find_connected(set<LineSegment*> *occupied, Polyline *polyline,
 
 
 void FindPolylinesFilter::filter(VectorPass* vpass) {
+    std::cerr << "FindPolyLines" << std::endl;
     set<LineSegment*> *occupied = new set<LineSegment*> ();
 
     LineSegment* ls;

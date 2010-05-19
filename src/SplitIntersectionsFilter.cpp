@@ -5,6 +5,7 @@
  *      Author: amir
  */
 #include <string>
+#include <iostream>
 #include <list>
 #include "LineSegment.h"
 #include "LaserJob.h"
@@ -18,13 +19,19 @@ SplitIntersectionsFilter::~SplitIntersectionsFilter() {
 }
 
 void SplitIntersectionsFilter::filter(VectorPass* vpass){
-    Joint *intersec = NULL;
+    std::cerr << "Split" << std::endl;
+	Joint *intersec = NULL;
     LineSegment *ls1, *ls2;
 
     list<LineSegment*>::iterator it_i;
     list<LineSegment*>::iterator it_j;
-
+    size_t  numLines = vpass->lines.size();
+    unsigned int  percent = numLines / 100;
+    unsigned int  cntLines = 0;
     for (it_i = vpass->lines.begin(); it_i != vpass->lines.end(); it_i++) {
+    	if(cntLines % percent == 0)
+    		std::cerr << cntLines / percent << std::endl;
+    	cntLines++;
         for (it_j = vpass->lines.begin(); it_j != vpass->lines.end(); it_j++) {
             ls2 = *it_j;
             ls1 = *it_i;

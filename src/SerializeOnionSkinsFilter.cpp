@@ -11,6 +11,7 @@
 SerializeOnionSkinsFilter::~SerializeOnionSkinsFilter() {}
 
 void SerializeOnionSkinsFilter::filter(VectorPass* vpass) {
+    std::cerr << "Serialize" << std::endl;
     vpass->lines.clear();
 
     OnionSkin* skin;

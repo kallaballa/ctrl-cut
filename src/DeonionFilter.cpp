@@ -64,7 +64,8 @@ void walkTheEdge(Polyline* p, OnionSkin* skin, LineSegment* edge, bool cw) {
 }
 
 void DeonionFilter::filter(VectorPass* vpass) {
-    unsigned int i;
+    std::cerr << "Deonion" << std::endl;
+	unsigned int i;
     Polyline* p;
 
     for (i = 0; i < vpass->polylines.size(); i++) {

@@ -21,7 +21,7 @@ using namespace std;
 
 int tile_cnt = 0;
 
-//TODO rewrite class to be OO
+//TODO rewrite class to be really OO
 
 void RasterPass::addTile(Tile* tile) {
 	this->tiles.push_back(tile);
@@ -69,7 +69,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 	int repeat;
 
 	stringstream ss;
-	ss << "/tmp/tile" << tile_cnt++ << ".bmp";
+	ss << "/tmp/tile" << tile_cnt++ << "_" << tile->offsetX() << "_" << tile->offsetY() << ".bmp";
 	string filename = ss.str();
 
 	tile->save_bmp(filename.c_str());
@@ -94,48 +94,75 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 
 		// Re-load width/height from bmp as it is possible that someone used  setpagedevice or some such
 		// Bytes 18 - 21 are the bitmap width (little endian format).
-		lconf->width = big_to_little_endian(bitmap_header + 18, 4);
+		int bmpWidth = big_to_little_endian(bitmap_header + 18, 4);
 
 		// Bytes 22 - 25 are the bitmap height (little endian format).
-		lconf->height = big_to_little_endian(bitmap_header + 22, 4);
+		int bmpHeight = big_to_little_endian(bitmap_header + 22, 4);
 
 		// Bytes 10 - 13 base offset for the beginning of the bitmap data.
 		base_offset = big_to_little_endian(bitmap_header + 10, 4);
-		char buf[102400];
+		unsigned char buf[102400];
+
 		if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
 			// colour/grey are byte per pixel power levels
-			h = lconf->width;
+			h = bmpWidth;
 			// BMP padded to 4 bytes per scan line
 			d = (h * 3 + 3) / 4 * 4;
 		} else {
 			// mono
-			h = (lconf->width + 7) / 8;
+			h = (bmpWidth + 7) / 8;
 			// BMP padded to 4 bytes per scan line
 			d = (h + 3) / 4 * 4;
 		}
 		if (debug) {
 			fprintf(stderr, "Width %d Height %d Bytes %d Line %d\n",
-					lconf->width, lconf->height, h, d);
+					bmpWidth, bmpHeight, h, d);
+		}
+		fseek(bitmap_file, base_offset, SEEK_SET);
+		int l;
+		int dir = 0;
+		for(int i = 0; i < d; i++)
+		{
+			//cout << bmpWidth;
+			l = fread(buf, 1, h, bitmap_file);
+			//out << format(R_ROW_BYTES) % (l);
+			//out << "\x03";
+
+			/*if (dir) {
+				// reverse bytes!
+				for (int n = 0; n < l / 2; n++) {
+					unsigned char t = buf[n];
+					buf[n] = buf[l - n - 1];
+					buf[l - n - 1] = t;
+				}
+			}
+
+			ir = 1 - dir;*/
+
+			for (int j = 0; j < l; j++) {
+				out << buf[j];
+			}
 		}
 
-		for (offx = lconf->width * (lconf->x_repeat - 1); offx >= 0; offx
-				-= lconf->width) {
-			for (offy = lconf->height * (lconf->y_repeat - 1); offy >= 0; offy
-					-= lconf->height) {
+		/*
+		for (offx = bmpWidth * (lconf->x_repeat - 1); offx >= 0; offx
+				-= bmpWidth) {
+			for (offy = bmpHeight * (lconf->y_repeat - 1); offy >= 0; offy
+					-= bmpHeight) {
 				for (pass = 0; pass < passes; pass++) {
 					// raster (basic)
 					int y;
 					char dir = 0;
 
 					fseek(bitmap_file, base_offset, SEEK_SET);
-					for (y = lconf->height - 1; y >= 0; y--) {
+					for (y = bmpHeight - 1; y >= 0; y--) {
 						int l;
 
 						switch (lconf->raster_mode) {
 						case 'c': // colour (passes)
 						{
-							char *f = buf;
-							char *t = buf;
+							unsigned char *f = buf;
+							unsigned char *t = buf;
 							if (d > sizeof(buf)) {
 								perror("Too wide");
 								return;
@@ -183,7 +210,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 								fprintf(stderr, "Too wide\n");
 								return;
 							}
-							l = fread((char *) buf, 1, d, bitmap_file);
+							l = fread(buf, 1, d, bitmap_file);
 							if (l != d) {
 								fprintf(stderr,
 										"Bad bit data from gs %d/%d (y=%d)\n",
@@ -202,7 +229,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 								perror("Too wide");
 								return;
 							}
-							l = fread((char *) buf, 1, d, bitmap_file);
+							l = fread(buf, 1, d, bitmap_file);
 							if (l != d) {
 								fprintf(stderr,
 										"Bad bit data from gs %d/%d (y=%d)\n",
@@ -230,7 +257,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 							// a line to print
 							int r;
 							int n;
-							char pack[sizeof(buf) * 5 / 4 + 1];
+							unsigned char pack[sizeof(buf) * 5 / 4 + 1];
 							for (r = h - 1; r > l && !buf[r]; r--) {
 								;
 							}
@@ -246,7 +273,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 								out << format(R_INTENSITY) % (-(r - l));
 								// reverse bytes!
 								for (n = 0; n < (r - l) / 2; n++) {
-									char t = buf[l + n];
+									unsigned char t = buf[l + n];
 									buf[l + n] = buf[r - n - 1];
 									buf[r - n - 1] = t;
 								}
@@ -292,7 +319,7 @@ void RasterPass::serializeTileTo(Tile* tile, ostream& out) {
 					}
 				}
 			}
-		}
+		}*/
 
 	}
 	fclose(bitmap_file);

@@ -16,6 +16,7 @@
 #include "LineSegment.h"
 #include "OnionSkin.h"
 #include "pjl.h"
+#include "stdint.h"
 
 using std::string;
 

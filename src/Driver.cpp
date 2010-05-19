@@ -38,8 +38,8 @@ void Driver::filter(LaserJob *job) {
 	for (it = passes.begin(); it != passes.end(); it++) {
 		if ((vpass = dynamic_cast<VectorPass*> (*it)))
 			fc.filterVectorPass(vpass);
-		else if ((rpass = dynamic_cast<RasterPass*> (*it)))
-			fc.filterRasterPass(rpass);
+	/*	else if ((rpass = dynamic_cast<RasterPass*> (*it)))
+			fc.filterRasterPass(rpass);*/
 	}
 }
 

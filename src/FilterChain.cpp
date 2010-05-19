@@ -69,6 +69,8 @@ bool FilterChain::evaluate() {
 }
 
 void FilterChain::filterRasterPass(RasterPass* rpass) {
+	//rpass->tiles.push_back(new Tile(*rpass->sourceImage));
+	return;
 	for (RasterFilterList::iterator it = rasterChain.begin(); it
 			!= rasterChain.end(); it++)
 		(*it)->filter(rpass);

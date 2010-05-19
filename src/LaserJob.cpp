@@ -65,10 +65,10 @@ void LaserJob::serializeTo(ostream &out) {
      * information to the print job.
      */
 
-     if (this->lconf->raster_power && this->lconf->raster_mode != 'n') {
+    // if (this->lconf->raster_power && this->lconf->raster_mode != 'n') {
     /* We're going to perform a raster print. */
          /* We're going to perform a vector print. */
-         LaserPassList &passes = this->getPasses();
+     /*    LaserPassList &passes = this->getPasses();
 
          LaserPassList::iterator it;
          RasterPass *rpass;
@@ -78,7 +78,7 @@ void LaserJob::serializeTo(ostream &out) {
                  rpass->serializeTo(out);
              }
          }
-    }
+    }*/
 
     /* If vector power is > 0 then add vector information to the print job. */
     if (this->lconf->vector_power) {

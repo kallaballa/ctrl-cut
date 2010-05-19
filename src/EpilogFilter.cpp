@@ -420,7 +420,8 @@ VectorPass *loadVectorPass(char *file_name) {
 }
 
 RasterPass* loadRasterPass(char* file_name) {
-    return new RasterPass(new Image(file_name));
+    //return new RasterPass(new Image(file_name));
+	return new RasterPass(NULL);
 }
 
 // FIXME: Move to laser_config
