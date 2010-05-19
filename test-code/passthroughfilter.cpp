@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
     fprintf(stderr, "DEBUG: %s: %s\n", options[i].name, options[i].value);
   }
 
-
   // FIXME: Register a signal handler to support cancelling of jobs
 
   cups_file_t *fp;
