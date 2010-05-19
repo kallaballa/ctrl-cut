@@ -1,12 +1,5 @@
-/*
- * CupsParser.h
- *
- *  Created on: 18.10.2009
- *      Author: amir
- */
-
-#ifndef CUPSPARSER_H_
-#define CUPSPARSER_H_
+#ifndef EPILOGFILTER_H_
+#define EPILOGFILTER_H_
 
 /** Default for debug mode. */
 #define DEBUG (1)
@@ -29,11 +22,5 @@
 #define PRINTER_NAME "LaserCutter"
 
 #define GTKLP_CONF_DIR "/home/amir/dev/Epilog/gtklpconf/"
-
-class CupsParser {
-public:
-    CupsParser();
-    virtual ~CupsParser();
-};
 
 #endif /* CUPSPARSER_H_ */

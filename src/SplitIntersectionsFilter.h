@@ -9,12 +9,12 @@
 #define SPLITINTERSECTIONSFILTER_H_
 
 class SplitIntersectionsFilter : public VectorFilter {
-public:
-	SplitIntersectionsFilter() {
-		this->provides.insert(SI_FILTER_ID);
-	}
-	virtual ~SplitIntersectionsFilter();
-	void filter(VectorPass* vpass);
+ public:
+  SplitIntersectionsFilter() {
+    this->provides.insert(SI_FILTER_ID);
+  }
+  virtual ~SplitIntersectionsFilter();
+  void filter(VectorPass* vpass);
 };
 
 #endif /* SPLITINTERSECTIONSFILTER_H_ */

@@ -19,15 +19,15 @@ typedef list<RasterFilter*> RasterFilterList;
 typedef list<VectorFilter*> VectorFilterList;
 
 class FilterChain {
-public:
-	RasterFilterList rasterChain;
-	VectorFilterList vectorChain;
+ public:
+  RasterFilterList rasterChain;
+  VectorFilterList vectorChain;
 
-	FilterChain();
-	virtual ~FilterChain();
-	bool evaluate();
-	void filterRasterPass(RasterPass* pass);
-	void filterVectorPass(VectorPass* pass);
+  FilterChain();
+  virtual ~FilterChain();
+  bool evaluate();
+  void filterRasterPass(RasterPass* pass);
+  void filterVectorPass(VectorPass* pass);
 };
 
 #endif /* FILTERCHAIN_H_ */

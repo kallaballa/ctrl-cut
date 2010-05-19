@@ -12,16 +12,16 @@
 #include "Filter.h"
 
 class TAFilter: public RasterFilter {
-private:
+ private:
 
-public:
-	TAFilter() {
-		this->provides.insert(TA_FILTER_ID);
-		this->preFilters.insert(TP_FILTER_ID);
-	}
+ public:
+  TAFilter() {
+    this->provides.insert(TA_FILTER_ID);
+    this->preFilters.insert(TP_FILTER_ID);
+  }
 
-	virtual ~TAFilter(){}
-	virtual void filter(RasterPass* p);
+  virtual ~TAFilter(){}
+  virtual void filter(RasterPass* p);
 };
 
 #endif /* TAFILTER_H_ */

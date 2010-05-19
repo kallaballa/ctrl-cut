@@ -1,13 +1,5 @@
-/*
- * laser_config.h
- *
- *  Created on: 19.09.2009
- *      Author: amir
- */
-
 #ifndef LASER_CONFIG_H_
 #define LASER_CONFIG_H_
-
 
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)
@@ -69,69 +61,68 @@
 /** Default speed level for vector cutting. */
 #define VECTOR_SPEED_DEFAULT (100)
 
-typedef struct {
-	/** Variable to track auto-focus. */
-	int focus;
+struct laser_config
+{
+  /** Variable to track auto-focus. */
+  int focus;
 
-	/** Height of the image (y-axis). By default this is the bed's height. */
-	int height;
+  /** Height of the image (y-axis). By default this is the bed's height. */
+  int height;
 
-	/** Variable to track the resolution of the print. */
-	int resolution;
+  /** Variable to track the resolution of the print. */
+  int resolution;
 
-	/** Variable to track the mode for rasterization. One of color 'c', or
-	 * grey-scale 'g', mono 'm', or none 'n'
-	 */
-	char raster_mode;
+  /** Variable to track the mode for rasterization. One of color 'c', or
+   * grey-scale 'g', mono 'm', or none 'n'
+   */
+  char raster_mode;
 
-	/** Variable to track the raster speed. */
-	int raster_speed;
+  /** Variable to track the raster speed. */
+  int raster_speed;
 
-	/** Variable to track the raster power. */
-	int raster_power;
+  /** Variable to track the raster power. */
+  int raster_power;
 
-	/** Variable to track whether or not a rasterization should be repeated. */
-	int raster_repeat;
+  /** Variable to track whether or not a rasterization should be repeated. */
+  int raster_repeat;
 
-	/** FIXME -- pixel size of screen, 0= threshold */
-	int screen;
+  /** FIXME -- pixel size of screen, 0= threshold */
+  int screen;
 
-	/** Variable to track the vector speed. */
-	int vector_speed;
+  /** Variable to track the vector speed. */
+  int vector_speed;
 
-	/** Variable to track the vector power. */
-	int vector_power;
+  /** Variable to track the vector power. */
+  int vector_power;
 
-	/** Variable to track the vector frequency. FIXME */
-	int vector_freq;
+  /** Variable to track the vector frequency. FIXME */
+  int vector_freq;
 
-	/** Width of the image (x-axis). By default this is the bed's width. */
-	int width;
+  /** Width of the image (x-axis). By default this is the bed's width. */
+  int width;
 
-	/** X re-center (0 = not). */
-	int x_center;
+  /** X re-center (0 = not). */
+  int x_center;
 
-	/** Track whether or not to repeat X. */
-	int x_repeat;
+  /** Track whether or not to repeat X. */
+  int x_repeat;
 
-	/** Y re-center (0 = not). */
-	int y_center;
+  /** Y re-center (0 = not). */
+  int y_center;
 
-	/** Track whether or not to repeat X. */
-	int y_repeat;
+  /** Track whether or not to repeat X. */
+  int y_repeat;
 
-	/** The relative x position inside the laser bed to start operating from **/
-	int basex;
+  /** The relative x position inside the laser bed to start operating from **/
+  int basex;
 
-	/** The relative y position inside the laser bed to start operating from **/
-	int basey;
+  /** The relative y position inside the laser bed to start operating from **/
+  int basey;
 
-	/** Variable to track whether or not the X axis should be flipped. */
-	char flip;
+  /** Variable to track whether or not the X axis should be flipped. */
+  char flip;
+};
 
-} laser_config;
-
-
-
+void init_laser_config(laser_config *lconf);
 
 #endif /* LASER_CONFIG_H_ */

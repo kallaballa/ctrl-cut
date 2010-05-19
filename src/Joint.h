@@ -22,7 +22,7 @@ class Joint {
         string key;
         void updateKey();
         std::set<LineSegment*> connectors;
-    public:
+ public:
         Joint(int x, int y);
         virtual ~Joint();
         int getX();
@@ -34,6 +34,6 @@ class Joint {
         void addConnector(LineSegment *ls);
         void removeConnector(LineSegment *ls);
         std::set<LineSegment*> getConnectors();
-    };
+};
 
 #endif /* LSPOINT_H_ */

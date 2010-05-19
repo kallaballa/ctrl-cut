@@ -23,7 +23,8 @@
 #include <list>
 #include <string>
 #include <iostream>
-#include "LaserPass.h"
+#include "VectorPass.h"
+#include "RasterPass.h"
 
 using std::map;
 using std::list;
@@ -35,26 +36,26 @@ typedef string FilterID;
 typedef set<FilterID > FilterList;
 
 class Filter {
-public:
-	FilterList provides;
-	FilterList preFilters;
-	FilterList postFilters;
+ public:
+  FilterList provides;
+  FilterList preFilters;
+  FilterList postFilters;
 };
 
 class RasterFilter: public Filter {
-public:
+ public:
 
-	RasterFilter(){}
-	virtual ~RasterFilter(){};
-	virtual void filter(RasterPass* p) = 0;
+  RasterFilter(){}
+  virtual ~RasterFilter(){};
+  virtual void filter(RasterPass* p) = 0;
 };
 
 class VectorFilter: public Filter {
-public:
+ public:
 
-	VectorFilter(){}
-	virtual ~VectorFilter(){};
-	virtual void filter(VectorPass* p) = 0;
+  VectorFilter(){}
+  virtual ~VectorFilter(){};
+  virtual void filter(VectorPass* p) = 0;
 };
 
 #endif /* FILTER_H_ */

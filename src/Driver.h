@@ -1,10 +1,3 @@
-/*
- * Driver.h
- *
- *  Created on: 18.10.2009
- *      Author: amir
- */
-
 #ifndef DRIVER_H_
 #define DRIVER_H_
 

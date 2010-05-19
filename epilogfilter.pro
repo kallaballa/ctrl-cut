@@ -28,11 +28,11 @@ SOURCES = \
           src/TAFilter.cpp \
           src/TilePartitioner.cpp \
           src/TPFilter.cpp \
-          src/VectorPass.cpp
+          src/VectorPass.cpp \
+          src/laser_config.cpp
 
 HEADERS = \
           src/CImg.h \
-          src/CupsParser.h \
           src/DeonionFilter.h \
           src/Driver.h \
           src/EpilogFilter.h \
@@ -44,6 +44,8 @@ HEADERS = \
           src/laser_config.h \
           src/LaserJob.h \
           src/LaserPass.h \
+          src/VectorPass.h \
+          src/RasterPass.h \
           src/LineSegment.h \
           src/OnionSkin.h \
           src/pjl.h \

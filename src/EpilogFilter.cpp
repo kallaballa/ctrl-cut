@@ -109,20 +109,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
-#include <sys/signal.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
-#include <fstream>
 #include <time.h>
 
 #include <cups/cups.h>
 
+#include "laser_config.h"
 #include "LaserJob.h"
 #include "Driver.h"
-#include "CupsParser.h"
+#include "EpilogFilter.h"
 #include "Raster.h"
+#include "VectorPass.h"
+#include "RasterPass.h"
 
 #ifndef __APPLE__
 #define GS_EXECUTABLE "/usr/bin/gs"
@@ -130,21 +128,16 @@
 #define GS_EXECUTABLE "/opt/local/bin/gs"
 #endif
 
-using namespace std;
-
 /** The laser cutter configuration **/
 laser_config lconf;
 
-/** Temporary buffer for building out strings. */
+/** Temporary buffer for building our strings. */
 char buf[102400];
 
 /** Determines whether or not debug is enabled. */
 char debug = DEBUG;
 
-/** The DEVICE_URI for the printer. */
-char *device_uri = "";
-
-char *queue_options = "";
+const char *queue_options = "";
 
 /**
  * Execute ghostscript feeding it an ecapsulated postscript file which is then
@@ -165,23 +158,23 @@ char *queue_options = "";
  * otherwise.
  */
 bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
-        char *filename_vector, const char *bmp_mode, int resolution,
-        int height, int width) {
-    char buf[8192];
-    sprintf(
-            buf,
-            "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-            GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
-            (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
-            filename_eps, filename_vector);
+                         char *filename_vector, const char *bmp_mode, int resolution,
+                         int height, int width) {
+  char buf[8192];
+  sprintf(
+          buf,
+          "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
+          GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
+          (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
+          filename_eps, filename_vector);
 
-    if (debug) {
-        fprintf(stderr, "DEBUG: %s\n", buf);
-    }
-    if (system(buf)) {
-        return false;
-    }
-    return true;
+  if (debug) {
+    fprintf(stderr, "DEBUG: %s\n", buf);
+  }
+  if (system(buf)) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -196,115 +189,125 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
  * @return Return true if the function completes its task, false otherwise.
  */
 bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file) {
-    int xoffset = 0;
-    int yoffset = 0;
+  int xoffset = 0;
+  int yoffset = 0;
 
-    int l;
-    while (fgets((char *) buf, sizeof(buf), ps_file)) {
-        fprintf(eps_file, "%s", (char *) buf);
-        if (*buf != '%') {
-            break;
+  int l;
+  while (fgets((char *) buf, sizeof(buf), ps_file)) {
+    fprintf(eps_file, "%s", (char *) buf);
+    if (*buf != '%') {
+      break;
+    }
+    if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
+      int lower_left_x;
+      int lower_left_y;
+      int upper_right_x;
+      int upper_right_y;
+      if (sscanf((char *) buf + 14, "%d %d %d %d", &lower_left_x,
+                 &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
+        xoffset = lower_left_x;
+        yoffset = lower_left_y;
+        lconf->width = (upper_right_x - lower_left_x);
+        lconf->height = (upper_right_y - lower_left_y);
+        fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
+        fprintf(eps_file, "0 %d translate\n", lconf->height
+                - upper_right_y);
+        if (xoffset || yoffset) {
+          fprintf(eps_file, "%d %d translate\n", -xoffset, -yoffset);
         }
-        if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
-            int lower_left_x;
-            int lower_left_y;
-            int upper_right_x;
-            int upper_right_y;
-            if (sscanf((char *) buf + 14, "%d %d %d %d", &lower_left_x,
-                    &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
-                xoffset = lower_left_x;
-                yoffset = lower_left_y;
-                lconf->width = (upper_right_x - lower_left_x);
-                lconf->height = (upper_right_y - lower_left_y);
-                fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
-                fprintf(eps_file, "0 %d translate\n", lconf->height
-                        - upper_right_y);
-                if (xoffset || yoffset) {
-                    fprintf(eps_file, "%d %d translate\n", -xoffset, -yoffset);
-                }
-                if (lconf->flip) {
-                    fprintf(eps_file, "%d 0 translate -1 1 scale\n",
-                            lconf->width);
-                }
-            }
+        if (lconf->flip) {
+          fprintf(eps_file, "%d 0 translate -1 1 scale\n",
+                  lconf->width);
         }
-        if (!strncasecmp((char *) buf, "%!", 2)) {
-            fprintf(
-                    eps_file,
-                    "/==={(        )cvs print}def/stroke{currentrgbcolor 0.0 \
+      }
+    }
+    if (!strncasecmp((char *) buf, "%!", 2)) {
+      fprintf(
+              eps_file,
+              "/==={(        )cvs print}def/stroke{currentrgbcolor 0.0 \
 eq exch 0.0 eq and exch 0.0 ne and{(P)=== currentrgbcolor pop pop 100 mul \
 round  cvi = flattenpath{transform(M)=== round cvi ===(,)=== round cvi \
 =}{transform(L)=== round cvi ===(,)=== round cvi =}{}{(C)=}pathforall \
 newpath}{stroke}ifelse}bind def/showpage{(X)= showpage}bind def\n");
-            if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
-                if (lconf->screen == 0) {
-                    fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
-                } else {
-                    int s = lconf->screen;
-                    if (s < 0) {
-                        s = 0 - s;
-                    }
-                    if (lconf->resolution >= 600) {
-                        // adjust for overprint
-                        fprintf(eps_file,
-                                "{dup 0 ne{%d %d div add}if}settransfer\n",
-                                lconf->resolution / 600, s);
-                    }
-                    fprintf(eps_file, "%d 30{%s}setscreen\n", lconf->resolution
-                            / s, (lconf->screen > 0) ? "pop abs 1 exch sub"
-                            : "180 mul cos exch 180 mul cos add 2 div");
-                }
-            }
+      if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
+        if (lconf->screen == 0) {
+          fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
+        } else {
+          int s = lconf->screen;
+          if (s < 0) {
+            s = 0 - s;
+          }
+          if (lconf->resolution >= 600) {
+            // adjust for overprint
+            fprintf(eps_file,
+                    "{dup 0 ne{%d %d div add}if}settransfer\n",
+                    lconf->resolution / 600, s);
+          }
+          fprintf(eps_file, "%d 30{%s}setscreen\n", lconf->resolution
+                  / s, (lconf->screen > 0) ? "pop abs 1 exch sub"
+                  : "180 mul cos exch 180 mul cos add 2 div");
         }
+      }
     }
-    while ((l = fread((char *) buf, 1, sizeof(buf), ps_file)) > 0) {
-        fwrite((char *) buf, 1, l, eps_file);
-    }
-    return true;
+  }
+  while ((l = fread((char *) buf, 1, sizeof(buf), ps_file)) > 0) {
+    fwrite((char *) buf, 1, l, eps_file);
+  }
+  return true;
 }
 
-/**
- * VectorPower=98 PageSize=LaserBed Resolution=75 RasterSpeed=9 AutoFocus number-up=1 RasterPower=99 VectorMode=Engrave VectorSpeed=8 RasterMode=Color
- */
-void process_print_job_options(const char *optionarg, laser_config *lconf) {
-    cups_option_t *options = NULL;
-    int numOptions = cupsParseOptions(optionarg, 0, &options);
+/*!
+  Copy supported options into the supplied laser_config:
 
-    const char *v;
-    if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
-        lconf->focus = atoi(v);
-    }
-    if ((v = cupsGetOption("Resolution", numOptions, options))) {
-        lconf->resolution = atoi(v);
-    }
-    if ((v = cupsGetOption("RasterSpeed", numOptions, options))) {
-        lconf->raster_speed = atoi(v);
-    }
-    if ((v = cupsGetOption("RasterPower", numOptions, options))) {
-        lconf->raster_power = atoi(v);
-    }
-    if ((v = cupsGetOption("RasterMode", numOptions, options))) {
-        lconf->raster_mode = tolower(*v);
-        lconf->raster_mode = 'g';
-    }
-    if ((v = cupsGetOption("RasterRepeat", numOptions, options))) {
-        lconf->raster_repeat = atoi(v);
-    }
-    if ((v = cupsGetOption("VectorSpeed", numOptions, options))) {
-        lconf->vector_speed = atoi(v);
-    }
-    if ((v = cupsGetOption("VectorPower", numOptions, options))) {
-        lconf->vector_power = atoi(v);
-    }
-    if ((v = cupsGetOption("VectorFrequency", numOptions, options))) {
-        lconf->vector_freq = atoi(v);
-    }
-    if ((v = cupsGetOption("FlipX", numOptions, options))) {
-        lconf->flip = 1;
-    }
-    if ((v = cupsGetOption("Debug", numOptions, options))) {
-        debug = 1;
-    }
+  VectorPower=98
+  PageSize=LaserBed
+  Resolution=75
+  RasterSpeed=9
+  AutoFocus 
+  number-up=1
+  RasterPower=99
+  VectorMode=Engrave
+  VectorSpeed=8
+  RasterMode=Color
+*/
+void process_print_job_options(cups_option_t *options, int numOptions,
+                               laser_config *lconf)
+{
+  const char *v;
+  if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
+    lconf->focus = atoi(v);
+  }
+  if ((v = cupsGetOption("Resolution", numOptions, options))) {
+    lconf->resolution = atoi(v);
+  }
+  if ((v = cupsGetOption("RasterSpeed", numOptions, options))) {
+    lconf->raster_speed = atoi(v);
+  }
+  if ((v = cupsGetOption("RasterPower", numOptions, options))) {
+    lconf->raster_power = atoi(v);
+  }
+  if ((v = cupsGetOption("RasterMode", numOptions, options))) {
+    lconf->raster_mode = tolower(*v);
+    lconf->raster_mode = 'g';
+  }
+  if ((v = cupsGetOption("RasterRepeat", numOptions, options))) {
+    lconf->raster_repeat = atoi(v);
+  }
+  if ((v = cupsGetOption("VectorSpeed", numOptions, options))) {
+    lconf->vector_speed = atoi(v);
+  }
+  if ((v = cupsGetOption("VectorPower", numOptions, options))) {
+    lconf->vector_power = atoi(v);
+  }
+  if ((v = cupsGetOption("VectorFrequency", numOptions, options))) {
+    lconf->vector_freq = atoi(v);
+  }
+  if ((v = cupsGetOption("FlipX", numOptions, options))) {
+    lconf->flip = 1;
+  }
+  if ((v = cupsGetOption("Debug", numOptions, options))) {
+    debug = 1;
+  }
 }
 
 /**
@@ -315,154 +318,59 @@ void process_print_job_options(const char *optionarg, laser_config *lconf) {
  * @return Nothing
  */
 void range_checks(void) {
-    if (lconf.raster_power > 100) {
-        lconf.raster_power = 100;
-    }
-    if (lconf.raster_power < 0) {
-        lconf.raster_power = 0;
-    }
+  if (lconf.raster_power > 100) {
+    lconf.raster_power = 100;
+  }
+  if (lconf.raster_power < 0) {
+    lconf.raster_power = 0;
+  }
 
-    if (lconf.raster_speed > 100) {
-        lconf.raster_speed = 100;
-    }
-    if (lconf.raster_speed < 1) {
-        lconf.raster_speed = 1;
-    }
+  if (lconf.raster_speed > 100) {
+    lconf.raster_speed = 100;
+  }
+  if (lconf.raster_speed < 1) {
+    lconf.raster_speed = 1;
+  }
 
-    if (lconf.resolution > 1200) {
-        lconf.resolution = 1200;
-    }
-    if (lconf.resolution < 75) {
-        lconf.resolution = 75;
-    }
+  if (lconf.resolution > 1200) {
+    lconf.resolution = 1200;
+  }
+  if (lconf.resolution < 75) {
+    lconf.resolution = 75;
+  }
 
-    if (lconf.screen < 1) {
-        lconf.screen = 1;
-    }
+  if (lconf.screen < 1) {
+    lconf.screen = 1;
+  }
 
-    if (lconf.vector_freq < 10) {
-        lconf.vector_freq = 10;
-    }
-    if (lconf.vector_freq > 5000) {
-        lconf.vector_freq = 5000;
-    }
+  if (lconf.vector_freq < 10) {
+    lconf.vector_freq = 10;
+  }
+  if (lconf.vector_freq > 5000) {
+    lconf.vector_freq = 5000;
+  }
 
-    if (lconf.vector_power > 100) {
-        lconf.vector_power = 100;
-    }
-    if (lconf.vector_power < 0) {
-        lconf.vector_power = 0;
-    }
+  if (lconf.vector_power > 100) {
+    lconf.vector_power = 100;
+  }
+  if (lconf.vector_power < 0) {
+    lconf.vector_power = 0;
+  }
 
-    if (lconf.vector_speed > 100) {
-        lconf.vector_speed = 100;
-    }
-    if (lconf.vector_speed < 1) {
-        lconf.vector_speed = 1;
-    }
+  if (lconf.vector_speed > 100) {
+    lconf.vector_speed = 100;
+  }
+  if (lconf.vector_speed < 1) {
+    lconf.vector_speed = 1;
+  }
 }
 
-/*!
- Loads a vector file and constructs a VectorPass.
- */
-VectorPass *loadVectorPass(char *file_name) {
-    VectorPass *vpass = new VectorPass();
-    string line;
-    ifstream infile(file_name, ios_base::in);
-    char first;
-    int power, x, y;
-    int lx, ly;
-    int mx, my;
-    Joint *start;
-    Joint *end;
-
-    while (getline(infile, line, '\n')) {
-        first = *line.begin();
-
-        if (first == 'X')
-            break;
-
-        if (isalpha(first)) {
-            switch (first) {
-            case 'M': // move
-                if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-                    lx = x;
-                    ly = y;
-                    mx = x;
-                    my = y;
-                }
-                break;
-            case 'C': // close
-                if (lx != mx || ly != my) {
-                    vpass->addLine(new Joint(lx, ly), new Joint(mx, my), power);
-                }
-                break;
-            case 'P': // power
-                if (sscanf(line.c_str() + 1, "%d", &x) == 1) {
-                    power = x;
-                }
-                break;
-            case 'L': // line
-                if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-                    start = new Joint(lx, ly);
-                    end = new Joint(x, y);
-                    vpass->addLine(start, end, power);
-                    lx = x;
-                    ly = y;
-                }
-                break;
-            }
-        }
-    }
-    infile.close();
-
-    return vpass;
-}
-
-RasterPass* loadRasterPass(char* file_name) {
-    //return new RasterPass(new Image(file_name));
-	return new RasterPass(NULL);
-}
-
-// FIXME: Move to laser_config
-void calculate_base_position(laser_config *lconf) {
-    if (lconf->x_center) {
-        lconf->basex = lconf->x_center - lconf->width / 2;
-    }
-    if (lconf->y_center) {
-        lconf->basey = lconf->y_center - lconf->height / 2;
-    }
-    if (lconf->basex < 0) {
-        lconf->basex = 0;
-    }
-    if (lconf->basey < 0) {
-        lconf->basey = 0;
-    }
-    // rasterises
-    lconf->basex = lconf->basex * lconf->resolution / POINTS_PER_INCH;
-    lconf->basey = lconf->basey * lconf->resolution / POINTS_PER_INCH;
-}
-
-// FIXME: Move to laser_config
-void init_laser_config(laser_config *lconf) {
-    lconf->focus = AUTO_FOCUS;
-    lconf->height = BED_HEIGHT;
-    lconf->resolution = RESOLUTION_DEFAULT;
-    lconf->raster_mode = RASTER_MODE_DEFAULT;
-    lconf->raster_speed = RASTER_SPEED_DEFAULT;
-    lconf->raster_power = RASTER_POWER_DEFAULT;
-    lconf->raster_repeat = RASTER_REPEAT;
-    lconf->screen = SCREEN_DEFAULT;
-    lconf->vector_speed = VECTOR_SPEED_DEFAULT;
-    lconf->vector_power = VECTOR_POWER_DEFAULT;
-    lconf->vector_freq = VECTOR_FREQUENCY_DEFAULT;
-    lconf->width = BED_WIDTH;
-    lconf->x_repeat = 1;
-    lconf->y_repeat = 1;
-    lconf->basex = 0;
-    lconf->basey = 0;
-    lconf->flip = FLIP;
-    calculate_base_position(lconf);
+static void printEnv(const char *env)
+{
+  const char *envstr = getenv(env);
+  if (envstr) {
+    fprintf(stderr, "DEBUG: %s = %s\n", env, envstr);
+  }
 }
 
 /**
@@ -474,185 +382,200 @@ void init_laser_config(laser_config *lconf) {
  * @return An integer where 0 represents successful termination, any other
  * value represents an error code.
  */
-int main(int argc, char *argv[]) {
-	clock_t start = clock();
+int main(int argc, char *argv[])
+{
+  clock_t start = clock();
 
-	if (argc < 6 || argc > 7) {
-        fprintf(stderr,
-                "ERROR: Usage: %s job-id user title copies options [file]\n",
-                argv[0]);
-        return 1;
+  // Make sure status messages are not buffered
+  setbuf(stderr, NULL);
+
+  if (argc < 6 || argc > 7) {
+    fprintf(stderr, "ERROR: Usage: %s job-id user title copies options [file]\n", argv[0]);
+    return 1;
+  }
+
+  // Arguments debug output:
+  fprintf(stderr, "DEBUG: ");
+  for (int i=0;i<argc;i++) {
+    fprintf(stderr, "%s ", argv[i]);
+  }
+  fprintf(stderr, "\n");
+
+  // Env. variable debug output
+  printEnv("CHARSET");
+  printEnv("CLASS");
+  printEnv("CONTENT_TYPE");
+  printEnv("CUPS_CACHEDIR");
+  printEnv("CUPS_DATADIR");
+  printEnv("CUPS_FILETYPE");
+  printEnv("CUPS_SERVERROOT");
+  printEnv("DEVICE_URI");
+  printEnv("FINAL_CONTENT_TYPE");
+  printEnv("LANG");
+  printEnv("PATH");
+  printEnv("PPD");
+  printEnv("PRINTER");
+  printEnv("RIP_CACHE");
+  printEnv("SOFTWARE");
+  printEnv("TZ");
+  printEnv("USER");
+
+
+  // FIXME: Register a signal handler to support cancelling of jobs
+
+  cups_file_t *fp;
+  if (argc == 6) {
+    fp = cupsFileStdin();
+  } else {
+    // Try to open the print file...
+    if ((fp = cupsFileOpen(argv[6], "r")) == NULL) {
+      perror("ERROR: unable to open print file - ");
+      return 1;
+    }
+  }
+
+  const char *arg_jobid = argv[1];
+  const char *arg_user = argv[2];
+  const char *arg_title = argv[3];
+  const char *arg_copies = argv[4];
+  const char *arg_options = argv[5];
+  
+  cups_option_t	*options;
+  int numOptions = cupsParseOptions(arg_options, 0, &options);
+
+  init_laser_config(&lconf);
+  
+  /* Strings designating filenames. */
+  char file_basename[FILENAME_NCHARS];
+  char filename_bitmap[FILENAME_NCHARS];
+  char filename_cups_debug[FILENAME_NCHARS];
+  char filename_eps[FILENAME_NCHARS];
+  char filename_vector[FILENAME_NCHARS];
+  
+  /* File handles. */
+  FILE *file_debug;
+  FILE *file_bitmap;
+  FILE *file_eps;
+  FILE *file_cups;
+  
+  process_print_job_options(options, numOptions, &lconf);
+
+  /* Perform a check over the global values to ensure that they have values
+   * that are within a tolerated range.
+   */
+  range_checks();
+
+  /* Determine and set the names of all files that will be manipulated by the
+   * program.
+   */
+  sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
+  sprintf(filename_bitmap, "%s.bmp", file_basename);
+  sprintf(filename_eps, "%s.eps", file_basename);
+  sprintf(filename_vector, "%s.vector", file_basename);
+
+  /* Gather the postscript file from either standard input or a filename
+   * specified as a command line argument.
+   */
+  if (argc > 6) {
+    file_cups = fopen(argv[6], "r");
+  } else {
+    file_cups = stdin;
+  }
+  if (!file_cups) {
+    // FIXME: Prefix with ERROR:
+    perror((argc > 6) ? argv[6] : "stdin");
+    return 1;
+  }
+
+  /* Write out the incoming cups data if debug is enabled. */
+  if (debug) {
+    /* We save the incoming cups data to the filesystem. */
+    sprintf(filename_cups_debug, "%s.cups", file_basename);
+    file_debug = fopen(filename_cups_debug, "w");
+
+    /* Check that file handle opened. */
+    if (!file_debug) {
+      // FIXME: Prefix with ERROR:
+      perror(filename_cups_debug);
+      return 1;
     }
 
-    FILE *fp;
-    if (argc == 6) {
-        fp = stdin;
-    } else {
-        // Try to open the print file...
-        if ((fp = fopen(argv[6], "rb")) == NULL) {
-            perror("ERROR: unable to open print file - ");
-            return 1;
-        }
-    }
-
-    const char *jobid = argv[1];
-    const char *user = argv[2];
-    const char *title = argv[3];
-    // FIXME: Should we handle copies? I think so since we don't output Postscript
-    const char *copies = argv[4];
-    const char *options = argv[5];
-
-    init_laser_config(&lconf);
-
-    /** The printer hostname. */
-    static char *host = "";
-
-    /* Strings designating filenames. */
-    char file_basename[FILENAME_NCHARS];
-    char filename_bitmap[FILENAME_NCHARS];
-    char filename_cups_debug[FILENAME_NCHARS];
-    char filename_eps[FILENAME_NCHARS];
-    char filename_vector[FILENAME_NCHARS];
-
-    /* File handles. */
-    FILE *file_debug;
-    FILE *file_bitmap;
-    FILE *file_eps;
-    FILE *file_cups;
-
-    /* Temporary variables. */
+    /* Write cups data to the filesystem. */
     int l;
-
-    /* Gather the site information from the user's environment variable. */
-    device_uri = getenv("DEVICE_URI");
-    if (!device_uri) {
-        fprintf(stderr, "ERROR: No $DEVICE_URI set\n");
-        return 0;
+    while ((l = fread(buf, 1, sizeof(buf), file_cups)) > 0) {
+      fwrite(buf, 1, l, file_debug);
     }
-    host = strstr(device_uri, "//");
-    if (!host) {
-        fprintf(stderr, "ERRROR: URI syntax epilog://host/queuename\n");
-        return 0;
-    }
-    host += 2;
-
-    process_print_job_options(options, &lconf);
-
-    /* Perform a check over the global values to ensure that they have values
-     * that are within a tolerated range.
+    fclose(file_debug);
+    /* In case file_cups pointed to stdin we close the existing file handle
+     * and switch over to using the debug file handle.
      */
-    range_checks();
+    fclose(file_cups);
+    file_cups = fopen(filename_cups_debug, "r");
+  }
 
-    /* Determine and set the names of all files that will be manipulated by the
-     * program.
-     */
-    sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
-    sprintf(filename_bitmap, "%s.bmp", file_basename);
-    sprintf(filename_eps, "%s.eps", file_basename);
-    sprintf(filename_vector, "%s.vector", file_basename);
+  /* Open the encapsulated postscript file for writing. */
+  file_eps = fopen(filename_eps, "w");
+  if (!file_eps) {
+    // FIXME: Prefix with ERROR:
+    perror(filename_eps);
+    return 1;
+  }
 
-    /* Gather the postscript file from either standard input or a filename
-     * specified as a command line argument.
-     */
-    if (argc > 6) {
-        file_cups = fopen(argv[6], "r");
-    } else {
-        file_cups = stdin;
-    }
-    if (!file_cups) {
-        // FIXME: Prefix with ERROR:
-        perror((argc > 6) ? argv[6] : "stdin");
-        return 1;
-    }
-
-    /* Write out the incoming cups data if debug is enabled. */
-    if (debug) {
-        /* We save the incoming cups data to the filesystem. */
-        sprintf(filename_cups_debug, "%s.cups", file_basename);
-        file_debug = fopen(filename_cups_debug, "w");
-
-        /* Check that file handle opened. */
-        if (!file_debug) {
-            // FIXME: Prefix with ERROR:
-            perror(filename_cups_debug);
-            return 1;
-        }
-
-        /* Write cups data to the filesystem. */
-        while ((l = fread(buf, 1, sizeof(buf), file_cups)) > 0) {
-            fwrite(buf, 1, l, file_debug);
-        }
-        fclose(file_debug);
-        /* In case file_cups pointed to stdin we close the existing file handle
-         * and switch over to using the debug file handle.
-         */
-        fclose(file_cups);
-        file_cups = fopen(filename_cups_debug, "r");
-    }
-
-    /* Open the encapsulated postscript file for writing. */
-    file_eps = fopen(filename_eps, "w");
-    if (!file_eps) {
-        // FIXME: Prefix with ERROR:
-        perror(filename_eps);
-        return 1;
-    }
-    /* Convert postscript to encapsulated postscript. */
-    if (!ps_to_eps(&lconf, file_cups, file_eps)) {
-        perror("ERROR: ps_to_eps failed - ");
-        fclose(file_eps);
-        return 1;
-    }
-    /* Cleanup after encapsulated postscript creation. */
+  /* Convert PS to EPS (for vector extraction) */
+  if (!ps_to_eps(&lconf, file_cups, file_eps)) {
+    perror("ERROR: ps_to_eps failed - ");
     fclose(file_eps);
-    if (file_cups != stdin) {
-        fclose(file_cups);
+    return 1;
+  }
+  /* Cleanup after encapsulated postscript creation. */
+  fclose(file_eps);
+  if (file_cups != stdin) {
+    fclose(file_cups);
+  }
+
+  const char *rm;
+
+  if (lconf.raster_mode == 'c')
+    rm = "bmp16m";
+  else if (lconf.raster_mode == 'g')
+    rm = "bmpgray";
+  else
+    rm = "bmpmono";
+
+  if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector,
+                           rm, lconf.resolution, lconf.height, lconf.width)) {
+    perror("ERROR: ghostscript failed -");
+    return 1;
+  }
+
+  VectorPass *vpass = VectorPass::createFromFile(filename_vector);
+  //Raster ignored at the moment
+  //  RasterPass *rpass = RasterPass::createFromFile(filename_bitmap);
+  LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
+  job.addPass(vpass);
+  //  job.addPass(rpass);
+
+
+  /* Cleanup unneeded files provided that debug mode is disabled. */
+  if (!debug) {
+    if (unlink(filename_bitmap)) {
+      // FIXME: Prefix with ERROR:
+      perror(filename_bitmap);
     }
-
-    const char *rm;
-
-    if (lconf.raster_mode == 'c')
-        rm = "bmp16m";
-    else if (lconf.raster_mode == 'g')
-        rm = "bmpgray";
-    else
-        rm = "bmpmono";
-
-    if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector,
-            rm, lconf.resolution, lconf.height, lconf.width)) {
-        perror("ERROR: ghostscript failed -");
-        return 1;
+    if (unlink(filename_eps)) {
+      // FIXME: Prefix with ERROR:
+      perror(filename_eps);
     }
-
-
-    VectorPass *vpass = loadVectorPass(filename_vector);
-    //Raster ignored at the moment
-    RasterPass *rpass = loadRasterPass(filename_bitmap);
-    LaserJob job(&lconf, user, jobid, title);
-    job.addPass(vpass);
-    job.addPass(rpass);
-
-
-    /* Cleanup unneeded files provided that debug mode is disabled. */
-    if (!debug) {
-        if (unlink(filename_bitmap)) {
-            // FIXME: Prefix with ERROR:
-            perror(filename_bitmap);
-        }
-        if (unlink(filename_eps)) {
-            // FIXME: Prefix with ERROR:
-            perror(filename_eps);
-        }
-        if (unlink(filename_vector)) {
-            // FIXME: Prefix with ERROR:
-            perror(filename_vector);
-        }
+    if (unlink(filename_vector)) {
+      // FIXME: Prefix with ERROR:
+      perror(filename_vector);
     }
+  }
 
-    Driver drv;
-    drv.process(&job);
-    clock_t end = clock() - start;
-    cerr << endl << "Clocks: " << end << endl;
-    cerr << "Seconds: " << end / CLOCKS_PER_SEC << endl;
-    return 0;
+  Driver drv;
+  drv.process(&job);
+  clock_t end = clock() - start;
+  cerr << endl << "Clocks: " << end << endl;
+  cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;
+  return 0;
 }

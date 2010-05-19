@@ -11,16 +11,16 @@
 #include "Filter.h"
 
 class TPFilter: public RasterFilter {
-private:
+ private:
 
-public:
-	TPFilter() {
-		this->provides.insert(TP_FILTER_ID);
-		this->postFilters.insert(TA_FILTER_ID);
-	}
+ public:
+  TPFilter() {
+    this->provides.insert(TP_FILTER_ID);
+    this->postFilters.insert(TA_FILTER_ID);
+  }
 
-	virtual ~TPFilter(){}
-	virtual void filter(RasterPass* rpass);
+  virtual ~TPFilter(){}
+  virtual void filter(RasterPass* rpass);
 };
 
 #endif /* TPFILTER_H_ */

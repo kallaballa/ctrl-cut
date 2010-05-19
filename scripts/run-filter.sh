@@ -1,11 +1,19 @@
 #!/bin/sh
 
+<<<<<<< HEAD
 filter=./EpilogFilter
 if [ $# != 1 ]; then
   echo "Usage: $0 ps-file"
   exit 1
 fi
 file=$1
+=======
+if [ $# == 0 ]; then
+  filter=./EpilogFilter
+else
+  filter=$1
+fi
+>>>>>>> Refactor batch - general cleaning, coding style etc.
 
 export CHARSET=utf-8
 export CONTENT_TYPE=application/pdf

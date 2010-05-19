@@ -59,16 +59,16 @@ void Joint::setX(int x, bool update) {
 }
 
 void Joint::setY(int y, bool update) {
-    this->y = y;
-    if (update)
-        updateKey();
+  this->y = y;
+  if (update)
+    updateKey();
 }
 
 std::string Joint::getKey() {
-    return key;
+  return key;
 }
 
 bool Joint::equals(Joint *other) {
-    return x == other->x && y == other->y;
+  return x == other->x && y == other->y;
 }
 

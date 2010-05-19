@@ -14,41 +14,41 @@
 #include <sstream>
 
 Driver::Driver() {
-	// TODO Auto-generated constructor stub
+  // TODO Auto-generated constructor stub
 
 }
 
 Driver::~Driver() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 void Driver::filter(LaserJob *job) {
-	FilterChain fc;
+  FilterChain fc;
 
-	if (!fc.evaluate()) {
-		std::cerr << "Filter chain evaluation failed" << endl;
-	}
+  if (!fc.evaluate()) {
+    std::cerr << "Filter chain evaluation failed" << endl;
+  }
 
-	LaserPassList &passes = job->getPasses();
+  LaserPassList &passes = job->getPasses();
 
-	LaserPassList::iterator it;
-	VectorPass *vpass;
-	RasterPass *rpass;
+  LaserPassList::iterator it;
+  VectorPass *vpass;
+  RasterPass *rpass;
 
-	for (it = passes.begin(); it != passes.end(); it++) {
-		if ((vpass = dynamic_cast<VectorPass*> (*it)))
-			fc.filterVectorPass(vpass);
-	/*	else if ((rpass = dynamic_cast<RasterPass*> (*it)))
-			fc.filterRasterPass(rpass);*/
-	}
+  for (it = passes.begin(); it != passes.end(); it++) {
+    if ((vpass = dynamic_cast<VectorPass*> (*it)))
+      fc.filterVectorPass(vpass);
+//     else if ((rpass = dynamic_cast<RasterPass*> (*it)))
+//       fc.filterRasterPass(rpass);
+   }
 }
 
 void Driver::process(LaserJob *job) {
-	filter(job);
-	stringstream ss;
-	job->serializeTo(ss);
-	cerr << ss.str().size();
-	ofstream out("/tmp/job.dump");
-	out << ss.rdbuf();
-	out.close();
+  filter(job);
+  stringstream ss;
+  job->serializeTo(ss);
+  cerr << ss.str().size();
+  ofstream out("/tmp/job.dump");
+  out << ss.rdbuf();
+  out.close();
 }

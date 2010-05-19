@@ -15,54 +15,54 @@
 
 
 SplitIntersectionsFilter::~SplitIntersectionsFilter() {
-	// TODO Auto-generated destructor stub
+  // TODO Auto-generated destructor stub
 }
 
 void SplitIntersectionsFilter::filter(VectorPass* vpass){
-    std::cerr << "Split" << std::endl;
-	Joint *intersec = NULL;
-    LineSegment *ls1, *ls2;
+  std::cerr << "Split" << std::endl;
+  Joint *intersec = NULL;
+  LineSegment *ls1, *ls2;
 
-    list<LineSegment*>::iterator it_i;
-    list<LineSegment*>::iterator it_j;
-    size_t  numLines = vpass->lines.size();
-    unsigned int  percent = numLines / 100;
-    unsigned int  cntLines = 0;
-    for (it_i = vpass->lines.begin(); it_i != vpass->lines.end(); it_i++) {
-    	if(cntLines % percent == 0)
-    		std::cerr << cntLines / percent << std::endl;
-    	cntLines++;
-        for (it_j = vpass->lines.begin(); it_j != vpass->lines.end(); it_j++) {
-            ls2 = *it_j;
-            ls1 = *it_i;
+  list<LineSegment*>::iterator it_i;
+  list<LineSegment*>::iterator it_j;
 
-            if (it_i == vpass->lines.end())
-                break;
+  size_t  numLines = vpass->lines.size();
+  unsigned int  percent = numLines / 100;
+  unsigned int  cntLines = 0;
+  for (it_i = vpass->lines.begin(); it_i != vpass->lines.end(); it_i++) {
+    if (cntLines % percent == 0) std::cerr << cntLines / percent << std::endl;
+    cntLines++;
+    for (it_j = vpass->lines.begin(); it_j != vpass->lines.end(); it_j++) {
+      ls2 = *it_j;
+      ls1 = *it_i;
 
-            if (ls1 == ls2)
-                continue;
+      if (it_i == vpass->lines.end())
+        break;
 
-            if ((intersec = ls1->intersects(ls2)) != NULL) {
-                intersec = vpass->addJoint(intersec);
+      if (ls1 == ls2)
+        continue;
 
-                if (!ls1->getStart()->equals(intersec)
-                        && !ls1->getEnd()->equals(intersec)) {
-                    it_i = vpass->eraseLine(it_i);
-                    vpass->addLine((Joint*) ls1->getStart(), intersec,
-                            ls1->getPower());
-                    vpass->addLine((Joint*) ls1->getEnd(), intersec,
-                            ls1->getPower());
-                }
+      if ((intersec = ls1->intersects(ls2)) != NULL) {
+        intersec = vpass->addJoint(intersec);
 
-                if (!ls2->getStart()->equals(intersec)
-                        && !ls2->getEnd()->equals(intersec)) {
-                    it_j = vpass->eraseLine(it_j);
-                    vpass->addLine((Joint*) ls2->getStart(), intersec,
-                            ls2->getPower());
-                    vpass->addLine((Joint*) ls2->getEnd(), intersec,
-                            ls2->getPower());
-                }
-            }
+        if (!ls1->getStart()->equals(intersec)
+            && !ls1->getEnd()->equals(intersec)) {
+          it_i = vpass->eraseLine(it_i);
+          vpass->addLine((Joint*) ls1->getStart(), intersec,
+                         ls1->getPower());
+          vpass->addLine((Joint*) ls1->getEnd(), intersec,
+                         ls1->getPower());
         }
+
+        if (!ls2->getStart()->equals(intersec)
+            && !ls2->getEnd()->equals(intersec)) {
+          it_j = vpass->eraseLine(it_j);
+          vpass->addLine((Joint*) ls2->getStart(), intersec,
+                         ls2->getPower());
+          vpass->addLine((Joint*) ls2->getEnd(), intersec,
+                         ls2->getPower());
+        }
+      }
     }
+  }
 }
