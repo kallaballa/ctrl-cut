@@ -1,0 +1,122 @@
+# This is just a standard file printer for capturing raw data
+<Printer metapostscript>
+Info metapostscript
+Location virtual
+DeviceURI file:/tmp/metapostscript.ps
+State Idle
+StateTime 1256501509
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+<Printer lazzzor-capture>
+Info lazzzor-capture
+Location virtual
+DeviceURI file:/tmp/capture.prn
+State Idle
+StateTime 1256512338
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+<Printer passthrough>
+Info passthrough
+Location virtual
+DeviceURI file:/tmp/passthrough.ps
+State Idle
+StateTime 1256501509
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+<Printer Epilog-new>
+Info Epilog-new
+Location Whateverlab
+DeviceURI file:///tmp/epilog-new.prn
+State Stopped
+StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/EpilogFilter" for printer "Epilog-new" not available: No such file or directory
+StateTime 1264077108
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+
+
+
+
+<Printer Lazzzor>
+Info Lazzzor
+Location Whateverlab
+DeviceURI lpd://10.20.30.27/
+State Idle
+StateTime 1256335916
+Accepting Yes
+Shared No
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+
+
+<Printer lazzzor-filter>
+Info lazzzor-filter
+Location Whateverlab
+DeviceURI lpd://10.20.30.27/
+State Stopped
+StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/EpilogFilter" for printer "lazzzor-filter" not available: No such file or directory
+StateTime 1264077109
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
+
+
+
+<Printer lpd-forward>
+Info lazzzor-forward
+Location virtual
+DeviceURI lpd://10.20.30.27/
+State Idle
+StateTime 1256512338
+Accepting Yes
+Shared Yes
+JobSheets none none
+QuotaPeriod 0
+PageLimit 0
+KLimit 0
+OpPolicy default
+ErrorPolicy stop-printer
+</Printer>
