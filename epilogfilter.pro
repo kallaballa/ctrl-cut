@@ -30,7 +30,8 @@ SOURCES = \
           src/TilePartitioner.cpp \
           src/TPFilter.cpp \
           src/VectorPass.cpp \
-          src/laser_config.cpp
+          src/laser_config.cpp \
+          src/eps_converter.cpp
 
 HEADERS = \
           src/CImg.h \
@@ -43,6 +44,7 @@ HEADERS = \
           src/Joint.h \
           src/Laser.h \
           src/laser_config.h \
+          src/eps_converter.h \
           src/LaserJob.h \
           src/LaserPass.h \
           src/VectorPass.h \
