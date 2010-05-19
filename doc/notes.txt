@@ -13,21 +13,24 @@ Display raw Epilog driver output:
   pcl6 -Zi -PRTL -sDEVICE=pdfwrite -sOutputFile=filtered.pdf filtered.prn 
 
 Convert from postscript to custom vector output (only works with red vectors atm.):
-  # This is to fix a problem when exporting from Corel Draw; red is not exported as pure red
-  sed -ie "s/1\.00 0\.00 0\.99 0\.95 0\.00 null/1.00 0.00 1.00 1.00 0.00 null/" test-data/corel/test_xpos_mm.ps
   test-code/ps_to_eps ps-file > eps-file
   gs -sDEVICE=nullpage -q -dBATCH -dNOPAUSE -r600 -g21600x14400 eps-file
 
 Convert from postscript to bitmap output (removes all red vectors atm.):
-  # This is to fix a problem when exporting from Corel Draw; red is not exported as pure red
-  sed -ie "s/1\.00 0\.00 0\.99 0\.95 0\.00 null/1.00 0.00 1.00 1.00 0.00 null/" test-data/corel/test_xpos_mm.ps
   test-code/ps_to_eps ps-file > eps-file
   gs -sDEVICE=bmpgray -sOutputFile=out.bmp -q -dBATCH -dNOPAUSE -r600 -g21600x14400 circle.eps
 
 How to create a test case in Corel Draw:
 o Draw shape as normal for laser cutting
 o Save corel draw file -> copy to test-data/corel/ as .cdr
-o Print as "Device Independent PostScript File" -> copy to test-data/corel/ as .ps
+o Print to file using "Generic PostScript Printer"
+  - NB! It's important to take note of the following!
+  - Printing to "Device Independent PostScript File" doesn't work
+  - The "Generic PostScript Printer" can be installed from here:
+    http://www.adobe.com/support/downloads/thankyou.jsp?ftpID=1500&fileID=1438
+  - Check "Use PPD" -> Use etc/ppd/EpilogPostscript.ppd
+  - Uncheck "Misc->Apply ICC profile"
+  - copy to test-data/corel/ as .ps
 o Print to file using Epilog driver (or to lazzzor-capture printer) -> copy to test-data/corel/ as .prn
 
 Env. variables:
