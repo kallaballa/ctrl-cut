@@ -26,7 +26,6 @@ PCL standard:
 *rC                   End Raster Graphics
 
 Unknown:
-*p and *b cmds
 *r#A
 
 HPGL commands:
