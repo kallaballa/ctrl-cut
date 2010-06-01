@@ -53,3 +53,8 @@ http://www.cups.org/documentation.php/doc-1.4/man-filter.html
  SOFTWARE
  TZ
  USER
+
+Glossary:
+
+RTL     - HP's Raster Transfer Language. Subset of PCL, often mixed with HP/GL2
+HP-GL/2 - Update of the original HP-GL language
