@@ -29,13 +29,13 @@ def handleXR(freq):
 
 def handlePU(pos):
     if verbose: print "PU " + pos
-    global currpos
+    global currpos, startpos
     if "strokelist" in globals() and strokelist != None:
         if verbose: print("new stroke")
         strokestr = startpos + " "
         for p in strokelist:
             strokestr += "%s,%s " % (p[0], p[1])
-#        if verbose: print(strokestr)
+        if verbose: print(strokestr)
         b = builders.ShapeBuilder()
         pl = b.createPolyline(strokestr)
         mySVG.addElement(pl)
@@ -43,19 +43,24 @@ def handlePU(pos):
 #        startpos = parsePosition(pos)
         currpos = pos
 #        print "Currpos: " + str(startpos)
+    startpos = None
 
 def handleLTPU(pos):
     if verbose: print "LT " + pos,
     handlePU(pos)
 
 def handlePD(pointstr):
-    if verbose: print "PD " + pointstr[0:30] + " ..."
+    if verbose: 
+        print "PD " + pointstr[0:30],
+        if len(pointstr) > 30: print "..."
+        else: print
     global startpos
     startpos = currpos
     coordlist = pointstr.split(',')
     # Group each pair of coordinates
     global strokelist
     strokelist = list(itertools.izip(*[itertools.islice(coordlist, i, None, 2) for i in range(2)]))
+    # FIXME: We don't support subsequent PD commands without a PU in between
 
 # Returns a list with position [x,y]
 def parsePosition(pos):
@@ -108,7 +113,7 @@ if __name__ == "__main__":
 
     if verbose: print "Processing " + rtlfile + "..."
     global mySVG
-    mySVG = structure.svg(rtlfile)
+    mySVG = structure.svg(rtlfile, height=21600, width=14400)
 
     f = open(rtlfile, "rb")
     buffer = f.read()
