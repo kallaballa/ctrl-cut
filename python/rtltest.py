@@ -35,7 +35,7 @@ def handlePU(pos):
         strokestr = startpos + " "
         for p in strokelist:
             strokestr += "%s,%s " % (p[0], p[1])
-        if verbose: print(strokestr)
+#        if verbose: print(strokestr)
         b = builders.ShapeBuilder()
         pl = b.createPolyline(strokestr)
         mySVG.addElement(pl)
@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     if verbose: print "Processing " + rtlfile + "..."
     global mySVG
-    mySVG = structure.svg(rtlfile, height=21600, width=14400)
+    mySVG = structure.svg(rtlfile, width=21600, height=14400)
 
     f = open(rtlfile, "rb")
     buffer = f.read()
