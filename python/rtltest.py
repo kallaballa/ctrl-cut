@@ -9,41 +9,49 @@
 import os
 import re
 import sys
+import getopt
+import itertools
 from pysvg import structure
 from pysvg import shape
 from pysvg import builders
-import itertools
 
 def handleYP(power):
-    print "YP " + power
+    if verbose: print "YP " + power
+    pass
 
 def handleZS(speed):
-    print "ZS " + speed
+    if verbose: print "ZS " + speed
+    pass
 
 def handleXR(freq):
-    print "XR " + freq
+    if verbose: print "XR " + freq
+    pass
 
 def handlePU(pos):
-    print "PU " + pos
+    if verbose: print "PU " + pos
+    global currpos
     if "strokelist" in globals() and strokelist != None:
+        if verbose: print("new stroke")
         strokestr = startpos + " "
         for p in strokelist:
             strokestr += "%s,%s " % (p[0], p[1])
+#        if verbose: print(strokestr)
         b = builders.ShapeBuilder()
         pl = b.createPolyline(strokestr)
         mySVG.addElement(pl)
     if len(pos) > 0:
-        global startpos
 #        startpos = parsePosition(pos)
-        startpos = pos
+        currpos = pos
 #        print "Currpos: " + str(startpos)
 
 def handleLTPU(pos):
-    print "LT",
-    handlePU(pos[2:])
+    if verbose: print "LT " + pos,
+    handlePU(pos)
 
 def handlePD(pointstr):
-    print "PD " + pointstr[0:30] + " ..."
+    if verbose: print "PD " + pointstr[0:30] + " ..."
+    global startpos
+    startpos = currpos
     coordlist = pointstr.split(',')
     # Group each pair of coordinates
     global strokelist
@@ -59,6 +67,12 @@ def parsePointlist(pointlist):
 
 def parseCommand(buffer, pos, end):
     # Extract the command and args
+    if verbose:
+        pend = end
+        if end - pos > 30: pend = pos + 30
+        if verbose: print "cmd: " + buffer[pos:pend],
+        if end - pos > 30: print "..."
+        else: print
     ro = re.compile("([a-zA-Z]+)([0-9,]*);")
     m = ro.match(buffer, pos, end+1)
 
@@ -71,13 +85,28 @@ def parseCommand(buffer, pos, end):
 
 def usage():
     print >> sys.stderr, "Usage: " + sys.argv[0] + " <prn-file>"
-    sys.exit(1)
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2: usage()
-    rtlfile = sys.argv[1]
-    print "Processing " + rtlfile + "..."
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "v", ["verbose"])
+    except getopt.GetoptError, err:
+        usage()
+        sys.exit(2)
+
+    if len(args) != 1:
+        usage()
+        sys.exit(2)
+
+    global verbose
+    verbose = False
+
+    for o, a in opts:
+        if o in ("-v", "--verbose"): verbose = True
+
+    rtlfile = args[0]
+
+    if verbose: print "Processing " + rtlfile + "..."
     global mySVG
     mySVG = structure.svg(rtlfile)
 
