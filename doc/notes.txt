@@ -31,7 +31,14 @@ o Print to file using "Generic PostScript Printer"
   - Check "Use PPD" -> Use etc/ppd/EpilogPostscript.ppd
   - Uncheck "Misc->Apply ICC profile"
   - copy to test-data/corel/ as .ps
-o Print to file using Epilog driver (or to lazzzor-capture printer) -> copy to test-data/corel/ as .prn
+o Print to file using Epilog driver (or to lazzzor-capture printer)
+o Settings:
+  - Auto Focus on
+  - Vector speed = 33
+  - Vector power = 80
+  - Vector freq = 1053
+  - Vector Sorting on
+o copy to test-data/corel/ as .prn
 
 Env. variables:
 http://www.cups.org/documentation.php/doc-1.4/man-filter.html
