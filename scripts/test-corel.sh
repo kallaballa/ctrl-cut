@@ -1,16 +1,32 @@
 #!/bin/bash
 
-echo "Running tests"
-srcdir=test-data/corel
-for f in $srcdir/*.ps; do
-  testcase=`basename $f .ps`
+#set -x 
+
+function runtest {
+  testcase=`basename $1 .ps`
   echo -n "*$testcase...."
   outfile=test-data/corel/$testcase.raw
-  scripts/run-filter.sh $f > $outfile 2> $testcase.log
+  scripts/run-filter.sh $1 > $outfile 2> $testcase.log
   diff -a $srcdir/$testcase.prn $outfile >> $testcase.log
-  if [ $? ]; then
-    echo Failed
-  else
+  if [ $? == 0 ]; then
     echo OK
+  else
+    echo Failed
   fi
-done
+}
+
+if [ $# -gt 1 ]; then
+  echo "Usage: $0 [ps-file]"
+  exit 1
+fi
+
+if [ $# == 1 ]; then
+  srcdir=`dirname $1`
+  runtest $1
+else
+  echo "Running tests"
+  srcdir=test-data/corel
+  for f in $srcdir/*.ps; do
+    runtest $f
+  done
+fi
