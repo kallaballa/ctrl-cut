@@ -51,13 +51,13 @@ bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file)
       }
     }
     if (!strncasecmp((char *) buf, "%!", 2)) {
-      fprintf(
-              eps_file,
-              "/==={(        )cvs print}def/stroke{currentrgbcolor 0.0 \
-eq exch 0.0 eq and exch 0.0 ne and{(P)=== currentrgbcolor pop pop 100 mul \
-round  cvi = flattenpath{transform(M)=== 1 sub round cvi ===(,)=== 1 sub round cvi \
-=}{transform(L)=== 1 sub round cvi ===(,)=== 1 sub round cvi =}{}{(C)=}pathforall \
-newpath}{stroke}ifelse}bind def/showpage{(X)= showpage}bind def\n");
+      fprintf(eps_file,
+              "/==={(        )cvs print}def/stroke{currentlinewidth matrix "
+              "currentmatrix 0 get mul 5 lt {(P)=== currentrgbcolor pop pop 100 mul "
+              "round  cvi = flattenpath{transform(M)=== 1 sub round cvi ===(,)=== 1 "
+              "sub round cvi =}{transform(L)=== 1 sub round cvi ===(,)=== 1 sub round "
+              "cvi =}{}{(C)=}pathforall newpath}{stroke}ifelse}bind def/showpage{(X)= "
+              "showpage}bind def\n");
       if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
         if (lconf->screen == 0) {
           fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
