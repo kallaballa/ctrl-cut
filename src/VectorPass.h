@@ -21,6 +21,8 @@ class VectorPass : public LaserPass
   OnionSkinVector skins;
   Joint* addJoint(Joint* p);
   LineSegmentList::iterator eraseLine(LineSegmentList::iterator it_ls);
+
+  bool wasClipped() const { return this->clipped; }
   
   // Print debug info
   void print(ostream &stream);
@@ -29,8 +31,10 @@ class VectorPass : public LaserPass
   //TODO: super inefficent string based key comparator
   typedef std::map<string, class Joint *> JointMap;
   JointMap joints;
+
+  bool clipped;
   
-  VectorPass() { }
+ VectorPass() : clipped(false) { }
   VectorPass(pass_params params) : LaserPass(params) { }
   virtual ~VectorPass() { }
 };

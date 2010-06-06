@@ -92,15 +92,23 @@ void LaserJob::serializeTo(ostream &out) {
 
     /* seems to be obsolete, but windows driver does it*/
     out << format(R_COMPRESSION) % 2;
+
+    // FIXME: This is to emulate the LT bug in the Epilog drivers:
+    // Check if any clipping has been done in any of the passes, and
+    // inject the stray "LT" string. This has no function, just for bug compatibility
+    // of the output files. See corresponding FIXME in LaserJob.cpp.
+    for (LaserPassList::iterator it = passes.begin(); it != passes.end(); it++) {
+      VectorPass *vpass = dynamic_cast<VectorPass*> (*it);
+      if (vpass && vpass->wasClipped()) out << "LT";
+    }
+
     out << PCL_SECTION_END;
 
     /* We're going to perform a vector print. */
     LaserPassList &passes = this->getPasses();
 
-    LaserPassList::iterator it;
-    VectorPass *vpass;
-    for (it = passes.begin(); it != passes.end(); it++) {
-      vpass = dynamic_cast<VectorPass*> (*it);
+    for (LaserPassList::iterator it = passes.begin(); it != passes.end(); it++) {
+      VectorPass *vpass = dynamic_cast<VectorPass*> (*it);
       if (vpass) {
         vpass->serializeTo(out);
       }

@@ -124,12 +124,15 @@ PJL_STRING(V_SPEED, "ZS%03d");
  * **/
 
 /**
- * Pen up. This command doesn't conform to PCL/HPGL and is only used
- * on the first issue of PU in a job. There seems to be no difference
- * to using the standard command also for the first issue, so I use it
- * only because the windows driver does.
+ * Line Type
+ * NB! The Windows driver inserts a Line Type without a parameter or
+ * command terminator before the first Pen Up command. This doesn't
+ * conform to PCL/HPGL and is only used on the first issue of PU in a
+ * job. There seems to be no difference to using the standard command
+ * also for the first issue, so I use it only because the windows
+ * driver does.
  */
-PJL_STRING(HPGL_PEN_UP_INIT, "LTPU");
+PJL_STRING(HPGL_LINE_TYPE, "LT");
 
 /* Pen up */
 PJL_STRING(HPGL_PEN_UP, "PU");

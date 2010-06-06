@@ -78,6 +78,23 @@ VectorPass *VectorPass::createFromFile(const string &filename)
 */
 void VectorPass::addLine(Joint *start, Joint *end, int power)
 {
+  // FIXME: Clip against page size
+  if (start->getX() < 0 || start->getY() < 0 ||
+      end->getX() < 0 || end->getY() < 0) {
+
+    if (start->getX() < 0) start->setX(0);
+    if (start->getY() < 0) start->setY(0);
+    if (end->getX() < 0) end->setX(0);
+    if (end->getY() < 0) end->setY(0);
+
+    // FIXME: The Windows driver subtracts 1 point from the X
+    // coordinate of the end of any line segment which is
+    // clipped. Strange, but let's follow suit for now.
+    end->setX(end->getX()-1);
+
+    this->clipped = true;
+  }
+
   LineSegment *ls = new LineSegment(start, end, power);
 
   start = addJoint(start);
@@ -223,20 +240,28 @@ void VectorPass::serializeTo(ostream &out)
     int endX = this->lconf->basex + ls->getEnd()->getX() + HPGLX;
     int endY = this->lconf->basey + ls->getEnd()->getY() + HPGLY;
     
-    if (beginX < 0) {
-      beginX = startX;
-      beginY = startY;
-    }
+//     if (beginX < 0) {
+//       beginX = startX;
+//       beginY = startY;
+//     }
 
     // After a power change, always issue a PU, even if the current
     // coordinate doesn't change.
     if (lastX != startX || lastY != startY || lastPower != power) {
       if (first) {
-        out << HPGL_PEN_UP_INIT;
+        // FIXME: This is to emulate the LT bug in the Epilog drivers:
+        // Check if any clipping has been done in any of the passes, and
+        // inject the stray "LT" string. This has no function, just for bug compatibility
+        // of the output files. See corresponding FIXME in LaserJob.cpp.
+        if (!this->wasClipped()) out << HPGL_LINE_TYPE;
         first = false;
-      } else {
-        out << HPGL_PEN_UP;
       }
+      else {
+        out << SEP;
+      }
+      out << HPGL_PEN_UP;
+      beginX = startX;
+      beginY = startY;
       out << format("%d,%d") % startX % startY << SEP;
       out << HPGL_PEN_DOWN << format("%d,%d") % endX % endY;
       writingPolyline = true;
@@ -249,14 +274,13 @@ void VectorPass::serializeTo(ostream &out)
     lastX = endX;
     lastY = endY;
     lastPower = power;
-  }
 
-  // FIXME: This is a temporary hack to emulate the Epilog Windows driver,
-  // which appears to repeat the first vertex in a closed polyline twice at the end.
-  if (beginX >= 0) {
-    out << format(",%d,%d") % beginX % beginY;
+    // FIXME: This is a temporary hack to emulate the Epilog Windows driver,
+    // which appears to repeat the first vertex in a closed polyline twice at the end.
+    if (beginX == lastX && beginY == lastY) {
+      out << format(",%d,%d") % beginX % beginY;
+    }
   }
-
 
   out << SEP << HPGL_END << PCL_SECTION_END << HPGL_PEN_UP;
 }
