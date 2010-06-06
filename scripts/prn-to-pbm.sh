@@ -6,7 +6,7 @@ if [ $# != 1 ]; then
 fi
 file=$1
 
-python/rtltest.py $file
-basefile=`dirname $file`/`basename $file .prn`
-svg2pdf $basefile.svg $basefile.pdf
-pdftoppm -q -r 36 -mono $basefile.pdf $basefile
+python/rtltest.py $file $file.svg
+svg2pdf $file.svg $file.pdf
+pdftoppm -q -r 12 -mono $file.pdf tmpfile 2>/dev/null
+mv tmpfile-000001.pbm $file.pbm
