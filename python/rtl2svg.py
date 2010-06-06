@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Test script for converting the vector parts of Epilog binary prn files
+# Script for converting the vector parts of Epilog binary prn files
 # (actually RTL files) to SVG.
 #
 #
@@ -27,22 +27,28 @@ def handleXR(freq):
     if verbose: print "XR " + freq
     pass
 
+def expandBBox(x, y):
+    global bbox
+    if x < bbox[0][0]: bbox[0][0] = x
+    if x > bbox[1][0]: bbox[1][0] = x
+    if y < bbox[0][1]: bbox[0][1] = y
+    if y > bbox[1][1]: bbox[1][1] = y
+
 def handlePU(pos):
     if verbose: print "PU " + pos
-    global currpos, startpos
+    global currpos, startpos, bbox
     if "strokelist" in globals() and strokelist != None:
         if verbose: print("new stroke")
-        strokestr = startpos + " "
+        strokelist.insert(0, startpos)
+        strokestr = ""
         for p in strokelist:
+            expandBBox(int(p[0]), int(p[1]))
             strokestr += "%s,%s " % (p[0], p[1])
 #        if verbose: print(strokestr)
         b = builders.ShapeBuilder()
         pl = b.createPolyline(strokestr)
         mySVG.addElement(pl)
-    if len(pos) > 0:
-#        startpos = parsePosition(pos)
-        currpos = pos
-#        print "Currpos: " + str(startpos)
+    if len(pos) > 0: currpos = parsePosition(pos)
     startpos = None
 
 def handleLTPU(pos):
@@ -89,12 +95,15 @@ def parseCommand(buffer, pos, end):
         print "Error: Unknown command '" + m.group(1) + "'"
 
 def usage():
-    print >> sys.stderr, "Usage: " + sys.argv[0] + " <prn-file> [<svg-file>]"
+    print >> sys.stderr, "Usage: " + sys.argv[0] + " [<options>] <prn-file> [<svg-file>]"
+    print >> sys.stderr, "Options:"
+    print >> sys.stderr, "  -v           Verbose"
+    print >> sys.stderr, "  -c           Crop result"
 
 if __name__ == "__main__":
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "v", ["verbose"])
+        opts, args = getopt.getopt(sys.argv[1:], "vc", ["verbose", "crop"])
     except getopt.GetoptError, err:
         usage()
         sys.exit(2)
@@ -103,11 +112,13 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
-    global verbose
+    global verbose, crop
     verbose = False
+    crop = False
 
     for o, a in opts:
         if o in ("-v", "--verbose"): verbose = True
+        elif o in ("-c", "--crop"): crop = True
 
     rtlfile = args[0]
     if len(args) == 2:
@@ -118,6 +129,8 @@ if __name__ == "__main__":
     if verbose: print "Processing " + rtlfile + "..."
     global mySVG
     mySVG = structure.svg(rtlfile, width=21600, height=14400)
+    global bbox
+    bbox = [[21600, 14400],[0, 0]]
 
     f = open(rtlfile, "rb")
     buffer = f.read()
@@ -141,6 +154,12 @@ if __name__ == "__main__":
 
     # Implicit PU when ending
     handlePU("");
+
+    if crop:
+        mySVG.set_preserveAspectRatio("xMidYMid meet")
+        mySVG.set_viewBox(" ".join(map(str, sum(bbox, []))))
+        mySVG.set_width(bbox[1][0]-bbox[0][0])
+        mySVG.set_height(bbox[1][1]-bbox[0][1])
 
     # Export svg to same position as input file
     mySVG.save(svgfile)
