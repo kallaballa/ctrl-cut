@@ -89,7 +89,7 @@ def parseCommand(buffer, pos, end):
         print "Error: Unknown command '" + m.group(1) + "'"
 
 def usage():
-    print >> sys.stderr, "Usage: " + sys.argv[0] + " <prn-file>"
+    print >> sys.stderr, "Usage: " + sys.argv[0] + " <prn-file> [<svg-file>]"
 
 if __name__ == "__main__":
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
-    if len(args) != 1:
+    if len(args) < 1 or len(args) > 2:
         usage()
         sys.exit(2)
 
@@ -110,6 +110,10 @@ if __name__ == "__main__":
         if o in ("-v", "--verbose"): verbose = True
 
     rtlfile = args[0]
+    if len(args) == 2:
+        svgfile = args[1]
+    else:
+        svgfile = os.path.splitext(rtlfile)[0]+".svg"
 
     if verbose: print "Processing " + rtlfile + "..."
     global mySVG
@@ -139,4 +143,4 @@ if __name__ == "__main__":
     handlePU("");
 
     # Export svg to same position as input file
-    mySVG.save(os.path.splitext(rtlfile)[0]+".svg")
+    mySVG.save(svgfile)
