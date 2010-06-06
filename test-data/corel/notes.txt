@@ -3,7 +3,11 @@ test_LT-bug:
 The Windows Epilog drivers has a bug which causes the "LT" which usually precedes the first PU command to be inserted into PCL instead of into HP-GL/2:
 ^[*b2MLT^[
 
-twolines:
+test_clip-coords:
+
+The Windows Epilog drivers has a bug which causes a polyline to have it's end X coordinate reduced by one point if it was clipped. This causes an otherwise continuous polyline to be chopped up, resulting in extra PU/PD commands.
+
+twolines, test_startcut, test_xpos, test_xpos_inches, test_xpos_mm:
 
 In this case, ghostscript will output the rightmost vector first,
 giving us a different output than the corel drivers.
