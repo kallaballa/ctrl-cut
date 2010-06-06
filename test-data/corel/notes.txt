@@ -1,0 +1,10 @@
+test_LT-bug:
+
+The Windows Epilog drivers has a bug which causes the "LT" which usually precedes the first PU command to be inserted into PCL instead of into HP-GL/2:
+^[*b2MLT^[
+
+twolines:
+
+In this case, ghostscript will output the rightmost vector first,
+giving us a different output than the corel drivers.
+
