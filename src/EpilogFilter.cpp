@@ -457,12 +457,14 @@ int main(int argc, char *argv[])
 
   const char *rm;
 
-  if (lconf.raster_mode == 'c')
-    rm = "bmp16m";
-  else if (lconf.raster_mode == 'g')
-    rm = "bmpgray";
-  else
-    rm = "bmpmono";
+//   if (lconf.raster_mode == 'c')
+//     rm = "bmp16m";
+//   else if (lconf.raster_mode == 'g')
+//     rm = "bmpgray";
+//   else
+//     rm = "bmpmono";
+// FIXME: While doing vector testing, set this to nullpage to speed up the gs run
+  rm = "nullpage";
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector,
                            rm, lconf.resolution, lconf.height, lconf.width)) {
