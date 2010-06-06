@@ -11,12 +11,20 @@ function runtest {
   if [ $? == 0 ]; then
     echo OK
   else
-    echo Failed
+    echo -n "binaries differ, comparing vectors..."
+    scripts/prn-to-pbm.sh $srcdir/$testcase.prn
+    scripts/prn-to-pbm.sh $outfile
+    errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.pbm $outfile.pbm`
+    if [ $? == 0 ]; then
+      echo OK
+    else
+      echo "Failed ($errorstr)"
+    fi
   fi
 }
 
 if [ $# -gt 1 ]; then
-  echo "Usage: $0 [ps-file]"
+  echo "Usage: $0 [ps-file]" 
   exit 1
 fi
 
