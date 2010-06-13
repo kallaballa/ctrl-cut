@@ -17,7 +17,10 @@ if [ $? -ne 0 ]; then
 else
   # Check if $pixelerror contains an integer (it sometimes outputs things like '0 @ 0,0')
   if [ $pixelerror -eq $pixelerror 2> /dev/null ]; then
-    echo "Pixel error: $pe"
+    if [ $pixelerror == 0 ]; then 
+      exit 0
+    fi
+    echo "Pixel error: $pixelerror"
   else
     echo "Pixel error: Err"
   fi
