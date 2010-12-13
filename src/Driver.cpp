@@ -1,40 +1,27 @@
 #include "Driver.h"
-#include "FilterChain.h"
 #include "LaserJob.h"
-#include "LaserPass.h"
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 Driver::Driver() {
-  // TODO Auto-generated constructor stub
+	// TODO Auto-generated constructor stub
 
 }
 
 Driver::~Driver() {
-  // TODO Auto-generated destructor stub
+	// TODO Auto-generated destructor stub
 }
 
-void Driver::filter(LaserJob *job)
-{
-  FilterChain fc;
+void Driver::filter(Cut *cut) {
+	/*list<Cut*> cuts = job->getCuts();
+	for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
 
-  if (!fc.evaluate()) {
-    std::cerr << "Filter chain evaluation failed" << endl;
-  }
+	}*/
 
-  LaserPassList &passes = job->getPasses();
-
-  for (LaserPassList::iterator it = passes.begin(); it != passes.end(); it++) {
-    fc.filterPass(*it);
-  }
 }
 
-void Driver::process(LaserJob *job)
-{
-  //  filter(job);
-  stringstream ss;
-  job->serializeTo(ss);
-  std::cerr << ss.str().size();
-  std::cout << ss.rdbuf();
+void Driver::process(Cut *cut) {
+	//  filter(job);
+	stringstream ss;
+	//job->serializeTo(ss);
+	std::cerr << ss.str().size();
+	std::cout << ss.rdbuf();
 }

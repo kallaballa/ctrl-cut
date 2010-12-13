@@ -1,16 +1,20 @@
 #ifndef DRIVER_H_
 #define DRIVER_H_
 
-#include "LaserJob.h"
+#include "vector/Cut.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 class Driver {
 private:
-	void filter(LaserJob *job);
+
 
 public:
     Driver();
     virtual ~Driver();
-    void process(LaserJob *job);
+    void filter(Cut *cut);
+    void process(Cut *cut);
 };
 
 #endif /* DRIVER_H_ */

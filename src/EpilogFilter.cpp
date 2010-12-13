@@ -118,9 +118,7 @@
 #include "LaserJob.h"
 #include "Driver.h"
 #include "EpilogFilter.h"
-#include "Raster.h"
-#include "VectorPass.h"
-#include "RasterPass.h"
+#include "vector/Cut.h"
 #include "eps_converter.h"
 
 #ifndef __APPLE__
@@ -472,12 +470,13 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  VectorPass *vpass = VectorPass::createFromFile(filename_vector);
+  Cut *cut = new Cut();
+  cut->load(filename_vector);
+
   //Raster ignored at the moment
   //  RasterPass *rpass = RasterPass::createFromFile(filename_bitmap);
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
-  job.addPass(vpass);
-  //  job.addPass(rpass);
+  job.addCut(cut);
 
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
@@ -497,7 +496,7 @@ int main(int argc, char *argv[])
   }
 
   Driver drv;
-  drv.process(&job);
+  drv.process(cut);
   clock_t end = clock() - start;
   cerr << endl << "Clocks: " << end << endl;
   cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;

@@ -53,7 +53,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+<entry excluding="PCLTiffEncoder.h|PCLTiffEncoder.cpp|raster|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 </sourceEntries>
 </configuration>
 </storageModule>
@@ -686,7 +686,7 @@
 </toolChain>
 </folderInfo>
 <sourceEntries>
-<entry excluding="PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+<entry excluding="PCLTiffEncoder.h|PCLTiffEncoder.cpp|raster|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 </sourceEntries>
 </configuration>
 </storageModule>

@@ -7,9 +7,7 @@
 
 #include "laser_config.h"
 #include "Laser.h"
-#include "LaserPass.h"
-#include "LineSegment.h"
-#include "OnionSkin.h"
+#include "vector/Cut.h"
 #include "pjl.h"
 #include "stdint.h"
 
@@ -36,8 +34,6 @@ static int big_to_little_endian(uint8_t *position, int nbytes) {
   return result;
 }
 
-typedef list<LaserPass*> LaserPassList;
-
 class LaserJob
 {
  public:
@@ -45,7 +41,7 @@ class LaserJob
   string user;   /*! User name that submitted the print job. */
   string title;  /*! Title for the print job. */
 
-  LaserPassList passes;
+  list<Cut*> cuts;
   laser_config *lconf;
 
   LaserJob(laser_config *lconf, 
@@ -53,8 +49,8 @@ class LaserJob
   virtual ~LaserJob();
 
   void optimize();
-  void addPass(LaserPass* pass);
-  LaserPassList &getPasses() { return passes; }
+  void addCut(Cut* cut);
+  list<Cut*> getCuts() { return cuts; }
 
   void serializeTo(ostream &out);
 };
