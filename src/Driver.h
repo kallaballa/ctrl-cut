@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "LaserJob.h"
 
 class Driver {
 private:
@@ -13,8 +14,8 @@ private:
 public:
     Driver();
     virtual ~Driver();
-    void filter(Cut *cut);
-    void process(Cut *cut);
+    void filter(LaserJob *job);
+    void process(LaserJob *job);
 };
 
 #endif /* DRIVER_H_ */

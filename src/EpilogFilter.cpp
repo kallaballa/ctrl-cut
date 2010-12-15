@@ -114,12 +114,13 @@
 
 #include <cups/cups.h>
 
-#include "laser_config.h"
+#include "util/LaserConfig.h"
+#include "util/Eps.h"
+#include "vector/Cut.h"
 #include "LaserJob.h"
 #include "Driver.h"
 #include "EpilogFilter.h"
-#include "vector/Cut.h"
-#include "eps_converter.h"
+
 
 #ifndef __APPLE__
 #define GS_EXECUTABLE "/usr/bin/gs"
@@ -496,7 +497,7 @@ int main(int argc, char *argv[])
   }
 
   Driver drv;
-  drv.process(cut);
+  drv.process(&job);
   clock_t end = clock() - start;
   cerr << endl << "Clocks: " << end << endl;
   cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;

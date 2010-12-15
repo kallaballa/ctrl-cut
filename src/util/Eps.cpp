@@ -1,5 +1,5 @@
-#include "eps_converter.h"
-#include "laser_config.h"
+#include "Eps.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>

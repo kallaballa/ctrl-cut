@@ -1,4 +1,4 @@
-#include "laser_config.h"
+#include "LaserConfig.h"
 
 static void calculate_base_position(laser_config *lconf)
 {

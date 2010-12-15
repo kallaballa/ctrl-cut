@@ -1,10 +1,6 @@
 #define PJL_PARAM
 
 #include "LaserJob.h"
-#include "laser_config.h"
-#include <iostream>
-#include "boost/format.hpp"
-#include "vector/Cut.h"
 
 using boost::format;
 
@@ -106,7 +102,8 @@ void LaserJob::serializeTo(ostream &out) {
 		for (list<Cut*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
 			Cut *cut = *it;
 			if (cut) {
-				//cut->serializeTo(out);
+				Renderer r(this->lconf);
+				r.renderCut(cut,out);
 			}
 		}
 
