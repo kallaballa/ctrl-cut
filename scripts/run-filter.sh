@@ -9,7 +9,7 @@ filter=./EpilogFilter
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
 
-type cups-config || error "cups-config required" 2
+type cups-config &> /dev/null || error "cups-config required" 2
 
 export CHARSET=utf-8
 export CONTENT_TYPE=application/pdf
