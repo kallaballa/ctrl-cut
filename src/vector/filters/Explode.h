@@ -1,9 +1,10 @@
-#ifndef SPLITINTERSECTIONSFILTER_H_
-#define SPLITINTERSECTIONSFILTER_H_
+#ifndef EXPLODE_H_
+#define EXPLODE_H_
 
 #include <string>
 #include <list>
 #include <iostream>
+#include <boost/format.hpp>
 #include "../Cut.h"
 
 class Explode {

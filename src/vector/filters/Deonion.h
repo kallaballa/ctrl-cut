@@ -1,5 +1,5 @@
-#ifndef DEONIONFILTER_H_
-#define DEONIONFILTER_H_
+#ifndef DEONION_H_
+#define DEONION_H_
 
 #include "../Cut.h"
 #include "../Primitives.h"

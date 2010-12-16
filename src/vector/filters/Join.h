@@ -6,12 +6,12 @@
 #include "../Cut.h"
 #include <iostream>
 
-class FindPolylinesFilter {
+class Join {
  public:
-  FindPolylinesFilter(){
+  Join(){
   }
 
-  virtual ~FindPolylinesFilter();
+  virtual ~Join();
   void filter(Cut *cut);
 };
 

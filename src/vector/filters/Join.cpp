@@ -1,6 +1,9 @@
-#include "FindPolylinesFilter.h"
+#include "Join.h"
+#include <boost/format.hpp>
 
-FindPolylinesFilter::~FindPolylinesFilter() {
+using boost::format;
+
+Join::~Join() {
   // TODO Auto-generated destructor stub
 }
 
@@ -25,7 +28,7 @@ void find_connected(set<Edge*> *occupied, Polyline *polyline,
   }
 }
 
-void FindPolylinesFilter::filter(Cut *cut)
+void Join::filter(Cut *cut)
 {
   std::cerr << "FindPolyLines" << std::endl;
 
@@ -33,17 +36,23 @@ void FindPolylinesFilter::filter(Cut *cut)
 
   Edge* ls;
   list<Edge*>::iterator it;
-
+  int cnt = 0;
   for (it = cut->freeEdges.begin(); it != cut->freeEdges.end(); it++) {
     ls = *it;
 
-    Polyline *polyline = new Polyline();
-
+		Polyline *polyline = new Polyline();
     if (occupied->find(ls) == occupied->end()) {
       polyline->add(ls);
-      cut->removeEdge(ls);
       find_connected(occupied, polyline, ls);
       cut->polylines.push_back(polyline);
+//      cut->removeEdge(ls, false);
     }
   }
+
+	for(vector<Polyline*>::iterator it = cut->polylines.begin(); it != cut->polylines.end(); it++) {
+		Polyline *p = *it;
+		for(set<Edge*>::iterator it_e = p->edges.begin(); it_e != p->edges.end(); it_e++) {
+			cut->removeEdge(*it_e, false);
+		}
+	}
 }
