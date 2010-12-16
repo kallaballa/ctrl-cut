@@ -1,0 +1,1 @@
+count(/cut/vertices/*)
