@@ -29,4 +29,4 @@ pdftoppm -q -r 36 -mono $file.pdf tmpfile 2>/dev/null
 if [ $? -eq 139 ]; then
   exit 1
 fi
-mv tmpfile-000001.pbm $file.pbm
+mv tmpfile-1.pbm $file.pbm
