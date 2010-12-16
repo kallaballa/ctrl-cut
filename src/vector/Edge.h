@@ -1,5 +1,5 @@
-#ifndef LINE_H_
-#define LINE_H_
+#ifndef EDGE_H_
+#define EDGE_H_
 
 #include <set>
 #include <string>
@@ -24,6 +24,7 @@ class Edge {
   void invertDirection();
   Vertex* intersects(Edge *otherLine);
   void detach();
+  void xml(ostream &out);
 
  private:
   Vertex *start;

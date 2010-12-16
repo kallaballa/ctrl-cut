@@ -9,11 +9,11 @@
 #define RENDERER_H_
 
 #include <map>
-#include "Primitives.h"
-#include "../laser_config.h"
-#include "../LaserJob.h"
-#include "Cut.h"
 
+#include "../util/LaserConfig.h"
+#include "../LaserJob.h"
+#include "Primitives.h"
+#include "Cut.h"
 
 class Renderer {
 

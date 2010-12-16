@@ -58,10 +58,13 @@ void Vertex::setY(int y, bool update) {
 }
 
 std::string Vertex::getKey() {
-  return key;
+  return this->key;
 }
 
 bool Vertex::equals(Vertex *other) {
   return x == other->x && y == other->y;
 }
 
+void Vertex::xml(ostream &out) {
+	out << "<vertex x=\"" << this->x << "\" y=\"" << this->y << "\" id=\"" << this << "\" key=\"" << this->key << "\" />" << std::endl;
+}

@@ -1,5 +1,5 @@
-#ifndef POLYGON_H_
-#define POLYGON_H_
+#ifndef POLYLINE_H_
+#define POLYLINE_H_
 #include "Edge.h"
 #include <vector>
 #include "climits"
@@ -18,6 +18,7 @@ public:
   void remove(Edge* ls);
   int count();
   Edge* findSteapest();
+  void xml(ostream &out);
 };
 
 #endif /* POLYGON_H_ */

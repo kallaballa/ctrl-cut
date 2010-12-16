@@ -76,3 +76,11 @@ Edge* Polyline::findSteapest() {
 
   return edge;
 }
+
+void Polyline::xml(ostream &out) {
+	out << "<polyline cnt=\"" << this->count() << "\" id=\"" << this << "\" >" << std::endl;
+	for(set<Edge*>::iterator it = this->edges.begin(); it != this->edges.end(); it++) {
+		((Edge*)*it)->xml(out);
+	}
+	out << "</polyline>" << std::endl;
+}

@@ -1,5 +1,5 @@
-#ifndef JOINT_H_
-#define JOINT_H_
+#ifndef VERTEX_H_
+#define VERTEX_H_
 
 #include <set>
 #include <string>
@@ -20,7 +20,7 @@ class Vertex {
   void attach(class Edge *ls);
   void detach(Edge *ls);
   std::set<Edge*> getAttachedEdges();
-
+  void xml(ostream &out);
  private:
   int x;
   int y;

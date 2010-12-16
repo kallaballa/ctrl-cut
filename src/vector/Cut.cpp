@@ -1,9 +1,5 @@
 #include "Cut.h"
 
-#include <fstream>
-#include <iostream>
-#include "boost/format.hpp"
-
 using boost::format;
 
 /*!
@@ -56,13 +52,21 @@ Vertex *Cut::mapVertex(Vertex *p)
   return p;
 }
 
-void Cut::removeEdge(Edge* e) {
-  e->detach();
+void Cut::removeEdge(Edge* e, bool detach) {
+  if(detach)
+  	e->detach();
   freeEdges.remove(e);
 }
 
-void Cut::load(const string &filename)
-{
+EdgeList::iterator Cut::removeEdge(EdgeList::iterator it_e, bool detach) {
+  Edge *e = *it_e;
+  if(detach)
+  	e->detach();
+
+  return freeEdges.erase(it_e);
+}
+
+void Cut::load(const string &filename) {
   string line;
   ifstream infile(filename.c_str(), ios_base::in);
   char first;
@@ -171,3 +175,28 @@ void Cut::print(ostream &stream)
 
 */
 
+void Cut::xml(std::string s) {
+	ofstream out(s.c_str(), ios_base::out);
+	this->xml(out);
+	out.close();
+}
+
+void Cut::xml(ostream &out) {
+	out << "<cut clipped=\"" << this->wasClipped() << "\" id=\"" << this << "\" >" << std::endl;
+	out << "<edges cnt=\"" << this->freeEdges.size() << "\" >" << std::endl;
+	for(list<Edge*>::iterator it = this->freeEdges.begin(); it != this->freeEdges.end(); it++) {
+		((Edge*)*it)->xml(out);
+	}
+	out << "</edges>" << std::endl;
+	out << "<polylines cnt=\"" << this->polylines.size() << "\" >" << std::endl;
+	for(vector<Polyline*>::iterator it = this->polylines.begin(); it != this->polylines.end(); it++) {
+		((Polyline*)*it)->xml(out);
+	}
+	out << "</polylines>" << std::endl;
+	out << "<vertices cnt=\"" << this->vertices.size() << "\" >" << std::endl;
+	for(map<string, class Vertex *>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++) {
+		((Vertex*)(*it).second)->xml(out);
+	}
+	out << "</vertices>" << std::endl;
+	out << "</cut>" << std::endl;
+}

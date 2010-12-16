@@ -1,19 +1,23 @@
 #include "Edge.h"
 #include <algorithm>
 #include <cmath>
-
+#include <iostream>
 using namespace std;
 
 Edge::Edge(Vertex *start, Vertex *end, int power) {
   this->start = start;
   this->end = end;
   this->power = power;
+  getStart();
 }
 
 Edge::~Edge() {
 }
 
 Vertex* Edge::getStart() {
+	if(start == ((void*)0x0000000000000021)) {
+		start = 0;
+	}
   return this->start;
 }
 
@@ -23,6 +27,7 @@ Vertex* Edge::getEnd() {
 
 void Edge::setStart(Vertex* start) {
   this->start = start;
+  getStart();
 }
 
 void Edge::setEnd(Vertex* end) {
@@ -41,6 +46,7 @@ void Edge::invertDirection() {
   Vertex* tmp = getStart();
   setStart(getEnd());
   setEnd(tmp);
+  getStart();
 }
 
 void Edge::detach() {
@@ -107,5 +113,12 @@ Vertex* Edge::intersects(Edge *otherLine) {
   }
 
   return NULL; //NOT_INTERSECTING;
+}
+
+void Edge::xml(ostream &out) {
+	out << "<edge power=\"" << this->power << "\" id=\"" << this << "\" >" << std::endl;
+	this->start->xml(out);
+	this->end->xml(out);
+	out << "</edge>" << std::endl;
 }
 

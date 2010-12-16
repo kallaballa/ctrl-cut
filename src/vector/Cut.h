@@ -1,7 +1,11 @@
-#ifndef VECTORPASS_H_
-#define VECTORPASS_H_
+#ifndef CUT_H_
+#define CUT_H_
 
-#include <map>
+
+#include <fstream>
+#include <iostream>
+#include "boost/format.hpp"
+
 #include "Primitives.h"
 
 #ifndef VECTOR_POWER_DEFAULT
@@ -12,23 +16,26 @@ class Cut {
 public:
 	PolylineVector polylines;
 	EdgeList freeEdges;
+	VertexMap vertices;
 
 	void createEdge(Vertex *start, Vertex *end, int power);
-	void removeEdge(Edge *e);
+	void removeEdge(Edge *e, bool detach);
+	EdgeList::iterator removeEdge(EdgeList::iterator it_e, bool detach);
 	void load(const string &filename);
 	Vertex* mapVertex(Vertex* p);
 
 	bool wasClipped() const {
 		return this->clipped;
 	}
-
+	void xml(std::string s);
+	void xml(ostream &out);
 	// Print debug info
 	void print(ostream &stream);
 	Cut() : clipped(false) {}
 private:
 	//TODO: super inefficent string based key comparator
-	typedef std::map<string, class Vertex *> VertexMap;
-	VertexMap vertices;
+
+
 	bool clipped;
 
 	virtual ~Cut() {}
