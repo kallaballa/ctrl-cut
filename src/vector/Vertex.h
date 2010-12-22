@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <cmath>
+#include "VTypes.h"
 
 using namespace std;
 

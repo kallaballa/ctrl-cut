@@ -2,7 +2,7 @@
 #define DEONION_H_
 
 #include "../Cut.h"
-#include "../Primitives.h"
+#include "../VTypes.h"
 #include <math.h>
 #include <iostream>
 

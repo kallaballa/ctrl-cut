@@ -5,7 +5,7 @@
 #include <iostream>
 #include "boost/format.hpp"
 
-#include "Primitives.h"
+#include "VTypes.h"
 
 #ifndef VECTOR_POWER_DEFAULT
 #define VECTOR_POWER_DEFAULT (80)

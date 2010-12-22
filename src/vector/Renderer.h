@@ -12,7 +12,7 @@
 
 #include "../util/LaserConfig.h"
 #include "../LaserJob.h"
-#include "Primitives.h"
+#include "VTypes.h"
 #include "Cut.h"
 
 class Renderer {
