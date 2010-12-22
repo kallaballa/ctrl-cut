@@ -2,6 +2,7 @@
 #define VERTEX_H_
 
 #include <set>
+#include <map>
 #include <string>
 #include <cmath>
 
@@ -19,14 +20,18 @@ class Vertex {
   string getKey();
   void attach(class Edge *ls);
   void detach(Edge *ls);
-  std::set<Edge*> getAttachedEdges();
-  void xml(ostream &out);
+  set<Edge*> getAttachedEdges();
+  friend ostream& operator <<(ostream &os,const Vertex &v);
+
  private:
+  static int cnt;
+  int id;
   int x;
   int y;
   string key;
+  set<Edge*> attachedEdges;
+
   void updateKey();
-  std::set<Edge*> attachedEdges;
 };
 
 #endif

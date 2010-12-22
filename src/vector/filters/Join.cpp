@@ -30,7 +30,7 @@ void find_connected(set<Edge*> *occupied, Polyline *polyline,
 
 void Join::filter(Cut *cut)
 {
-  std::cerr << "FindPolyLines" << std::endl;
+  std::cerr << "Join" << std::endl;
 
   set<Edge*> *occupied = new set<Edge*> ();
 
@@ -41,17 +41,18 @@ void Join::filter(Cut *cut)
     ls = *it;
 
 		Polyline *polyline = new Polyline();
+
     if (occupied->find(ls) == occupied->end()) {
       polyline->add(ls);
       find_connected(occupied, polyline, ls);
       cut->polylines.push_back(polyline);
-//      cut->removeEdge(ls, false);
     }
+    cnt++;
   }
 
 	for(vector<Polyline*>::iterator it = cut->polylines.begin(); it != cut->polylines.end(); it++) {
 		Polyline *p = *it;
-		for(set<Edge*>::iterator it_e = p->edges.begin(); it_e != p->edges.end(); it_e++) {
+		for(vector<Edge*>::iterator it_e = p->edges.begin(); it_e != p->edges.end(); it_e++) {
 			cut->removeEdge(*it_e, false);
 		}
 	}

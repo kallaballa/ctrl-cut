@@ -1,24 +1,33 @@
 #include "Polyline.h"
 
-
 using namespace std;
 
-Polyline::Polyline() {
-}
+int Polyline::cnt = 0;
 
-Polyline::~Polyline() {
-}
+Polyline::Polyline() { this->id++; }
 
 void Polyline::add(Edge* ls) {
-	edges.insert(ls);
+	edges.push_back(ls);
+}
+
+VecEdge::iterator Polyline::find(Edge* ls) {
+	for (VecEdge::iterator it = this->edges.begin(); it 	!= this->edges.end(); it++) {
+		if (*it == ls)
+			return it;
+	}
+
+	return (VecEdge::iterator)NULL;
 }
 
 bool Polyline::contains(Edge* ls) {
-	return edges.find(ls) != edges.end();
+	VecEdge::iterator it = find(ls);
+	return  it != (VecEdge::iterator) NULL && it != edges.end();
 }
 
 void Polyline::remove(Edge* ls) {
-	edges.erase(ls);
+	VecEdge::iterator it = find(ls);
+	if(it != (VecEdge::iterator) NULL)
+		edges.erase(it);
 }
 
 int Polyline::count() {
@@ -26,61 +35,65 @@ int Polyline::count() {
 }
 
 Edge* Polyline::findSteapest() {
-  Edge* ls;
-  int min_x = INT_MAX;
-  Vertex* most_left = NULL;
-  set<Edge*>::iterator it;
-  int sx;
-  int ex;
+	Edge* ls;
+	int min_x = INT_MAX;
+	Vertex* most_left = NULL;
+	VecEdge::iterator it;
+	int sx;
+	int ex;
 
-  for (it = edges.begin(); it != edges.end(); it++) {
-    ls = *it;
-    sx = ls->getStart()->getX();
-    ex = ls->getEnd()->getX();
+	for (it = edges.begin(); it != edges.end(); it++) {
+		ls = *it;
+		sx = ls->getStart()->getX();
+		ex = ls->getEnd()->getX();
 
-    if (sx < min_x) {
-      min_x = sx;
-      most_left = ls->getStart();
-    }
+		if (sx < min_x) {
+			min_x = sx;
+			most_left = ls->getStart();
+		}
 
-    if (ex < min_x) {
-      min_x = ex;
-      most_left = ls->getEnd();
-    }
-  }
+		if (ex < min_x) {
+			min_x = ex;
+			most_left = ls->getEnd();
+		}
+	}
+	set<Edge*>::iterator it_c;
+	set<Edge*> connected = most_left->getAttachedEdges();
 
-  set<Edge*> connected = most_left->getAttachedEdges();
+	Edge* edge;
+	float slope;
+	float steapest = M_PI;
 
-  Edge* edge;
-  float slope;
-  float steapest = M_PI;
+	for (it_c = connected.begin(); it_c != connected.end(); it_c++) {
+		ls = *it_c;
 
-  for (it = connected.begin(); it != connected.end(); it++) {
-    ls = *it;
+		if (ls->getStart()->getY() > ls->getEnd()->getY())
+			ls->invertDirection();
 
-    if (ls->getStart()->getY() > ls->getEnd()->getY())
-      ls->invertDirection();
+		slope = abs(ls->getSlope() - (M_PI / 2));
+		if (slope >= 3.1415f)
+			slope = 0;
 
-    slope = abs(ls->getSlope() - (M_PI / 2));
-    if (slope >= 3.1415f)
-      slope = 0;
+		if (slope < steapest) {
+			steapest = slope;
+			edge = ls;
+		}
+	}
 
-    if (slope < steapest) {
-      steapest = slope;
-      edge = ls;
-    }
-  }
+	if (ls->getSlope() < 0)
+		ls->invertDirection();
 
-  if (ls->getSlope() < 0)
-    ls->invertDirection();
-
-  return edge;
+	return edge;
 }
 
-void Polyline::xml(ostream &out) {
-	out << "<polyline cnt=\"" << this->count() << "\" id=\"" << this << "\" >" << std::endl;
-	for(set<Edge*>::iterator it = this->edges.begin(); it != this->edges.end(); it++) {
-		((Edge*)*it)->xml(out);
+ostream& operator <<(ostream &os, Polyline &pl) {
+	os << "<polyline id=\"" << pl.id << "\" >"
+			<< std::endl;
+
+	for (VecEdge::iterator it = pl.edges.begin(); it
+			!= pl.edges.end(); it++) {
+		os << *((Edge*) *it);
 	}
-	out << "</polyline>" << std::endl;
+	os << "</polyline>" << std::endl;
+	return os;
 }

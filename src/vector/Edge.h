@@ -2,18 +2,23 @@
 #define EDGE_H_
 
 #include <set>
+#include <list>
+#include <vector>
 #include <string>
 #include <cmath>
+#include <algorithm>
+#include <iostream>
 #include "Vertex.h"
 
-using namespace std;
 
 class Edge {
  public:
-
+	int pos;
   enum IntersectResult { PARALLEL, COINCIDENT, NOT_INTERSECTING, INTERSECTING };
+
   Edge(Vertex *start,Vertex *end, int power);
   virtual ~Edge();
+
   void setStart(Vertex* start);
   void setEnd(Vertex* end);
   Vertex* getStart();
@@ -24,9 +29,12 @@ class Edge {
   void invertDirection();
   Vertex* intersects(Edge *otherLine);
   void detach();
-  void xml(ostream &out);
+
+  friend ostream& operator <<(ostream &os, Edge &e);
 
  private:
+  static int cnt;
+  int id;
   Vertex *start;
   Vertex *end;
   int power;

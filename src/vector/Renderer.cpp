@@ -31,10 +31,10 @@ void Renderer::renderCut(Cut *cut, ostream &out) {
 	int beginX = -1, beginY = -1;
 	int lastX = -1, lastY = -1;
 	int lastPower = this->lconf->vector_power;
-	for (PolylineVector::iterator it_p = cut->polylines.begin(); it_p
+	for (VecPolyline::iterator it_p = cut->polylines.begin(); it_p
 			!= cut->polylines.end(); it_p++) {
 		Polyline *p = *it_p;
-		for (set<Edge*>::iterator it_s = p->edges.begin(); it_s != p->edges.end(); it_s++) {
+		for (vector<Edge*>::iterator it_s = p->edges.begin(); it_s != p->edges.end(); it_s++) {
 			ls = *it_s;
 
 			int power = ls->getPower();

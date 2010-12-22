@@ -4,8 +4,11 @@
 #include <iostream>
 #include "Edge.h"
 
+int Vertex::cnt = 0;
+
 Vertex::Vertex(int x, int y) {
-  setX(x, false);
+	this->id = cnt++;
+	setX(x, false);
   setY(y);
 }
 
@@ -22,7 +25,6 @@ void Vertex::updateKey() {
 }
 
 Vertex::~Vertex() {
-  // TODO Auto-generated destructor stub
 }
 
 void Vertex::attach(Edge* ls) {
@@ -65,6 +67,7 @@ bool Vertex::equals(Vertex *other) {
   return x == other->x && y == other->y;
 }
 
-void Vertex::xml(ostream &out) {
-	out << "<vertex x=\"" << this->x << "\" y=\"" << this->y << "\" id=\"" << this << "\" key=\"" << this->key << "\" />" << std::endl;
+ostream& operator <<(ostream &os,const Vertex &v) {
+	os << "<vertex x=\"" << v.x << "\" y=\"" << v.y << "\" id=\"" << v.id << "\" key=\"" << v.key << "\" />" << std::endl;
+	return os;
 }

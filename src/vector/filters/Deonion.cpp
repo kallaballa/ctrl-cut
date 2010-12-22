@@ -58,14 +58,16 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw) {
 
 void Deonion::filter(Cut *cut)
 {
-  std::cerr << "Deonion" << std::endl;
+  std::cerr << "Deonion: " << cut->polylines.size() << std::endl;
   
   unsigned int i;
   Polyline* p;
-  PolylineVector skins;
+  VecPolyline skins;
 
   for (i = 0; i < cut->polylines.size(); i++) {
     p = cut->polylines.at(i);
+    if(i % 100 == 0.0f)
+    	std::cerr << i << std::endl;
 
     while (p->count() > 0) {
       Polyline *skin = new Polyline();
@@ -73,6 +75,6 @@ void Deonion::filter(Cut *cut)
       skins.push_back(skin);
     }
 
-    cut->polylines = skins;
   }
+  cut->polylines = skins;
 }

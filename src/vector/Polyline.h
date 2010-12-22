@@ -1,24 +1,33 @@
 #ifndef POLYLINE_H_
 #define POLYLINE_H_
-#include "Edge.h"
-#include <vector>
+
+#include "stddef.h"
 #include "climits"
 #include "iostream"
 #include <cmath>
+
+#include "Primitives.h"
 
 using namespace std;
 
 class Polyline {
 public:
-	set<Edge*> edges;
+	VecEdge edges;
 	Polyline();
-  virtual ~Polyline();
+  virtual ~Polyline(){}
+
   bool contains(Edge* ls);
   void add(Edge* ls);
   void remove(Edge* ls);
   int count();
   Edge* findSteapest();
-  void xml(ostream &out);
+  VecEdge::iterator find(Edge* ls);
+
+  friend ostream& operator <<(ostream &os, Polyline &pl);
+
+private:
+  static int cnt;
+  int id;
 };
 
 #endif /* POLYGON_H_ */

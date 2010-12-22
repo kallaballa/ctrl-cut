@@ -1,5 +1,6 @@
 #include "Cut.h"
 
+
 using boost::format;
 
 /*!
@@ -42,7 +43,7 @@ void Cut::createEdge(Vertex *start, Vertex *end, int power)
 
 Vertex *Cut::mapVertex(Vertex *p)
 {
-  VertexMap::iterator it = vertices.find(p->getKey());
+  MapVertex::iterator it = vertices.find(p->getKey());
   
   if (it != vertices.end()) {
     return (Vertex *)it->second;
@@ -58,7 +59,7 @@ void Cut::removeEdge(Edge* e, bool detach) {
   freeEdges.remove(e);
 }
 
-EdgeList::iterator Cut::removeEdge(EdgeList::iterator it_e, bool detach) {
+LstEdge::iterator Cut::removeEdge(LstEdge::iterator it_e, bool detach) {
   Edge *e = *it_e;
   if(detach)
   	e->detach();
@@ -176,27 +177,32 @@ void Cut::print(ostream &stream)
 */
 
 void Cut::xml(std::string s) {
-	ofstream out(s.c_str(), ios_base::out);
-	this->xml(out);
-	out.close();
+	ofstream os(s.c_str(), ios_base::out);
+	Cut c = *((Cut*)this);
+	os << c;
+	os.close();
 }
 
-void Cut::xml(ostream &out) {
-	out << "<cut clipped=\"" << this->wasClipped() << "\" id=\"" << this << "\" >" << std::endl;
-	out << "<edges cnt=\"" << this->freeEdges.size() << "\" >" << std::endl;
-	for(list<Edge*>::iterator it = this->freeEdges.begin(); it != this->freeEdges.end(); it++) {
-		((Edge*)*it)->xml(out);
+ostream& operator<< (ostream &os, Cut &cut) {
+	std::cerr << "<< cut " << std::endl;
+	os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
+
+	os << "<edges cnt=\"" << cut.freeEdges.size() << "\" >" << std::endl;
+	for(LstEdge::iterator it = cut.freeEdges.begin(); it != cut.freeEdges.end(); it++) {
+		os << *((Edge*)*it);
 	}
-	out << "</edges>" << std::endl;
-	out << "<polylines cnt=\"" << this->polylines.size() << "\" >" << std::endl;
-	for(vector<Polyline*>::iterator it = this->polylines.begin(); it != this->polylines.end(); it++) {
-		((Polyline*)*it)->xml(out);
+	os << "</edges>" << std::endl;
+	os << "<polylines cnt=\"" << cut.polylines.size() << "\" >" << std::endl;
+	for(VecPolyline::iterator it = cut.polylines.begin(); it != cut.polylines.end(); it++) {
+		os << *((Polyline*)*it);
 	}
-	out << "</polylines>" << std::endl;
-	out << "<vertices cnt=\"" << this->vertices.size() << "\" >" << std::endl;
-	for(map<string, class Vertex *>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++) {
-		((Vertex*)(*it).second)->xml(out);
+	os << "</polylines>" << std::endl;
+	os << "<vertices cnt=\"" << cut.vertices.size() << "\" >" << std::endl;
+	for(MapVertex::iterator it = cut.vertices.begin(); it != cut.vertices.end(); it++) {
+		Vertex* vec = (Vertex*) (*it).second;
+		os << *vec;
 	}
-	out << "</vertices>" << std::endl;
-	out << "</cut>" << std::endl;
+	os << "</vertices>" << std::endl;
+	os << "</cut>" << std::endl;
+	return os;
 }
