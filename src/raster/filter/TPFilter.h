@@ -1,19 +1,19 @@
 #ifndef TPFILTER_H_
 #define TPFILTER_H_
+#include "../Raster.h"
+#include "../DownSample.h"
 
-#include "Filter.h"
+#include <list>
 
-class TPFilter: public RasterFilter {
+using std::list;
+
+class TPFilter {
  private:
 
  public:
-  TPFilter() {
-    this->provides.insert(TP_FILTER_ID);
-    this->postFilters.insert(TA_FILTER_ID);
-  }
-
+  TPFilter() {}
   virtual ~TPFilter(){}
-  virtual void filter(class LaserPass* rpass);
+  virtual void filter(class Raster* raster);
 };
 
 #endif /* TPFILTER_H_ */

@@ -10,7 +10,7 @@
 
 using boost::format;
 
-Renderer::Renderer(laser_config *lconf) {
+Renderer::Renderer(LaserConfig *lconf) {
 	this->lconf = lconf;
 }
 

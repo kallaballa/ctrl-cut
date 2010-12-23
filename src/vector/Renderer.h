@@ -18,9 +18,9 @@
 class Renderer {
 
 public:
-	laser_config *lconf;
+	LaserConfig *lconf;
 	void renderCut(Cut *cut, ostream &out);
-	Renderer(laser_config *lconf);
+	Renderer(LaserConfig *lconf);
 	virtual ~Renderer();
 };
 

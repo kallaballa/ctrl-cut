@@ -44,8 +44,8 @@
 /** Default speed for raster engraving */
 #define RASTER_SPEED_DEFAULT (100)
 
-/** Default resolution is 600 DPI */
-#define RESOLUTION_DEFAULT (600)
+/** Default resolution is 300 DPI */
+#define RESOLUTION_DEFAULT (300)
 
 /** Pixel size of screen (0 is threshold).
  * FIXME - add more details
@@ -61,7 +61,7 @@
 /** Default speed level for vector cutting. */
 #define VECTOR_SPEED_DEFAULT (33)
 
-struct laser_config
+struct LaserConfig
 {
   /** Variable to track auto-focus. */
   int focus;
@@ -126,6 +126,6 @@ struct laser_config
   char flip;
 };
 
-void init_laser_config(laser_config *lconf);
+void init_laser_config(LaserConfig *lconf);
 
 #endif /* LASER_CONFIG_H_ */

@@ -129,7 +129,7 @@
 #endif
 
 /** The laser cutter configuration **/
-laser_config lconf;
+LaserConfig lconf;
 
 /** Temporary buffer for building our strings. */
 char buf[102400];
@@ -160,12 +160,12 @@ const char *queue_options = "";
 bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
                          char *filename_vector, const char *bmp_mode, int resolution,
                          int height, int width) {
-  char buf[8192];
+	char buf[8192];
   sprintf(
           buf,
           "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-          GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
-          (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
+          GS_EXECUTABLE, resolution, width,
+          height, bmp_mode, filename_bitmap,
           filename_eps, filename_vector);
 
   if (debug) {
@@ -192,7 +192,7 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
   RasterMode=Color
 */
 void process_print_job_options(cups_option_t *options, int numOptions,
-                               laser_config *lconf)
+                               LaserConfig *lconf)
 {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
@@ -456,14 +456,15 @@ int main(int argc, char *argv[])
 
   const char *rm;
 
-//   if (lconf.raster_mode == 'c')
-//     rm = "bmp16m";
-//   else if (lconf.raster_mode == 'g')
-//     rm = "bmpgray";
-//   else
-//     rm = "bmpmono";
-// FIXME: While doing vector testing, set this to nullpage to speed up the gs run
-  rm = "nullpage";
+   if (lconf.raster_mode == 'c')
+     rm = "bmp16m";
+   else if (lconf.raster_mode == 'g')
+     rm = "bmpgray";
+   else
+     rm = "bmpmono";
+
+   // FIXME: While doing vector testing, set this to nullpage to speed up the gs run
+//  rm = "nullpage";
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector,
                            rm, lconf.resolution, lconf.height, lconf.width)) {
@@ -471,14 +472,12 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  Cut *cut = new Cut();
-  cut->load(filename_vector);
-
-  //Raster ignored at the moment
-  //  RasterPass *rpass = RasterPass::createFromFile(filename_bitmap);
+  Cut *cut = Cut::load(filename_vector);
+  Raster *raster = Raster::load(filename_bitmap);
+  raster->addTile(new Tile(*raster->sourceImage));
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
   job.addCut(cut);
-
+  job.addRaster(raster);
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!debug) {

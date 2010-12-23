@@ -1,6 +1,6 @@
 #include "LaserConfig.h"
 
-static void calculate_base_position(laser_config *lconf)
+static void calculate_base_position(LaserConfig *lconf)
 {
   if (lconf->x_center) {
     lconf->basex = lconf->x_center - lconf->width / 2;
@@ -19,7 +19,7 @@ static void calculate_base_position(laser_config *lconf)
   lconf->basey = lconf->basey * lconf->resolution / POINTS_PER_INCH;
 }
 
-void init_laser_config(laser_config *lconf)
+void init_laser_config(LaserConfig *lconf)
 {
   lconf->focus = AUTO_FOCUS;
   lconf->height = BED_HEIGHT;

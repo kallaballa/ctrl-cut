@@ -1,9 +1,12 @@
-#ifndef TILEPARTITIONER_H_
-#define TILEPARTITIONER_H_
+#ifndef GRID_H_
+#define GRID_H_
 
-#include "boost/multi_array.hpp"
 #include <list>
-#include "Raster.h"
+#include <iostream>
+#include <algorithm>
+#include "boost/multi_array.hpp"
+
+#include "RTypes.h"
 
 using namespace std;
 
@@ -14,7 +17,7 @@ class BBox: public Rectangle {
             && y > (ul_y - tol_y));
   }
 
-  void adjustTo(Marker* m) {
+  void adjustTo(Point2D* m) {
     this->ul_x = min(m->x, ul_x);
     this->ul_y = min(m->y, ul_y);
     this->lr_x = max(m->x, lr_x);
@@ -29,25 +32,26 @@ class BBox: public Rectangle {
   }
 };
 
-typedef Rectangle Cell;
+typedef Rectangle PixelBox;
 
-class TilePartitioner {
-  typedef boost::multi_array<Cell*, 2> CellGrid;
-  CellGrid* cells;
-  list<Cell*> cellList;
+class DownSample {
+	typedef boost::multi_array<PixelBox*, 2> PB_Image;
+  PB_Image* image;
+  list<PixelBox*> pixelBoxes;
   BBox boundingBox;
   int tolerance;
 
-  int cell_width, cell_height, num_cells_x, num_cells_y;
- public:
+  int pixel_width, pixel_height, res_x, res_y;
 
-  TilePartitioner(Marker* m_ul, int num_cells_x, int num_cells_y,
+ public:
+  DownSample(Point2D* m_ul, int res_x, int res_y,
                   int cell_width, int cell_height, int tolerance);
-  virtual ~TilePartitioner();
-  bool mark(Marker* m);
+  virtual ~DownSample(){}
+  bool sample(Point2D* m);
   BBox getBoundingBox();
-  void resizeGrid(int width, int height);
-  list<Cell*> getMarkedCells();
+  void resize(int width, int height);
+  list<PixelBox*> getPixels();
 };
 
-#endif /* TILEPARTITIONER_H_ */
+#endif /* DOWNSAMPLE_H_ */
+

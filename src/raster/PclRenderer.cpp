@@ -9,7 +9,7 @@
 
 using boost::format;
 
-PclRenderer::PclRenderer(laser_config *lconf) {
+PclRenderer::PclRenderer(LaserConfig *lconf) {
 	this->lconf = lconf;
 }
 

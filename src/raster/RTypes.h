@@ -8,7 +8,7 @@
 
 using namespace cimg_library;
 
-struct Marker {
+struct Point2D {
   int x, y;
 };
 
@@ -28,7 +28,7 @@ public:
     this->height = lr_y - ul_y;
   }
   
-  bool inside(Marker* m, int tolerance = 0) {
+  bool inside(Point2D* m, int tolerance = 0) {
     return (m->x < (lr_x + tolerance) && m->x > (ul_x - tolerance) && m->y
             < (lr_y + tolerance) && m->y > (ul_y - tolerance));
   }

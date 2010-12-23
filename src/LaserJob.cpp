@@ -4,7 +4,7 @@
 
 using boost::format;
 
-LaserJob::LaserJob(laser_config *lconf, const string &user, const string &name,
+LaserJob::LaserJob(LaserConfig *lconf, const string &user, const string &name,
 		const string &title) {
 	this->lconf = lconf;
 	this->user = user;
@@ -18,6 +18,10 @@ LaserJob::~LaserJob() {
 
 void LaserJob::addCut(Cut* cut) {
 	this->cuts.push_back(cut);
+}
+
+void LaserJob::addRaster(Raster* raster) {
+	this->rasters.push_back(raster);
 }
 
 /**
@@ -55,20 +59,16 @@ void LaserJob::serializeTo(ostream &out) {
 	 * information to the print job.
 	 */
 
-	//  if (this->lconf->raster_power && this->lconf->raster_mode != 'n') {
-	/* We're going to perform a raster print. */
-	/*
-	 LaserPassList &passes = this->getPasses();
-
-	 LaserPassList::iterator it;
-	 RasterPass *rpass;
-	 for (it = passes.begin(); it != passes.end(); it++) {
-	 rpass = dynamic_cast<RasterPass*> (*it);
-	 if (rpass) {
-	 rpass->serializeTo(out);
-	 }
-	 }
-	 } */
+	//if (this->lconf->raster_power && this->lconf->raster_mode != 'n') {
+		/* We're going to perform a raster print. */
+		for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
+			Raster *raster = *it;
+			if (raster) {
+				PclRenderer r(this->lconf);
+				r.renderRaster(raster, out);
+			}
+		}
+	//}
 
 	/* If vector power is > 0 then add vector information to the print job. */
 	if (this->lconf->vector_power) {
@@ -103,7 +103,7 @@ void LaserJob::serializeTo(ostream &out) {
 			Cut *cut = *it;
 			if (cut) {
 				Renderer r(this->lconf);
-				r.renderCut(cut,out);
+				r.renderCut(cut, out);
 			}
 		}
 

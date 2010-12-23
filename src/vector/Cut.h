@@ -17,10 +17,11 @@ public:
 	LstEdge freeEdges;
 	MapVertex vertices;
 
+	static Cut* load(const string &filename);
+
 	void createEdge(Vertex *start, Vertex *end, int power);
 	void removeEdge(Edge *e, bool detach);
 	LstEdge::iterator removeEdge(LstEdge::iterator it_e, bool detach);
-	void load(const string &filename);
 	Vertex* mapVertex(Vertex* p);
 
 	bool wasClipped() const {

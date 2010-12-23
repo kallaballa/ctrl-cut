@@ -1,20 +1,18 @@
 #ifndef TAFILTER_H_
 #define TAFILTER_H_
 
+#include "../Raster.h"
+#include "../DownSample.h"
 
-#include "Filter.h"
+#include <list>
 
-class TAFilter: public RasterFilter {
+class TAFilter {
  private:
 
  public:
-  TAFilter() {
-    this->provides.insert(TA_FILTER_ID);
-    this->preFilters.insert(TP_FILTER_ID);
-  }
-
+  TAFilter() {}
   virtual ~TAFilter(){}
-  virtual void filter(LaserPass *pass);
+  virtual void filter(Raster* raster);
 };
 
 #endif /* TAFILTER_H_ */

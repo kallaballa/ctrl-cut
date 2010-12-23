@@ -8,7 +8,7 @@ void Raster::addTile(Tile* tile) {
   this->tiles.push_back(tile);
 }
 
-Raster *Raster::createFromFile(const string &filename) {
+Raster *Raster::load(const string &filename) {
   return new Raster(new Image(filename.c_str()));
 }
 

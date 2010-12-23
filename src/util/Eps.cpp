@@ -16,7 +16,7 @@
  *
  * @return Return true if the function completes its task, false otherwise.
  */
-bool ps_to_eps(laser_config *lconf, FILE *ps_file, FILE *eps_file)
+bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
 {
   int xoffset = 0;
   int yoffset = 0;

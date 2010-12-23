@@ -12,6 +12,8 @@
 #include "util/LaserConfig.h"
 #include "vector/Cut.h"
 #include "vector/Renderer.h"
+#include "raster/Raster.h"
+#include "raster/PclRenderer.h"
 
 using std::string;
 
@@ -44,14 +46,16 @@ class LaserJob
   string title;  /*! Title for the print job. */
 
   list<Cut*> cuts;
-  laser_config *lconf;
+  list<Raster*> rasters;
+  LaserConfig *lconf;
 
-  LaserJob(laser_config *lconf, 
+  LaserJob(LaserConfig *lconf, 
            const string &user, const string &name, const string &title);
   virtual ~LaserJob();
 
   void optimize();
   void addCut(Cut* cut);
+  void addRaster(Raster* raster);
   list<Cut*> getCuts() { return cuts; }
 
   void serializeTo(ostream &out);

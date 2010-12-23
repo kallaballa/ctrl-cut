@@ -19,12 +19,12 @@
 class PclRenderer {
 
 public:
-	laser_config *lconf;
+	LaserConfig *lconf;
 
 	void renderRaster(Raster *raster, ostream &out);
 	void renderTile(Tile* tile, ostream& out);
 
-	PclRenderer(laser_config *lconf);
+	PclRenderer(LaserConfig *lconf);
 	virtual ~PclRenderer();
 };
 

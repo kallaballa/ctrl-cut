@@ -17,7 +17,7 @@
 #define HOSTNAME_NCHARS (1024)
 
 /** Temporary directory to store files. */
-#define TMP_DIRECTORY "/tmp"
+#define TMP_DIRECTORY "tmp"
 
 #define PRINTER_NAME "LaserCutter"
 
