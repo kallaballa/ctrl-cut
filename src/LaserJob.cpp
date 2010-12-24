@@ -61,13 +61,13 @@ void LaserJob::serializeTo(ostream &out) {
 
 	//if (this->lconf->raster_power && this->lconf->raster_mode != 'n') {
 		/* We're going to perform a raster print. */
-		for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
+	/*	for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
 			Raster *raster = *it;
 			if (raster) {
 				PclRenderer r(this->lconf);
 				r.renderRaster(raster, out);
 			}
-		}
+		}*/
 	//}
 
 	/* If vector power is > 0 then add vector information to the print job. */

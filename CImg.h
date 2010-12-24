@@ -5790,10 +5790,10 @@ namespace cimg_library {
     }
 
     //! In-place version of the constructor.
-    CImgDisplay& assign(const unsigned int width, const unsigned int height,
+    CImgDisplay& assign(const unsigned int w, const unsigned int height,
                         const char *const title=0, const unsigned int normalization=3,
                         const bool is_fullscreen=false, const bool is_closed=false) {
-      cimg::unused(width,height,title,normalization,is_fullscreen,is_closed);
+      cimg::unused(w,height,title,normalization,is_fullscreen,is_closed);
       return assign();
     }
 
@@ -6238,8 +6238,8 @@ namespace cimg_library {
 #if cimg_display==0
 
     //! Resize window.
-    CImgDisplay& resize(const int width, const int height, const bool redraw=true) {
-      return assign(width,height,0,3,redraw);
+    CImgDisplay& resize(const int w, const int height, const bool redraw=true) {
+      return assign(w,height,0,3,redraw);
     }
 
 #endif
@@ -6557,7 +6557,7 @@ namespace cimg_library {
       } else {
 #ifdef cimg_use_xrandr
         if (cimg::X11_attr().resolutions && cimg::X11_attr().curr_resolution)
-          res = cimg::X11_attr().resolutions[cimg::X11_attr().curr_resolution].width;
+          res = cimg::X11_attr().resolutions[cimg::X11_attr().curr_resolution].w;
         else
 #endif
           res = DisplayWidth(cimg::X11_attr().display,DefaultScreen(cimg::X11_attr().display));
@@ -6862,10 +6862,10 @@ namespace cimg_library {
             cimg::X11_attr().curr_resolution = 0;
             for (unsigned int i = 0; i<cimg::X11_attr().nb_resolutions; ++i) {
               const unsigned int
-                nw = (unsigned int)(cimg::X11_attr().resolutions[i].width),
+                nw = (unsigned int)(cimg::X11_attr().resolutions[i].w),
                 nh = (unsigned int)(cimg::X11_attr().resolutions[i].height);
               if (nw>=_width && nh>=_height &&
-                  nw<=(unsigned int)(cimg::X11_attr().resolutions[cimg::X11_attr().curr_resolution].width) &&
+                  nw<=(unsigned int)(cimg::X11_attr().resolutions[cimg::X11_attr().curr_resolution].w) &&
                   nh<=(unsigned int)(cimg::X11_attr().resolutions[cimg::X11_attr().curr_resolution].height))
                 cimg::X11_attr().curr_resolution = i;
             }
@@ -7802,7 +7802,7 @@ namespace cimg_library {
           if (TrackMouseEvent(&tme)) disp->_is_mouse_tracked = true;
         }
 #endif
-        if (disp->_mouse_x<0 || disp->_mouse_y<0 || disp->_mouse_x>=disp->width() || disp->_mouse_y>=disp->height())
+        if (disp->_mouse_x<0 || disp->_mouse_y<0 || disp->_mouse_x>=disp->w() || disp->_mouse_y>=disp->height())
           disp->_mouse_x = disp->_mouse_y = -1;
         disp->_is_event = true;
         SetEvent(cimg::Win32_attr().wait_event);
@@ -7852,7 +7852,7 @@ namespace cimg_library {
       MSG msg;
       delete[] (void**)arg;
       disp->_bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-      disp->_bmi.bmiHeader.biWidth = disp->width();
+      disp->_bmi.bmiHeader.biWidth = disp->w();
       disp->_bmi.bmiHeader.biHeight = -disp->height();
       disp->_bmi.bmiHeader.biPlanes = 1;
       disp->_bmi.bmiHeader.biBitCount = 32;
@@ -29127,9 +29127,9 @@ namespace cimg_library {
 #ifdef cimg_use_board
             if (pboard) {
               const float
-                l0 = light_texture((int)(light_texture.width()/2*(1+lightprops(n0,0))), (int)(light_texture.height()/2*(1+lightprops(n0,1)))),
-                l1 = light_texture((int)(light_texture.width()/2*(1+lightprops(n1,0))), (int)(light_texture.height()/2*(1+lightprops(n1,1)))),
-                l2 = light_texture((int)(light_texture.width()/2*(1+lightprops(n2,0))), (int)(light_texture.height()/2*(1+lightprops(n2,1))));
+                l0 = light_texture((int)(light_texture.w()/2*(1+lightprops(n0,0))), (int)(light_texture.height()/2*(1+lightprops(n0,1)))),
+                l1 = light_texture((int)(light_texture.w()/2*(1+lightprops(n1,0))), (int)(light_texture.height()/2*(1+lightprops(n1,1)))),
+                l2 = light_texture((int)(light_texture.w()/2*(1+lightprops(n2,0))), (int)(light_texture.height()/2*(1+lightprops(n2,1))));
               board.setPenColorRGBi((unsigned char)(color[0]),
                                      (unsigned char)(color[1]),
                                      (unsigned char)(color[2]),
@@ -29260,10 +29260,10 @@ namespace cimg_library {
 #ifdef cimg_use_board
             if (pboard) {
               const float
-                l0 = light_texture((int)(light_texture.width()/2*(1+lx0)), (int)(light_texture.height()/2*(1+ly0))),
-                l1 = light_texture((int)(light_texture.width()/2*(1+lx1)), (int)(light_texture.height()/2*(1+ly1))),
-                l2 = light_texture((int)(light_texture.width()/2*(1+lx2)), (int)(light_texture.height()/2*(1+ly2))),
-                l3 = light_texture((int)(light_texture.width()/2*(1+lx3)), (int)(light_texture.height()/2*(1+ly3)));
+                l0 = light_texture((int)(light_texture.w()/2*(1+lx0)), (int)(light_texture.height()/2*(1+ly0))),
+                l1 = light_texture((int)(light_texture.w()/2*(1+lx1)), (int)(light_texture.height()/2*(1+ly1))),
+                l2 = light_texture((int)(light_texture.w()/2*(1+lx2)), (int)(light_texture.height()/2*(1+ly2))),
+                l3 = light_texture((int)(light_texture.w()/2*(1+lx3)), (int)(light_texture.height()/2*(1+ly3)));
               board.setPenColorRGBi((unsigned char)(color[0]),
                                      (unsigned char)(color[1]),
                                      (unsigned char)(color[2]),
@@ -29384,9 +29384,9 @@ namespace cimg_library {
 #ifdef cimg_use_board
             if (pboard) {
               const float
-                l0 = light_texture((int)(light_texture.width()/2*(1+lightprops(n0,0))), (int)(light_texture.height()/2*(1+lightprops(n0,1)))),
-                l1 = light_texture((int)(light_texture.width()/2*(1+lightprops(n1,0))), (int)(light_texture.height()/2*(1+lightprops(n1,1)))),
-                l2 = light_texture((int)(light_texture.width()/2*(1+lightprops(n2,0))), (int)(light_texture.height()/2*(1+lightprops(n2,1))));
+                l0 = light_texture((int)(light_texture.w()/2*(1+lightprops(n0,0))), (int)(light_texture.height()/2*(1+lightprops(n0,1)))),
+                l1 = light_texture((int)(light_texture.w()/2*(1+lightprops(n1,0))), (int)(light_texture.height()/2*(1+lightprops(n1,1)))),
+                l2 = light_texture((int)(light_texture.w()/2*(1+lightprops(n2,0))), (int)(light_texture.height()/2*(1+lightprops(n2,1))));
               board.setPenColorRGBi(128,128,128,(unsigned char)(opac*255));
               board.fillGouraudTriangle((float)x0,height()-(float)y0,l0,(float)x1,height()-(float)y1,l1,(float)x2,height()-(float)y2,l2);
             }
@@ -29527,10 +29527,10 @@ namespace cimg_library {
 #ifdef cimg_use_board
             if (pboard) {
               const float
-                l0 = light_texture((int)(light_texture.width()/2*(1+lx0)), (int)(light_texture.height()/2*(1+ly0))),
-                l1 = light_texture((int)(light_texture.width()/2*(1+lx1)), (int)(light_texture.height()/2*(1+ly1))),
-                l2 = light_texture((int)(light_texture.width()/2*(1+lx2)), (int)(light_texture.height()/2*(1+ly2))),
-                l3 = light_texture((int)(light_texture.width()/2*(1+lx3)), (int)(light_texture.height()/2*(1+ly3)));
+                l0 = light_texture((int)(light_texture.w()/2*(1+lx0)), (int)(light_texture.height()/2*(1+ly0))),
+                l1 = light_texture((int)(light_texture.w()/2*(1+lx1)), (int)(light_texture.height()/2*(1+ly1))),
+                l2 = light_texture((int)(light_texture.w()/2*(1+lx2)), (int)(light_texture.height()/2*(1+ly2))),
+                l3 = light_texture((int)(light_texture.w()/2*(1+lx3)), (int)(light_texture.height()/2*(1+ly3)));
               board.setPenColorRGBi(128,128,128,(unsigned char)(opac*255));
               board.fillGouraudTriangle((float)x0,height()-(float)y0,l0,
                                          (float)x1,height()-(float)y1,l1,
@@ -30646,7 +30646,7 @@ namespace cimg_library {
 
 #ifdef cimg_use_magick
       Magick::Image image(filename);
-      const unsigned int W = image.size().width(), H = image.size().height();
+      const unsigned int W = image.size().w(), H = image.size().height();
       switch (image.type()) {
       case Magick::PaletteMatteType :
       case Magick::TrueColorMatteType :
@@ -33407,7 +33407,7 @@ namespace cimg_library {
                                   rotated_vertices,reverse_primitives?reverse_primitives:primitives,
                                   colors,opacities,clicked?nrender_motion:nrender_static,
                                   _double_sided==1,focale,
-                                  visu.width()/2.0f+light_x,visu.height()/2.0f+light_y,light_z,specular_light,specular_shine,
+                                  visu.w()/2.0f+light_x,visu.height()/2.0f+light_y,light_z,specular_light,specular_shine,
                                   zbuffer.fill(0));
             board.saveEPS(filename);
             visu.draw_text(0,0," Object '%s' saved. ",foreground_color._data,background_color._data,1,13,filename).display(disp);
@@ -33427,7 +33427,7 @@ namespace cimg_library {
                                   rotated_vertices,reverse_primitives?reverse_primitives:primitives,
                                   colors,opacities,clicked?nrender_motion:nrender_static,
                                   _double_sided==1,focale,
-                                  visu.width()/2.0f+light_x,visu.height()/2.0f+light_y,light_z,specular_light,specular_shine,
+                                  visu.w()/2.0f+light_x,visu.height()/2.0f+light_y,light_z,specular_light,specular_shine,
                                   zbuffer.fill(0));
             board.saveSVG(filename);
             visu.draw_text(0,0," Object '%s' saved. ",foreground_color._data,background_color._data,1,13,filename).display(disp);
@@ -37815,7 +37815,7 @@ namespace cimg_library {
               }
             // Get frame with, height and fps.
             const int
-              framew = format_ctx->streams[vstream]->codec->width,
+              framew = format_ctx->streams[vstream]->codec->w,
               frameh = format_ctx->streams[vstream]->codec->height;
             const float
               num = (float)(format_ctx->streams[vstream]->r_frame_rate).num,
@@ -37847,9 +37847,9 @@ namespace cimg_library {
       }
 
       // Read video frames
-      const unsigned int numBytes = avpicture_get_size(ffmpeg_pixfmt,codec_ctx->width,codec_ctx->height);
+      const unsigned int numBytes = avpicture_get_size(ffmpeg_pixfmt,codec_ctx->w,codec_ctx->height);
       uint8_t *const buffer = new uint8_t[numBytes];
-      avpicture_fill((AVPicture *)converted_frame,buffer,ffmpeg_pixfmt,codec_ctx->width,codec_ctx->height);
+      avpicture_fill((AVPicture *)converted_frame,buffer,ffmpeg_pixfmt,codec_ctx->w,codec_ctx->height);
       const T foo = (T)0;
       AVPacket packet;
       for (unsigned int frame = 0, next_frame = nfirst_frame; frame<=nlast_frame && av_read_frame(format_ctx,&packet)>=0; ) {
@@ -37862,14 +37862,14 @@ namespace cimg_library {
 #endif
           if (decoded) {
             if (frame==next_frame) {
-              SwsContext *c = sws_getContext(codec_ctx->width,codec_ctx->height,codec_ctx->pix_fmt,codec_ctx->width,
+              SwsContext *c = sws_getContext(codec_ctx->w,codec_ctx->height,codec_ctx->pix_fmt,codec_ctx->w,
                                              codec_ctx->height,ffmpeg_pixfmt,1,0,0,0);
               sws_scale(c,avframe->data,avframe->linesize,0,codec_ctx->height,converted_frame->data,converted_frame->linesize);
               if (ffmpeg_pixfmt==PIX_FMT_RGB24) {
-                CImg<ucharT> next_image(*converted_frame->data,3,codec_ctx->width,codec_ctx->height,1,true);
+                CImg<ucharT> next_image(*converted_frame->data,3,codec_ctx->w,codec_ctx->height,1,true);
                 next_image._get_permute_axes("yzcx",foo).move_to(*this);
               } else {
-                CImg<ucharT> next_image(*converted_frame->data,1,codec_ctx->width,codec_ctx->height,1,true);
+                CImg<ucharT> next_image(*converted_frame->data,1,codec_ctx->w,codec_ctx->height,1,true);
                 next_image._get_permute_axes("yzcx",foo).move_to(*this);
               }
               next_frame+=nstep_frame;
@@ -38265,7 +38265,7 @@ namespace cimg_library {
       avcodec_register_all();
       av_register_all();
       const int
-        frame_dimx = _data[first_frame].width(),
+        frame_dimx = _data[first_frame].w(),
         frame_dimy = _data[first_frame].height(),
         frame_dimv = _data[first_frame].spectrum();
       if (frame_dimv!=1 && frame_dimv!=3)
@@ -38329,7 +38329,7 @@ namespace cimg_library {
       c->codec_id = fmt->video_codec;
       c->codec_type = CODEC_TYPE_VIDEO;
       c->bit_rate = 400000;
-      c->width = frame_dimx;
+      c->w = frame_dimx;
       c->height = frame_dimy;
       c->time_base.num = 1;
       c->time_base.den = fps;
@@ -38433,7 +38433,7 @@ namespace cimg_library {
       double video_pts;
       SwsContext *img_convert_context = 0;
       img_convert_context = sws_getContext(frame_dimx,frame_dimy,src_pxl_fmt,
-                                           c->width,c->height,c->pix_fmt,sws_flags,0,0,0);
+                                           c->w,c->height,c->pix_fmt,sws_flags,0,0,0);
       if (!img_convert_context) { // Failed to get swscale context.
         // if (!(fmt->flags & AVFMT_NOFILE)) url_fclose(&oc->pb);
         av_free(picture->data);
@@ -39151,11 +39151,11 @@ namespace cimg {
     cbutton.draw_line(bw-5,bh-5,4,bh-5,black,1,0xAAAAAAAA,false).draw_line(4,bh-5,4,4,black,1,0xAAAAAAAA,false);
 
     cimglist_for(buttons,ll) {
-      CImg<unsigned char>(cbutton).draw_image(1+(bw-buttons[ll].width())/2,1+(bh-buttons[ll].height())/2,buttons[ll]).
+      CImg<unsigned char>(cbutton).draw_image(1+(bw-buttons[ll].w())/2,1+(bh-buttons[ll].height())/2,buttons[ll]).
         move_to(cbuttons);
-      CImg<unsigned char>(sbutton).draw_image((bw-buttons[ll].width())/2,(bh-buttons[ll].height())/2,buttons[ll]).
+      CImg<unsigned char>(sbutton).draw_image((bw-buttons[ll].w())/2,(bh-buttons[ll].height())/2,buttons[ll]).
         move_to(sbuttons);
-      CImg<unsigned char>(button).draw_image((bw-buttons[ll].width())/2,(bh-buttons[ll].height())/2,buttons[ll]).
+      CImg<unsigned char>(button).draw_image((bw-buttons[ll].w())/2,(bh-buttons[ll].height())/2,buttons[ll]).
         move_to(buttons[ll]);
     }
 

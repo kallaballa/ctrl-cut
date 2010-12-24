@@ -1,6 +1,5 @@
 #include "TAFilter.h"
 
-
 using std::list;
 
 void TAFilter::filter(Raster *raster)
@@ -33,17 +32,14 @@ void TAFilter::filter(Raster *raster)
         newTileDim.adjustTo(c);
       }
     }
-    Tile* tile = new Tile(newTileDim.ul_x, newTileDim.ul_y, newTileDim.lr_x
-                          - newTileDim.ul_x, newTileDim.lr_y - newTileDim.ul_y);
-    tile->fill(255).draw_image(-newTileDim.ul_x, -newTileDim.ul_y,
-                               *raster->sourceImage);
+    MMapImage* tile = raster->sourceImage->tile(newTileDim.ul_x, newTileDim.ul_y, newTileDim.lr_x - newTileDim.ul_x, newTileDim.lr_y - newTileDim.ul_y);
     raster->tiles.push_back(tile);
     startNewTile = true;
   }
 
 #ifdef DEBUG
   list<Tile*>::iterator it_t;
-  Image assembledImage(raster->sourceImage->width(), raster->sourceImage->height());
+  Image assembledImage(raster->sourceImage->w(), raster->sourceImage->h());
   assembledImage.fill(255);
 
   for (it_t = raster->tiles.begin(); it_t != raster->tiles.end(); it_t++) {

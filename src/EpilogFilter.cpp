@@ -456,15 +456,15 @@ int main(int argc, char *argv[])
 
   const char *rm;
 
-   if (lconf.raster_mode == 'c')
+ /*  if (lconf.raster_mode == 'c')
      rm = "bmp16m";
    else if (lconf.raster_mode == 'g')
      rm = "bmpgray";
    else
-     rm = "bmpmono";
+     rm = "bmpmono";*/
 
    // FIXME: While doing vector testing, set this to nullpage to speed up the gs run
-//  rm = "nullpage";
+  rm = "nullpage";
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector,
                            rm, lconf.resolution, lconf.height, lconf.width)) {
@@ -473,11 +473,11 @@ int main(int argc, char *argv[])
   }
 
   Cut *cut = Cut::load(filename_vector);
-  Raster *raster = Raster::load(filename_bitmap);
-  raster->addTile(new Tile(*raster->sourceImage));
+/*  Raster *raster = Raster::load(filename_bitmap);
+  raster->addTile(new Tile(*raster->sourceImage));*/
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
   job.addCut(cut);
-  job.addRaster(raster);
+//  job.addRaster(raster);
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!debug) {

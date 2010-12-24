@@ -11,7 +11,7 @@ void TPFilter::filter(Raster *raster)
 
   for (int j = 0; j < height; j++) {
     for (int i = 0; i < width; i++) {
-      pixel = (*raster->sourceImage)(i, j, 0, 0);
+      pixel = (*raster->sourceImage).pixel({i, j});
       if (pixel < 255) {
         Point2D m = { i, j };
         bool added = false;

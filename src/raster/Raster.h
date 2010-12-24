@@ -10,7 +10,7 @@ class Raster
 {
  public:
 	static Raster *load(const string &filename);
-	Image* sourceImage;
+	MMapImage* sourceImage;
   list<Tile*> tiles;
   list<DownSample*> grids;
 

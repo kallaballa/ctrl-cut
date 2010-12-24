@@ -55,16 +55,6 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 	int offx;
 	int offy;
 	int repeat;
-	int tile_cnt = 0;
-
-	stringstream ss;
-	ss << "/tmp/tile" << tile_cnt++ << ".bmp";
-	string filename = ss.str();
-
-	tile->save_bmp(filename.c_str());
-	FILE* bitmap_file = fopen(filename.c_str(), "r");
-
-	uint8_t bitmap_header[BITMAP_HEADER_NBYTES];
 
 	repeat = this->lconf->raster_repeat;
 	while (repeat--) {
@@ -78,18 +68,9 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 			passes = 1;
 		}
 
-		// Read in the bitmap header.
-		fread(bitmap_header, 1, BITMAP_HEADER_NBYTES, bitmap_file);
+		lconf->width = tile->width();
+		lconf->height = tile->height();
 
-		// Re-load width/height from bmp as it is possible that someone used  setpagedevice or some such
-		// Bytes 18 - 21 are the bitmap width (little endian format).
-		lconf->width = big_to_little_endian(bitmap_header + 18, 4);
-
-		// Bytes 22 - 25 are the bitmap height (little endian format).
-		lconf->height = big_to_little_endian(bitmap_header + 22, 4);
-
-		// Bytes 10 - 13 base offset for the beginning of the bitmap data.
-		base_offset = big_to_little_endian(bitmap_header + 10, 4);
 		char buf[102400];
 		if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
 			// colour/grey are byte per pixel power levels
@@ -116,7 +97,6 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 					int y;
 					char dir = 0;
 
-					fseek(bitmap_file, base_offset, SEEK_SET);
 					for (y = lconf->height - 1; y >= 0; y--) {
 						int l;
 
