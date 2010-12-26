@@ -17,7 +17,7 @@ public:
 	LstEdge freeEdges;
 	MapVertex vertices;
 
-	static Cut* load(const string &filename);
+	static Cut* load(const std::string &filename);
 
 	void createEdge(Vertex *start, Vertex *end, int power);
 	void removeEdge(Edge *e, bool detach);
@@ -29,8 +29,8 @@ public:
 	}
 	void xml(std::string s);
 	// Print debug info
-	void print(ostream &stream);
-	friend ostream& operator <<(ostream &os, Cut &cut);
+	void print(std::ostream &stream);
+	friend std::ostream& operator <<(std::ostream &os, Cut &cut);
 	Cut() : clipped(false) {}
 private:
 	bool clipped;

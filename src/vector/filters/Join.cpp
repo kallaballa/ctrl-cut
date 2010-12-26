@@ -1,4 +1,9 @@
 #include "Join.h"
+#include "../VTypes.h"
+#include "../Edge.h"
+#include "../Polyline.h"
+#include "../Cut.h"
+
 #include <boost/format.hpp>
 
 using boost::format;
@@ -7,10 +12,10 @@ Join::~Join() {
   // TODO Auto-generated destructor stub
 }
 
-void find_connected(set<Edge*> *occupied, Polyline *polyline,
+void find_connected(SetEdge *occupied, Polyline *polyline,
                     Edge* current) {
-  set<Edge*> connectors = current->getEnd()->getAttachedEdges();
-  set<Edge*>::iterator it;
+  SetEdge connectors = current->getEnd()->getAttachedEdges();
+  SetEdge::iterator it;
   Edge* candidate;
 
   occupied->insert(current);
@@ -32,7 +37,7 @@ void Join::filter(Cut *cut)
 {
   std::cerr << "Join" << std::endl;
 
-  set<Edge*> *occupied = new set<Edge*> ();
+  SetEdge *occupied = new SetEdge();
 
   Edge* ls;
   list<Edge*>::iterator it;

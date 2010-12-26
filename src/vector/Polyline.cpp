@@ -1,4 +1,5 @@
 #include "Polyline.h"
+#include "Edge.h"
 
 using namespace std;
 

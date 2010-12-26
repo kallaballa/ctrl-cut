@@ -1,4 +1,7 @@
 #include "Cut.h"
+#include "Vertex.h"
+#include "Edge.h"
+#include "Polyline.h"
 
 
 using boost::format;

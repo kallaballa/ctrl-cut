@@ -19,7 +19,7 @@ class Renderer {
 
 public:
 	LaserConfig *lconf;
-	void renderCut(Cut *cut, ostream &out);
+	void renderCut(Cut *cut, std::ostream &out);
 	Renderer(LaserConfig *lconf);
 	virtual ~Renderer();
 };

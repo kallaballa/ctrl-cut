@@ -1,4 +1,8 @@
 #include "Deonion.h"
+#include "../VTypes.h"
+#include "../Edge.h"
+#include "../Polyline.h"
+#include "../Cut.h"
 
 
 Deonion::~Deonion() {
@@ -6,8 +10,8 @@ Deonion::~Deonion() {
 }
 
 void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw) {
-  set<Edge*> connectors = edge->getEnd()->getAttachedEdges();
-  set<Edge*>::iterator it;
+  SetEdge connectors = edge->getEnd()->getAttachedEdges();
+  SetEdge::iterator it;
   Edge* candidate;
   Edge* next_edge = NULL;
 

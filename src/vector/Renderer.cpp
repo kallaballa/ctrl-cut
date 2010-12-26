@@ -6,6 +6,8 @@
  */
 
 #include "Renderer.h"
+#include "Polyline.h"
+#include "Edge.h"
 #include "boost/format.hpp"
 
 using boost::format;

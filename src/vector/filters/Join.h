@@ -1,10 +1,5 @@
-#ifndef FINDPOLYLINESFILTER_H_
-#define FINDPOLYLINESFILTER_H_
-
-#include <list>
-#include <set>
-#include "../Cut.h"
-#include <iostream>
+#ifndef JOIN_H_
+#define JOIN_H_
 
 class Join {
  public:
@@ -12,7 +7,7 @@ class Join {
   }
 
   virtual ~Join();
-  void filter(Cut *cut);
+  void filter(class Cut *cut);
 };
 
-#endif /* FINDPOLYLINESFILTER_H_ */
+#endif

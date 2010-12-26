@@ -1,4 +1,7 @@
 #include "Explode.h"
+#include "../VTypes.h"
+#include "../Edge.h"
+#include "../Cut.h"
 
 using boost::format;
 
@@ -11,8 +14,8 @@ void Explode::filter(Cut *cut) {
 	Vertex *intersec = NULL;
 	Edge *ls1, *ls2;
 
-	list<Edge*>::iterator it_i;
-	list<Edge*>::iterator it_j;
+	LstEdge::iterator it_i;
+	LstEdge::iterator it_j;
 
 	int cntLines = 0;
 	for (it_i = cut->freeEdges.begin(); it_i != cut->freeEdges.end(); it_i++) {

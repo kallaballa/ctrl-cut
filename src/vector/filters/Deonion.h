@@ -1,8 +1,6 @@
 #ifndef DEONION_H_
 #define DEONION_H_
 
-#include "../Cut.h"
-#include "../VTypes.h"
 #include <math.h>
 #include <iostream>
 
@@ -12,7 +10,7 @@ class Deonion {
     {
     }
   virtual ~Deonion();
-  void filter(Cut *cut);
+  void filter(class Cut *cut);
 };
 
-#endif /* DEONIONFILTER_H_ */
+#endif
