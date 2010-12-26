@@ -58,7 +58,8 @@ runtest()
         plstr="OK"
     fi
     pad $plstr 14
-    if [ $lenA != $lenB ]; then
+    lenerr=`echo $lenA $lenB | awk '{print ($1 - $2 < -1 || $1 - $2 > 1)}'`
+    if [ $lenerr != 0 ]; then
         lenstr="$lenA->$lenB"
     else
         lenstr="OK"
