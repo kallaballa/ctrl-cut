@@ -1,4 +1,5 @@
 TARGET = EpilogFilter
+CONFIG -= qt
 macx {
   CONFIG -= app_bundle
   INCLUDEPATH += /opt/local/include 
@@ -11,53 +12,34 @@ DEFINES += cimg_display=0
 LIBS += -lcups
 
 SOURCES = \
-          src/DeonionFilter.cpp \
           src/Driver.cpp \
           src/EpilogFilter.cpp \
-          src/FilterChain.cpp \
-          src/FindPolylinesFilter.cpp \
-          src/Joint.cpp \
           src/LaserJob.cpp \
-          src/LineSegment.cpp \
-          src/OnionSkin.cpp \
-          src/Polygon.cpp \
-          src/Polyline.cpp \
-          src/RasterPass.cpp \
-          src/Filter.cpp \
-          src/SerializeOnionSkinsFilter.cpp \
-          src/SplitIntersectionsFilter.cpp \
-          src/TAFilter.cpp \
-          src/TilePartitioner.cpp \
-          src/TPFilter.cpp \
-          src/VectorPass.cpp \
-          src/laser_config.cpp \
-          src/eps_converter.cpp
+          src/util/Eps.cpp \
+          src/util/LaserConfig.cpp \
+          src/vector/Cut.cpp \
+          src/vector/Polyline.cpp \
+          src/vector/Vertex.cpp \
+          src/vector/Edge.cpp \
+          src/vector/Renderer.cpp \
+          src/vector/filters/Deonion.cpp \
+          src/vector/filters/Explode.cpp \
+          src/vector/filters/Join.cpp
 
 HEADERS = \
-          src/CImg.h \
-          src/DeonionFilter.h \
           src/Driver.h \
           src/EpilogFilter.h \
-          src/Filter.h \
-          src/FilterChain.h \
-          src/FindPolylinesFilter.h \
-          src/Joint.h \
-          src/Laser.h \
-          src/laser_config.h \
-          src/eps_converter.h \
           src/LaserJob.h \
-          src/LaserPass.h \
-          src/VectorPass.h \
-          src/RasterPass.h \
-          src/LineSegment.h \
-          src/OnionSkin.h \
-          src/pjl.h \
-          src/Polygon.h \
-          src/Polyline.h \
-          src/Primitives.h \
-          src/Raster.h \
-          src/SerializeOnionSkinsFilter.h \
-          src/SplitIntersectionsFilter.h \
-          src/TAFilter.h \
-          src/TilePartitioner.h \
-          src/TPFilter.h
+          src/util/Eps.h \
+          src/util/LaserConfig.h \
+          src/util/PJL.h \
+          src/vector/Cut.h \
+          src/vector/Polyline.h \
+          src/vector/VTypes.h \
+          src/vector/Edge.h \
+          src/vector/Renderer.h \
+          src/vector/Vertex.h \
+          src/vector/filters/Deonion.h \
+          src/vector/filters/Filters.h \
+          src/vector/filters/Explode.h \
+          src/vector/filters/Join.h
