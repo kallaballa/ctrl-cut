@@ -21,7 +21,7 @@ class Vertex {
   string getKey();
   void attach(class Edge *ls);
   void detach(Edge *ls);
-  set<Edge*> getAttachedEdges();
+  SetEdge getAttachedEdges();
   friend ostream& operator <<(ostream &os,const Vertex &v);
 
  private:
@@ -30,7 +30,7 @@ class Vertex {
   int x;
   int y;
   string key;
-  set<Edge*> attachedEdges;
+  SetEdge attachedEdges;
 
   void updateKey();
 };
