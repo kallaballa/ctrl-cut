@@ -23,7 +23,13 @@ else
 fi
 
 python/rtl2svg.py -c $file $file.svg
+if [ $? -ne 0 ]; then
+  echo "rtl2svn.py failed"
+fi
 svg2pdf $file.svg $file.pdf
+if [ $? -ne 0 ]; then
+  echo "svg2pdf failed"
+fi
 pdftoppm -q -r 36 -mono $file.pdf tmpfile 2>/dev/null
 # Segmentation fault - it has happened
 if [ $? -eq 139 ]; then
