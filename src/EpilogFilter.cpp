@@ -497,6 +497,8 @@ int main(int argc, char *argv[])
 
   Driver drv;
   drv.process(&job);
+
+  delete cut;
   clock_t end = clock() - start;
   cerr << endl << "Clocks: " << end << endl;
   cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;

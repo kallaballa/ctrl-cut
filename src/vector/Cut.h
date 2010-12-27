@@ -32,9 +32,9 @@ public:
 	void print(std::ostream &stream);
 	friend std::ostream& operator <<(std::ostream &os, Cut &cut);
 	Cut() : clipped(false) {}
+	virtual ~Cut() {}
 private:
 	bool clipped;
-	virtual ~Cut() {}
 };
 
 

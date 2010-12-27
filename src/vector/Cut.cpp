@@ -70,9 +70,9 @@ LstEdge::iterator Cut::removeEdge(LstEdge::iterator it_e, bool detach) {
   return freeEdges.erase(it_e);
 }
 
-Cut* Cut::load(const string &filename) {
-	Cut cut;
-	string line;
+Cut *Cut::load(const string &filename) {
+  Cut *cut = new Cut();
+  string line;
   ifstream infile(filename.c_str(), ios_base::in);
   char first;
   int power, x, y;
@@ -100,7 +100,7 @@ Cut* Cut::load(const string &filename) {
         break;
       case 'C': // close
         if (lx != mx || ly != my) {
-        	cut.createEdge(new Vertex(lx, ly), new Vertex(mx, my), power);
+        	cut->createEdge(new Vertex(lx, ly), new Vertex(mx, my), power);
         }
         break;
       case 'P': // power
@@ -114,7 +114,7 @@ Cut* Cut::load(const string &filename) {
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
           start = new Vertex(lx, ly);
           end = new Vertex(x, y);
-          cut.createEdge(start, end, power);
+          cut->createEdge(start, end, power);
           lx = x;
           ly = y;
         }
@@ -124,7 +124,7 @@ Cut* Cut::load(const string &filename) {
   }
   infile.close();
 
-  return &cut;
+  return cut;
 }
 
 /*
