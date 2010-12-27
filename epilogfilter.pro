@@ -1,5 +1,5 @@
 TARGET = EpilogFilter
-CONFIG += raster
+#CONFIG += raster
 CONFIG -= qt
 macx {
   CONFIG -= app_bundle
