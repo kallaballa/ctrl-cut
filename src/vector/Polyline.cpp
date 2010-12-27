@@ -58,8 +58,8 @@ Edge* Polyline::findSteapest() {
 			most_left = ls->getEnd();
 		}
 	}
-	set<Edge*>::iterator it_c;
-	set<Edge*> connected = most_left->getAttachedEdges();
+	SetEdge::iterator it_c;
+	SetEdge connected = most_left->getAttachedEdges();
 
 	Edge* edge;
 	float slope;
