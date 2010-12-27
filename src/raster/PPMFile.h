@@ -16,7 +16,7 @@ using namespace std;
 class PPMFile {
 public:
 	PPMFile();
-	virtual ~PPMFile();
+	virtual ~PPMFile(){};
 
 	MMapImage load(string filename);
 	bool skip(ifstream& in, char * name, int v);
