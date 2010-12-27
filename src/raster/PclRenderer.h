@@ -15,6 +15,7 @@
 #include "../LaserJob.h"
 #include "RTypes.h"
 #include "Raster.h"
+#include "MMapImage.h"
 
 class PclRenderer {
 
@@ -22,7 +23,7 @@ public:
 	LaserConfig *lconf;
 
 	void renderRaster(Raster *raster, ostream &out);
-	void renderTile(Tile* tile, ostream& out);
+	void renderTile(MMapImage* tile, ostream& out);
 
 	PclRenderer(LaserConfig *lconf);
 	virtual ~PclRenderer();

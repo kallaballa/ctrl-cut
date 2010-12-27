@@ -3,6 +3,7 @@
 
 #include "RTypes.h"
 #include "DownSample.h"
+#include "MMapImage.h"
 
 using namespace std;
 
@@ -11,17 +12,17 @@ class Raster
  public:
 	static Raster *load(const string &filename);
 	MMapImage* sourceImage;
-  list<Tile*> tiles;
+  list<MMapImage*> tiles;
   list<DownSample*> grids;
 
-  Raster(Image* sourceImage) {
+  Raster(MMapImage* sourceImage) {
     this->sourceImage = sourceImage;
   }
 
   virtual ~Raster() {}
 
-  void addSourceImage(Image* img);
-  void addTile(Tile* tile);
+  void addSourceImage(MMapImage* img);
+  void addTile(MMapImage* tile);
 };
 
 #endif

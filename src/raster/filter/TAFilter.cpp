@@ -32,8 +32,8 @@ void TAFilter::filter(Raster *raster)
         newTileDim.adjustTo(c);
       }
     }
-    MMapImage* tile = raster->sourceImage->tile(newTileDim.ul_x, newTileDim.ul_y, newTileDim.lr_x - newTileDim.ul_x, newTileDim.lr_y - newTileDim.ul_y);
-    raster->tiles.push_back(tile);
+/*    MMapImage<unsigned char>* tile = raster->sourceImage->tile((offset_t)newTileDim.ul_x, (offset_t)newTileDim.ul_y,(size_t) newTileDim.lr_x - newTileDim.ul_x, (size_t) newTileDim.lr_y - newTileDim.ul_y);
+    raster->tiles.push_back(tile);*/
     startNewTile = true;
   }
 

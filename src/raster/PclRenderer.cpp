@@ -17,7 +17,7 @@ PclRenderer::~PclRenderer() {
 }
 
 void PclRenderer::renderRaster(Raster* raster, ostream& out) {
-	list<Tile*>::iterator it;
+	list<MMapImage*>::iterator it;
 	// Raster Orientation
 	out << format(R_ORIENTATION) % 0;
 	// Raster power
@@ -47,7 +47,7 @@ void PclRenderer::renderRaster(Raster* raster, ostream& out) {
 	out << "\26" << "\4"; // some end of file markers
 }
 
-void PclRenderer::renderTile(Tile* tile, ostream& out) {
+void PclRenderer::renderTile(MMapImage* tile, ostream& out) {
 	//TODO handle debug flag properly
 	char debug = 1;
 	int h;
@@ -72,17 +72,7 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 		lconf->height = tile->height();
 
 		char buf[102400];
-		if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
-			// colour/grey are byte per pixel power levels
-			h = lconf->width;
-			// BMP padded to 4 bytes per scan line
-			d = (h * 3 + 3) / 4 * 4;
-		} else {
-			// mono
-			h = (lconf->width + 7) / 8;
-			// BMP padded to 4 bytes per scan line
-			d = (h + 3) / 4 * 4;
-		}
+
 		if (debug) {
 			fprintf(stderr, "Width %d Height %d Bytes %d Line %d\n",
 					lconf->width, lconf->height, h, d);
@@ -103,80 +93,19 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 						switch (lconf->raster_mode) {
 						case 'c': // colour (passes)
 						{
-							char *f = buf;
-							char *t = buf;
-							if (d > sizeof(buf)) {
-								perror("Too wide");
-								return;
-							}
-							l = fread(buf, 1, d, bitmap_file);
-							if (l != d) {
-								fprintf(stderr,
-										"Bad bit data from gs %d/%d (y=%d)\n",
-										l, d, y);
-								return;
-							}
-							while (l--) {
-								// pack and pass check RGB
-								int n = 0;
-								int v = 0;
-								int p = 0;
-								int c = 0;
-								for (c = 0; c < 3; c++) {
-									if (*f > 240) {
-										p |= (1 << c);
-									} else {
-										n++;
-										v += *f;
-									}
-									f++;
-								}
-								if (n) {
-									v /= n;
-								} else {
-									p = 0;
-									v = 255;
-								}
-								if (p != pass) {
-									v = 255;
-								}
-								*t++ = 255 - v;
-							}
 						}
 							break;
 						case 'g': // grey level
 						{
-							//BMP padded to 4 bytes per scan line
-							int d = (h + 3) / 4 * 4;
-							if (d > sizeof(buf)) {
-								fprintf(stderr, "Too wide\n");
-								return;
-							}
-							l = fread((char *) buf, 1, d, bitmap_file);
-							if (l != d) {
-								fprintf(stderr,
-										"Bad bit data from gs %d/%d (y=%d)\n",
-										l, d, y);
-								return;
-							}
-							for (l = 0; l < h; l++) {
-								buf[l] = (255 - (uint8_t) buf[l]);
+							for (int x = 0; x < lconf->width; x++) {
+								buf[l] = (255 - (uint8_t) tile->pixel({x, y}));
 							}
 						}
 							break;
 						default: // mono
 						{
-							int d = (h + 3) / 4 * 4; // BMP padded to 4 bytes per scan line
-							if (d > sizeof(buf)) {
-								perror("Too wide");
-								return;
-							}
-							l = fread((char *) buf, 1, d, bitmap_file);
-							if (l != d) {
-								fprintf(stderr,
-										"Bad bit data from gs %d/%d (y=%d)\n",
-										l, d, y);
-								return;
+							for (int x = 0; x < lconf->width; x++) {
+								buf[l] = tile->pixel({x, y});
 							}
 						}
 						}
@@ -264,5 +193,4 @@ void PclRenderer::renderTile(Tile* tile, ostream& out) {
 		}
 
 	}
-	fclose(bitmap_file);
 }

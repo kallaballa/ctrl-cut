@@ -1,27 +1,25 @@
-#include "RTypes.h"
+#include "MMapImage.h"
 
-using namespace boost::interprocess;
-
-MMapImage::MMapImage(string filename, size_t width, size_t height, size_t bpp, offset_t x, offset_t y) {
+MMapImage::MMapImage(string filename, size_t width, size_t height, offset_t x, offset_t y, offset_t region_off) {
 	this->filename = filename;
 	this->m_file = new file_mapping(filename.c_str(), read_only);
-	this->m_region = mapped_region(this->m_file, read_only, x * y * bpp, width * height * bpp);
+	this->bytes_per_pixel = sizeof(unsigned char);
+	this->m_region = mapped_region(this->m_file, read_only, region_off + (x * y * bytes_per_pixel), width * height * bytes_per_pixel);
 	this->addr = m_region.get_address();
 	this->size = m_region.get_size();
-	this->bpp = bpp;
 	this->x = x;
 	this->y = y;
 	this->w = width;
 	this->h = height;
 }
 
-MMapImage::MMapImage(file_mapping* m_file, string filename, size_t width, size_t height, size_t bpp, offset_t x, offset_t y) {
+MMapImage::MMapImage(file_mapping* m_file, string filename, size_t width, size_t height, offset_t x, offset_t y) {
 	this->filename = filename;
 	this->m_file = m_file;
-	this->m_region = mapped_region(this->m_file, read_only, x * y * bpp, width * height * bpp);
+	this->m_region = mapped_region(this->m_file, read_only, x * y * bytes_per_pixel, width * height * bytes_per_pixel);
 	this->addr = m_region.get_address();
 	this->size = m_region.get_size();
-	this->bpp = bpp;
+	this->bytes_per_pixel = sizeof(unsigned char);
 	this->x = x;
 	this->y = y;
 	this->w = width;
@@ -36,20 +34,25 @@ size_t MMapImage::height() {
 	return this->h;
 }
 
-offset_t MMapImage::point2offset(Point2D p) {
-	return p.y * w + p.x;
+size_t MMapImage::offsetX() {
+	return this->x;
 }
 
-const unsigned char* MMapImage::point2addr(Point2D p) {
-  return (static_cast<unsigned char*>(addr))+point2offset(p);
+size_t MMapImage::offsetY() {
+	return this->y;
+}
+
+
+const unsigned char* MMapImage::point2pointer(Point2D p) {
+  return (static_cast<unsigned char*>(addr))+(p.y * w + p.x);
 }
 
 unsigned char MMapImage::pixel(Point2D p){
-	return *point2addr(p);
+	return *point2pointer(p);
 }
 
 MMapImage* MMapImage::tile(offset_t x, offset_t y, size_t width, size_t height) {
-	return new MMapImage(this->m_file, this->filename, width, height, this->bpp, x, y);
+	return new MMapImage(this->m_file, this->filename, width, height, x, y);
 }
 
 /*
