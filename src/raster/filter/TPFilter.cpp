@@ -11,9 +11,9 @@ void TPFilter::filter(Raster *raster)
 
   for (int j = 0; j < height; j++) {
     for (int i = 0; i < width; i++) {
-      pixel = (*raster->sourceImage).pixel({i, j});
+      pixel = (*raster->sourceImage).pixel(Point2D(i, j));
       if (pixel < 255) {
-        Point2D m = { i, j };
+        Point2D m(i, j);
         bool added = false;
         for (it_tp = raster->grids.begin(); it_tp
                != raster->grids.end(); it_tp++) {

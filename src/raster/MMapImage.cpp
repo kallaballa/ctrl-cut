@@ -4,7 +4,7 @@ MMapImage::MMapImage(string filename, size_t width, size_t height, offset_t x, o
 	this->filename = filename;
 	this->m_file = new file_mapping(filename.c_str(), read_only);
 	this->bytes_per_pixel = sizeof(unsigned char);
-	this->m_region = mapped_region(this->m_file, read_only, region_off + (x * y * bytes_per_pixel), width * height * bytes_per_pixel);
+	this->m_region = mapped_region(*this->m_file, read_only, region_off + (x * y * bytes_per_pixel), width * height * bytes_per_pixel);
 	this->addr = m_region.get_address();
 	this->size = m_region.get_size();
 	this->x = x;
@@ -16,7 +16,7 @@ MMapImage::MMapImage(string filename, size_t width, size_t height, offset_t x, o
 MMapImage::MMapImage(file_mapping* m_file, string filename, size_t width, size_t height, offset_t x, offset_t y) {
 	this->filename = filename;
 	this->m_file = m_file;
-	this->m_region = mapped_region(this->m_file, read_only, x * y * bytes_per_pixel, width * height * bytes_per_pixel);
+	this->m_region = mapped_region(*this->m_file, read_only, x * y * bytes_per_pixel, width * height * bytes_per_pixel);
 	this->addr = m_region.get_address();
 	this->size = m_region.get_size();
 	this->bytes_per_pixel = sizeof(unsigned char);

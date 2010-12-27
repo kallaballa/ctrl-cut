@@ -11,6 +11,7 @@
 using namespace std;
 
 struct Point2D {
+  Point2D(int x, int y) : x(x), y(y) { }
   int x, y;
 };
 
