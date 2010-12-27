@@ -29,7 +29,7 @@ void Driver::filter(LaserJob *job) {
 }
 
 void Driver::process(LaserJob *job) {
-	//filter(job);
+	filter(job);
 	stringstream ss;
 	job->serializeTo(ss);
 	std::cerr << ss.str().size();
