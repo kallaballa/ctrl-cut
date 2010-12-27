@@ -80,7 +80,7 @@ void PPMFile::debug(char * c, int val[]) {
 }
 
 //bRead == v
-bool PPMFile::skip(ifstream in, char * name, int v) {
+bool PPMFile::skip(ifstream& in, char * name, int v) {
   int r;
   in >> r;
   if(r != v) {
@@ -90,7 +90,7 @@ bool PPMFile::skip(ifstream in, char * name, int v) {
   return true;
 }
 
-bool PPMFile::skipSpace(ifstream in) {
+bool PPMFile::skipSpace(ifstream& in) {
   int r;
   in >> r;
   if(!isspace(r)){
@@ -101,7 +101,7 @@ bool PPMFile::skipSpace(ifstream in) {
 }
 
 //consume \s*, return first none whitespace
-int PPMFile::consumeSpace(ifstream in) {
+int PPMFile::consumeSpace(ifstream& in) {
   int r;
   while(in >> r) {
   	if(!isspace(r))

@@ -19,9 +19,9 @@ public:
 	virtual ~PPMFile();
 
 	MMapImage load(string filename);
-	bool skip(ifstream in, char * name, int v);
-	bool skipSpace(ifstream in);
-	int consumeSpace(ifstream in);
+	bool skip(ifstream& in, char * name, int v);
+	bool skipSpace(ifstream& in);
+	int consumeSpace(ifstream& in);
 	bool check(char * name, int val);
 	int readMagic(ifstream& in);
 	int readNum(ifstream& in, int maxdigits);
