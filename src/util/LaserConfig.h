@@ -44,8 +44,8 @@
 /** Default speed for raster engraving */
 #define RASTER_SPEED_DEFAULT (100)
 
-/** Default resolution is 300 DPI */
-#define RESOLUTION_DEFAULT (300)
+/** Default resolution in DPI */
+#define RESOLUTION_DEFAULT (600)
 
 /** Pixel size of screen (0 is threshold).
  * FIXME - add more details

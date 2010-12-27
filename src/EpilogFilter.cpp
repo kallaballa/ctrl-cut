@@ -164,8 +164,8 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
   sprintf(
           buf,
           "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-          GS_EXECUTABLE, resolution, width,
-          height, bmp_mode, filename_bitmap,
+          GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
+          (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
           filename_eps, filename_vector);
 
   if (debug) {
