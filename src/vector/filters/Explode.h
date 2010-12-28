@@ -2,7 +2,7 @@
 #define EXPLODE_H_
 
 class Explode {
- public:
+public:
   Explode() {
   }
   virtual ~Explode();

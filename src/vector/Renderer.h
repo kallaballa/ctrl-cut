@@ -1,10 +1,3 @@
-/*
- * Renderer.h
- *
- *  Created on: Dec 13, 2010
- *      Author: elchaschab
- */
-
 #ifndef RENDERER_H_
 #define RENDERER_H_
 
@@ -18,10 +11,10 @@
 class Renderer {
 
 public:
-	LaserConfig *lconf;
-	void renderCut(Cut *cut, std::ostream &out);
-	Renderer(LaserConfig *lconf);
-	virtual ~Renderer();
+  LaserConfig *lconf;
+  void renderCut(Cut *cut, std::ostream &out);
+  Renderer(LaserConfig *lconf);
+  virtual ~Renderer();
 };
 
 #endif /* RENDERER_H_ */

@@ -12,10 +12,10 @@ private:
 
 
 public:
-    Driver();
-    virtual ~Driver();
-    void filter(LaserJob *job);
-    void process(LaserJob *job);
+  Driver();
+  virtual ~Driver();
+  void filter(LaserJob *job);
+  void process(LaserJob *job);
 };
 
 #endif /* DRIVER_H_ */

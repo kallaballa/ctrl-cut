@@ -2,7 +2,7 @@
 #define JOIN_H_
 
 class Join {
- public:
+public:
   Join(){
   }
 

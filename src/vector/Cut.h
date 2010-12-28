@@ -13,28 +13,28 @@
 
 class Cut {
 public:
-	VecPolyline polylines;
-	LstEdge freeEdges;
-	MapVertex vertices;
+  VecPolyline polylines;
+  LstEdge freeEdges;
+  MapVertex vertices;
 
-	static Cut* load(const std::string &filename);
+  static Cut* load(const std::string &filename);
 
-	void createEdge(Vertex *start, Vertex *end, int power);
-	void removeEdge(Edge *e, bool detach);
-	LstEdge::iterator removeEdge(LstEdge::iterator it_e, bool detach);
-	Vertex* mapVertex(Vertex* p);
+  void createEdge(Vertex *start, Vertex *end, int power);
+  void removeEdge(Edge *e, bool detach);
+  LstEdge::iterator removeEdge(LstEdge::iterator it_e, bool detach);
+  Vertex* mapVertex(Vertex* p);
 
-	bool wasClipped() const {
-		return this->clipped;
-	}
-	void xml(std::string s);
-	// Print debug info
-	void print(std::ostream &stream);
-	friend std::ostream& operator <<(std::ostream &os, Cut &cut);
-	Cut() : clipped(false) {}
-	virtual ~Cut() {}
+  bool wasClipped() const {
+    return this->clipped;
+  }
+  void xml(std::string s);
+  // Print debug info
+  void print(std::ostream &stream);
+  friend std::ostream& operator <<(std::ostream &os, Cut &cut);
+  Cut() : clipped(false) {}
+  virtual ~Cut() {}
 private:
-	bool clipped;
+  bool clipped;
 };
 
 

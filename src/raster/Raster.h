@@ -9,9 +9,9 @@ using namespace std;
 
 class Raster
 {
- public:
-	static Raster *load(const string &filename);
-	MMapImage* sourceImage;
+public:
+  static Raster *load(const string &filename);
+  MMapImage* sourceImage;
   list<MMapImage*> tiles;
   list<DownSample*> grids;
 

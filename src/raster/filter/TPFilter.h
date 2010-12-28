@@ -8,9 +8,9 @@
 using std::list;
 
 class TPFilter {
- private:
+private:
 
- public:
+public:
   TPFilter() {}
   virtual ~TPFilter(){}
   virtual void filter(class Raster* raster);

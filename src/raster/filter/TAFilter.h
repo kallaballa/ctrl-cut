@@ -7,9 +7,9 @@
 #include <list>
 
 class TAFilter {
- private:
+private:
 
- public:
+public:
   TAFilter() {}
   virtual ~TAFilter(){}
   virtual void filter(Raster* raster);

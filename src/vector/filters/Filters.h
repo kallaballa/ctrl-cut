@@ -1,10 +1,3 @@
-/*
- * Filters.h
- *
- *  Created on: Dec 13, 2010
- *      Author: amir
- */
-
 #ifndef FILTERS_H_
 #define FILTERS_H_
 

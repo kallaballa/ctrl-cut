@@ -40,7 +40,7 @@ static int big_to_little_endian(uint8_t *position, int nbytes) {
 
 class LaserJob
 {
- public:
+public:
   string name;   /*! Job name for the print. */
   string user;   /*! User name that submitted the print job. */
   string title;  /*! Title for the print job. */

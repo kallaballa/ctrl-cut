@@ -1,10 +1,3 @@
-/*
- * Renderer.h
- *
- *  Created on: Dec 13, 2010
- *      Author: elchaschab
- */
-
 #ifndef PCL_RENDERER_H_
 #define PCL_RENDERER_H_
 
@@ -20,13 +13,13 @@
 class PclRenderer {
 
 public:
-	LaserConfig *lconf;
+  LaserConfig *lconf;
 
-	void renderRaster(Raster *raster, ostream &out);
-	void renderTile(MMapImage* tile, ostream& out);
+  void renderRaster(Raster *raster, ostream &out);
+  void renderTile(MMapImage* tile, ostream& out);
 
-	PclRenderer(LaserConfig *lconf);
-	virtual ~PclRenderer();
+  PclRenderer(LaserConfig *lconf);
+  virtual ~PclRenderer();
 };
 
 #endif /* PCL_RENDERER_H_ */

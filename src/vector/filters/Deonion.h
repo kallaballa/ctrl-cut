@@ -5,10 +5,10 @@
 #include <iostream>
 
 class Deonion {
- public:
+public:
   Deonion()
-    {
-    }
+  {
+  }
   virtual ~Deonion();
   void filter(class Cut *cut);
 };

@@ -12,8 +12,8 @@
 
 
 class Edge {
- public:
-	int pos;
+public:
+  int pos;
   enum IntersectResult { PARALLEL, COINCIDENT, NOT_INTERSECTING, INTERSECTING };
 
   Edge(Vertex *start, Vertex *end, int power);
@@ -32,7 +32,7 @@ class Edge {
 
   friend ostream& operator <<(ostream &os, Edge &e);
 
- private:
+private:
   static int cnt;
   int id;
   Vertex *v[2];

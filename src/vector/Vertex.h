@@ -10,7 +10,7 @@
 using namespace std;
 
 class Vertex {
- public:
+public:
   Vertex(int x, int y);
   virtual ~Vertex();
   int getX();
@@ -24,7 +24,7 @@ class Vertex {
   SetEdge getAttachedEdges();
   friend ostream& operator <<(ostream &os,const Vertex &v);
 
- private:
+private:
   static int cnt;
   int id;
   int x;

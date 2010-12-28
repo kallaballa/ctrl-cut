@@ -1,3 +1,21 @@
+/*
+ * EpilogCUPS - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #include "PPMFile.h"
 
 #ifndef DEBUG
@@ -5,9 +23,9 @@
 #endif
 
 #ifdef DEBUG
-  #define DBG(c,val) debug(__LINE__,c, val)
+#define DBG(c,val) debug(__LINE__,c, val)
 #else
-  #define DBG(c,val)
+#define DBG(c,val)
 #endif
 
 #define ERR(c,val) error(__LINE__,c, val)
@@ -17,35 +35,35 @@ PPMFile::PPMFile() {
 }
 
 MMapImage PPMFile::load(string filename) {
-	ifstream in;
+  ifstream in;
 
-	in.open(filename.c_str());
+  in.open(filename.c_str());
 
-	if (!in) {
-	    cerr << "Unable to open file datafile.txt";
-	    exit(1);   // call system to stop
-	}
-
-	int magic, width, height, maxval;
-
-/* if(!check("magic", magic = readMagic(in)))
-    return;
-
-  if(!check("width", width = readNum(in, 7)))
-    return;
-
-  if(!check("height", height  = readNum(in, 7)))
-    return;
-
-  if(!check("maxval", maxval  = readNum(in, 5)))
-     return;
-
-  if(maxval != 255) {
-    ERR("maxval not supported", maxval);
-    return;
+  if (!in) {
+    cerr << "Unable to open file datafile.txt";
+    exit(1);   // call system to stop
   }
 
-	return new MMapImage(filename, width, height, 0, 0, 0);*/
+  int magic, width, height, maxval;
+
+  /* if(!check("magic", magic = readMagic(in)))
+     return;
+
+     if(!check("width", width = readNum(in, 7)))
+     return;
+
+     if(!check("height", height  = readNum(in, 7)))
+     return;
+
+     if(!check("maxval", maxval  = readNum(in, 5)))
+     return;
+
+     if(maxval != 255) {
+     ERR("maxval not supported", maxval);
+     return;
+     }
+
+     return new MMapImage(filename, width, height, 0, 0, 0);*/
 }
 
 void PPMFile::echo(char * c, int val) {
@@ -55,28 +73,28 @@ void PPMFile::echo(char * c, int val) {
 }
 
 void PPMFile::error(int line, char * c, int val) {
-	std::cerr << "[E] ";
-	std::cerr << line;
-	std::cerr << ": ";
+  std::cerr << "[E] ";
+  std::cerr << line;
+  std::cerr << ": ";
   echo(c, val);
 }
 
 void PPMFile::debug(int line, char * c, int val) {
-	std::cerr << "[D] ";
-	std::cerr << line;
-	std::cerr << ": ";
-    echo(c, val);
+  std::cerr << "[D] ";
+  std::cerr << line;
+  std::cerr << ": ";
+  echo(c, val);
 }
 
 void PPMFile::debug(char * c, int val[]) {
-	std::cerr << "[D] ";
-	std::cerr << c;
-	std::cerr << " ";
-    for(int i = 0; i < sizeof(val); i++) {
-    	std::cerr << val[i];
-    	std::cerr << " ";
-    }
-    std::cerr << std::endl;
+  std::cerr << "[D] ";
+  std::cerr << c;
+  std::cerr << " ";
+  for(int i = 0; i < sizeof(val); i++) {
+    std::cerr << val[i];
+    std::cerr << " ";
+  }
+  std::cerr << std::endl;
 }
 
 //bRead == v
@@ -104,9 +122,9 @@ bool PPMFile::skipSpace(ifstream& in) {
 int PPMFile::consumeSpace(ifstream& in) {
   int r;
   while(in >> r) {
-  	if(!isspace(r))
-  		break;
-  	DBG("consumed", r);
+    if(!isspace(r))
+      break;
+    DBG("consumed", r);
   }
 
   DBG("not consumed", r);
@@ -125,11 +143,11 @@ bool PPMFile::check(char * name, int val) {
 
 //P\n+\s
 int PPMFile::readMagic(ifstream& in)  {
-	int r;
-	while (in >> r) {
-  	if(r == 'P')
-			break;
-	}
+  int r;
+  while (in >> r) {
+    if(r == 'P')
+      break;
+  }
   return readNum(in, 4);
 }
 
@@ -140,8 +158,8 @@ int PPMFile::readNum(ifstream& in, int maxdigits) {
   if(isdigit(num[0] = consumeSpace(in))) {
     bool skipWs = true;
     for(int i = 1; i < maxdigits; i++) {
-    	in >> r;
-    	if(!isdigit(r)) {
+      in >> r;
+      if(!isdigit(r)) {
         if(isspace(r)) {
           skipWs = false;
           num[i] = '\0';
