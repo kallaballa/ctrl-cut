@@ -15,6 +15,10 @@ runtest()
 
   # Generate a PCL/RTL file using our filter
   scripts/run-filter.sh $1 > $outfile 2> $testcase.log
+  if [ $? != 0 ]; then
+    error "filter failed with return code $?"
+    return
+  fi
 
   # Binary compare with the outout of the Windows drivers
   diff -a $srcdir/$testcase.prn $outfile >> $testcase.log

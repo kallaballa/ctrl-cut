@@ -27,3 +27,4 @@ export PRINTER=passthrough
 export USER=root
 
 $filter 32 kintel `basename $file ps`cdr 1 options $file
+exit $?
