@@ -1,0 +1,21 @@
+How to manually install the CUPS driver for production use
+==========================================================
+
+FIXME: This only works for ethernet-connected laser cutters. USB is not supported atm.
+
+Mac OS X (10.6)
+---------------
+
+System Preferences -> Print & Fax -> + (Add Printer) -> IP tab:
+Protocol: Line Printer Deamon - LPD
+Address: Whatever IP your lazzzor has
+Queue: <blank>
+Name: <your choice>
+Location: <your choice>
+Print Using: Other -> EpilogCups/etc/ppd/EpilogLegend36EXT.ppd
+
+-> Add
+
+Linux
+-----
+
