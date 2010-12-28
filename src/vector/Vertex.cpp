@@ -68,6 +68,7 @@ bool Vertex::equals(Vertex *other) {
 }
 
 ostream& operator <<(ostream &os,const Vertex &v) {
-	os << "<vertex x=\"" << v.x << "\" y=\"" << v.y << "\" id=\"" << v.id << "\" key=\"" << v.key << "\" />" << std::endl;
-	return os;
+  os << "<vertex x=\"" << v.x << "\" y=\"" << v.y << "\" id=\"" << v.id
+     << "\" key=\"" << v.key << "\" />" << std::endl;
+  return os;
 }

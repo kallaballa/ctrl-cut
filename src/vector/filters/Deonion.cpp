@@ -7,43 +7,36 @@
 Deonion::~Deonion() {
 }
 
-void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw) {
+void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
+{
   SetEdge connectors = edge->getEnd()->getAttachedEdges();
   SetEdge::iterator it;
-  Edge* candidate;
-  Edge* next_edge = NULL;
+  Edge *next_edge = NULL;
 
   float edge_slope = edge->getSlope(true);
-  float candidate_slope;
 
   float slope_diff;
   float min_slope_diff = 2 * M_PI;
 
-  //TODO resolve double check
   if (p->contains(edge)) {
     skin->add(edge);
     p->remove(edge);
   }
 
   for (it = connectors.begin(); it != connectors.end(); it++) {
-    candidate = *it;
+    Edge *candidate = *it;
 
-    if (candidate == edge || !p->contains(candidate)) {
-      continue;
-    }
+    if (candidate == edge || !p->contains(candidate)) continue;
 
     if (candidate->getStart() != edge->getEnd()) {
       candidate->invertDirection();
     }
 
-    candidate_slope = candidate->getSlope();
+    float candidate_slope = candidate->getSlope();
 
     slope_diff = edge_slope - candidate_slope;
     if (slope_diff < 0) {
       slope_diff += 2*M_PI;
-    }
-    else if (slope_diff > 2*M_PI) {
-      slope_diff -= 2*M_PI;
     }
 
     if (slope_diff < min_slope_diff) {
@@ -53,6 +46,10 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw) {
   }
 
   if (next_edge == NULL && cw) {
+    // if we traversed a closed polyline, emit a skin and continue,
+    // else, we reached a possible blind alley and must backtrack
+    if (skin->edges.front()->getStart() == skin->edges.back()->getEnd()) return;
+
     edge->invertDirection();
     walkTheEdge(p, skin, edge, !cw);
   } else if (next_edge != NULL) {
@@ -78,7 +75,7 @@ void Deonion::filter(Cut *cut)
     }
     while (p->count() > 0) {
       Polyline *skin = new Polyline();
-      walkTheEdge(p, skin, p->findSteapest(), true);
+      walkTheEdge(p, skin, p->findLeftmostClockwise(), true);
       skins.push_back(skin);
     }
 

@@ -12,15 +12,15 @@ using namespace std;
 
 class Polyline {
 public:
-	VecEdge edges;
-	Polyline();
+  VecEdge edges;
+  Polyline();
   virtual ~Polyline(){}
 
   bool contains(Edge* ls);
   void add(Edge* ls);
   void remove(Edge* ls);
   int count();
-  Edge* findSteapest();
+  Edge *findLeftmostClockwise();
   VecEdge::iterator find(Edge* ls);
 
   friend ostream& operator <<(ostream &os, Polyline &pl);

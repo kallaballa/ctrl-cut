@@ -1,5 +1,6 @@
 #include "Polyline.h"
 #include "Edge.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -8,93 +9,96 @@ int Polyline::cnt = 0;
 Polyline::Polyline() { this->id++; }
 
 void Polyline::add(Edge* ls) {
-	edges.push_back(ls);
+  edges.push_back(ls);
 }
 
 VecEdge::iterator Polyline::find(Edge* ls) {
-	for (VecEdge::iterator it = this->edges.begin(); it 	!= this->edges.end(); it++) {
-		if (*it == ls)
-			return it;
-	}
+  for (VecEdge::iterator it = this->edges.begin(); it 	!= this->edges.end(); it++) {
+    if (*it == ls)
+      return it;
+  }
 
-	return (VecEdge::iterator)NULL;
+  return (VecEdge::iterator)NULL;
 }
 
 bool Polyline::contains(Edge* ls) {
-	VecEdge::iterator it = find(ls);
-	return  it != (VecEdge::iterator) NULL && it != edges.end();
+  VecEdge::iterator it = find(ls);
+  return  it != (VecEdge::iterator) NULL && it != edges.end();
 }
 
 void Polyline::remove(Edge* ls) {
-	VecEdge::iterator it = find(ls);
-	if(it != (VecEdge::iterator) NULL)
-		edges.erase(it);
+  VecEdge::iterator it = find(ls);
+  if(it != (VecEdge::iterator) NULL)
+    edges.erase(it);
 }
 
 int Polyline::count() {
-	return edges.size();
+  return edges.size();
 }
 
-Edge* Polyline::findSteapest() {
-	Edge* ls;
-	int min_x = INT_MAX;
-	Vertex* most_left = NULL;
-	VecEdge::iterator it;
-	int sx;
-	int ex;
+/*!
+  Finds the "first leftmost clockwise" edge. This is the edge connected to
+  the leftmost vertex which is the first we would traverse when doing a clockwise
+  traversal. This is the edge which has the smallest positive angle to the positive Y axis.
+*/
+Edge *Polyline::findLeftmostClockwise() 
+{
+  int min_x = INT_MAX;
+  Vertex *leftmostvertex = NULL;
+  int startx;
+  int endx;
 
-	for (it = edges.begin(); it != edges.end(); it++) {
-		ls = *it;
-		sx = ls->getStart()->getX();
-		ex = ls->getEnd()->getX();
+  // Find leftmost vertex
+  for (VecEdge::iterator it = edges.begin(); it != edges.end(); it++) {
+    startx = (*it)->getStart()->getX();
+    endx = (*it)->getEnd()->getX();
 
-		if (sx < min_x) {
-			min_x = sx;
-			most_left = ls->getStart();
-		}
+    if (startx < min_x) {
+      min_x = startx;
+      leftmostvertex = (*it)->getStart();
+    }
+    if (endx < min_x) {
+      min_x = endx;
+      leftmostvertex = (*it)->getEnd();
+    }
+  }
 
-		if (ex < min_x) {
-			min_x = ex;
-			most_left = ls->getEnd();
-		}
-	}
-	SetEdge::iterator it_c;
-	SetEdge connected = most_left->getAttachedEdges();
+  cout << "leftmostvertex: " << *leftmostvertex;
 
-	Edge* edge;
-	float slope;
-	float steapest = M_PI;
+  // Find next clockwise edge
+  SetEdge connected = leftmostvertex->getAttachedEdges();
 
-	for (it_c = connected.begin(); it_c != connected.end(); it_c++) {
-		ls = *it_c;
+  Edge *edge = NULL;
+  float steapest = 2*M_PI;
+  Edge *ls;
+  for (SetEdge::iterator it_c = connected.begin(); it_c != connected.end(); it_c++) {
+    ls = *it_c;
 
-		if (ls->getStart()->getY() > ls->getEnd()->getY())
-			ls->invertDirection();
+    // make sure we're pointing into the positive halfsphere
+    if (ls->getStart()->getX() > ls->getEnd()->getX()) {
+      ls->invertDirection();
+    }
 
-		slope = abs(ls->getSlope() - (M_PI / 2));
-		if (slope >= 3.1415f)
-			slope = 0;
+    float slope = ls->getSlope();
+    if (slope < steapest) {
+      steapest = slope;
+      edge = ls;
+    }
+  }
 
-		if (slope < steapest) {
-			steapest = slope;
-			edge = ls;
-		}
-	}
-
-	if (ls->getSlope() < 0)
-		ls->invertDirection();
-
-	return edge;
+  assert(edge->getSlope() >= 0);
+ 
+  return edge;
 }
 
 ostream& operator <<(ostream &os, Polyline &pl) {
-	os << "<polyline id=\"" << pl.id << "\" >"
-			<< std::endl;
+  os << "<polyline id=\"" << pl.id << "\" >"
+     << std::endl;
 
-	for (VecEdge::iterator it = pl.edges.begin(); it
-			!= pl.edges.end(); it++) {
-		os << *((Edge*) *it);
-	}
-	os << "</polyline>" << std::endl;
-	return os;
+  for (VecEdge::iterator it = pl.edges.begin(); it
+         != pl.edges.end(); it++) {
+    os << *((Edge*) *it);
+  }
+  os << "</polyline>" << std::endl;
+  return os;
 }
