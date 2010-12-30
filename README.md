@@ -26,5 +26,6 @@ GPL V2
 Contact
 -------
 
-Amir Hassan <amir@viel-zu.org>
-Marius Kintel <marius@kintel.net>
+Amir Hassan: <amir@viel-zu.org>
+
+Marius Kintel: <marius@kintel.net>
