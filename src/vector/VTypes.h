@@ -5,6 +5,9 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <string>
+
+class Vertex;
 
 typedef std::vector<class Polyline*> VecPolyline;
 typedef std::set<class Edge*> SetEdge;
