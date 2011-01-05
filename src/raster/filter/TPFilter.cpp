@@ -16,37 +16,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "TPFilter.h"
 
-void TPFilter::filter(Raster *raster)
-{
-  unsigned char pixel = 0;
+void TPFilter::filter(Raster *raster) {
+	Pixel<unsigned char>* pixel = 0;
 
-  list<DownSample*>::iterator it_tp;
-  DownSample * tp;
-  int width = raster->sourceImage->width();
-  int height = raster->sourceImage->height();
+	list<DownSample*>::iterator it_tp;
+	DownSample * tp;
+	int width = raster->sourceImage->width();
+	int height = raster->sourceImage->height();
 
-  for (int j = 0; j < height; j++) {
-    for (int i = 0; i < width; i++) {
-      pixel = (*raster->sourceImage).pixel(Point2D(i, j));
-      if (pixel < 255) {
-        Point2D m(i, j);
-        bool added = false;
-        for (it_tp = raster->grids.begin(); it_tp
-               != raster->grids.end(); it_tp++) {
-          tp = *it_tp;
+	for (int j = 0; j < height; j++) {
+		for (int i = 0; i < width; i++) {
+			pixel = (*raster->sourceImage).pixel(Point2D(i, j));
+			if (pixel->r < 255 || pixel->g < 255 || pixel->b < 255) {
+				Point2D m(i, j);
+				bool added = false;
+				for (it_tp = raster->grids.begin(); it_tp != raster->grids.end(); it_tp++) {
+					tp = *it_tp;
 
-          if ((added = tp->sample(&m)))
-            break;
-        }
+					if ((added = tp->sample(&m)))
+						break;
+				}
 
-        if (!added) {
-          DownSample *tmnew = new DownSample(&m, 25, 25, 5,
-                                                       5, 2);
-          raster->grids.push_back(tmnew);
-        }
-      }
-    }
-  }
+				if (!added) {
+					DownSample *tmnew = new DownSample(&m, 25, 25, 5, 5, 2);
+					raster->grids.push_back(tmnew);
+				}
+			}
+		}
+	}
 }
