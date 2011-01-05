@@ -21,8 +21,8 @@
 
 using namespace std;
 
-DownSample::DownSample(Point2D* p_ul, int res_x, int res_y, int pixel_width,
-		int pixel_height, int tolerance) {
+DownSample::DownSample(Point2D* p_ul, uint16_t res_x, uint16_t res_y, uint16_t pixel_width,
+		uint16_t pixel_height, uint16_t tolerance) {
 	this->res_x = res_x;
 	this->res_y = res_y;
 
@@ -43,23 +43,23 @@ bool DownSample::sample(Point2D* p) {
 			* tolerance))
 		return false;
 	else {
-		int cx = p->x / pixel_width;
-		int cy = p->y / pixel_height;
+		uint16_t cx = p->x / pixel_width;
+		uint16_t cy = p->y / pixel_height;
 
 		//TODO figure appropriate growth rate
 		if (image == NULL || cx >= this->res_x || cy >= this->res_y) {
-			int ncx = max(this->res_x, (cx));
-			int ncy = max(this->res_y, (cy));
+			uint16_t ncx = max(this->res_x, (cx));
+			uint16_t ncy = max(this->res_y, (cy));
 			resize(ncx * 2, ncy * 2);
 		}
 
 		PixelBox* pb = (*image)[cx][cy];
 
 		if (pb == NULL) {
-			int ul_x = cx * pixel_width;
-			int ul_y = cy * pixel_height;
-			int lr_x = ul_x + pixel_width;
-			int lr_y = ul_y + pixel_height;
+			uint16_t ul_x = cx * pixel_width;
+			uint16_t ul_y = cy * pixel_height;
+			uint16_t lr_x = ul_x + pixel_width;
+			uint16_t lr_y = ul_y + pixel_height;
 			pb = new PixelBox(ul_x, ul_y, lr_x, lr_y);
 			(*image)[cx][cy] = pb;
 		}
@@ -70,8 +70,8 @@ bool DownSample::sample(Point2D* p) {
 	}
 }
 
-void DownSample::resize(int num_x, int num_y) {
-	int offset = 0;
+void DownSample::resize(uint16_t num_x, uint16_t num_y) {
+	uint16_t offset = 0;
 	if (image == NULL)
 		image = new PB_Image(boost::extents[num_x][num_y]);
 	else {

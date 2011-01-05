@@ -26,6 +26,7 @@
 #include <string>
 #include <iostream>
 #include "RTypes.h"
+#include "stdint.h"
 
 using namespace std;
 using namespace boost::interprocess;
@@ -44,12 +45,12 @@ public:
 	size_t w;
 	size_t h;
 
-	MMapMatrix(string filename, unsigned int width, unsigned int height,
-			unsigned int x, unsigned int y, unsigned long region_off) {
+	MMapMatrix(string filename, uint16_t width, uint16_t height,
+			uint16_t x, uint16_t y, uint64_t region_off) {
 		cerr << "off: " << region_off << std::endl;
 		this->filename = filename;
 		this->m_file = new file_mapping(filename.c_str(), read_only);
-		this->bytes_per_pixel = sizeof(unsigned char);
+		this->bytes_per_pixel = sizeof(T);
 		this->m_region = mapped_region(*this->m_file, read_only, region_off + (x
 				* y * bytes_per_pixel), width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
@@ -60,15 +61,15 @@ public:
 		this->h = height;
 	}
 
-	MMapMatrix(file_mapping* m_file, unsigned int width, unsigned int height,
-			unsigned int x, unsigned int y) {
+	MMapMatrix(file_mapping* m_file, uint16_t width, uint16_t height,
+			uint16_t x, uint16_t y) {
 		this->filename = filename;
 		this->m_file = m_file;
 		this->m_region = mapped_region(*this->m_file, read_only, x * y
 				* bytes_per_pixel, width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
-		this->bytes_per_pixel = sizeof(unsigned char);
+		this->bytes_per_pixel = sizeof(T);
 		this->x = x;
 		this->y = y;
 		this->w = width;
@@ -92,7 +93,6 @@ public:
 	}
 
 	Pixel<T>* pixel(Point2D p) {
-		cerr << "p: " << p.x << "/" << p.y << std::endl;
 		T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
 		return new Pixel<T> (*sample, *(sample + 1), *(sample + 2));
 	}
@@ -102,6 +102,6 @@ public:
 	}
 };
 
-typedef MMapMatrix<unsigned char> Image;
+typedef MMapMatrix<uint8_t> Image;
 #endif /* MMAPMATRIX_H_ */
 

@@ -72,11 +72,11 @@ void printImage(Image* img) {
 		for (int x = 0; x < w; ++x) {
 			Pixel<unsigned char>* p = img->pixel(Point2D(x, y));
 
-			cout << x << "/" << y << ": " << (int) p->r << " " << (int) p->g << " "
-					<< (int) p->b << "\t";
+			cerr << x << "/" << y << ": " << (int) p->rgb[0] << " " << (int) p->rgb[1] << " "
+					<< (int) p->rgb[2] << "\t";
 		}
 
-		cout << std::endl;
+		cerr << std::endl;
 	}
 }
 

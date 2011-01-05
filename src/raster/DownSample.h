@@ -20,6 +20,7 @@
 #ifndef GRID_H_
 #define GRID_H_
 
+#include "stdint.h"
 #include <list>
 #include <iostream>
 #include <algorithm>
@@ -31,7 +32,7 @@ using namespace std;
 
 class BBox: public Rectangle {
  public:
-  bool inside(int x, int y, int tol_x = 0, int tol_y = 0) {
+  bool inside(uint16_t x, uint16_t y, uint16_t tol_x = 0, uint16_t tol_y = 0) {
     return (x < (lr_x + tol_x) && x > (ul_x - tol_x) && y < (lr_y + tol_y)
             && y > (ul_y - tol_y));
   }
@@ -58,17 +59,15 @@ class DownSample {
   PB_Image* image;
   list<PixelBox*> pixelBoxes;
   BBox boundingBox;
-  int tolerance;
-
-  int pixel_width, pixel_height, res_x, res_y;
+  uint16_t tolerance, pixel_width, pixel_height, res_x, res_y;
 
  public:
-  DownSample(Point2D* m_ul, int res_x, int res_y,
-                  int cell_width, int cell_height, int tolerance);
+  DownSample(Point2D* m_ul, uint16_t res_x, uint16_t res_y,
+  		uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
   virtual ~DownSample(){}
   bool sample(Point2D* m);
   BBox getBoundingBox();
-  void resize(int width, int height);
+  void resize(uint16_t width, uint16_t height);
   list<PixelBox*> getPixels();
 };
 

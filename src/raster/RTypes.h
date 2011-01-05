@@ -35,8 +35,29 @@ struct Point2D {
 template<class T>
 class Pixel {
 public:
-   Pixel(T r, T g, T b) : r(r), g(g), b(b) { }
-   T r,g,b;
+   Pixel(T r, T g, T b) {
+  	 this->rgb[0] = r;
+  	 this->rgb[1] = g;
+  	 this->rgb[2] = b;
+   }
+
+   T rgb[3];
+   T ihs[3];
+private:
+  void initIHS(T* rgb) {
+  	 T r = rgb[0];
+  	 T g = rgb[1];
+  	 T b = rgb[2];
+  	 T i = (r + g +b)/3;
+  	 T s = 1 - 3(min(r,g,b))/(r+g+b);
+  	 T h = acos(0.5*((r-g)+(r-b)))/sqrt(pow((r-g),2)+(r-b)*(g-b));
+  	 if(b > g)
+  	 h = 2.0*3.14159265 - h;
+
+  	 this->ihs[0] = i;
+  	 this->ihs[1] = h;
+  	 this->ihs[2] = s;
+  }
 };
 
 class Rectangle {

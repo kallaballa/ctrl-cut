@@ -30,7 +30,7 @@ void TPFilter::filter(Raster *raster) {
 	for (int j = 0; j < height; j++) {
 		for (int i = 0; i < width; i++) {
 			pixel = (*raster->sourceImage).pixel(Point2D(i, j));
-			if (pixel->r < 255 || pixel->g < 255 || pixel->b < 255) {
+			if (pixel->rgb[0] < 255 || pixel->rgb[1] < 255 || pixel->rgb[2] < 255) {
 				Point2D m(i, j);
 				bool added = false;
 				for (it_tp = raster->grids.begin(); it_tp != raster->grids.end(); it_tp++) {

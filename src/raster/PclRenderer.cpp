@@ -109,9 +109,10 @@ void PclRenderer::renderTile(Image* tile, ostream& out) {
 							break;
 						case 'g': // grey level
 						{
-							/*for (int x = 0; x < lconf->width; x++) {
-							 buf[l] = (255 - (uint8_t) tile->pixel({x, y}));
-							 }*/
+							for (int x = 0; x < lconf->width; x++) {
+								Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
+								buf[l] = (255 - (uint8_t) p->ihs[0]);
+							}
 						}
 							break;
 						default: // mono
