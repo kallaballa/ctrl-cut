@@ -81,7 +81,7 @@ Edge *Polyline::findLeftmostClockwise()
     }
   }
 
-  cout << "leftmostvertex: " << *leftmostvertex;
+  cerr << "leftmostvertex: " << *leftmostvertex;
 
   // Find next clockwise edge
   SetEdge connected = leftmostvertex->getAttachedEdges();
