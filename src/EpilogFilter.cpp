@@ -35,7 +35,6 @@
 #include "LaserJob.h"
 #include "Driver.h"
 #include "EpilogFilter.h"
-#include "raster/PPMFile.h"
 
 #ifndef __APPLE__
 #define GS_EXECUTABLE "/usr/bin/gs"
@@ -75,6 +74,7 @@ const char *queue_options = "";
 bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
 		char *filename_vector, const char *bmp_mode, int resolution, int height,
 		int width) {
+
 	char buf[8192];
 	sprintf(
 			buf,
@@ -207,6 +207,16 @@ static void printEnv(const char *env) {
 	}
 }
 
+
+void ppm2pcl(string filename) {
+	Raster *raster = Raster::load(filename);
+	raster->addTile(raster->sourceImage);
+	lconf.raster_repeat = 1;
+	PclRenderer renderer(&lconf);
+	renderer.renderRaster(raster, cout);
+	exit(0);
+}
+
 /**
  * Main entry point for the program.
  *
@@ -303,7 +313,7 @@ int main(int argc, char *argv[]) {
 	 * program.
 	 */
 	sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
-	sprintf(filename_bitmap, "%s.bmp", file_basename);
+	sprintf(filename_bitmap, "%s.ppm", file_basename);
 	sprintf(filename_eps, "%s.eps", file_basename);
 	sprintf(filename_vector, "%s.vector", file_basename);
 
@@ -377,7 +387,8 @@ int main(int argc, char *argv[]) {
 	 rm = "bmpmono";*/
 
 	// FIXME: While doing vector testing, set this to nullpage to speed up the gs run
-	rm = "nullpage";
+	//rm = "nullpage";
+	rm = "ppmraw";
 
 	if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
 			lconf.resolution, lconf.height, lconf.width)) {
@@ -386,11 +397,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	Cut *cut = Cut::load(filename_vector);
-	/*  Raster *raster = Raster::load(filename_bitmap);
-	 raster->addTile(new Tile(*raster->sourceImage));*/
+	Raster *raster = Raster::load(filename_bitmap);
+	raster->addTile(raster->sourceImage);
 	LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
-	job.addCut(cut);
-	//  job.addRaster(raster);
+  job.addCut(cut);
+	job.addRaster(raster);
 
 	/* Cleanup unneeded files provided that debug mode is disabled. */
 	if (!debug) {

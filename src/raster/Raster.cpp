@@ -17,16 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "Raster.h"
+#include "PPMFile.h"
 
 int tile_cnt = 0;
-
-//TODO rewrite class to be really OO
 
 void Raster::addTile(Image* tile) {
   this->tiles.push_back(tile);
 }
 
 Raster *Raster::load(const string &filename) {
-  //return new Raster(new MMapImage<unsigned char>(filename.c_str()));
+  return new Raster(loadppm(filename));
 }
 

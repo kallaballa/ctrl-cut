@@ -111,7 +111,8 @@ void PclRenderer::renderTile(Image* tile, ostream& out) {
 						{
 							for (int x = 0; x < lconf->width; x++) {
 								Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
-								buf[l] = (255 - (uint8_t) p->ihs[0]);
+								buf[x] = (255 - (uint8_t) p->ihs[0]);
+								delete p;
 							}
 						}
 							break;

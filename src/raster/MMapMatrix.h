@@ -50,11 +50,13 @@ public:
 		cerr << "off: " << region_off << std::endl;
 		this->filename = filename;
 		this->m_file = new file_mapping(filename.c_str(), read_only);
-		this->bytes_per_pixel = sizeof(T);
+		this->bytes_per_pixel = sizeof(T) * 3;
+		cerr << "Bpp" << bytes_per_pixel << std::endl;
 		this->m_region = mapped_region(*this->m_file, read_only, region_off + (x
 				* y * bytes_per_pixel), width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
+		cerr << "size" << this->size << std::endl;
 		this->x = x;
 		this->y = y;
 		this->w = width;
@@ -65,11 +67,11 @@ public:
 			uint16_t x, uint16_t y) {
 		this->filename = filename;
 		this->m_file = m_file;
+		this->bytes_per_pixel = sizeof(T) * 3;
 		this->m_region = mapped_region(*this->m_file, read_only, x * y
 				* bytes_per_pixel, width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
-		this->bytes_per_pixel = sizeof(T);
 		this->x = x;
 		this->y = y;
 		this->w = width;
@@ -93,8 +95,12 @@ public:
 	}
 
 	Pixel<T>* pixel(Point2D p) {
+		//cerr << "pos: " << p.x << "/" << p.y << " #" << ((p.y * w + p.x) * 3) << "\t";
 		T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
-		return new Pixel<T> (*sample, *(sample + 1), *(sample + 2));
+		Pixel<T>* pix = new Pixel<T> (*sample, *++sample, *++sample);
+		//cerr << (int)pix->ihs[0] << "|" << (int)pix->rgb[0] << " / " << (int)pix->rgb[1] << " / " << (int)pix->rgb[2] << std::endl;
+
+		return pix;
 	}
 
 	MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
