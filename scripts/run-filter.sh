@@ -5,6 +5,7 @@ function error() {
     exit $2
 }
 
+export RASTER_OFF="y"
 filter=./EpilogFilter
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
