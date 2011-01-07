@@ -44,24 +44,19 @@ HEADERS = \
           src/vector/filters/Filters.h \
           src/vector/filters/Explode.h \
           src/vector/filters/Join.h
-
-raster {
 SOURCES += \
           src/raster/DownSample.cpp \
           src/raster/filter/TAFilter.cpp \
           src/raster/filter/TPFilter.cpp \
-          src/raster/MMapImage.cpp \
           src/raster/PclRenderer.cpp \
-          src/raster/PPMFile.cpp \
           src/raster/Raster.cpp
 
 HEADERS  += \
           src/raster/DownSample.h \
           src/raster/filter/TAFilter.h \
           src/raster/filter/TPFilter.h \
-          src/raster/MMapImage.h \
+          src/raster/MMapMatrix.h \
           src/raster/PclRenderer.h \
           src/raster/PPMFile.h \
           src/raster/Raster.h \
           src/raster/RTypes.h
-}
