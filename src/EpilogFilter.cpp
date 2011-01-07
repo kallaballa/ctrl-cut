@@ -16,7 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 #include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -207,7 +206,6 @@ static void printEnv(const char *env) {
 	}
 }
 
-
 void ppm2pcl(string filename) {
 	Raster *raster = Raster::load(filename);
 	raster->addTile(raster->sourceImage);
@@ -264,7 +262,18 @@ int main(int argc, char *argv[]) {
 	printEnv("SOFTWARE");
 	printEnv("TZ");
 	printEnv("USER");
+	printEnv("DO_RASTER");
+	printEnv("DO_VECTOR");
 
+	const char *disableRaster = getenv("RASTER_OFF");
+	if (disableRaster) {
+		fprintf(stderr, "disabling raster passes\n");
+	}
+
+	const char *disableVector = getenv("VECTOR_OFF");
+	if (disableVector) {
+		fprintf(stderr, "disabling vector passes\n");
+	}
 	// FIXME: Register a signal handler to support cancelling of jobs
 
 	cups_file_t *fp;
@@ -387,8 +396,11 @@ int main(int argc, char *argv[]) {
 	 rm = "bmpmono";*/
 
 	// FIXME: While doing vector testing, set this to nullpage to speed up the gs run
-	//rm = "nullpage";
-	rm = "ppmraw";
+	if (disableRaster) {
+		rm = "nullpage";
+	} else {
+		rm = "ppmraw";
+	}
 
 	if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
 			lconf.resolution, lconf.height, lconf.width)) {
@@ -396,12 +408,18 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	Cut *cut = Cut::load(filename_vector);
-	Raster *raster = Raster::load(filename_bitmap);
-	raster->addTile(raster->sourceImage);
 	LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
-  job.addCut(cut);
-	job.addRaster(raster);
+
+	if (!disableRaster) {
+		Raster *raster = Raster::load(filename_bitmap);
+		raster->addTile(raster->sourceImage);
+		job.addRaster(raster);
+	}
+	Cut *cut = NULL;
+	if (!disableVector) {
+		cut = Cut::load(filename_vector);
+		job.addCut(cut);
+	}
 
 	/* Cleanup unneeded files provided that debug mode is disabled. */
 	if (!debug) {
@@ -422,7 +440,9 @@ int main(int argc, char *argv[]) {
 	Driver drv;
 	drv.process(&job);
 
-	delete cut;
+	if (cut)
+		delete cut;
+
 	clock_t end = clock() - start;
 	cerr << endl << "Clocks: " << end << endl;
 	cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;
