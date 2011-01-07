@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# cd to epilogcups basedir
+cd "`dirname $(readlink -f $0)`/.."
+
 while getopts 'v' c
 do
   case $c in

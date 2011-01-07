@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# cd to epilogcups basedir
+cd "`dirname $(readlink -f $0)`/.."
+
 GHOSTPDL=$HOME/Desktop/Lazzzor/CUPS/ghostpdl-8.71/main/debugobj/pcl6
 
 if [ $# != 1 ]; then

@@ -1,9 +1,9 @@
 #!/bin/bash
+BASEDIR=`dirname $(readlink -f $0)`
+tfilter="$BASEDIR/test-filter.sh $@"
 
-cd xml
-
-./test-filter.sh $@ input
-./test-filter.sh $@ explode
-./test-filter.sh $@ join
-./test-filter.sh $@ deonion
+$tfilter input
+$tfilter explode
+$tfilter join
+$tfilter deonion
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+BASEDIR=`dirname $(readlink -f $0)`
+cd $BASEDIR
 
 XQ=`type -p xqilla`
 function usage { echo "test-filter.sh [-v] filtername"; }
@@ -28,7 +30,7 @@ while true ; do
 done
 
 for filter in "$@"; do
-    echo "testing $filter..."    
+    echo "testing $filter..."
     for xql in `ls $filter/*.xql`; do
         check `basename $filter` `basename $xql`;
     done

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# cd to epilogcups basedir
+cd "`dirname $(readlink -f $0)`/.."
+
 function error() {
     echo "Error: $1"
     exit $2
