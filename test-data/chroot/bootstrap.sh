@@ -9,9 +9,9 @@ chrtrun="./scripts/chrtsetup.sh test-build-and-install --run "
 debootstrap --verbose squeeze ./test-data/chroot/root/ http://debian.inode.at/debian/
 
 # install dependencies and build tool chain
-$chrtrun="apt-get install build-essential libcups2-dev libboost-dev qt4-qmake"
+$chrtrun "apt-get install build-essential libcups2-dev libboost-dev qt4-qmake lpr"
 
 # generate modules.dep for the host kernel
-$chrtrun="/lib/modules/`uname -r`/; depmod -a"
+$chrtrun "mkdir /lib/modules/`uname -r`/; depmod -a"
 
 
