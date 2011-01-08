@@ -8,7 +8,14 @@ cd "`dirname $(readlink -f $0)`"
 PRINTER=$1
 PPDNAME=$2
 FILTER_PATH="`cups-config --serverbin`/filter"
+KERNELMODDIR="/lib/modules/`uname -r`/"
 
+# if theres no kernel module directory for the host kernel we're probably in a chroot
+[ ! -d "$KERNELMODDIR" ] && mkdir "$KERNELMODDIR"
+depmod -a
+
+# start cupsd
+/etc/init.d/cupsd start
 
 # generate ppd files
 etc/ppd/generate_ppds.sh
