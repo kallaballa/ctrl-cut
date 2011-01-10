@@ -15,8 +15,8 @@ echo -e "\nInstall dependencies"
 $chrtrun "apt-get -y --allow-unauthenticated install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core libqtgui4"
 
 # install packages required for testing
-$chrtrun "apt-get -y --allow-unauthenticated install pkg-config python-minimal xqilla "
+$chrtrun "apt-get -y --allow-unauthenticated install pkg-config python-minimal xqilla librsvg2-dev libcairo2"
 
-echo -e "\nFixing lib symlinks"
+echo -e "\nFixing qt lib symlinks"
 $chrtrun "ln -s /usr/lib/libQtCore.so.4 /usr/lib/libQtCore.so"
 $chrtrun "ln -s /usr/lib/libQtGui.so.4 /usr/lib/libQtGui.so"
