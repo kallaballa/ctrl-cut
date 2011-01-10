@@ -36,12 +36,17 @@ function populate() {
 
 populate
 
-echo -e "\nCloning and building..."
+echo -e "\nDownloading and building..."
 
 # clone ec source and build
-$chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
-    qmake; make; \
-    cd test-code/; qmake passthroughfilter.pro; make"
+$chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; \
+    cd epilogcups/; qmake; make; \
+    cd test-code/; qmake passthroughfilter.pro; make; \
+    cd svg2pdf/; make"
+
+# download and install pysvg 
+$chrtrun "cd /tmp; wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip pysvg-0.2.1.zip; \
+   cd pysvg-0.2.1/; python setup.py install" 
 
 
 echo -e "\nInstalling passthrough printer"
