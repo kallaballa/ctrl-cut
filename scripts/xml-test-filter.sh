@@ -1,6 +1,6 @@
 #!/bin/bash
-BASEDIR=`dirname $(readlink -f $0)`
-cd $BASEDIR
+
+cd $EC_TEST_DATA/xml
 
 XQ=`type -p xqilla`
 function usage { echo "test-filter.sh [-v] filtername"; }
@@ -13,7 +13,7 @@ function check {
     cmd="$XQ -i epilog.xml $1/$2"
     [ $VERBOSE ] && echo -n "($cmd)";
     echo -n " ... "
-    result="`$XQ -i epilog.xml $1/$2`"
+    result="`$cmd`"
     [ "$result" == "0" ] && green "OK" || red $result
 }
 
@@ -21,7 +21,7 @@ function check {
 
 [ $# -eq 0 ] && usage
 
-eval set -- "`getopt -o v --long verbose -n 'test-filter.sh' -- \"$@\"`"
+eval set -- "`getopt -o v --long verbose -n 'xml-test-filter.sh' -- \"$@\"`"
 while true ; do
     case "$1" in
         -v|--verbose) VERBOSE=0 ; shift ;;
@@ -36,4 +36,3 @@ for filter in "$@"; do
     done
 done
 
-    
