@@ -46,5 +46,5 @@ $chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
 
 echo -e "\nInstalling passthrough printer"
 # install the printer with passthrough backend
-$chrtrun "cd ~/epilogcups; ./ec install lazzzor passthrough.ppd"
+$chrtrun "cd ~/epilogcups; ./ec install lazzzor EpilogLegend36EXT.ppd dump://"
 
