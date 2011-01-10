@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this scripts should be used to call all other project scripts. 
+# this script should be used to call all other project scripts. 
 # it configures the necessary environment variables for the project context.
 # e.g. to call "$EC_BASE/scripts/test-corel.sh <args>" do "./ec test-corel <args>"
 # alternatively you may also source it and call scripts directly
