@@ -1,5 +1,6 @@
 #!/bin/bash
 
+svg2pdf="$EC_TEST_CODE/svg2pdf/svg2pdf"
 
 while getopts 'v' c
 do
@@ -27,7 +28,7 @@ $EC_PYTHON/rtl2svg.py -c $file $file.svg
 if [ $? -ne 0 ]; then
   echo "rtl2svn.py failed"
 fi
-svg2pdf $file.svg $file.pdf
+$svg2pdf $file.svg $file.pdf
 if [ $? -ne 0 ]; then
   echo "svg2pdf failed"
 fi
