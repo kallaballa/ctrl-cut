@@ -1,10 +1,8 @@
 #!/bin/sh
 
+cd $EC_BASE
 
-function error() {
-    echo "Error: $1"
-    exit $2
-}
+[ ! -d "./tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
 filter=./EpilogFilter

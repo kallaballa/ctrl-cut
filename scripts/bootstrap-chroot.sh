@@ -12,7 +12,10 @@ $chrtrun "mkdir /lib/modules/`uname -r`/; depmod -a"
 
 echo -e "\nInstall dependencies"
 # install dependencies and build tool chain
-$chrtrun "apt-get -y --allow-unauthenticated install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core lpr libqtgui4"
+$chrtrun "apt-get -y --allow-unauthenticated install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core libqtgui4"
+
+# install packages required for testing
+$chrtrun "apt-get -y --allow-unauthenticated install pkg-config python-minimal xqilla "
 
 echo -e "\nFixing lib symlinks"
 $chrtrun "ln -s /usr/lib/libQtCore.so.4 /usr/lib/libQtCore.so"
