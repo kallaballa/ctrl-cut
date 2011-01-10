@@ -8,9 +8,6 @@ PRINTER=$1
 PPDNAME=$2
 FILTER_PATH="`cups-config --serverbin`/filter"
 
-# start cupsd
-/etc/init.d/cups start
-
 # generate ppd files
 $EC_SCRIPTS/generate_ppds.sh
 
@@ -18,5 +15,5 @@ $EC_SCRIPTS/generate_ppds.sh
 cp EpilogFilter $FILTER_PATH/epilogcups
 
 # install the printer
-lpadmin -p "$PRINTER" -P "$EC_PPD_DIR/$PPDNAME"
+/usr/sbin/lpadmin -p "$PRINTER" -P "$EC_PPD_DIR/$PPDNAME"
 

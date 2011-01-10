@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TEST_FILTER_PATH=`"$EC_TEST_CODE"`
+TEST_FILTER_PATH="$EC_TEST_CODE"
 FILTER_PATH="`cups-config --serverbin`/filter"
 
 sed "s|\$FILTER|$TEST_FILTER_PATH/passthroughfilter|g" $EC_PPD_DIR/stubs/passthrough.ppd > $EC_PPD_DIR/passtrough.ppd
