@@ -2,8 +2,9 @@
 
 VERBOSE=
 POPULATE=
-CHRTFS="$EC_TEST_CHROOT/root"
+CHRTFS="$EC_TEST_CHROOT"
 chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
+bootstrap="$EC_SCRIPTS/bootstrap.sh"
 
 while getopts 'vcp' c
 do
@@ -26,7 +27,7 @@ function populate() {
         echo "Populating chroot $CHRTFS"
         mkdir $CHRTFS
         cd $CHRTFS
-        $EC_TEST_CHROOT/bootstrap.sh
+        $bootstrap
     else
         echo "Chroot already populated"
     fi

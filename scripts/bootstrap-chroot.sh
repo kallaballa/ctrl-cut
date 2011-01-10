@@ -2,7 +2,7 @@
 
 chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
 
-# bootstrap debian squeeze into ./test-data/chroot/root/
+# bootstrap debian squeeze
 debootstrap --verbose $EC_CHROOT_FLAVOUR $EC_TEST_CHROOT http://debian.inode.at/debian/
 
 # install dependencies and build tool chain
