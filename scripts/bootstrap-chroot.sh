@@ -6,7 +6,7 @@ chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
 #debootstrap --verbose $EC_CHROOT_FLAVOUR $EC_TEST_CHROOT http://debian.inode.at/debian/
 
 # install dependencies and build tool chain
-$chrtrun "apt-get install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core lpr libqtgui4"
+$chrtrun "apt-get -y --allow-unauthenticated install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core lpr libqtgui4"
 
 # generate modules.dep for the host kernel
 $chrtrun "mkdir /lib/modules/`uname -r`/; depmod -a"
