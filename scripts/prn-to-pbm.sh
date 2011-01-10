@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# cd to epilogcups basedir
-cd "`dirname $(readlink -f $0)`/.."
 
 while getopts 'v' c
 do
@@ -25,7 +23,7 @@ else
   exec 2> /dev/null
 fi
 
-python/rtl2svg.py -c $file $file.svg
+$EC_PYTHON/rtl2svg.py -c $file $file.svg
 if [ $? -ne 0 ]; then
   echo "rtl2svn.py failed"
 fi

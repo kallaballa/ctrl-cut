@@ -1,15 +1,9 @@
 #!/bin/bash
 
-BASEDIR="`dirname $(readlink -f $0)`/.."
-
-# cd to epilogcups base dir
-cd $BASEDIR
-
 VERBOSE=
 POPULATE=
-ARCHIVE="debian_squeeze_x86_chroot.tar.bz2"
-ROOT="./test-data/chroot/root"
-chrtrun="./scripts/chrtsetup.sh test-build-and-install --run "
+CHRTFS="$EC_TEST_CHROOT/root"
+chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
 
 while getopts 'vcp' c
 do
@@ -24,15 +18,15 @@ done
 
 function populate() {
     if [ $CLEAR ]; then
-        echo "Clearing chroot"
-        rm -r $ROOT
+        echo "Clearing chroot $CHRTFS"
+        rm -r $CHRTFS
     fi
 
     if [ $POPULATE ]; then
-        echo "Populating chroot"
-        mkdir $ROOT
-        cd $ROOT
-        tar -pxjf ../$ARCHIVE
+        echo "Populating chroot $CHRTFS"
+        mkdir $CHRTFS
+        cd $CHRTFS
+        $EC_TEST_CHROOT/bootstrap.sh
     else
         echo "Chroot already populated"
     fi
@@ -40,5 +34,9 @@ function populate() {
 }
 
 populate
-$chrtrun "id"
-$chrtrun "cd ~/; git clone git://github.com/Metalab/epilogcups.git; cd epilogcups; qmake; make"
+
+# clone ec source and build
+$chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
+    qmake; make; \
+    cd test-code/; qmake passthroughfilter.pro; make"
+

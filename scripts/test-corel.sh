@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# cd to epilogcups basedir
-cd "`dirname $(readlink -f $0)`/.."
-
 pad()
 {
   echo -n $1

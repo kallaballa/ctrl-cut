@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# cd to epilogcups basedir
-cd `dirname $(readlink -f $0)`/..
 
 PREPARE=; ENTER=; CLEAN=; VERBOSE=; X=; Y=;
 RUN="/bin/bash"
@@ -112,7 +110,7 @@ CONFIG=$1
 [ -z $CONFIG ] && usage "CONFIG is mandatory"
 [ ! "$CLEAN" -a ! "$PREPARE" -a  ! "$ENTER" ] && CLEAN=set PREPARE=set ENTER=set
 
-source "./test-data/chroot/$CONFIG"
+source "$EC_ETC/chroot/$CONFIG"
 [ "$X" -o "$Y" ] && setupX $DISPLAY
 [ $PREPARE ] && prepare
 [ $ENTER ]  && chroot "$CHROOT" bash -c "$RUN"

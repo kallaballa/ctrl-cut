@@ -1,6 +1,4 @@
 #!/bin/sh
 
-# cd to epilogcups basedir
-cd "`dirname $(readlink -f $0)`/.."
 
-./test-code/ps_to_eps $1 | gs -sDEVICE=nullpage -q -dBATCH -dNOPAUSE -r600 -g21600x14400 -
+$EC_TEST_CODE/ps_to_eps $1 | gs -sDEVICE=nullpage -q -dBATCH -dNOPAUSE -r600 -g21600x14400 -
