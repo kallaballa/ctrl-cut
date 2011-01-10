@@ -19,24 +19,24 @@ done
 
 function populate() {
     if [ $CLEAR ]; then
-        echo "\nClearing chroot $CHRTFS"
+        echo -e "\nClearing chroot $CHRTFS"
         rm -r $CHRTFS
     fi
 
     if [ $POPULATE ]; then
-        echo "\nPopulating chroot $CHRTFS"
+        echo -e "\nPopulating chroot $CHRTFS"
         mkdir $CHRTFS
         cd $CHRTFS
         $bootstrap
     else
-        echo "\nAssuming chroot already populated $CHRTFS"
+        echo -e "\nAssuming chroot already populated $CHRTFS"
     fi
     cd $BASEDIR
 }
 
 populate
 
-echo "\nCloning and building..."
+echo -e "\nCloning and building..."
 
 # clone ec source and build
 $chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
@@ -44,7 +44,7 @@ $chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
     cd test-code/; qmake passthroughfilter.pro; make"
 
 
-echo "\nInstalling passthrough printer"
+echo -e "\nInstalling passthrough printer"
 # install the printer with passthrough backend
 $chrtrun "cd ~/epilogcups; ./ec install lazzzor passthrough.ppd"
 
