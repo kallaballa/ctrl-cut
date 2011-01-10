@@ -4,7 +4,7 @@ VERBOSE=
 POPULATE=
 CHRTFS="$EC_TEST_CHROOT"
 chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
-bootstrap="$EC_SCRIPTS/bootstrap.sh"
+bootstrap="$EC_SCRIPTS/bootstrap-chroot.sh"
 
 while getopts 'vcp' c
 do
