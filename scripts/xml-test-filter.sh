@@ -10,7 +10,7 @@ function verbose  { [ $VERBOSE ] && echo $@; $@; }
 function error { echo "error: $1" >&2; exit 1; }
 function check { 
     echo -en "\tcheck: $1 $2 "
-    cmd="$XQ -i $1/epilog.xml $1/$2"
+    cmd="$XQ -i epilog.xml $2"
     [ $VERBOSE ] && echo -n "($cmd)";
     echo -n " ... "
     result="`$cmd`"
@@ -32,7 +32,7 @@ done
 for filter in "$@"; do
     echo "testing $filter..."
     for xql in `ls $filter/*.xql`; do
-        check `basename $filter` `basename $xql`;
+        check $filter $xql;
     done
 done
 
