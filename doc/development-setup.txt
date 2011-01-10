@@ -9,9 +9,7 @@ Set up printer drivers:
 This is just for testing/debugging.
   cd etc
   ppdc metapostscript.drv
-  sudo ln -s /Users/kintel/code/metalab/checkout/EpilogCups.git/etc/ppd/metapostscript.ppd /etc/cups/ppd
-  copy&paste <Printer fileprinter> from etc/printers.conf.txt to /etc/cups/printers.conf
-  Print a test page and check that it succeeds; verify output in /tmp/metapostscript.ps
+  lpadmin -p metapostscript -E -v file:///tmp/metapostscript.ps -P etc/ppd/metapostscript.ppd
 
 2) Set up a local shared printer for capturing raw data from the Windows driver
 
@@ -51,3 +49,5 @@ apps to be able to test our code and compare the output to that of the
 Epilog Windows drivers.
 
 6) Set up the Epilog CUPS driver for local printing
+
+lpadmin -p lazzzor -E -v file:///tmp/out.prn -P etc/ppd/EpilogLegend36EXT.ppd
