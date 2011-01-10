@@ -266,6 +266,9 @@ int main(int argc, char *argv[]) {
 	printEnv("DO_VECTOR");
 
 	const char *disableRaster = getenv("RASTER_OFF");
+	//FIXME: raster pass disabled
+	disableRaster = "y";
+
 	if (disableRaster) {
 		fprintf(stderr, "disabling raster passes\n");
 	}
