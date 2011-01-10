@@ -20,9 +20,7 @@
 *NickName: "Epilog Legend 36EXT"
 *Manufacturer: "Epilog"
 *DriverType: "custom"
-*cupsFilter: "application/vnd.cups-raw        0       $FILTER"
-*cupsFilter: "application/octet-stream        0       $FILTER"
-*cupsFilter: "application/postscript          0       $FILTER"
+*cupsFilter: "application/vnd.cups-postscript          0       $FILTER"
 
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
