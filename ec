@@ -7,6 +7,7 @@
 
 export EC_BASE="`dirname $(readlink -f $0)`"
 export EC_TEST_CHROOT="$EC_BASE/chroot"
+export EC_CHROOT_MIRROR="http://debian.inode.at/debian/"
 export EC_CHROOT_FLAVOUR="squeeze"
 export EC_SCRIPTS="$EC_BASE/scripts"
 export EC_GIT_URL="git://github.com/Metalab/epilogcups.git"
