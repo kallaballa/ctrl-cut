@@ -18,6 +18,5 @@ cp EpilogFilter $FILTER_PATH/epilogcups
 
 echo -e "\nInstalling the passthrough filter"
 # install the printer
-ls -l /usr/sbin/lpadmin
 /usr/sbin/lpadmin -p "$PRINTER" -P "$EC_PPD_DIR/$PPDNAME"
 
