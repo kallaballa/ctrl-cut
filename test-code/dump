@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "file dump \"Unknown\" \"Printing into /tmp/[job title].prn\""
+    exit
+fi
+
+cat > "/tmp/$3.prn"
+
