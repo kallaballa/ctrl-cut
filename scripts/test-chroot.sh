@@ -41,3 +41,7 @@ $chrtrun "cd ~/; rm -r epilogcups; git clone $EC_GIT_URL; cd epilogcups; \
     qmake; make; \
     cd test-code/; qmake passthroughfilter.pro; make"
 
+
+# install the printer with passthrough backend
+$chrtrun "cd ~/epilogcups; ./ec install lazzzor passthrough.ppd"
+
