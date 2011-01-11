@@ -5,7 +5,9 @@
 # e.g. to call "$EC_BASE/scripts/test-corel.sh <args>" do "./ec test-corel <args>"
 # alternatively you may also source it and call scripts directly
 
-export EC_BASE="`dirname $(readlink -f $0)`"
+cd `dirname $0` 
+
+export EC_BASE="`pwd`"
 export EC_TEST_CHROOT="$EC_BASE/chroot"
 export EC_CHROOT_MIRROR="http://debian.inode.at/debian/"
 export EC_CHROOT_FLAVOUR="squeeze"
