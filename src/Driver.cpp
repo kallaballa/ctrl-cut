@@ -21,7 +21,8 @@
 #include "vector/filters/Filters.h"
 
 
-Driver::Driver() {
+Driver::Driver() : dumpxml(false)
+{
 }
 
 Driver::~Driver() {
@@ -36,13 +37,13 @@ void Driver::filter(LaserJob *job) {
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
 
-    cut->xml("test-data/xml/input/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/input/epilog.xml");
     explode.filter(cut);
-    cut->xml("test-data/xml/explode/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/explode/epilog.xml");
     join.filter(cut);
-    cut->xml("test-data/xml/join/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/join/epilog.xml");
     deonion.filter(cut);
-    cut->xml("test-data/xml/deonion/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/deonion/epilog.xml");
   }
 }
 

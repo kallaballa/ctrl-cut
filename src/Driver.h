@@ -8,14 +8,15 @@
 #include "LaserJob.h"
 
 class Driver {
-private:
-
-
 public:
   Driver();
   virtual ~Driver();
+  void enableXML(bool on) { dumpxml = on; }
   void filter(LaserJob *job);
   void process(LaserJob *job);
+
+private:
+  bool dumpxml;
 };
 
 #endif /* DRIVER_H_ */
