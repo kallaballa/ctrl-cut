@@ -1,11 +1,11 @@
 *PPD-Adobe: "4.3"
 *%%%% PPD file for Metalab LaserSpoofer with CUPS.
-*%%%% Created by the CUPS PPD Compiler CUPS v1.4.3.
+*%%%% Created by the CUPS PPD Compiler CUPS v1.4.6.
 *FormatVersion: "4.3"
 *FileVersion: "1.0"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
-*PCFileName: "metapostscript.ppd"
+*PCFileName: "metaps.ppd"
 *Product: "(Metalab LaserSpoofer)"
 *Manufacturer: "Metalab"
 *ModelName: "Metalab LaserSpoofer"
@@ -93,4 +93,4 @@
 *Font Times-Roman: Standard "(1.05)" Standard ROM
 *Font ZapfChancery-MediumItalic: Standard "(1.05)" Standard ROM
 *Font ZapfDingbats: Special "(001.005)" Special ROM
-*% End of metapostscript.ppd, 04154 bytes.
+*% End of metaps.ppd, 04138 bytes.
