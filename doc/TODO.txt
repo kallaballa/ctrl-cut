@@ -1,0 +1,14 @@
+Postscript:
+-----------
+
+o Create a few standard test documents in the typical applications
+  (Inkscape, QCad, Corel Draw)
+o Go through each of these and figure out exactly how it goes wrong
+  when extracting data from it
+o Quick&Dirty fix: Hardcode an app-detector and write code to work
+  around the errors, just to buy us some time.
+
+Installer:
+----------
+o Linux installer
+o Mac OS X installer
