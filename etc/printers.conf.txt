@@ -52,7 +52,7 @@ Info Epilog-new
 Location Whateverlab
 DeviceURI file:///tmp/epilog-new.prn
 State Stopped
-StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/EpilogFilter" for printer "Epilog-new" not available: No such file or directory
+StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/epilogcups" for printer "Epilog-new" not available: No such file or directory
 StateTime 1264077108
 Accepting Yes
 Shared Yes
@@ -91,7 +91,7 @@ Info lazzzor-filter
 Location Whateverlab
 DeviceURI lpd://10.20.30.27/
 State Stopped
-StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/EpilogFilter" for printer "lazzzor-filter" not available: No such file or directory
+StateMessage Filter "/Users/kintel/code/metalab/checkout/whatever/user/amir/EpilogCups/src/epilogcups" for printer "lazzzor-filter" not available: No such file or directory
 StateTime 1264077109
 Accepting Yes
 Shared Yes

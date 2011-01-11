@@ -21,7 +21,7 @@ BACKEND_PATH="`cups-config --serverbin`/backend"
 try "Generating PPD files..." "$EC_SCRIPTS/generate_ppds.sh"
 
 # copy epilog filter into the cups filter path
-try "Installing filter binary..." "cp EpilogFilter $FILTER_PATH/epilogcups"
+try "Installing filter binary..." "cp epilogcups $FILTER_PATH/epilogcups"
 
 # copy dump backend
 try "Installing dump backend..." "cp $EC_TEST_CODE/dump $BACKEND_PATH"

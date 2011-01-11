@@ -5,7 +5,7 @@ cd $EC_BASE
 [ ! -d "./tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
-filter=./EpilogFilter
+filter=./epilogcups
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
 
