@@ -20,9 +20,7 @@
 *NickName: "Epilog Legend 36EXT"
 *Manufacturer: "Epilog"
 *DriverType: "custom"
-*cupsFilter: "application/vnd.cups-raw        0       $FILTER"
-*cupsFilter: "application/octet-stream        0       $FILTER"
-*cupsFilter: "application/postscript          0       $FILTER"
+*cupsFilter: "application/vnd.cups-postscript          0       epilogcups"
 
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
@@ -1115,7 +1113,7 @@ restore
 
 *%******** VectorPower ********
 *OpenUI *VectorPower/VectorPower: PickOne
-*DefaultVectorPower: 80
+*DefaultVectorPower: 10
 *OrderDependency: 140 AnySetup *VectorPower
 *VectorPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorPower 1>> >>
@@ -1521,7 +1519,7 @@ restore
 
 *%******** VectorSpeed ********
 *OpenUI *VectorSpeed/VectorSpeed: PickOne
-*DefaultVectorSpeed: 33
+*DefaultVectorSpeed: 100
 *OrderDependency: 140 AnySetup *VectorSpeed
 *VectorSpeed 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 1>> >>
