@@ -13,7 +13,7 @@ Manufacturer "Metalab"
 ModelName "Metalab LaserSpoofer"
 Version 1.0
 
-Filter "application/vnd.cups-postscript 0 /Users/kintel/code/metalab/checkout/EpilogCups.git/test-code/passthroughfilter"
+Filter "application/vnd.cups-postscript 0 passthroughfilter"
 
 // PostScript printer attributes
 Attribute DefaultColorSpace "" Gray
@@ -44,4 +44,5 @@ Attribute "?PageSize" "" "
       restore"
 
 // Specify the name of the PPD file we want to generate
-PCFileName "passthrough.ppd"
+FileName "passthrough.ppd"
+PCFileName "passthru.ppd"

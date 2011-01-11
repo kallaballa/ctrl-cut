@@ -42,4 +42,5 @@ Attribute "?PageSize" "" "
       restore"
 
 // Specify the name of the PPD file we want to generate
-PCFileName "metapostscript.ppd"
+FileName "metapostscript.ppd"
+PCFileName "metaps.ppd"
