@@ -2,6 +2,8 @@
 
 cd $EC_BASE
 
+. $EC_FUNCTIONS
+
 [ ! -d "./tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
@@ -9,7 +11,7 @@ filter=./epilogcups
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
 
-type cups-config &> /dev/null || error "cups-config required" 2
+try "locating cups-config..." "type cups-config" 
 
 export CHARSET=utf-8
 export CONTENT_TYPE=application/pdf
@@ -26,5 +28,5 @@ export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
 
-$filter 32 kintel `basename $file ps`cdr 1 options $file
+try "starting filter..." "$filter 32 kintel `basename $file ps`cdr 1 options $file"
 exit $?

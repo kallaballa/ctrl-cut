@@ -23,14 +23,6 @@ function check {
 
 [ $# -eq 0 ] && usage
 
-eval set -- "`getopt -o v --long verbose -n 'xml-test-filter.sh' -- \"$@\"`"
-while true ; do
-    case "$1" in
-        -v|--verbose) VERBOSE=0 ; shift ;;
-        --) shift ; break ;;
-    esac
-done
-
 for filter in "$@"; do
     echo "testing $filter..."
     for xql in `ls $filter/*.xql`; do

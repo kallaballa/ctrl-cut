@@ -7,6 +7,13 @@
 
 cd `dirname $0` 
 
+while getopts 'v' c
+do
+    case $c in
+        v) export VERBOSE=-v ;;
+    esac
+done
+
 export EC_BASE="`pwd`"
 export EC_TEST_CHROOT="$EC_BASE/chroot"
 export EC_CHROOT_MIRROR="http://debian.inode.at/debian/"

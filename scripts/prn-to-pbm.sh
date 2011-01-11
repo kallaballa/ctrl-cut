@@ -1,13 +1,8 @@
 #!/bin/bash
 
-svg2pdf="$EC_TEST_CODE/svg2pdf/svg2pdf"
+. $EC_FUNCTIONS
 
-while getopts 'v' c
-do
-  case $c in
-    v) VERBOSE=-v ;;
-  esac
-done
+svg2pdf="$EC_TEST_CODE/svg2pdf/svg2pdf"
 
 shift $(($OPTIND - 1))
 
@@ -24,17 +19,18 @@ else
   exec 2> /dev/null
 fi
 
-$EC_PYTHON/rtl2svg.py -c $file $file.svg
+try "rtl2svg $file... " "$EC_PYTHON/rtl2svg.py -c $file $file.svg"
 if [ $? -ne 0 ]; then
   echo "rtl2svn.py failed"
 fi
-$svg2pdf $file.svg $file.pdf
+try "svg2pdf $file.svg..." "$svg2pdf $file.svg $file.pdf"
 if [ $? -ne 0 ]; then
   echo "svg2pdf failed"
 fi
-pdftoppm -q -r 36 -mono $file.pdf tmpfile 2>/dev/null
+try "pdftoppm $file.pdf" "pdftoppm -q -r 36 -mono $file.pdf tmpfile 2>/dev/null"
 # Segmentation fault - it has happened
 if [ $? -eq 139 ]; then
   exit 1
 fi
-mv tmpfile-1.pbm $file.pbm
+try "mv result..." "mv tmpfile-1.pbm $file.pbm"
+

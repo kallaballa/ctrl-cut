@@ -6,10 +6,9 @@ CHRTFS="$EC_TEST_CHROOT"
 chrtrun="$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run "
 bootstrap="$EC_SCRIPTS/bootstrap-chroot.sh"
 
-while getopts 'vcp' c
+while getopts 'cp' c
 do
     case $c in
-        v) VERBOSE=-v ;;
         p) POPULATE=-p ;;
         c) CLEAR=-c ;;
         ?) printUsage; exit 1 ;;
