@@ -60,8 +60,7 @@ private:
 		} else {
 			i = (r + g + b) / 3;
 			s = 1 - 3 * (min(min(r, g), b)) / (r + g + b);
-			h = acos(0.5 * ((r - g) + (r - b))) / sqrt(pow((r - g), 2) + (r - b) * (g
-					- b));
+			h = acos(0.5 * ((r - g) + (r - b))) / sqrt((r - g) * (r - g) + (r - b) * (g - b));
 		}
 		if (b > g)
 			h = 2.0 * 3.14159265 - h;
