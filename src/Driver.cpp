@@ -36,13 +36,13 @@ void Driver::filter(LaserJob *job) {
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
 
-    cut->xml("xml/input/epilog.xml");
+    cut->xml("test-data/xml/input/epilog.xml");
     explode.filter(cut);
-    cut->xml("xml/explode/epilog.xml");
+    cut->xml("test-data/xml/explode/epilog.xml");
     join.filter(cut);
-    cut->xml("xml/join/epilog.xml");
+    cut->xml("test-data/xml/join/epilog.xml");
     deonion.filter(cut);
-    cut->xml("xml/deonion/epilog.xml");
+    cut->xml("test-data/xml/deonion/epilog.xml");
   }
 }
 
