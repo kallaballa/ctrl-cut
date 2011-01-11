@@ -32,6 +32,10 @@ using boost::format;
 */
 void Cut::createEdge(Vertex *start, Vertex *end, int power)
 {
+	//filter zero length edges
+	if(start->getKey() == end->getKey())
+		return;
+
   // FIXME: Clip against page size
   if (start->getX() < 0 || start->getY() < 0 ||
       end->getX() < 0 || end->getY() < 0) {
