@@ -23,7 +23,7 @@
 *cupsVersion: 1.4
 *cupsModelNumber: 0
 *cupsManualCopies: False
-*cupsFilter: "application/vnd.cups-postscript 0 $FILTER"
+*cupsFilter: "application/vnd.cups-postscript 0 passthroughfilter"
 *cupsLanguages: "en"
 *OpenUI *PageSize/Media Size: PickOne
 *OrderDependency: 10 AnySetup *PageSize

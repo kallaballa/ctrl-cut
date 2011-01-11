@@ -17,9 +17,6 @@ try "find cups-config..." "type -p cups-config"
 FILTER_PATH="`cups-config --serverbin`/filter"
 BACKEND_PATH="`cups-config --serverbin`/backend"
 
-# generate ppd files
-try "Generating PPD files..." "$EC_SCRIPTS/generate_ppds.sh"
-
 # copy epilog filter into the cups filter path
 try "Installing filter binary..." "cp epilogcups $FILTER_PATH/epilogcups"
 
