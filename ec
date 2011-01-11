@@ -10,7 +10,7 @@ cd `dirname $0`
 while getopts 'v' c
 do
     case $c in
-        v) export VERBOSE=-v ;;
+        v) export VERBOSE=-v; shift ;;
     esac
 done
 
