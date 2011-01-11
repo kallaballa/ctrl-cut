@@ -20,7 +20,7 @@ $EC_SCRIPTS/generate_ppds.sh
 
 echo -e "\nInstalling filter binary..."
 # copy epilog filter into the cups filter path
-cp EpilogFilter $FILTER_PATH/epilogcups
+cp epilogcups $FILTER_PATH
 
 echo -e "\nInstalling debug backends/filters..."
 # copy dump backend

@@ -1,4 +1,4 @@
-TARGET = EpilogFilter
+TARGET = epilogcups
 #CONFIG += raster
 CONFIG -= qt
 macx {
