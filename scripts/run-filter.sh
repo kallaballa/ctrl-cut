@@ -28,5 +28,6 @@ export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
 
+# Don't run this with try since it produces stdout which is passed to our caller
 $filter 32 kintel `basename $file ps`cdr 1 options $file
 exit $?
