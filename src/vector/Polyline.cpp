@@ -81,8 +81,6 @@ Edge *Polyline::findLeftmostClockwise()
     }
   }
 
-  cerr << "leftmostvertex: " << *leftmostvertex;
-
   // Find next clockwise edge
   SetEdge connected = leftmostvertex->getAttachedEdges();
 
