@@ -5,7 +5,12 @@
 # e.g. to call "$EC_BASE/scripts/test-corel.sh <args>" do "./ec test-corel <args>"
 # alternatively you may also source it and call scripts directly
 
+# switch to bash 3.1 compatibility mode for mac osx
+shopt -s compat31
+
 cd `dirname $0` 
+
+VERBOSE=
 
 while getopts 'v' c
 do
@@ -14,6 +19,8 @@ do
 	--) shift; break;;
     esac
 done
+
+
 
 export EC_BASE="`pwd`"
 export EC_TEST_CHROOT="$EC_BASE/chroot"
@@ -28,16 +35,19 @@ export EC_TEST_CODE="$EC_BASE/test-code"
 export EC_PYTHON="$EC_BASE/python"
 export EC_ETC="$EC_BASE/etc"
 
-echo "EC_BASE: $EC_BASE"
-echo "EC_TEST_CHROOT: $EC_TEST_CHROOT"
-echo "EC_CHROOT_FLAVOUR: $EC_CHROOT_FLAVOUR"
-echo "EC_SCRIPTS: $EC_SCRIPTS"
-echo "EC_GIT_URL: $EC_GIT_URL"
-echo "EC_PPD_DIR: $EC_PPD_DIR"
-echo "EC_TEST_DATA: $EC_TEST_DATA"
-echo "EC_TEST_CODE: $EC_TEST_CODE"
-echo "EC_PYTHON: $EC_PYTHON"
-echo "EC_ETC: $EC_ETC"
+. $EC_FUNCTIONS
+
+verbose "EC_BASE: $EC_BASE"
+verbose "EC_TEST_CHROOT: $EC_TEST_CHROOT"
+verbose "EC_CHROOT_FLAVOUR: $EC_CHROOT_FLAVOUR"
+verbose "EC_SCRIPTS: $EC_SCRIPTS"
+verbose "EC_FUNCTIONS: $EC_FUNCTIONS"
+verbose "EC_GIT_URL: $EC_GIT_URL"
+verbose "EC_PPD_DIR: $EC_PPD_DIR"
+verbose "EC_TEST_DATA: $EC_TEST_DATA"
+verbose "EC_TEST_CODE: $EC_TEST_CODE"
+verbose "EC_PYTHON: $EC_PYTHON"
+verbose "EC_ETC: $EC_ETC"
 
 SCRIPTNAME=$1
 shift
