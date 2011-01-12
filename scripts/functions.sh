@@ -16,8 +16,10 @@ function error {
 function try { 
     errcode=0; 
     echo -n "$1 "; 
-    [ $VERBOSE ] && echo -n "$2 "; 
-    $2 1> /dev/null; errcode=$?; 
+    shift;
+
+    [ $VERBOSE ] && echo -n "$@ "; 
+    $@ 1> /dev/null; errcode=$?; 
     [ $errcode ]  && ok || error; 
     return $errcode; 
 }
