@@ -27,7 +27,7 @@ try "svg2pdf $file.svg..." "$svg2pdf $file.svg $file.pdf"
 if [ $? -ne 0 ]; then
   echo "svg2pdf failed"
 fi
-try "pdftoppm $file.pdf" "pdftoppm -q -r 36 -mono $file.pdf tmpfile 2>/dev/null"
+try "pdftoppm $file.pdf" "pdftoppm -q -r 36 -mono $file.pdf tmpfile"
 # Segmentation fault - it has happened
 if [ $? -eq 139 ]; then
   exit 1
