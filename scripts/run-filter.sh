@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd $EC_BASE
 
@@ -28,5 +28,5 @@ export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
 
-try "starting filter..." "$filter 32 kintel `basename $file ps`cdr 1 options $file"
+$filter 32 kintel `basename $file ps`cdr 1 options $file
 exit $?
