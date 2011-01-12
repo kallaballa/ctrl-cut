@@ -130,7 +130,7 @@ if __name__ == "__main__":
     global mySVG
     mySVG = structure.svg(rtlfile, width=21600, height=14400)
     global bbox
-    bbox = [[21600, 14400],[0, 0]]
+    bbox = [[sys.maxint, sys.maxint],[0, 0]]
 
     f = open(rtlfile, "rb")
     buffer = f.read()
@@ -155,11 +155,14 @@ if __name__ == "__main__":
     # Implicit PU when ending
     handlePU("");
 
+    if verbose: print "BBox: " + str(bbox)
+
     if crop:
         mySVG.set_preserveAspectRatio("xMidYMid meet")
-        mySVG.set_viewBox(" ".join(map(str, sum(bbox, []))))
-        mySVG.set_width(bbox[1][0]-bbox[0][0])
-        mySVG.set_height(bbox[1][1]-bbox[0][1])
+        width,height = bbox[1][0]-bbox[0][0], bbox[1][1]-bbox[0][1]
+        mySVG.set_viewBox(str(bbox[0][0]) + " " + str(bbox[0][1]) + " " + str(width) + " " + str(height))
+        mySVG.set_width(width)
+        mySVG.set_height(height)
 
     # Export svg to same position as input file
     mySVG.save(svgfile)
