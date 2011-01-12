@@ -17,18 +17,6 @@ Usage: chrtsetup.sh [OPTIONS] [CHRTCONF]
   -p, --prepare            perform mount sequence only
   -c, --clean              perform umount sequence only
   -e, --enter              enter chroot only
-  -x DISPLAY               configures the xsession defined by DISPLAY
-                           to allow all connections from localhost 
-                           (xhost +localhost) and sets the DISPLAY
-                           variable inside the chroot accordingly to
-                           support connecting X11 clients from inside the
-                           chroot to your X11 server.
-  -y DISPLAY               does the same like -x but additionally sets the 
-                           window manager name of the xsession to a 
-                           non-reparenting window manager (wmname LG3D) to
-                           avoid problems with some jdk versions running
-                           with awesome wm. (shouldn't interfere with 
-                           conventional use-cases :)
   -r, --run=COMMAND        run specified COMMAND after entering the chroot
 
 CHRTCONF is the name of the chroot configuration stored in /etc/chrtsetup/.
@@ -38,7 +26,6 @@ Examples:
   chrtsetup ubuntu                                      # executed setup defined in /etc/chrtsetup/ubuntu, enter chroot and clean up after
   chrtsetup -c ubuntu                                   # undo mounts performed to setup the chroot
   chrtsetup -pe ubuntu                                  # mount, enter but do not clean up after
-  chrtsetup -y localhost:0.0 --run="xterm" ubuntu       # configure the xsession and start xterm inside the chroot
 EOF
 
   exit 2
@@ -81,13 +68,6 @@ function prepare {
   done
 }
 
-function setupX {
-    RUN="DISPLAY=$1 $RUN"
-    export DISPLAY=$1 
-    xhost +localhost
-    [ $Y ] && /usr/local/bin/wmname LG3D
-}
-
 ### main
 
 [ $# -eq 0 ] && usage
@@ -100,8 +80,6 @@ while true ; do
                 -e|--enter) ENTER=0 ; shift ;;
                 -c|--clean) CLEAN=0 ; shift ;;
                 -r|--run) RUN="$2" ; shift 2;;
-                -x|--x) X=0; DISPLAY="$2" ; shift 2;;
-                -y|--y) Y=0; DISPLAY="$2" ; shift 2;;
                 --) shift ; break ;;
         esac
 done
@@ -111,7 +89,8 @@ CONFIG=$1
 [ ! "$CLEAN" -a ! "$PREPARE" -a  ! "$ENTER" ] && CLEAN=set PREPARE=set ENTER=set
 
 source "$EC_ETC/chroot/$CONFIG"
-[ "$X" -o "$Y" ] && setupX $DISPLAY
 [ $PREPARE ] && prepare
 [ $ENTER ]  && chroot "$CHROOT" bash -c "$RUN"
 [ $CLEAN ]  && clean
+
+

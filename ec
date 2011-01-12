@@ -11,6 +11,7 @@ while getopts 'v' c
 do
     case $c in
         v) export VERBOSE=-v; shift ;;
+	--) shift; break;;
     esac
 done
 
@@ -42,3 +43,5 @@ SCRIPTNAME=$1
 shift
 
 [ $SCRIPTNAME ] && "$EC_SCRIPTS/$SCRIPTNAME.sh" "$@" || echo "No script to run"
+
+
