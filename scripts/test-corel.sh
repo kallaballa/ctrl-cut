@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. $EC_FUNCTIONS
+
 pad()
 {
   echo -n $1
@@ -28,16 +30,16 @@ runtest()
     pad "no" 5
     # Convert cut vectors bitmaps and compare them
     errorstr=""
-    scripts/prn-to-pbm.sh $VERBOSE $corelfile
+    scripts/prn-to-pbm.sh $corelfile
     if [ $? -ne 0 ]; then
       errorstr="Err"
     fi
-    scripts/prn-to-pbm.sh $VERBOSE $outfile
+    scripts/prn-to-pbm.sh $outfile
     if [ $? -ne 0 ]; then
       errorstr="Err"
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn.pbm $outfile.pbm`
+      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.pbm $outfile.pbm`
       if [ $? == 0 ]; then
         pixelstr="OK"
       else
@@ -79,14 +81,6 @@ printUsage()
   echo "Options:"
   echo "  -v        Verbose"
 }
-
-while getopts 'v' c
-do
-  case $c in
-    v) VERBOSE=-v ;;
-    ?) printUsage; exit 1 ;;
-  esac
-done
 
 shift $(($OPTIND - 1))
 
