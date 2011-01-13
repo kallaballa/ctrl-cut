@@ -8,12 +8,16 @@ pad()
   s=$(printf "%$(($2-${#1}))s"); echo -n "${s// /.}"
 }
 
+# Usage: runtest <testfile> <testtype>
+# Example: runtest test-data/corel/quad.ps corel
 runtest()
 {
+  testtype=$2
   testcase=`basename $1 .ps`
-  corelfile=$srcdir/$testcase.prn
+  srcdir=`dirname $1`
+  prnfile=$srcdir/$testcase.prn
   pad "*$testcase" 22
-  outfile=test-data/corel/$testcase.raw
+  outfile=test-data/$testtype/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
   scripts/run-filter.sh $1 > $outfile 2> $testcase.log
@@ -30,7 +34,7 @@ runtest()
     pad "no" 5
     # Convert cut vectors bitmaps and compare them
     errorstr=""
-    scripts/prn-to-pbm.sh $corelfile
+    scripts/prn-to-pbm.sh $prnfile
     if [ $? -ne 0 ]; then
       errorstr="Err"
     fi
@@ -51,7 +55,7 @@ runtest()
     pad "$pixelstr" 7
 
     # Compare number og polylines and total cut length
-    infoA=`python/rtlinfo.py $corelfile`
+    infoA=`python/rtlinfo.py $prnfile`
     plA=`echo $infoA | awk '{print $2}'`
     lenA=`echo $infoA | awk '{print $4}'`
     infoB=`python/rtlinfo.py $outfile`
@@ -103,11 +107,14 @@ echo
 
 # Run given test or all tests
 if [ $# == 1 ]; then
-  srcdir=`dirname $1`
-  runtest $1
+  runtest $1 `basename $(dirname $1)`
 else
-  srcdir=test-data/corel
-  for f in $srcdir/*.ps; do
-    runtest $f
+  testdirs="corel qcad"
+  for testdir in $testdirs
+  do
+    srcdir=$EC_TEST_DATA/testdir
+    for f in $srcdir/*.ps; do
+      runtest $f $testdir
+    done
   done
 fi
