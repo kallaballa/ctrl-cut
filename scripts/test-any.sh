@@ -92,9 +92,10 @@ rundir()
 {
   for testdir in $@
   do
-    srcdir=$testdir
-    for f in $srcdir/*.ps; do
-      runtest $f $testdir
+    testtype=`basename $testdir`
+    echo "[$testtype]"
+    for f in $testdir/*.ps; do
+      runtest $f $testtype
     done
   done
 }
@@ -133,5 +134,11 @@ if [ $# == 1 ]; then
     runtest $1 `basename $(dirname $1)`
   fi
 else
-  rundir corel qcad
+ testdirs="corel qcad"
+ testpaths=""
+ for testdir in $testdirs
+ do
+   testpaths="$testpaths $EC_TEST_DATA/$testdir"
+ done
+ rundir $testpaths
 fi
