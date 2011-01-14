@@ -134,7 +134,7 @@ if [ $# == 1 ]; then
     runtest $1 `basename $(dirname $1)`
   fi
 else
- testdirs="corel qcad"
+ testdirs="corel qcad inkscape"
  testpaths=""
  for testdir in $testdirs
  do
