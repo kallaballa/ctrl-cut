@@ -6,18 +6,30 @@ How to run tests:
 How to add new test cases:
 --------------------------
 
+Prerequisites:
+
+o Make sure the EpilogCapture printer is installed
+  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/EpilogCapture.ppd
+
 QCAD:
 
 o Save DXF to test-data/qcad/<testcase>.dxf
-o Make sure the EpilogCapture printer is installed
-  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/EpilogCapture.ppd
-o Print to this printer from QCad
+o Print to EpilogCapture
 o copy /tmp/epilogcapture.ps to test-data/qcad/<testcase>.ps
 o The test will be automatically run by test-any.
   To test now, run ./ec test-any test-data/qcad/<testcase>.ps
 
+Inkscape:
+
+o Set up the LaserBed paper size in Inkscape:
+  cp doc/LaserBed.svg <templatedir>
+  templatedir:
+  Mac OS X: /Applications/Inkscape.app/Contents/Resources/templates
+  Linux: ~/.inkscape/templates or /usr/share/inkscape/template
+o Save Inkscape SVG to test-data/inkscape/<testcase>.svg
+o Print to EpilogCapture
+o copy /tmp/epilogcapture.ps to test-data/inkscape/<testcase>.ps
+o The test will be automatically run by test-any.
+  To test now, run ./ec test-any test-data/inkscape/<testcase>.ps
+
 FIXME: Set up the test case for regression
-
-
-
-
