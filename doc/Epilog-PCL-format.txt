@@ -33,7 +33,7 @@ HPGL commands:
 
 Note: Alle coordinates are given in positive integers in "x,y" format,
 where the origin is the upper left corner of the lazzzor, as well as the
-document.
+document. Coordinates are 600 DPI integers.
 
 Epilog-specific:
 YP [power]       (e.g. YP080)                                           Vector power
