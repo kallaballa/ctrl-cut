@@ -1,3 +1,8 @@
+CUPS:
+-----
+o Generate EpilogLegend36EXT.ppd with ppdc
+  This should open up for easy generation of PPD's for any Epilog other laser
+
 Postscript:
 -----------
 
