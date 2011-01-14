@@ -15,7 +15,7 @@ VERBOSE=
 while getopts 'v' c
 do
     case $c in
-        v) export VERBOSE=-v; shift ;;
+        v) export VERBOSE=-v; shift; break ;;
 	--) shift; break;;
     esac
 done
