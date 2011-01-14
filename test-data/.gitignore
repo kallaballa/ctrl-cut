@@ -1,4 +1,5 @@
-*.svg
+*.raw.svg
+*.prn.svg
 *.pdf
 *.raw
 *.pbm
