@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# This script is the main test runner for regression tests.
+# It expects postscript files as input and will compare processed files
+# with manually accepted results to catch regressions.
+#
+# Usage variants:
+# ec test-any            - Runs all tests
+# ec test-any <dir>      - Runs all tests in the given dir
+# ec test-any <file.ps>  - Runs the specified test
+
 . $EC_FUNCTIONS
 
 pad()
@@ -17,7 +26,7 @@ runtest()
   srcdir=`dirname $1`
   prnfile=$srcdir/$testcase.prn
   pad "*$testcase" 22
-  outfile=test-data/$testtype/$testcase.raw
+  outfile=$srcdir/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
   scripts/run-filter.sh $1 > $outfile 2> $testcase.log
@@ -79,6 +88,18 @@ runtest()
   echo
 }
 
+rundir()
+{
+  for testdir in $@
+  do
+    testtype=`basename $testdir`
+    echo "[$testtype]"
+    for f in $testdir/*.ps; do
+      runtest $f $testtype
+    done
+  done
+}
+
 printUsage()
 {
   echo "Usage: $0 [-v] [<testcase>]"
@@ -107,14 +128,17 @@ echo
 
 # Run given test or all tests
 if [ $# == 1 ]; then
-  runtest $1 `basename $(dirname $1)`
+  if [ -d $1 ]; then
+    rundir $1
+  else
+    runtest $1 `basename $(dirname $1)`
+  fi
 else
-  testdirs="corel qcad"
-  for testdir in $testdirs
-  do
-    srcdir=$EC_TEST_DATA/testdir
-    for f in $srcdir/*.ps; do
-      runtest $f $testdir
-    done
-  done
+ testdirs="corel qcad"
+ testpaths=""
+ for testdir in $testdirs
+ do
+   testpaths="$testpaths $EC_TEST_DATA/$testdir"
+ done
+ rundir $testpaths
 fi
