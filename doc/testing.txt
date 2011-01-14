@@ -1,0 +1,23 @@
+How to run tests:
+-----------------
+
+./ec test-any <filename.ps>
+
+How to add new test cases:
+--------------------------
+
+QCAD:
+
+o Save DXF to test-data/qcad/<testcase>.dxf
+o Make sure the EpilogCapture printer is installed
+  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/EpilogCapture.ppd
+o Print to this printer from QCad
+o copy /tmp/epilogcapture.ps to test-data/qcad/<testcase>.ps
+o The test will be automatically run by test-any.
+  To test now, run ./ec test-any test-data/qcad/<testcase>.ps
+
+FIXME: Set up the test case for regression
+
+
+
+
