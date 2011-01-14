@@ -4,12 +4,18 @@ FileDevice Yes
 
 Set up printer drivers:
 
-1) Print to file based on a postscript printer
+1a) Print to file based on a postscript printer
 
-This is just for testing/debugging.
+This is just for testing/debugging and not really necessary.
   cd etc
   ppdc metapostscript.drv
   lpadmin -p metapostscript -E -v file:///tmp/metapostscript.ps -P etc/ppd/metapostscript.ppd
+
+1b) Print to file based on the Epilog PPD
+
+This is to be able to generate postscript test cases
+
+  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/EpilogCapture.ppd
 
 2) Set up a local shared printer for capturing raw data from the Windows driver
 
