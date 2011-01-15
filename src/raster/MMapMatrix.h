@@ -25,6 +25,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include "../util/Logger.h"
 #include "RTypes.h"
 #include "stdint.h"
 
@@ -47,16 +48,16 @@ public:
 
 	MMapMatrix(string filename, uint16_t width, uint16_t height,
 			uint16_t x, uint16_t y, uint64_t region_off) {
-		cerr << "off: " << region_off << std::endl;
+	  LOG_DEBUG(region_off);
 		this->filename = filename;
 		this->m_file = new file_mapping(filename.c_str(), read_only);
 		this->bytes_per_pixel = sizeof(T) * 3;
-		cerr << "Bpp" << bytes_per_pixel << std::endl;
+    LOG_DEBUG(bytes_per_pixel);
 		this->m_region = mapped_region(*this->m_file, read_only, region_off + (x
 				* y * bytes_per_pixel), width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
-		cerr << "size" << this->size << std::endl;
+    LOG_DEBUG(this->size);
 		this->x = x;
 		this->y = y;
 		this->w = width;
@@ -95,10 +96,12 @@ public:
 	}
 
 	Pixel<T>* pixel(Point2D p) {
-		//cerr << "pos: " << p.x << "/" << p.y << " #" << ((p.y * w + p.x) * 3) << "\t";
-		T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
+	  std::stringstream ss;
+	  ss << p.x << "/" << p.y << " #" << ((p.y * w + p.x) * 3);
+	  LOG_ULTRA_MSG("pixelpos", ss.str());
+
+	  T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
 		Pixel<T>* pix = new Pixel<T> (*sample, *++sample, *++sample);
-		//cerr << (int)pix->ihs[0] << "|" << (int)pix->rgb[0] << " / " << (int)pix->rgb[1] << " / " << (int)pix->rgb[2] << std::endl;
 
 		return pix;
 	}

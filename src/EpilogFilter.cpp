@@ -457,7 +457,7 @@ int main(int argc, char *argv[]) {
     delete cut;
 
   clock_t end = clock() - start;
-  cerr << endl << "Clocks: " << end << endl;
-  cerr << "Seconds: " << 1.0 * end / CLOCKS_PER_SEC << endl;
+  int seconds = 1.0 * end / CLOCKS_PER_SEC;
+  LOG_DEBUG(seconds);
   return 0;
 }
