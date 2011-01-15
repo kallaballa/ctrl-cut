@@ -5,10 +5,10 @@
 #define AUTO_FOCUS (1)
 
 /** Default bed width (x-axis) in pts. */
-#define BED_WIDTH 21600
+#define BED_WIDTH 2592
 
 /** Default bed height (y-axis) in pts. */
-#define BED_HEIGHT 14400
+#define BED_HEIGHT 1728
 
 /**
  * Default on whether or not the result is supposed to be flipped along the X
