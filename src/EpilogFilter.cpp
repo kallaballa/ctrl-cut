@@ -136,13 +136,13 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->flip = true;
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-  	lconf->debug = true;
+    lconf->debug = true;
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
-  	lconf->enable_raster = true;
+    lconf->enable_raster = true;
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-  	lconf->enable_vector = true;
+    lconf->enable_vector = true;
   }
 }
 
@@ -409,9 +409,9 @@ int main(int argc, char *argv[]) {
   const char *rm;
 
   if(lconf.enable_raster) {
-		rm = "ppmraw";
+    rm = "ppmraw";
   } else {
-  	rm = "nullpage";
+    rm = "nullpage";
   }
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
@@ -437,19 +437,19 @@ int main(int argc, char *argv[]) {
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!lconf.debug) {
-  	if(lconf.enable_raster) {
-			if (unlink(filename_bitmap)) {
-				// FIXME: Prefix with ERROR:
-				perror(filename_bitmap);
-			}
-  	}
+    if(lconf.enable_raster) {
+      if (unlink(filename_bitmap)) {
+        // FIXME: Prefix with ERROR:
+        perror(filename_bitmap);
+      }
+    }
 
-  	if (unlink(filename_eps)) {
+    if (unlink(filename_eps)) {
       // FIXME: Prefix with ERROR:
       perror(filename_eps);
     }
 
-  	if (unlink(filename_vector)) {
+    if (unlink(filename_vector)) {
       // FIXME: Prefix with ERROR:
       perror(filename_vector);
     }
