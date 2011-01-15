@@ -8,11 +8,20 @@ macx {
 
 OBJECTS_DIR = objects
 
-DEFINES += cimg_display=0
+QMAKE_CXXFLAGS+=-DETLOG
+QMAKE_CXXFLAGS+=-DDEBUG=5
 
 LIBS += -lcups
 
+
 SOURCES = \
+          src/tri_logger/tri_logger.cpp
+
+HEADERS = \
+          src/tri_logger/tri_logger.hpp \
+          src/tri_logger/nullstream.hpp
+
+SOURCES += \
           src/Driver.cpp \
           src/EpilogFilter.cpp \
           src/LaserJob.cpp \
@@ -27,7 +36,7 @@ SOURCES = \
           src/vector/filters/Explode.cpp \
           src/vector/filters/Join.cpp
 
-HEADERS = \
+HEADERS += \
           src/Driver.h \
           src/EpilogFilter.h \
           src/LaserJob.h \
@@ -46,15 +55,11 @@ HEADERS = \
           src/vector/filters/Join.h
 SOURCES += \
           src/raster/DownSample.cpp \
-          src/raster/filter/TAFilter.cpp \
-          src/raster/filter/TPFilter.cpp \
           src/raster/PclRenderer.cpp \
           src/raster/Raster.cpp
 
 HEADERS  += \
           src/raster/DownSample.h \
-          src/raster/filter/TAFilter.h \
-          src/raster/filter/TPFilter.h \
           src/raster/MMapMatrix.h \
           src/raster/PclRenderer.h \
           src/raster/PPMFile.h \

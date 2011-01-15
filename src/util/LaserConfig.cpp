@@ -56,5 +56,8 @@ void init_laser_config(LaserConfig *lconf)
   lconf->basex = 0;
   lconf->basey = 0;
   lconf->flip = FLIP;
+  lconf->debug = true;
+  lconf->enable_vector = true;
+  lconf->enable_raster = false;
   calculate_base_position(lconf);
 }
