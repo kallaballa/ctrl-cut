@@ -37,36 +37,25 @@ struct Point2D {
 template<class T>
 class Pixel {
 public:
+	/* complete rgb 2 ihs conversion
+	 	 	i = (r + g + b) / 3;
+			s = 1 - 3 * (min(min(r, g), b)) / (r + g + b);
+			h = acos(0.5 * ((r - g) + (r - b))) / sqrt((r - g) * (r - g) + (r - b) * (g - b));
+	 */
+
+	T rgb[3];
+
 	Pixel(T r, T g, T b) {
 		this->rgb[0] = r;
 		this->rgb[1] = g;
 		this->rgb[2] = b;
-		initIHS(this->rgb);
 	}
 
-	T rgb[3];
-	T ihs[3];
-
-private:
-	void initIHS(T* rgb) {
-		T r = rgb[0];
-		T g = rgb[1];
-		T b = rgb[2];
-		T i, s, h;
-		if (r == 0 && g == 0 && b == 0) {
-			i = 0;
-			h = 0;
-			s = 0;
-		} else {
-			i = (r + g + b) / 3;
-			s = 1 - 3 * (min(min(r, g), b)) / (r + g + b);
-			h = acos(0.5 * ((r - g) + (r - b))) / sqrt((r - g) * (r - g) + (r - b) * (g - b));
-		}
-		if (b > g)
-			h = 2.0 * 3.14159265 - h;
-		this->ihs[0] = i;
-		this->ihs[1] = h;
-		this->ihs[2] = s;
+	T intensity() {
+		if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] == 0)
+			return 0;
+		else
+			return (rgb[0] + rgb[1] + rgb[2]) / 3;
 	}
 };
 
