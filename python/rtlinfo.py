@@ -187,3 +187,4 @@ if __name__ == "__main__":
         if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
     print "polylines: %d" % (len(polylines))
     print "length: %.2f" % (totlength * 25.4 / 600) 
+    print "boundingbox: %s" % (" ".join(map(str, sum(bbox, []))))
