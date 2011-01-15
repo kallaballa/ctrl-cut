@@ -47,9 +47,6 @@ LaserConfig lconf;
 /** Temporary buffer for building our strings. */
 char buf[102400];
 
-/** Determines whether or not debug is enabled. */
-char debug = DEBUG;
-
 const char *queue_options = "";
 
 /**
@@ -82,7 +79,7 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
           (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
           filename_eps, filename_vector);
 
-  if (debug) {
+  if (lconf.debug) {
     fprintf(stderr, "DEBUG: %s\n", buf);
   }
   if (system(buf)) {
@@ -122,7 +119,6 @@ void process_print_job_options(cups_option_t *options, int numOptions,
   }
   if ((v = cupsGetOption("RasterMode", numOptions, options))) {
     lconf->raster_mode = tolower(*v);
-    lconf->raster_mode = 'g';
   }
   if ((v = cupsGetOption("RasterRepeat", numOptions, options))) {
     lconf->raster_repeat = atoi(v);
@@ -140,7 +136,13 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->flip = 1;
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-    debug = 1;
+  	lconf->debug = 1;
+  }
+  if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
+  	lconf->enable_raster = 1;
+  }
+  if ((v = cupsGetOption("EnableVector", numOptions, options))) {
+  	lconf->enable_vector = 1;
   }
 }
 
@@ -292,24 +294,11 @@ int main(int argc, char *argv[]) {
   printEnv("DO_RASTER");
   printEnv("DO_VECTOR");
 
-  const char *disableRaster = getenv("RASTER_OFF");
-  //FIXME: raster pass disabled
-  disableRaster = "y";
-
-  if (disableRaster) {
-    fprintf(stderr, "disabling raster passes\n");
-  }
-
-  const char *disableVector = getenv("VECTOR_OFF");
-  if (disableVector) {
-    fprintf(stderr, "disabling vector passes\n");
-  }
   // FIXME: Register a signal handler to support cancelling of jobs
-
   const char *arg_jobid = argv[optind];
   const char *arg_user = argv[optind+1];
   const char *arg_title = argv[optind+2];
-  const char *arg_copies = argv[optind+3];
+  //const char *arg_copies = argv[optind+3];
   const char *arg_options = argv[optind+4];
   const char *arg_filename = argv[optind+5];
 
@@ -372,7 +361,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* Write out the incoming cups data if debug is enabled. */
-  if (debug) {
+  if (lconf.debug) {
     /* We save the incoming cups data to the filesystem. */
     sprintf(filename_cups_debug, "%s.cups", file_basename);
     file_debug = fopen(filename_cups_debug, "w");
@@ -426,12 +415,7 @@ int main(int argc, char *argv[]) {
       else
       rm = "bmpmono";*/
 
-  // FIXME: While doing vector testing, set this to nullpage to speed up the gs run
-  if (disableRaster) {
-    rm = "nullpage";
-  } else {
-    rm = "ppmraw";
-  }
+
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
@@ -441,19 +425,20 @@ int main(int argc, char *argv[]) {
 
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
 
-  if (!disableRaster) {
+  if (lconf.enable_raster) {
     Raster *raster = Raster::load(filename_bitmap);
     raster->addTile(raster->sourceImage);
     job.addRaster(raster);
   }
   Cut *cut = NULL;
-  if (!disableVector) {
+
+  if (lconf.enable_vector) {
     cut = Cut::load(filename_vector);
     job.addCut(cut);
   }
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
-  if (!debug) {
+  if (!lconf.debug) {
     if (unlink(filename_bitmap)) {
       // FIXME: Prefix with ERROR:
       perror(filename_bitmap);
