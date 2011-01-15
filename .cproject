@@ -25,7 +25,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.694145543" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.63356459" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.918037137" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1759030236" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-Wno-format  -W -lm -c -fmessage-length=0 -Dcimg_use_vt100 -I/usr/include/X11 -Dcimg_use_xshm -Dcimg_use_xrandr -L/usr/lib/X11 -L/usr/lib/ -lpthread -lX11 -lXext -lXrandr -lcups" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.1759030236" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-DETLOG -Wno-format  -W -lm -c -fmessage-length=0 -I/usr/include/X11 -Dcimg_use_xshm -Dcimg_use_xrandr -L/usr/lib/X11 -L/usr/lib/ -lpthread -lX11 -lXext -lXrandr -lcups" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1495451413" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1028439664" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -51,16 +51,6 @@
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.671726884" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
-						</toolChain>
-					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.1986422655" name="/" resourcePath="src/raster">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1053982411" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.557856289" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1753683383"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1203711885" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.694145543"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1103386600" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1028439664"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1957140043" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.903163046"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.344936531" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1199342356"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.262171091" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1990152385"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
