@@ -41,6 +41,14 @@ $INSUNITS
  70
 4
   9
+$DIMSTYLE
+  2
+Standard
+  9
+$CLAYER
+  8
+0
+  9
 $DIMEXO
  40
 0.625
@@ -923,7 +931,7 @@ AcDbLayerTableRecord
   6
 CONTINUOUS
 370
-25
+0
 390
 F
   0
