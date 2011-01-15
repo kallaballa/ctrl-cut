@@ -14,9 +14,6 @@ file=$1
 
 if test $VERBOSE; then
   set -x
-else
-  # suppress segmentation fault output
-  exec 2> /dev/null
 fi
 
 try "rtl2svg $file... " "$EC_PYTHON/rtl2svg.py -c $file $file.svg"

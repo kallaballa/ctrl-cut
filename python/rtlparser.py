@@ -17,9 +17,13 @@ def parsePointlist(pointlist):
 class RTLParser:
     def __init__(self, verbose=False):
         self.verbose = verbose
+        self.reset()
+        self.handlers = {}
+
+    def reset(self):
         self.bbox = [[sys.maxint, sys.maxint],[0, 0]]
         self.startpos = self.currpos = None
-        self.handlers = {}
+        self.strokelist = None
 
     def registerHandler(self, primitive, func):
         self.handlers[primitive] = func
@@ -89,14 +93,14 @@ class RTLParser:
 
     def handlePU(self, pos):
         if self.verbose: print "PU " + pos
-        if hasattr(self,"strokelist") and self.strokelist != None:
+        if self.strokelist != None:
             if self.verbose: print("new stroke")
             self.strokelist.insert(0, self.startpos)
             strokestr = ""
             for p in self.strokelist:
                 self.expandBBox(int(p[0]), int(p[1]))
                 strokestr += "%s,%s " % (p[0], p[1])
-#            if self.verbose: print(strokestr)
+#            if self.verbose: print(strokestr)a
             if "PU" in self.handlers:
                 self.handlers["PU"](pos, strokestr)
         if len(pos) > 0: self.currpos = parsePosition(pos)

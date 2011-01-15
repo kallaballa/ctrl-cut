@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import getopt
+import math
 import itertools
 from vec2 import Vec2
 from rtlparser import RTLParser
@@ -60,7 +61,7 @@ def handlePD(pointstr):
     pd_was_seen = True;
 
 def usage():
-    print >> sys.stderr, "Usage: " + sys.argv[0] + " [<options>] <prn-file>"
+    print >> sys.stderr, "Usage: " + sys.argv[0] + " [<options>] <prn-file> [<prn-file>]"
     print >> sys.stderr, "Options:"
     print >> sys.stderr, "  -v           Verbose"
     print >> sys.stderr, "  -c           Crop result"
@@ -73,7 +74,7 @@ if __name__ == "__main__":
         usage()
         sys.exit(2)
 
-    if len(args) != 1:
+    if len(args) < 1 or len(args) > 2:
         usage()
         sys.exit(2)
 
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         elif o in ("-c", "--crop"): crop = True
 
     rtlfile = args[0]
+    if len(args) > 1: second_rtlfile = args[1]
 
     if verbose: print "Processing " + rtlfile + "..."
 
@@ -108,6 +110,57 @@ if __name__ == "__main__":
         length = pl.length()
         totlength += length
         if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
-    print "polylines: %d" % (len(polylines))
-    print "length: %.2f" % (totlength * 25.4 / 600) 
-    print "boundingbox: %s" % (" ".join(map(str, sum(parser.bbox, []))))
+    totlength = (totlength * 25.4 / 600) 
+
+    if len(args) == 1:
+        print "polylines: %d" % (len(polylines))
+        print "length: %.2f" % (totlength * 25.4 / 600) 
+        print "boundingbox: %s" % (" ".join(map(str, sum(parser.bbox, []))))
+    else:
+        first_polylines = polylines
+        first_bbox = parser.bbox
+        first_totlength = totlength
+
+        polylines = []
+        parser.reset()
+        parser.parse(second_rtlfile)
+
+        second_polylines = polylines
+        second_bbox = parser.bbox
+        second_totlength = 0
+        for i in range(len(second_polylines)):
+            pl = second_polylines[i]
+            length = pl.length()
+            second_totlength += length
+            if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
+        second_totlength = (second_totlength * 25.4 / 600) 
+
+#        print "second polylines: %d" % (len(second_polylines))
+#        print "second length: %.2f" % (second_totlength * 25.4 / 600) 
+#        print "second boundingbox: %s" % (" ".join(map(str, sum(second_bbox, []))))
+
+        fail = False
+        polyline_diff = abs(len(first_polylines) - len(second_polylines))
+        if polyline_diff > 1:
+            print str(len(first_polylines)) + "->" + str(len(second_polylines))
+            fail = True
+        else:
+            print "0",
+
+        totlen_diff = math.fabs(first_totlength - second_totlength)
+        if totlen_diff > 1:
+            print "%.2f" % (first_totlength) + "->" + "%.2f" % (second_totlength),
+            fail = True
+        else:
+            print "0",
+
+        if abs(first_bbox[0][0] - second_bbox[0][0]) > 1 or \
+           abs(first_bbox[0][1] - second_bbox[0][1]) > 1 or \
+           abs(first_bbox[1][0] - second_bbox[1][0]) > 1 or \
+           abs(first_bbox[1][1] - second_bbox[1][1]) > 1:
+            print "1"
+            fail = True
+        else:
+            print "0"
+
+        if fail: sys.exit(1)

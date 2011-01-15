@@ -21,7 +21,7 @@ function try {
     verbose $@; $@ 1>&2;
     errcode=$?; 
     
-    [ $errcode ]  && ok || error; 
+    if [ $errcode != 0 ]; then error; else ok; fi
     return $errcode; 
 }
 

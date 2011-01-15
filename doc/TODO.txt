@@ -25,9 +25,6 @@ o Write a simple logger implementation
 Testing:
 --------
 
-o Test the bounding box of HP-GL contents of RTL files.
-  (to detect issues with coordinate translations)
-
 Goodies:
 --------
 
