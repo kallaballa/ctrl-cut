@@ -35,19 +35,42 @@ runtest()
     return
   fi
 
-  # Binary compare with the outout of the Windows drivers
-  diff -a $srcdir/$testcase.prn $outfile >> $testcase.log
-  if [ $? == 0 ]; then
+  if [ -f $prnfile ]; then 
+      has_prnfile=1
+  else 
+      has_prnfile=0
+  fi
+
+  # Binary compare with the validated output (e.g. from the Windows drivers)
+  binary_ok=0
+  if [ $has_prnfile == 1 ]; then
+    diff -a $prnfile $outfile >> $testcase.log
+    if [ $? == 0 ]; then
+      binary_ok=1
+    fi
+  fi
+
+  if [ $binary_ok == 1 ]; then
     echo -n OK
   else
-    pad "no" 5
-    # Convert cut vectors bitmaps and compare them
+    # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    scripts/prn-to-pbm.sh $prnfile
+    scripts/prn-to-pbm.sh $outfile
     if [ $? -ne 0 ]; then
       errorstr="Err"
+      rawtopbmfailed=1
     fi
-    scripts/prn-to-pbm.sh $outfile
+    infoB=`python/rtlinfo.py $outfile`
+    plB=`echo $infoB | awk '{print $2}'`
+    lenB=`echo $infoB | awk '{print $4}'`
+
+    if [ $has_prnfile == 0 ]; then
+      echo "No prn file found. Generating output.."
+      return
+    fi
+
+    pad "no" 5
+    scripts/prn-to-pbm.sh $prnfile
     if [ $? -ne 0 ]; then
       errorstr="Err"
     fi
@@ -67,11 +90,8 @@ runtest()
     infoA=`python/rtlinfo.py $prnfile`
     plA=`echo $infoA | awk '{print $2}'`
     lenA=`echo $infoA | awk '{print $4}'`
-    infoB=`python/rtlinfo.py $outfile`
-    plB=`echo $infoB | awk '{print $2}'`
-    lenB=`echo $infoB | awk '{print $4}'`
 
-    if [ $plA != $plB ]; then
+    if [ "$plA" != "$plB" ]; then
         plstr="$plA->$plB"
     else
         plstr="OK"

@@ -133,16 +133,16 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->vector_freq = atoi(v);
   }
   if ((v = cupsGetOption("FlipX", numOptions, options))) {
-    lconf->flip = 1;
+    lconf->flip = true;
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-  	lconf->debug = 1;
+  	lconf->debug = true;
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
-  	lconf->enable_raster = 1;
+  	lconf->enable_raster = true;
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-  	lconf->enable_vector = 1;
+  	lconf->enable_vector = true;
   }
 }
 
