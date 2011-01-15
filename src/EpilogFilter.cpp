@@ -416,6 +416,7 @@ int main(int argc, char *argv[]) {
       rm = "bmpmono";*/
 
 
+  rm = "nullpage";
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
@@ -424,18 +425,20 @@ int main(int argc, char *argv[]) {
   }
 
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
-
-  if (lconf.enable_raster) {
+  lconf.enable_raster = 0;
+  /*if (lconf.enable_raster) {
     Raster *raster = Raster::load(filename_bitmap);
     raster->addTile(raster->sourceImage);
     job.addRaster(raster);
-  }
+  }*/
   Cut *cut = NULL;
 
+  lconf.enable_vector = 1;
   if (lconf.enable_vector) {
     cut = Cut::load(filename_vector);
     job.addCut(cut);
   }
+	lconf.debug = 1;
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!lconf.debug) {
