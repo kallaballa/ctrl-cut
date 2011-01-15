@@ -118,6 +118,22 @@ restore
 
 *OpenGroup: General
 
+*%******** EnableRaster ********
+*OpenUI *EnableRaster/EnableRaster: Boolean
+*DefaultEnableRaster: True
+*OrderDependency: 140 AnySetup *EnableRaster
+*EnableRaster True: " "
+*EnableRaster False: " "
+*CloseUI: *EnableRaster
+
+*%******** EnableVector ********
+*OpenUI *EnableVector/EnableVector: Boolean
+*DefaultEnableVector: True
+*OrderDependency: 140 AnySetup *EnableVector
+*EnableVector True: " "
+*EnableVector False: " "
+*CloseUI: *EnableVector
+
 *%******** AutoFocus ********
 *OpenUI *AutoFocus/AutoFocus: Boolean
 *DefaultAutoFocus: True

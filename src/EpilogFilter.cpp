@@ -408,15 +408,11 @@ int main(int argc, char *argv[]) {
 
   const char *rm;
 
-  /*  if (lconf.raster_mode == 'c')
-      rm = "bmp16m";
-      else if (lconf.raster_mode == 'g')
-      rm = "bmpgray";
-      else
-      rm = "bmpmono";*/
-
-
-  rm = "nullpage";
+  if(lconf.enable_raster) {
+		rm = "ppmraw";
+  } else {
+  	rm = "nullpage";
+  }
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
@@ -426,11 +422,11 @@ int main(int argc, char *argv[]) {
 
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
   lconf.enable_raster = 0;
-  /*if (lconf.enable_raster) {
+  if (lconf.enable_raster) {
     Raster *raster = Raster::load(filename_bitmap);
     raster->addTile(raster->sourceImage);
     job.addRaster(raster);
-  }*/
+  }
   Cut *cut = NULL;
 
   lconf.enable_vector = 1;
@@ -438,19 +434,22 @@ int main(int argc, char *argv[]) {
     cut = Cut::load(filename_vector);
     job.addCut(cut);
   }
-	lconf.debug = 1;
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!lconf.debug) {
-    if (unlink(filename_bitmap)) {
-      // FIXME: Prefix with ERROR:
-      perror(filename_bitmap);
-    }
-    if (unlink(filename_eps)) {
+  	if(lconf.enable_raster) {
+			if (unlink(filename_bitmap)) {
+				// FIXME: Prefix with ERROR:
+				perror(filename_bitmap);
+			}
+  	}
+
+  	if (unlink(filename_eps)) {
       // FIXME: Prefix with ERROR:
       perror(filename_eps);
     }
-    if (unlink(filename_vector)) {
+
+  	if (unlink(filename_vector)) {
       // FIXME: Prefix with ERROR:
       perror(filename_vector);
     }
