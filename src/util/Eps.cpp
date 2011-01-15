@@ -26,6 +26,25 @@
 #include <stdlib.h>
 #include <strings.h>
 
+/*!
+  This hack searches for a bbox at the end of the file, but in a really dumb way.
+  Returns true if a bbox was found.
+*/
+bool get_bbox_from_end(FILE *ps_file, 
+                       int &lower_left_x, int &lower_left_y, 
+                       int &upper_right_x, int &upper_right_y)
+{
+  while (fgets(buf, sizeof(buf), ps_file)) {
+    if (!strncasecmp(buf, "%%BoundingBox:", 14)) {
+      if (sscanf(buf + 14, "%d %d %d %d",
+                 &lower_left_x, &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /**
  * Convert the given postscript file (ps) converting it to an encapsulated
  * postscript file (eps).
@@ -42,15 +61,16 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
   int xoffset = 0;
   int yoffset = 0;
   bool created_by_cairo = false;
+  bool landscape_flipped = false;
 
   int l;
   while (fgets((char *) buf, sizeof(buf), ps_file)) {
     fprintf(eps_file, "%s", (char *) buf);
     if (*buf != '%') {
-      continue;
+      continue; // We're only looking for comment lines
     }
-    // Check for Inkscape
-    if (created_by_cairo) {
+    // Check for Inkscape with landscape bug
+    if (created_by_cairo && landscape_flipped) {
       if (!strncasecmp((char *) buf, "%%EndPageSetup", 14)) {
         // Revert Inkscape fuckup
         fprintf(eps_file, "0 -1 1 0 0 1728 6 array astore concat\n");
@@ -64,14 +84,40 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
       int lower_left_y;
       int upper_right_x;
       int upper_right_y;
-      if (sscanf((char *) buf + 14, "%d %d %d %d", &lower_left_x,
-                 &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
+      bool found = false;
+      if (!strncasecmp((char *) buf+15, "(atend)", 7)) {
+        long pos = ftell(ps_file);
+        found = get_bbox_from_end(ps_file, lower_left_x, lower_left_y, 
+                                  upper_right_x, upper_right_y);
+        fseek(ps_file, pos, SEEK_SET);
+      }
+      else {
+        found = (sscanf((char *) buf + 14, "%d %d %d %d",
+                        &lower_left_x, &lower_left_y, 
+                        &upper_right_x, &upper_right_y) == 4);
+      }
+
+      if (found) {
         xoffset = lower_left_x;
         yoffset = lower_left_y;
+        int width = upper_right_x - lower_left_x;
+        int height = upper_right_y - lower_left_y;
+
+        // FIXME: This is a check for buggy postscript from inkscape.
+        // Inkscape 0.46 works, 0.48 is broken. The broken one swaps width and height.
+        // If the laser itself has a portrait layout, this check is inherently wrong
+        // -> rethink this later.
+        if (height > width) {
+          landscape_flipped = true;
+        }
+
         // FIXME: Sometimes (e.g. from Inkscape) the width and height is swapped.
         // We don't want ot poison our lconf with this, so comment this out for now.
-        // lconf->width = (upper_right_x - lower_left_x);
-        // lconf->height = (upper_right_y - lower_left_y);
+        // lconf->width = width;
+        // lconf->height = height;
+
+        // FIXME: Commented out for now as I don't know what this was supposed to do.
+#if 0
         fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
         fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
         if (xoffset || yoffset) {
@@ -81,6 +127,7 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
           fprintf(eps_file, "%d 0 translate -1 1 scale\n",
                   lconf->width);
         }
+#endif
       }
     }
     else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
