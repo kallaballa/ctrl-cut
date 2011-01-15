@@ -41,14 +41,25 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
 {
   int xoffset = 0;
   int yoffset = 0;
+  bool created_by_cairo = false;
 
   int l;
   while (fgets((char *) buf, sizeof(buf), ps_file)) {
     fprintf(eps_file, "%s", (char *) buf);
     if (*buf != '%') {
-      break;
+      continue;
     }
-    if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
+    // Check for Inkscape
+    if (created_by_cairo) {
+      if (!strncasecmp((char *) buf, "%%EndPageSetup", 14)) {
+        // Revert Inkscape fuckup
+        fprintf(eps_file, "0 -1 1 0 0 1728 6 array astore concat\n");
+      }
+    }
+    if (!strncasecmp((char *) buf, "%%Creator: cairo", 16)) {
+      created_by_cairo = true;
+    }
+    else if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
       int lower_left_x;
       int lower_left_y;
       int upper_right_x;
@@ -57,11 +68,12 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
                  &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
         xoffset = lower_left_x;
         yoffset = lower_left_y;
-        lconf->width = (upper_right_x - lower_left_x);
-        lconf->height = (upper_right_y - lower_left_y);
+        // FIXME: Sometimes (e.g. from Inkscape) the width and height is swapped.
+        // We don't want ot poison our lconf with this, so comment this out for now.
+        // lconf->width = (upper_right_x - lower_left_x);
+        // lconf->height = (upper_right_y - lower_left_y);
         fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
-        fprintf(eps_file, "0 %d translate\n", lconf->height
-                - upper_right_y);
+        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
         if (xoffset || yoffset) {
           fprintf(eps_file, "%d %d translate\n", -xoffset, -yoffset);
         }
@@ -71,14 +83,33 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
         }
       }
     }
-    if (!strncasecmp((char *) buf, "%!", 2)) {
+    else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
+      // Define === to print whatever is on the stack
+      fprintf(eps_file, "/=== { (        ) cvs print } def\n");
+      // Redefine stroke to also print the coordinates
       fprintf(eps_file,
-              "/==={(        )cvs print}def/stroke{currentlinewidth matrix "
-              "currentmatrix 0 get mul 5 lt {(P)=== currentrgbcolor pop pop 100 mul "
-              "round  cvi = flattenpath{transform(M)=== 1 sub round cvi ===(,)=== 1 "
-              "sub round cvi =}{transform(L)=== 1 sub round cvi ===(,)=== 1 sub round "
-              "cvi =}{}{(C)=}pathforall newpath}{stroke}ifelse}bind def/showpage{(X)= "
-              "showpage}bind def\n");
+              "/stroke { " // define stroke
+              "currentlinewidth " // Put current line width on stack
+              "matrix currentmatrix " // Get current matrix
+              "0 get mul 5 lt " // Check linewidth (hackish; only checks the matrix x axis scale)
+              // If linewidth < 5, this will be cut:
+              // Print "P" followed by a number for the amount of red (0-100)
+              "{(P)=== currentrgbcolor pop pop 100 mul round cvi = "
+              "flattenpath " // Convert all graphics to lines
+              "{transform (M)=== 1 sub round cvi === (,)=== 1 sub round cvi =}" // move
+              "{transform (L)=== 1 sub round cvi === (,)=== 1 sub round cvi =}" // line
+              "{}" // curve (shouldn't occur due to flattenpath)
+              "{(C)=}" // close
+              "pathforall " // execute one of the previous 4 blocks
+              "newpath}" // remove path
+              // If linewidth >= 5, this will be lasercut:
+              "{stroke}"
+              "ifelse "              // The actual ifelse statement - reverse boolean ftw!
+              "} bind def\n"); // end define stroke
+      // Redefine showpage to first print "X"
+      fprintf(eps_file, "/showpage { (X)= showpage } bind def\n");
+
+      // FIXME: Go through and verify this code
       if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
         if (lconf->screen == 0) {
           fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
