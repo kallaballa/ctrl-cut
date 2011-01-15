@@ -54,7 +54,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="raster/bak|PCLTiffEncoder.h|PCLTiffEncoder.cpp|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="raster/filter|raster/bak|PCLTiffEncoder.h|PCLTiffEncoder.cpp|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
