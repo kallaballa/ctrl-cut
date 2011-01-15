@@ -13,6 +13,8 @@ o Make sure the EpilogCapture printer is installed
 
 QCAD:
 
+o Make sure to set the Pen width of all layers to 0.00 mm
+  (in View->Toolbars->Layer List->Edit Layer)
 o Save DXF to test-data/qcad/<testcase>.dxf
 o Print to EpilogCapture
 o copy /tmp/epilogcapture.ps to test-data/qcad/<testcase>.ps
@@ -26,6 +28,8 @@ o Set up the LaserBed paper size in Inkscape:
   templatedir:
   Mac OS X: /Applications/Inkscape.app/Contents/Resources/templates
   Linux: ~/.inkscape/templates or /usr/share/inkscape/template
+o Make sure to se the stroke width to <= 0.025 mm
+  (in Object->Fill and Stroke->Stroke Style)
 o Save Inkscape SVG to test-data/inkscape/<testcase>.svg
 o Print to EpilogCapture
 o copy /tmp/epilogcapture.ps to test-data/inkscape/<testcase>.ps
