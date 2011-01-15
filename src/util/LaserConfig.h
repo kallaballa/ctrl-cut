@@ -1,6 +1,9 @@
 #ifndef LASER_CONFIG_H_
 #define LASER_CONFIG_H_
 
+#include <stdint.h>
+#include <stdbool.h>
+
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)
 
@@ -123,7 +126,16 @@ struct LaserConfig
   int basey;
 
   /** Variable to track whether or not the X axis should be flipped. */
-  char flip;
+  bool flip;
+
+  // Are we running in debug mode?
+  bool debug;
+
+  // Are we running performing raster passes
+  bool enable_raster;
+
+  // Are we running performing vector passes
+  bool enable_vector;
 };
 
 void init_laser_config(LaserConfig *lconf);
