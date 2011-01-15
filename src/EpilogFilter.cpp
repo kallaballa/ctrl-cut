@@ -28,6 +28,7 @@
 
 #include <cups/cups.h>
 
+#include "util/Logger.h"
 #include "util/LaserConfig.h"
 #include "util/Eps.h"
 #include "vector/Cut.h"
@@ -68,20 +69,21 @@ const char *queue_options = "";
  * otherwise.
  */
 bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
-                         char *filename_vector, const char *bmp_mode, int resolution, int height,
-                         int width) {
+    char *filename_vector, const char *bmp_mode, int resolution, int height,
+    int width) {
 
   char buf[8192];
   sprintf(
-          buf,
-          "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-          GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
-          (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
-          filename_eps, filename_vector);
+      buf,
+      "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
+      GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
+      (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
+      filename_eps, filename_vector);
 
   if (lconf.debug) {
-    fprintf(stderr, "DEBUG: %s\n", buf);
+    LOG_DEBUG(buf);
   }
+
   if (system(buf)) {
     return false;
   }
@@ -89,21 +91,21 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
 }
 
 /*!
-  Copy supported options into the supplied laser_config:
+ Copy supported options into the supplied laser_config:
 
-  VectorPower=98
-  PageSize=LaserBed
-  Resolution=75
-  RasterSpeed=9
-  AutoFocus
-  number-up=1
-  RasterPower=99
-  VectorMode=Engrave
-  VectorSpeed=8
-  RasterMode=Color
-*/
+ VectorPower=98
+ PageSize=LaserBed
+ Resolution=75
+ RasterSpeed=9
+ AutoFocus
+ number-up=1
+ RasterPower=99
+ VectorMode=Engrave
+ VectorSpeed=8
+ RasterMode=Color
+ */
 void process_print_job_options(cups_option_t *options, int numOptions,
-                               LaserConfig *lconf) {
+    LaserConfig *lconf) {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
     lconf->focus = atoi(v);
@@ -136,13 +138,13 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->flip = true;
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-  	lconf->debug = true;
+    lconf->debug = true;
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
-  	lconf->enable_raster = true;
+    lconf->enable_raster = true;
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-  	lconf->enable_vector = true;
+    lconf->enable_vector = true;
   }
 }
 
@@ -204,7 +206,7 @@ void range_checks(void) {
 static void printEnv(const char *env) {
   const char *envstr = getenv(env);
   if (envstr) {
-    fprintf(stderr, "DEBUG: %s = %s\n", env, envstr);
+    LOG_DEBUG_MSG(env, envstr);
   }
 }
 
@@ -217,15 +219,16 @@ void ppm2pcl(string filename) {
   exit(0);
 }
 
-void printUsage(const char *name)
-{
+void printUsage(const char *name) {
   fprintf(stderr, "%s V0.1\n", name);
-  fprintf(stderr, "Usage: %s [options] job-id user title copies options [file]\n\n", name);
+  fprintf(stderr,
+      "Usage: %s [options] job-id user title copies options [file]\n\n", name);
 
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  -x     Output xml files for debugging\n");
   exit(1);
 }
+
 
 /**
  * Main entry point for the program.
@@ -247,7 +250,7 @@ int main(int argc, char *argv[]) {
   bool dumpxml = false;
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
-    switch(c) {
+    switch (c) {
     case 'x':
       dumpxml = true;
       break;
@@ -259,19 +262,16 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  
+
   // Now, only standard CUPS parameters should be left
   int cupsargs = argc - optind;
   if (cupsargs < 5 || cupsargs > 6) {
     printUsage(argv[0]);
   }
 
-  // Arguments debug output:
-  fprintf(stderr, "DEBUG: ");
   for (int i = optind; i < argc; i++) {
-    fprintf(stderr, "%s ", argv[i]);
+    LOG_DEBUG(argv[i]);
   }
-  fprintf(stderr, "\n");
 
   // Env. variable debug output
   printEnv("CHARSET");
@@ -296,11 +296,11 @@ int main(int argc, char *argv[]) {
 
   // FIXME: Register a signal handler to support cancelling of jobs
   const char *arg_jobid = argv[optind];
-  const char *arg_user = argv[optind+1];
-  const char *arg_title = argv[optind+2];
+  const char *arg_user = argv[optind + 1];
+  const char *arg_title = argv[optind + 2];
   //const char *arg_copies = argv[optind+3];
-  const char *arg_options = argv[optind+4];
-  const char *arg_filename = argv[optind+5];
+  const char *arg_options = argv[optind + 4];
+  const char *arg_filename = argv[optind + 5];
 
   cups_file_t *fp;
   if (cupsargs == 5) {
@@ -308,7 +308,7 @@ int main(int argc, char *argv[]) {
   } else {
     // Try to open the print file...
     if ((fp = cupsFileOpen(arg_filename, "r")) == NULL) {
-      perror("ERROR: unable to open print file - ");
+      LOG_FATAL_MSG("unable to open print file", arg_filename);
       return 1;
     }
   }
@@ -355,8 +355,7 @@ int main(int argc, char *argv[]) {
     file_cups = stdin;
   }
   if (!file_cups) {
-    // FIXME: Prefix with ERROR:
-    perror((cupsargs > 5) ? arg_filename : "stdin");
+    LOG_FATAL_MSG("Can't open", (cupsargs > 5) ? arg_filename : "stdin");
     return 1;
   }
 
@@ -368,8 +367,7 @@ int main(int argc, char *argv[]) {
 
     /* Check that file handle opened. */
     if (!file_debug) {
-      // FIXME: Prefix with ERROR:
-      perror(filename_cups_debug);
+      LOG_FATAL_MSG("Can't open", filename_cups_debug);
       return 1;
     }
 
@@ -389,14 +387,13 @@ int main(int argc, char *argv[]) {
   /* Open the encapsulated postscript file for writing. */
   file_eps = fopen(filename_eps, "w");
   if (!file_eps) {
-    // FIXME: Prefix with ERROR:
-    perror(filename_eps);
+    LOG_FATAL_MSG("Can't open", filename_eps);
     return 1;
   }
 
   /* Convert PS to EPS (for vector extraction) */
   if (!ps_to_eps(&lconf, file_cups, file_eps)) {
-    perror("ERROR: ps_to_eps failed - ");
+    LOG_FATAL_STR("ps_to_eps failed");
     fclose(file_eps);
     return 1;
   }
@@ -408,15 +405,15 @@ int main(int argc, char *argv[]) {
 
   const char *rm;
 
-  if(lconf.enable_raster) {
-		rm = "ppmraw";
+  if (lconf.enable_raster) {
+    rm = "ppmraw";
   } else {
-  	rm = "nullpage";
+    rm = "nullpage";
   }
 
   if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
-                           lconf.resolution, lconf.height, lconf.width)) {
-    perror("ERROR: ghostscript failed -");
+      lconf.resolution, lconf.height, lconf.width)) {
+    LOG_FATAL_STR("ghostscript failed");
     return 1;
   }
 
@@ -429,7 +426,6 @@ int main(int argc, char *argv[]) {
   }
   Cut *cut = NULL;
 
-  lconf.enable_vector = 1;
   if (lconf.enable_vector) {
     cut = Cut::load(filename_vector);
     job.addCut(cut);
@@ -437,26 +433,24 @@ int main(int argc, char *argv[]) {
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
   if (!lconf.debug) {
-  	if(lconf.enable_raster) {
-			if (unlink(filename_bitmap)) {
-				// FIXME: Prefix with ERROR:
-				perror(filename_bitmap);
-			}
-  	}
-
-  	if (unlink(filename_eps)) {
-      // FIXME: Prefix with ERROR:
-      perror(filename_eps);
+    if (lconf.enable_raster) {
+      if (unlink(filename_bitmap)) {
+        LOG_FATAL_MSG("unlink failed", filename_bitmap);
+      }
     }
 
-  	if (unlink(filename_vector)) {
-      // FIXME: Prefix with ERROR:
-      perror(filename_vector);
+    if (unlink(filename_eps)) {
+      LOG_FATAL_MSG("unlink failed", filename_eps);
+    }
+
+    if (unlink(filename_vector)) {
+      LOG_FATAL_MSG("unlink failed", filename_vector);
     }
   }
 
   Driver drv;
-  if (dumpxml) drv.enableXML(true);
+  if (dumpxml)
+    drv.enableXML(true);
   drv.process(&job);
 
   if (cut)
