@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "../../util/Logger.h"
 #include "Deonion.h"
 #include "../VTypes.h"
 #include "../Edge.h"
@@ -80,7 +81,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
 
 void Deonion::filter(Cut *cut)
 {
-  std::cerr << "Deonion: " << cut->polylines.size() << std::endl;
+  LOG_INFO_MSG("Deonion", cut->polylines.size());
   
   unsigned int i;
   Polyline* p;
@@ -88,9 +89,7 @@ void Deonion::filter(Cut *cut)
 
   for (i = 0; i < cut->polylines.size(); i++) {
     p = cut->polylines.at(i);
-    if (i % 100 == 0) {
-      std::cerr << i << std::endl;
-    }
+
     while (p->count() > 0) {
       Polyline *skin = new Polyline();
       walkTheEdge(p, skin, p->findLeftmostClockwise(), true);

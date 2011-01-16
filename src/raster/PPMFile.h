@@ -24,6 +24,7 @@
 
 #include "stdio.h"
 #include <fstream>
+#include "../util/Logger.h"
 #include "MMapMatrix.h"
 
 using namespace std;
@@ -68,15 +69,14 @@ Image* loadppm(string filename) {
 void printImage(Image* img) {
 	int w = img->width();
 	int h = img->height();
+
 	for (int y = 0; y < h; ++y) {
-		for (int x = 0; x < w; ++x) {
+	  stringstream ss;
+	  for (int x = 0; x < w; ++x) {
 			Pixel<unsigned char>* p = img->pixel(Point2D(x, y));
-
-			cerr << x << "/" << y << ": " << (int) p->rgb[0] << " " << (int) p->rgb[1] << " "
-					<< (int) p->rgb[2] << "\t";
+			ss << x << "/" << y << ": " << (int) p->rgb[0] << " " << (int) p->rgb[1] << " " << (int) p->rgb[2] << "\t";
 		}
-
-		cerr << std::endl;
+    LOG_ULTRA_MSG("scanline", ss.str());
 	}
 }
 

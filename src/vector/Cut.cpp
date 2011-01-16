@@ -212,7 +212,6 @@ void Cut::xml(std::string s) {
 }
 
 ostream& operator<< (ostream &os, Cut &cut) {
-  std::cerr << "<< cut " << std::endl;
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
 
   os << "<edges cnt=\"" << cut.freeEdges.size() << "\" >" << std::endl;
