@@ -20,8 +20,6 @@ do
     esac
 done
 
-
-
 export CC_BASE="`pwd`"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
 export CC_CHROOT_MIRROR="http://debian.inode.at/debian/"
