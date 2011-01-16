@@ -52,6 +52,9 @@ void find_connected(SetEdge *occupied, Polyline *polyline,
   }
 }
 
+/*
+ * Iterate over all free edges and collect connected ones into polylines.
+ */
 void Join::filter(Cut *cut)
 {
   LOG_INFO_STR("Join");

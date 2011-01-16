@@ -28,6 +28,10 @@ Driver::Driver() : dumpxml(false)
 Driver::~Driver() {
 }
 
+
+/**
+ * run the filter stack. additionally if dumpxml is set to truedump cut graph to xml.
+ */
 void Driver::filter(LaserJob *job) {
   Explode explode;
   Join join;
@@ -46,6 +50,7 @@ void Driver::filter(LaserJob *job) {
     if (this->dumpxml) cut->xml("test-data/xml/deonion/ctrl-cut.xml");
   }
 }
+
 
 void Driver::process(LaserJob *job) {
   filter(job);

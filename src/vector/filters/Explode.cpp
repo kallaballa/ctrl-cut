@@ -28,11 +28,14 @@ using boost::format;
 Explode::~Explode() {
 }
 
+/*
+ * Split edges at intersection points.
+ */
 void Explode::filter(Cut *cut) {
   LOG_INFO_STR("Explode");
 
   Vertex *intersec = NULL;
-  Edge *ls1, *ls2;
+  Edge *pick, *candidate;
 
   LstEdge::iterator it_i;
   LstEdge::iterator it_j;
@@ -42,30 +45,36 @@ void Explode::filter(Cut *cut) {
     cntLines++;
 
     for (it_j = cut->freeEdges.begin(); it_j != cut->freeEdges.end(); it_j++) {
-      ls2 = *it_j;
-      ls1 = *it_i;
+      pick = *it_i;
+      candidate = *it_j;
 
+      //no more free edges
       if (it_i == cut->freeEdges.end())
         break;
 
-      if (ls1 == ls2)
+      // collision
+      if (pick == candidate)
         continue;
 
-      if ((intersec = ls1->intersects(ls2)) != NULL) {
+      // check if pick does intersect candidate
+      if ((intersec = pick->intersects(candidate)) != NULL) {
+        // register the resulting vertex
         intersec = cut->mapVertex(intersec);
 
-        if (!ls1->getStart()->equals(intersec) && !ls1->getEnd()->equals(
-                                                                         intersec)) {
+
+        // if pick doesnt tip intersect remove it and split it in two
+        if (!pick->getStart()->equals(intersec) && !pick->getEnd()->equals(intersec)) {
           it_i = cut->removeEdge(it_i, true);
-          cut->createEdge((Vertex*) ls1->getStart(), intersec, ls1->getPower());
-          cut->createEdge((Vertex*) ls1->getEnd(), intersec, ls1->getPower());
+          cut->createEdge((Vertex*) pick->getStart(), intersec, pick->getPower());
+          cut->createEdge((Vertex*) pick->getEnd(), intersec, pick->getPower());
         }
 
-        if (!ls2->getStart()->equals(intersec) && !ls2->getEnd()->equals(
+        // if candidate doesnt tip intersect remove it and split it in two
+        if (!candidate->getStart()->equals(intersec) && !candidate->getEnd()->equals(
                                                                          intersec)) {
           it_j = cut->removeEdge(it_j, true);
-          cut->createEdge((Vertex*) ls2->getStart(), intersec, ls2->getPower());
-          cut->createEdge((Vertex*) ls2->getEnd(), intersec, ls2->getPower());
+          cut->createEdge((Vertex*) candidate->getStart(), intersec, candidate->getPower());
+          cut->createEdge((Vertex*) candidate->getEnd(), intersec, candidate->getPower());
         }
       }
     }
