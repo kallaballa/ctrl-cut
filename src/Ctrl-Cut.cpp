@@ -36,11 +36,20 @@
 #include "Driver.h"
 #include "Ctrl-Cut.h"
 
+#ifdef USE_GHOSTSCRIPT_API
+#include <ghostscript/iapi.h>
+#include <ghostscript/ierrors.h>
+#include "boost/format.hpp"
+using boost::str;
+using boost::format;
+#else
 #ifndef __APPLE__
 #define GS_EXECUTABLE "/usr/bin/gs"
 #else
 #define GS_EXECUTABLE "/opt/local/bin/gs"
 #endif
+#endif
+
 
 /** The laser cutter configuration **/
 LaserConfig lconf;
@@ -49,6 +58,17 @@ LaserConfig lconf;
 char buf[102400];
 
 const char *queue_options = "";
+
+#ifdef USE_GHOSTSCRIPT_API
+FILE *gs_output_file;
+static int GSDLLCALL
+gsdll_stdout(void *, const char *str, int len)
+{
+  fwrite(str, 1, len, gs_output_file);
+  fflush(stdout);
+  return len;
+}
+#endif
 
 /**
  * Execute ghostscript feeding it an ecapsulated postscript file which is then
@@ -72,6 +92,7 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
     char *filename_vector, const char *bmp_mode, int resolution, int height,
     int width) {
 
+#ifndef USE_GHOSTSCRIPT_API
   char buf[8192];
   sprintf(
       buf,
@@ -88,6 +109,48 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
     return false;
   }
   return true;
+#else
+  std::vector<std::string> argstrings;
+  argstrings.push_back("gs");
+  argstrings.push_back("-q");
+  argstrings.push_back("-dBATCH");
+  argstrings.push_back("-dNOPAUSE");
+  argstrings.push_back(str(format("-r%d") % resolution));
+  argstrings.push_back(str(format("-g%dx%d")
+                                  % ((width * resolution) / POINTS_PER_INCH)
+                                  % ((height * resolution) / POINTS_PER_INCH)));
+  argstrings.push_back("-sDEVICE=nullpage");
+  argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
+  argstrings.push_back(filename_eps);
+  
+  int gsargc = argstrings.size();
+  const char *gsargv[gsargc];
+  for (int i=0;i<gsargc;i++) {
+    gsargv[i] = argstrings[i].c_str();
+  }
+  void *minst;
+  int code = gsapi_new_instance(&minst, NULL);
+  if (code < 0) {
+    LOG_ERR_MSG("gsapi_new_instance() failed", code);
+    return false;
+  }
+  gs_output_file = fopen(filename_vector, "w");
+  gsapi_set_stdio(minst, NULL, gsdll_stdout, NULL);
+  code = gsapi_init_with_args(minst, gsargc, (char **)gsargv);
+  int code1 = gsapi_exit(minst);
+  if ((code == 0) || (code == e_Quit)) {
+    code = code1;
+  }
+
+  gsapi_delete_instance(minst);
+  fclose(gs_output_file);
+  
+  if ((code == 0) || (code == e_Quit)) {
+    return true;
+  }
+
+  return false;
+#endif
 }
 
 /*!
@@ -340,7 +403,6 @@ int main(int argc, char *argv[]) {
 
   /* File handles. */
   FILE *file_debug;
-  FILE *file_bitmap;
   FILE *file_eps;
   FILE *file_cups;
 

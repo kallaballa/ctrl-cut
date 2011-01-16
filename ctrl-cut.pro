@@ -6,6 +6,16 @@ macx {
   INCLUDEPATH += /opt/local/include 
 }
 
+CONFIG += gsapi
+gsapi {
+  DEFINES += USE_GHOSTSCRIPT_API
+  macx {
+   INCLUDEPATH += /opt/local/include
+   LIBS += -L/opt/local/lib
+  }
+  LIBS += -lgs
+}
+
 OBJECTS_DIR = objects
 
 QMAKE_CXXFLAGS+=-DETLOG
