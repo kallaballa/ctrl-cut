@@ -18,6 +18,7 @@ public:
   MapVertex vertices;
 
   static Cut* load(const std::string &filename);
+  static Cut* load(std::istream &input);
 
   void createEdge(Vertex *start, Vertex *end, int power);
   void removeEdge(Edge *e, bool detach);

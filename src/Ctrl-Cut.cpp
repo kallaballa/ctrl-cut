@@ -61,14 +61,11 @@ char buf[102400];
 const char *queue_options = "";
 
 #ifdef USE_GHOSTSCRIPT_API
-std::ostringstream vectorbuffer;
+std::stringstream vectorbuffer;
 static int GSDLLCALL
 gsdll_stdout(void *, const char *str, int len)
 {
-  // fwrite(str, 1, len, gs_output_file);
-  // fflush(stdout);
-
-  vectorbuffer << str;
+  vectorbuffer.write(str, len);
   return len;
 }
 #endif
@@ -146,11 +143,6 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
 
   gsapi_delete_instance(minst);
 
-  std::ofstream gs_output;
-  gs_output.open(filename_vector);
-  gs_output << vectorbuffer.str();
-  gs_output.close();
-  
   if ((code == 0) || (code == e_Quit)) {
     return true;
   }
@@ -508,7 +500,7 @@ int main(int argc, char *argv[]) {
   Cut *cut = NULL;
 
   if (lconf.enable_vector) {
-    cut = Cut::load(filename_vector);
+    cut = Cut::load(vectorbuffer);
     job.addCut(cut);
   }
 

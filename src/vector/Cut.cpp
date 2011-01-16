@@ -20,7 +20,8 @@
 #include "Vertex.h"
 #include "Edge.h"
 #include "Polyline.h"
-
+#include <iostream>
+#include <fstream>
 
 using boost::format;
 
@@ -92,10 +93,10 @@ LstEdge::iterator Cut::removeEdge(LstEdge::iterator it_e, bool detach) {
   return freeEdges.erase(it_e);
 }
 
-Cut *Cut::load(const string &filename) {
+Cut *Cut::load(istream &input)
+{
   Cut *cut = new Cut();
   string line;
-  ifstream infile(filename.c_str(), ios_base::in);
   char first;
   int power, x, y;
   int lx, ly;
@@ -103,7 +104,7 @@ Cut *Cut::load(const string &filename) {
   Vertex *start;
   Vertex *end;
 
-  while (std::getline(infile, line)) {
+  while (std::getline(input, line)) {
     first = line[0];
 
     if (first == 'X') { // End of output
@@ -144,9 +145,14 @@ Cut *Cut::load(const string &filename) {
       }
     }
   }
-  infile.close();
 
   return cut;
+}
+
+Cut *Cut::load(const string &filename)
+{
+  ifstream infile(filename.c_str(), ios_base::in);
+  return Cut::load(infile);
 }
 
 /*
