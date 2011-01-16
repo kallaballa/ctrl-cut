@@ -71,15 +71,14 @@ gsdll_stdout(void *, const char *str, int len)
 #endif
 
 /**
- * Execute ghostscript feeding it an ecapsulated postscript file which is then
- * converted into a bitmap image. As a byproduct output of the ghostscript
- * process is redirected to a .vector file which will contain instructions on
- * how to perform a vector cut of lines within the postscript.
+ * Execute ghostscript feeding it an ecapsulated postscript file which
+ * is then converted into a bitmap image. As a byproduct, output of
+ * the ghostscript process is redirected to the global stringstream
+ * vectorbuffer, which will contain instructions on how to perform a
+ * vector cut of lines within the postscript.
  *
  * @param filename_bitmap the filename to use for the resulting bitmap file.
  * @param filename_eps the filename to read in encapsulated postscript from.
- * @param filename_vector the filename that will contain the vector
- * information.
  * @param bmp_mode a string which is one of bmp16m, bmpgray, or bmpmono.
  * @param resolution the encapsulated postscript resolution.
  * @param height the postscript height in points per inch.
@@ -88,9 +87,9 @@ gsdll_stdout(void *, const char *str, int len)
  * @return Return true if the execution of ghostscript succeeds, false
  * otherwise.
  */
-bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
-    char *filename_vector, const char *bmp_mode, int resolution, int height,
-    int width) {
+bool execute_ghostscript(char *filename_eps, char *filename_bitmap, 
+                         const char *bmp_mode, int resolution, int height,
+                         int width) {
 
 #ifndef USE_GHOSTSCRIPT_API
   char buf[8192];
@@ -119,7 +118,7 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
   argstrings.push_back(str(format("-g%dx%d")
                                   % ((width * resolution) / POINTS_PER_INCH)
                                   % ((height * resolution) / POINTS_PER_INCH)));
-  argstrings.push_back("-sDEVICE=nullpage");
+  argstrings.push_back(str(format("-sDEVICE=%s") % bmp_mode));
   argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
   argstrings.push_back(filename_eps);
   
@@ -397,7 +396,6 @@ int main(int argc, char *argv[]) {
   char filename_bitmap[FILENAME_NCHARS];
   char filename_cups_debug[FILENAME_NCHARS];
   char filename_eps[FILENAME_NCHARS];
-  char filename_vector[FILENAME_NCHARS];
 
   /* File handles. */
   FILE *file_debug;
@@ -417,7 +415,6 @@ int main(int argc, char *argv[]) {
   sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
   sprintf(filename_bitmap, "%s.ppm", file_basename);
   sprintf(filename_eps, "%s.eps", file_basename);
-  sprintf(filename_vector, "%s.vector", file_basename);
 
   /* Gather the postscript file from either standard input or a filename
    * specified as a command line argument.
@@ -484,8 +481,8 @@ int main(int argc, char *argv[]) {
     rm = "nullpage";
   }
 
-  if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
-      lconf.resolution, lconf.height, lconf.width)) {
+  if (!execute_ghostscript(filename_eps, filename_bitmap, rm,
+                           lconf.resolution, lconf.height, lconf.width)) {
     LOG_FATAL_STR("ghostscript failed");
     return 1;
   }
@@ -514,10 +511,6 @@ int main(int argc, char *argv[]) {
 
     if (unlink(filename_eps)) {
       LOG_FATAL_MSG("unlink failed", filename_eps);
-    }
-
-    if (unlink(filename_vector)) {
-      LOG_FATAL_MSG("unlink failed", filename_vector);
     }
   }
 
