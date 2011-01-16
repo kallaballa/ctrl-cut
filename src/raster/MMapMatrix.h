@@ -96,10 +96,6 @@ public:
 	}
 
 	Pixel<T>* pixel(Point2D p) {
-	  std::stringstream ss;
-	  ss << p.x << "/" << p.y << " #" << ((p.y * w + p.x) * 3);
-	  LOG_ULTRA_MSG("pixelpos", ss.str());
-
 	  T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
 		Pixel<T>* pix = new Pixel<T> (*sample, *++sample, *++sample);
 
