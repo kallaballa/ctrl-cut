@@ -68,8 +68,7 @@ namespace trivial_logger
 #define TRI_LOG_LEVEL_MSG(level, msg,  name) \
     do { if ( trivial_logger::tri_logger().is_activated() ){\
     *trivial_logger::tri_logger().ostream_ptr() << level << ": " << __FILE__ \
-    << " [" << __LINE__ << "] : " << msg << ": " << #name \
-    << " = " << (name) << ::std::endl;} }while(false)
+    << " [" << __LINE__ << "] : " << msg << ": " << (name) << ::std::endl;} }while(false)
 
 // macro prints loglevel, a message, variable name and its value to the logger stream
 #define TRI_LOG_LEVEL_STR(level, str) \
