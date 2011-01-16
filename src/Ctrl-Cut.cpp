@@ -37,6 +37,7 @@
 #include "Ctrl-Cut.h"
 
 #ifdef USE_GHOSTSCRIPT_API
+#include <sstream>
 #include <ghostscript/iapi.h>
 #include <ghostscript/ierrors.h>
 #include "boost/format.hpp"
@@ -60,12 +61,14 @@ char buf[102400];
 const char *queue_options = "";
 
 #ifdef USE_GHOSTSCRIPT_API
-FILE *gs_output_file;
+std::ostringstream vectorbuffer;
 static int GSDLLCALL
 gsdll_stdout(void *, const char *str, int len)
 {
-  fwrite(str, 1, len, gs_output_file);
-  fflush(stdout);
+  // fwrite(str, 1, len, gs_output_file);
+  // fflush(stdout);
+
+  vectorbuffer << str;
   return len;
 }
 #endif
@@ -134,7 +137,6 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
     LOG_ERR_MSG("gsapi_new_instance() failed", code);
     return false;
   }
-  gs_output_file = fopen(filename_vector, "w");
   gsapi_set_stdio(minst, NULL, gsdll_stdout, NULL);
   code = gsapi_init_with_args(minst, gsargc, (char **)gsargv);
   int code1 = gsapi_exit(minst);
@@ -143,7 +145,11 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
   }
 
   gsapi_delete_instance(minst);
-  fclose(gs_output_file);
+
+  std::ofstream gs_output;
+  gs_output.open(filename_vector);
+  gs_output << vectorbuffer.str();
+  gs_output.close();
   
   if ((code == 0) || (code == e_Quit)) {
     return true;
