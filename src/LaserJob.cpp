@@ -126,7 +126,6 @@ void LaserJob::serializeTo(ostream &out) {
 				r.renderCut(cut, out);
 			}
 		}
-
 	}
 
 	out << PCL_RESET;

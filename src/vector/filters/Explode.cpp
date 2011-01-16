@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "../../util/Logger.h"
 #include "Explode.h"
 #include "../VTypes.h"
 #include "../Edge.h"
@@ -27,7 +29,7 @@ Explode::~Explode() {
 }
 
 void Explode::filter(Cut *cut) {
-  std::cerr << "Explode" << std::endl;
+  LOG_INFO_STR("Explode");
 
   Vertex *intersec = NULL;
   Edge *ls1, *ls2;

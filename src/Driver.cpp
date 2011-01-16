@@ -51,6 +51,7 @@ void Driver::process(LaserJob *job) {
   filter(job);
   stringstream ss;
   job->serializeTo(ss);
-  std::cerr << ss.str().size();
+  LOG_DEBUG_MSG("Output size", ss.str().size());
+
   std::cout << ss.rdbuf();
 }

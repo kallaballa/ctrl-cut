@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "../../util/Logger.h"
 #include "Join.h"
 #include "../VTypes.h"
 #include "../Edge.h"
@@ -53,7 +54,7 @@ void find_connected(SetEdge *occupied, Polyline *polyline,
 
 void Join::filter(Cut *cut)
 {
-  std::cerr << "Join" << std::endl;
+  LOG_INFO_STR("Join");
 
   SetEdge *occupied = new SetEdge();
 
