@@ -2,7 +2,7 @@
 
 # this script should be used to call all other project scripts. 
 # it configures the necessary environment variables for the project context.
-# e.g. to call "$EC_BASE/scripts/test-corel.sh <args>" do "./ec test-corel <args>"
+# e.g. to call "$CC_BASE/scripts/test-corel.sh <args>" do "./ec test-corel <args>"
 # alternatively you may also source it and call scripts directly
 
 # switch to bash 3.1 compatibility mode for mac osx
@@ -22,36 +22,38 @@ done
 
 
 
-export EC_BASE="`pwd`"
-export EC_TEST_CHROOT="$EC_BASE/chroot"
-export EC_CHROOT_MIRROR="http://debian.inode.at/debian/"
-export EC_CHROOT_FLAVOUR="squeeze"
-export EC_SCRIPTS="$EC_BASE/scripts"
-export EC_FUNCTIONS="$EC_SCRIPTS/functions.sh"
-export EC_GIT_URL="git://github.com/Metalab/epilogcups.git"
-export EC_PPD_DIR="$EC_BASE/etc/ppd"
-export EC_TEST_DATA="$EC_BASE/test-data"
-export EC_TEST_CODE="$EC_BASE/test-code"
-export EC_PYTHON="$EC_BASE/python"
-export EC_ETC="$EC_BASE/etc"
+export CC_BASE="`pwd`"
+export CC_TEST_CHROOT="$CC_BASE/chroot"
+export CC_CHROOT_MIRROR="http://debian.inode.at/debian/"
+export CC_CHROOT_FLAVOUR="squeeze"
+export CC_SCRIPTS="$CC_BASE/scripts"
+export CC_FUNCTIONS="$CC_SCRIPTS/functions.sh"
+export CC_GIT_URL="git://github.com/Metalab/epilogcups.git"
+export CC_PPD_DIR="$CC_BASE/etc/ppd"
+export CC_TEST_DATA="$CC_BASE/test-data"
+export CC_TEST_CODE="$CC_BASE/test-code"
+export CC_PYTHON="$CC_BASE/python"
+export CC_ETC="$CC_BASE/etc"
+export CC_BINARY="$CC_BASE/ctrl-cut"
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
-verbose "EC_BASE: $EC_BASE"
-verbose "EC_TEST_CHROOT: $EC_TEST_CHROOT"
-verbose "EC_CHROOT_FLAVOUR: $EC_CHROOT_FLAVOUR"
-verbose "EC_SCRIPTS: $EC_SCRIPTS"
-verbose "EC_FUNCTIONS: $EC_FUNCTIONS"
-verbose "EC_GIT_URL: $EC_GIT_URL"
-verbose "EC_PPD_DIR: $EC_PPD_DIR"
-verbose "EC_TEST_DATA: $EC_TEST_DATA"
-verbose "EC_TEST_CODE: $EC_TEST_CODE"
-verbose "EC_PYTHON: $EC_PYTHON"
-verbose "EC_ETC: $EC_ETC"
+verbose "CC_BASE: $CC_BASE"
+verbose "CC_TEST_CHROOT: $CC_TEST_CHROOT"
+verbose "CC_CHROOT_FLAVOUR: $CC_CHROOT_FLAVOUR"
+verbose "CC_SCRIPTS: $CC_SCRIPTS"
+verbose "CC_FUNCTIONS: $CC_FUNCTIONS"
+verbose "CC_GIT_URL: $CC_GIT_URL"
+verbose "CC_PPD_DIR: $CC_PPD_DIR"
+verbose "CC_TEST_DATA: $CC_TEST_DATA"
+verbose "CC_TEST_CODE: $CC_TEST_CODE"
+verbose "CC_PYTHON: $CC_PYTHON"
+verbose "CC_ETC: $CC_ETC"
+verbose "CC_BINARY: $CC_BINARY"
 
 SCRIPTNAME=$1
 shift
 
-[ $SCRIPTNAME ] && "$EC_SCRIPTS/$SCRIPTNAME.sh" "$@" || echo "No script to run"
+[ $SCRIPTNAME ] && "$CC_SCRIPTS/$SCRIPTNAME.sh" "$@" || echo "No script to run"
 
 

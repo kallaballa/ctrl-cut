@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
-tfilter="$EC_SCRIPTS/xml-test-filter.sh $@"
+tfilter="$CC_SCRIPTS/xml-test-filter.sh $@"
 try "checking input..." "$tfilter input"
 try "checking explode..." "$tfilter explode"
 try "checking join..." "$tfilter join"

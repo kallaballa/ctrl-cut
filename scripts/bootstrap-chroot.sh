@@ -1,13 +1,13 @@
 #!/bin/bash
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
 function chrtrun {
-	try "$1" "$EC_SCRIPTS/chrtsetup.sh test-$EC_CHROOT_FLAVOUR --run \"$2\""
+	try "$1" "$CC_SCRIPTS/chrtsetup.sh test-$CC_CHROOT_FLAVOUR --run \"$2\""
 }
 KERNEL=`uname -r`
 
-#try "Debootstrap: $EC_CHROOT_FLAVOUR into $EC_TEST_CHROOT"      "debootstrap --verbose $EC_CHROOT_FLAVOUR $EC_TEST_CHROOT $EC_CHROOT_MIRROR"
+#try "Debootstrap: $CC_CHROOT_FLAVOUR into $CC_TEST_CHROOT"      "debootstrap --verbose $CC_CHROOT_FLAVOUR $CC_TEST_CHROOT $CC_CHROOT_MIRROR"
 try "Create kernel mod directory..."               		$chrtrun "mkdir /lib/modules/$KERNEL/"
 try "Generate modules.dep"... 					$chrtrun "depmod -a"
 try "Install dependencies and build tool chain..."              $chrtrun "apt-get -y --allow-unauthenticated install build-essential cups libcups2-dev libboost-dev qt4-qmake git-core libqtgui4"

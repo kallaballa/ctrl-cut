@@ -1,5 +1,5 @@
 /*
- * EpilogCUPS - A laser cutter CUPS driver
+ * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,13 +37,13 @@ void Driver::filter(LaserJob *job) {
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
 
-    if (this->dumpxml) cut->xml("test-data/xml/input/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/input/ctrl-cut.xml");
     explode.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/explode/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/explode/ctrl-cut.xml");
     join.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/join/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/join/ctrl-cut.xml");
     deonion.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/deonion/epilog.xml");
+    if (this->dumpxml) cut->xml("test-data/xml/deonion/ctrl-cut.xml");
   }
 }
 

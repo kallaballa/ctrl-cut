@@ -9,7 +9,7 @@
 # ec test-any <dir>      - Runs all tests in the given dir
 # ec test-any <file.ps>  - Runs the specified test
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
 pad()
 {
@@ -164,7 +164,7 @@ else
  testpaths=""
  for testdir in $testdirs
  do
-   testpaths="$testpaths $EC_TEST_DATA/$testdir"
+   testpaths="$testpaths $CC_TEST_DATA/$testdir"
  done
  rundir $testpaths
 fi

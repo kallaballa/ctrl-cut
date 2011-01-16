@@ -23,7 +23,7 @@ HEADERS = \
 
 SOURCES += \
           src/Driver.cpp \
-          src/EpilogFilter.cpp \
+          src/Ctrl-Cut.cpp \
           src/LaserJob.cpp \
           src/util/Eps.cpp \
           src/util/LaserConfig.cpp \
@@ -38,7 +38,7 @@ SOURCES += \
 
 HEADERS += \
           src/Driver.h \
-          src/EpilogFilter.h \
+          src/Ctrl-Cut.h \
           src/LaserJob.h \
           src/util/Eps.h \
           src/util/LaserConfig.h \

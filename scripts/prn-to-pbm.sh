@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
-svg2pdf="$EC_TEST_CODE/svg2pdf/svg2pdf"
+svg2pdf="$CC_TEST_CODE/svg2pdf/svg2pdf"
 
 shift $(($OPTIND - 1))
 
@@ -16,7 +16,7 @@ if test $VERBOSE; then
   set -x
 fi
 
-try "rtl2svg $file... " "$EC_PYTHON/rtl2svg.py -c $file $file.svg"
+try "rtl2svg $file... " "$CC_PYTHON/rtl2svg.py -c $file $file.svg"
 if [ $? -ne 0 ]; then
   red "rtl2svg.py failed"
   exit 1

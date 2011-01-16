@@ -1,13 +1,12 @@
 #!/bin/bash
 
-cd $EC_BASE
+cd $CC_BASE
 
-. $EC_FUNCTIONS
+. $CC_FUNCTIONS
 
 [ ! -d "./tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
-filter=./epilogcups
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
 
@@ -29,5 +28,5 @@ export PRINTER=passthrough
 export USER=root
 
 # Don't run this with try since it produces stdout which is passed to our caller
-$filter 32 kintel `basename $file ps`cdr 1 "$EC_FILTER_OPTIONS" $file
+$CC_BINARY 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS" $file
 exit $?

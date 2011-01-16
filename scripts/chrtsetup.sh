@@ -88,7 +88,7 @@ CONFIG=$1
 [ -z $CONFIG ] && usage "CONFIG is mandatory"
 [ ! "$CLEAN" -a ! "$PREPARE" -a  ! "$ENTER" ] && CLEAN=set PREPARE=set ENTER=set
 
-source "$EC_ETC/chroot/$CONFIG"
+source "$CC_ETC/chroot/$CONFIG"
 [ $PREPARE ] && prepare
 [ $ENTER ]  && chroot "$CHROOT" bash -c "$RUN"
 [ $CLEAN ]  && clean

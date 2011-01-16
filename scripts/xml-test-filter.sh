@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $EC_TEST_DATA/xml
+cd $CC_TEST_DATA/xml
 
 XQ=`type -p xqilla`
 function usage { echo "test-filter.sh [-v] filtername"; }
@@ -11,7 +11,7 @@ function error { echo "error: $1" >&2; exit 1; }
 function check { 
     echo -en "\tcheck: $1 $2 "
     cd "$1"
-    cmd="$XQ -i epilog.xml $2"
+    cmd="$XQ -i ctrl-cut.xml $2"
     [ $VERBOSE ] && echo -n "($cmd)";
     echo -n " ... "
     result="`$cmd`"

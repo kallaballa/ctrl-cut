@@ -1,5 +1,5 @@
 /*
- * EpilogCUPS - A laser cutter CUPS driver
+ * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
  * This program is free software; you can redistribute it and/or modify

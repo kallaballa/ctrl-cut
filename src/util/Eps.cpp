@@ -1,5 +1,5 @@
 /*
- * EpilogCUPS - A laser cutter CUPS driver
+ * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2002-2008 Andrews & Arnold Ltd <info@aaisp.net.uk>
  * Copyright (C) 2008 AS220 Labs <brandon@as220.org>
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
