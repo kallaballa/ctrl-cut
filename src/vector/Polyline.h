@@ -8,8 +8,6 @@
 
 #include "VTypes.h"
 
-using namespace std;
-
 class Polyline {
 public:
   VecEdge edges;
@@ -23,7 +21,7 @@ public:
   Edge *findLeftmostClockwise();
   VecEdge::iterator find(Edge* ls);
 
-  friend ostream& operator <<(ostream &os, Polyline &pl);
+  friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
 
 private:
   static int cnt;
