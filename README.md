@@ -1,5 +1,11 @@
-CUPS driver for Epilog lasers
-=============================
+Laser cutter driver and control panel
+=====================================
+
+Ctrl-Cut is an initiative to produce Open Source software for talking
+to laser cutters without being restricted to proprietery drivers and
+the chosen operating system of the laser cutter vendor.
+
+Initially, this is targetted Epilog laser cutters.
 
 Laser cutters from Epilog are fantastic devices. Unfortunately, Epilog
 forces us to use their Microsoft Windows-only laser cutter drivers. In
