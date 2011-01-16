@@ -21,7 +21,6 @@
 #define PCL_RENDERER_H_
 
 #include <map>
-#include "boost/format.hpp"
 
 #include "../util/LaserConfig.h"
 #include "../LaserJob.h"

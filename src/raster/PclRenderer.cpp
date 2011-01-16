@@ -18,7 +18,7 @@
  */
 
 #include "PclRenderer.h"
-
+#include "boost/format.hpp"
 using boost::format;
 
 PclRenderer::PclRenderer(LaserConfig *lconf) {
