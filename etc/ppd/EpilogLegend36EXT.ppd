@@ -22,6 +22,9 @@
 *DriverType: "custom"
 *cupsFilter: "application/vnd.cups-postscript          0       epilogcups"
 
+*% Provide icon (Apple extension)
+*APPrinterIconPath: "/Library/Printers/CtrlCut/Icons/EpilogLegend36EXT.icns"
+
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
 *ColorDevice: True
