@@ -1,4 +1,4 @@
-TARGET = epilogcups
+TARGET = ctrl-cut
 #CONFIG += raster
 CONFIG -= qt
 macx {

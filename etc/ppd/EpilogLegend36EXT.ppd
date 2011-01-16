@@ -20,7 +20,7 @@
 *NickName: "Epilog Legend 36EXT"
 *Manufacturer: "Epilog"
 *DriverType: "custom"
-*cupsFilter: "application/vnd.cups-postscript          0       epilogcups"
+*cupsFilter: "application/vnd.cups-postscript          0       ctrl-cut"
 
 *% Provide icon (Apple extension)
 *APPrinterIconPath: "/Library/Printers/CtrlCut/Icons/EpilogLegend36EXT.icns"
