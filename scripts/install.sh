@@ -24,7 +24,7 @@ try "Installing filter binary..." "cp epilogcups $FILTER_PATH/epilogcups"
 try "Installing dump backend..." "cp $EC_TEST_CODE/dump $BACKEND_PATH"
 
 # copy passthroughfilter
-try "Instralling passthrough filter" "cp $EC_TEST_CODE/passthroughfilter $FILTER_PATH"
+try "Installing passthrough filter" "cp $EC_TEST_CODE/passthroughfilter $FILTER_PATH"
 
 # install the printer
 try "Installing the passthrough filter" "/usr/sbin/lpadmin -p \"$PRINTER\" -P \"$EC_PPD_DIR/$PPDNAME\" -v \"$DEVICEURL\""
