@@ -23,7 +23,7 @@
 #include <map>
 
 #include "../util/LaserConfig.h"
-#include "../LaserJob.h"
+#include "../util/PJL.h"
 #include "RTypes.h"
 #include "Raster.h"
 #include "MMapMatrix.h"
