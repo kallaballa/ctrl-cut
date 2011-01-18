@@ -84,8 +84,8 @@ void LaserJob::serializeTo(ostream &out) {
 			!= this->rasters.end(); it++) {
 		Raster *raster = *it;
 		if (raster) {
-			PclRenderer r(this->lconf);
-			r.renderRaster(raster, out);
+			PclEncoder r(this->lconf);
+			r.encode(raster, out);
 		}
 	}
 	//}
@@ -122,8 +122,8 @@ void LaserJob::serializeTo(ostream &out) {
 		for (list<Cut*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
 			Cut *cut = *it;
 			if (cut) {
-				Renderer r(this->lconf);
-				r.renderCut(cut, out);
+				HPGLEncoder r(this->lconf);
+				r.encode(cut, out);
 			}
 		}
 	}

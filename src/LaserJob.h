@@ -11,9 +11,9 @@
 #include "util/PJL.h"
 #include "util/LaserConfig.h"
 #include "vector/Cut.h"
-#include "vector/Renderer.h"
+#include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
-#include "raster/PclRenderer.h"
+#include "raster/PclEncoder.h"
 
 using std::string;
 

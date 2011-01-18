@@ -296,8 +296,8 @@ void ppm2pcl(string filename) {
   Raster *raster = Raster::load(filename);
   raster->addTile(raster->sourceImage);
   lconf.raster_repeat = 1;
-  PclRenderer renderer(&lconf);
-  renderer.renderRaster(raster, cout);
+  PclEncoder renderer(&lconf);
+  renderer.encode(raster, cout);
   exit(0);
 }
 

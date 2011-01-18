@@ -31,6 +31,9 @@ Join::~Join() {
   // TODO Auto-generated destructor stub
 }
 
+/**
+ * Recursive function
+ */
 void find_connected(SetEdge *occupied, Polyline *polyline,
                     Edge* current) {
   SetEdge connectors = current->getEnd()->getAttachedEdges();

@@ -28,16 +28,16 @@
 #include "Raster.h"
 #include "MMapMatrix.h"
 
-class PclRenderer {
+class PclEncoder {
 
 public:
 	LaserConfig *lconf;
 
-	void renderRaster(Raster *raster, ostream &out);
-	void renderTile(Image* tile, ostream& out);
+	void encode(Raster *raster, ostream &out);
+	void encodeTile(Image* tile, ostream& out);
 
-	PclRenderer(LaserConfig *lconf);
-	virtual ~PclRenderer();
+	PclEncoder(LaserConfig *lconf);
+	virtual ~PclEncoder();
 };
 
 #endif /* PCL_RENDERER_H_ */

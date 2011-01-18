@@ -17,18 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "PclRenderer.h"
+#include "PclEncoder.h"
 #include "boost/format.hpp"
 using boost::format;
 
-PclRenderer::PclRenderer(LaserConfig *lconf) {
+PclEncoder::PclEncoder(LaserConfig *lconf) {
 	this->lconf = lconf;
 }
 
-PclRenderer::~PclRenderer() {
+PclEncoder::~PclEncoder() {
 }
 
-void PclRenderer::renderRaster(Raster* raster, ostream& out) {
+void PclEncoder::encode(Raster* raster, ostream& out) {
 	list<Image*>::iterator it;
 	// Raster Orientation
 	out << format(R_ORIENTATION) % 0;
@@ -53,13 +53,13 @@ void PclRenderer::renderRaster(Raster* raster, ostream& out) {
 	out << R_START_AT_POS;
 
 	for (it = raster->tiles.begin(); it != raster->tiles.end(); it++) {
-		renderTile(*it, out);
+		encodeTile(*it, out);
 	}
 	out << "\e*rC"; // end raster
 	out << "\26" << "\4"; // some end of file markers
 }
 
-void PclRenderer::renderTile(Image* tile, ostream& out) {
+void PclEncoder::encodeTile(Image* tile, ostream& out) {
 	//TODO handle debug flag properly
 	char debug = 1;
 	int h;

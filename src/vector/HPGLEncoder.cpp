@@ -16,22 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "Renderer.h"
+#include "HPGLEncoder.h"
 #include "Polyline.h"
 #include "Edge.h"
 #include "boost/format.hpp"
 
 using boost::format;
 
-Renderer::Renderer(LaserConfig *lconf) {
+HPGLEncoder::HPGLEncoder(LaserConfig *lconf) {
   this->lconf = lconf;
 }
 
-Renderer::~Renderer() {
+HPGLEncoder::~HPGLEncoder() {
   // TODO Auto-generated destructor stub
 }
 
-void Renderer::renderCut(Cut *cut, ostream &out) {
+void HPGLEncoder::encode(Cut *cut, ostream &out) {
   bool first = true;
   bool writingPolyline = false;
 

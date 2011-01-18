@@ -8,13 +8,13 @@
 #include "VTypes.h"
 #include "Cut.h"
 
-class Renderer {
+class HPGLEncoder {
 
 public:
   LaserConfig *lconf;
-  void renderCut(Cut *cut, std::ostream &out);
-  Renderer(LaserConfig *lconf);
-  virtual ~Renderer();
+  void encode(Cut *cut, std::ostream &out);
+  HPGLEncoder(LaserConfig *lconf);
+  virtual ~HPGLEncoder();
 };
 
 #endif /* RENDERER_H_ */
