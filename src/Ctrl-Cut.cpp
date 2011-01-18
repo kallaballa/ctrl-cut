@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include <cups/cups.h>
+#include <cups/file.h>
 
 #include "util/Logger.h"
 #include "util/LaserConfig.h"
@@ -61,28 +62,24 @@ char buf[102400];
 const char *queue_options = "";
 
 #ifdef USE_GHOSTSCRIPT_API
-std::ostringstream vectorbuffer;
+std::stringstream vectorbuffer;
 static int GSDLLCALL
 gsdll_stdout(void *, const char *str, int len)
 {
-  // fwrite(str, 1, len, gs_output_file);
-  // fflush(stdout);
-
-  vectorbuffer << str;
+  vectorbuffer.write(str, len);
   return len;
 }
 #endif
 
 /**
- * Execute ghostscript feeding it an ecapsulated postscript file which is then
- * converted into a bitmap image. As a byproduct output of the ghostscript
- * process is redirected to a .vector file which will contain instructions on
- * how to perform a vector cut of lines within the postscript.
+ * Execute ghostscript feeding it an ecapsulated postscript file which
+ * is then converted into a bitmap image. As a byproduct, output of
+ * the ghostscript process is redirected to the global stringstream
+ * vectorbuffer, which will contain instructions on how to perform a
+ * vector cut of lines within the postscript.
  *
  * @param filename_bitmap the filename to use for the resulting bitmap file.
  * @param filename_eps the filename to read in encapsulated postscript from.
- * @param filename_vector the filename that will contain the vector
- * information.
  * @param bmp_mode a string which is one of bmp16m, bmpgray, or bmpmono.
  * @param resolution the encapsulated postscript resolution.
  * @param height the postscript height in points per inch.
@@ -91,9 +88,9 @@ gsdll_stdout(void *, const char *str, int len)
  * @return Return true if the execution of ghostscript succeeds, false
  * otherwise.
  */
-bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
-    char *filename_vector, const char *bmp_mode, int resolution, int height,
-    int width) {
+bool execute_ghostscript(char *filename_eps, char *filename_bitmap, 
+                         const char *bmp_mode, int resolution, int height,
+                         int width) {
 
 #ifndef USE_GHOSTSCRIPT_API
   char buf[8192];
@@ -122,7 +119,7 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
   argstrings.push_back(str(format("-g%dx%d")
                                   % ((width * resolution) / POINTS_PER_INCH)
                                   % ((height * resolution) / POINTS_PER_INCH)));
-  argstrings.push_back("-sDEVICE=nullpage");
+  argstrings.push_back(str(format("-sDEVICE=%s") % bmp_mode));
   argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
   argstrings.push_back(filename_eps);
   
@@ -146,11 +143,6 @@ bool execute_ghostscript(char *filename_bitmap, char *filename_eps,
 
   gsapi_delete_instance(minst);
 
-  std::ofstream gs_output;
-  gs_output.open(filename_vector);
-  gs_output << vectorbuffer.str();
-  gs_output.close();
-  
   if ((code == 0) || (code == e_Quit)) {
     return true;
   }
@@ -384,12 +376,14 @@ int main(int argc, char *argv[]) {
   const char *arg_options = argv[optind + 4];
   const char *arg_filename = argv[optind + 5];
 
-  cups_file_t *fp;
+  cups_file_t *input_file;
+  bool input_is_stdin = false;
   if (cupsargs == 5) {
-    fp = cupsFileStdin();
+    input_file = cupsFileStdin();
+    input_is_stdin = true;
   } else {
     // Try to open the print file...
-    if ((fp = cupsFileOpen(arg_filename, "r")) == NULL) {
+    if ((input_file = cupsFileOpen(arg_filename, "r")) == NULL) {
       LOG_FATAL_MSG("unable to open print file", arg_filename);
       return 1;
     }
@@ -405,7 +399,6 @@ int main(int argc, char *argv[]) {
   char filename_bitmap[FILENAME_NCHARS];
   char filename_cups_debug[FILENAME_NCHARS];
   char filename_eps[FILENAME_NCHARS];
-  char filename_vector[FILENAME_NCHARS];
 
   /* File handles. */
   FILE *file_debug;
@@ -425,22 +418,13 @@ int main(int argc, char *argv[]) {
   sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
   sprintf(filename_bitmap, "%s.ppm", file_basename);
   sprintf(filename_eps, "%s.eps", file_basename);
-  sprintf(filename_vector, "%s.vector", file_basename);
-
-  /* Gather the postscript file from either standard input or a filename
-   * specified as a command line argument.
-   */
-  if (cupsargs > 5) {
-    file_cups = fopen(arg_filename, "r");
-  } else {
-    file_cups = stdin;
-  }
-  if (!file_cups) {
-    LOG_FATAL_MSG("Can't open", (cupsargs > 5) ? arg_filename : "stdin");
-    return 1;
-  }
 
   /* Write out the incoming cups data if debug is enabled. */
+  // FIXME: This is disabled for now since it has a bug:
+  // If we're reading from e.g. network, and debug is on, we'll reopen
+  // the dumped file as a FILE*. Otherwise, we'll keep the cups_file_t.
+  // Subsequence code doeesn't handle the difference.
+#if 0
   if (lconf.debug) {
     /* We save the incoming cups data to the filesystem. */
     sprintf(filename_cups_debug, "%s.cups", file_basename);
@@ -454,16 +438,17 @@ int main(int argc, char *argv[]) {
 
     /* Write cups data to the filesystem. */
     int l;
-    while ((l = fread(buf, 1, sizeof(buf), file_cups)) > 0) {
+    while ((l = cupsFileRead(input_file, buf, sizeof(buf))) > 0) {
       fwrite(buf, 1, l, file_debug);
     }
     fclose(file_debug);
     /* In case file_cups pointed to stdin we close the existing file handle
      * and switch over to using the debug file handle.
      */
-    fclose(file_cups);
+    cupsFileClose(input_file);
     file_cups = fopen(filename_cups_debug, "r");
   }
+#endif
 
   /* Open the encapsulated postscript file for writing. */
   file_eps = fopen(filename_eps, "w");
@@ -473,16 +458,14 @@ int main(int argc, char *argv[]) {
   }
 
   /* Convert PS to EPS (for vector extraction) */
-  if (!ps_to_eps(&lconf, file_cups, file_eps)) {
+  if (!ps_to_eps(&lconf, input_file, file_eps)) {
     LOG_FATAL_STR("ps_to_eps failed");
     fclose(file_eps);
     return 1;
   }
   /* Cleanup after encapsulated postscript creation. */
   fclose(file_eps);
-  if (file_cups != stdin) {
-    fclose(file_cups);
-  }
+  if (!input_is_stdin) cupsFileClose(input_file);
 
   const char *rm;
 
@@ -492,8 +475,8 @@ int main(int argc, char *argv[]) {
     rm = "nullpage";
   }
 
-  if (!execute_ghostscript(filename_bitmap, filename_eps, filename_vector, rm,
-      lconf.resolution, lconf.height, lconf.width)) {
+  if (!execute_ghostscript(filename_eps, filename_bitmap, rm,
+                           lconf.resolution, lconf.height, lconf.width)) {
     LOG_FATAL_STR("ghostscript failed");
     return 1;
   }
@@ -508,7 +491,7 @@ int main(int argc, char *argv[]) {
   Cut *cut = NULL;
 
   if (lconf.enable_vector) {
-    cut = Cut::load(filename_vector);
+    cut = Cut::load(vectorbuffer);
     job.addCut(cut);
   }
 
@@ -522,10 +505,6 @@ int main(int argc, char *argv[]) {
 
     if (unlink(filename_eps)) {
       LOG_FATAL_MSG("unlink failed", filename_eps);
-    }
-
-    if (unlink(filename_vector)) {
-      LOG_FATAL_MSG("unlink failed", filename_vector);
     }
   }
 

@@ -30,11 +30,11 @@
   This hack searches for a bbox at the end of the file, but in a really dumb way.
   Returns true if a bbox was found.
 */
-bool get_bbox_from_end(FILE *ps_file, 
+bool get_bbox_from_end(cups_file_t *ps_file, 
                        int &lower_left_x, int &lower_left_y, 
                        int &upper_right_x, int &upper_right_y)
 {
-  while (fgets(buf, sizeof(buf), ps_file)) {
+  while (cupsFileGets(ps_file, buf, sizeof(buf))) {
     if (!strncasecmp(buf, "%%BoundingBox:", 14)) {
       if (sscanf(buf + 14, "%d %d %d %d",
                  &lower_left_x, &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
@@ -56,7 +56,7 @@ bool get_bbox_from_end(FILE *ps_file,
  *
  * @return Return true if the function completes its task, false otherwise.
  */
-bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
+bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
 {
   int xoffset = 0;
   int yoffset = 0;
@@ -64,7 +64,7 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
   bool landscape_flipped = false;
 
   int l;
-  while (fgets((char *) buf, sizeof(buf), ps_file)) {
+  while (cupsFileGetLine(ps_file, (char *) buf, sizeof(buf))) {
     fprintf(eps_file, "%s", (char *) buf);
     if (*buf != '%') {
       continue; // We're only looking for comment lines
@@ -86,10 +86,10 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
       int upper_right_y;
       bool found = false;
       if (!strncasecmp((char *) buf+15, "(atend)", 7)) {
-        long pos = ftell(ps_file);
+        off_t pos = cupsFileTell(ps_file);
         found = get_bbox_from_end(ps_file, lower_left_x, lower_left_y, 
                                   upper_right_x, upper_right_y);
-        fseek(ps_file, pos, SEEK_SET);
+        cupsFileSeek(ps_file, pos);
       }
       else {
         found = (sscanf((char *) buf + 14, "%d %d %d %d",
@@ -178,7 +178,7 @@ bool ps_to_eps(LaserConfig *lconf, FILE *ps_file, FILE *eps_file)
       }
     }
   }
-  while ((l = fread((char *) buf, 1, sizeof(buf), ps_file)) > 0) {
+  while ((l = cupsFileRead(ps_file, (char *) buf, sizeof(buf))) > 0) {
     fwrite((char *) buf, 1, l, eps_file);
   }
   return true;
