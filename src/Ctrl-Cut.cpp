@@ -230,6 +230,9 @@ void process_print_job_options(cups_option_t *options, int numOptions,
  * @return Nothing
  */
 void range_checks(void) {
+  // restrict raster mode to greyscale for the time beeing
+  lconf.raster_mode = 'g';
+
   if (lconf.raster_power > 100) {
     lconf.raster_power = 100;
   }
