@@ -48,7 +48,7 @@
 #define RASTER_SPEED_DEFAULT (100)
 
 /** Default resolution in DPI */
-#define RESOLUTION_DEFAULT (600)
+#define RESOLUTION_DEFAULT (75)
 
 /** Pixel size of screen (0 is threshold).
  * FIXME - add more details
