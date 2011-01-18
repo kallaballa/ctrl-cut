@@ -41,7 +41,7 @@ SOURCES += \
           src/vector/Polyline.cpp \
           src/vector/Vertex.cpp \
           src/vector/Edge.cpp \
-          src/vector/Renderer.cpp \
+          src/vector/HPGLEncoder.cpp \
           src/vector/filters/Deonion.cpp \
           src/vector/filters/Explode.cpp \
           src/vector/filters/Join.cpp
@@ -57,7 +57,7 @@ HEADERS += \
           src/vector/Polyline.h \
           src/vector/VTypes.h \
           src/vector/Edge.h \
-          src/vector/Renderer.h \
+          src/vector/HPGLEncoder.h \
           src/vector/Vertex.h \
           src/vector/filters/Deonion.h \
           src/vector/filters/Filters.h \
@@ -65,13 +65,13 @@ HEADERS += \
           src/vector/filters/Join.h
 SOURCES += \
           src/raster/DownSample.cpp \
-          src/raster/PclRenderer.cpp \
+          src/raster/PclEncoder.cpp \
           src/raster/Raster.cpp
 
 HEADERS  += \
           src/raster/DownSample.h \
           src/raster/MMapMatrix.h \
-          src/raster/PclRenderer.h \
+          src/raster/PclEncoder.h \
           src/raster/PPMFile.h \
           src/raster/Raster.h \
           src/raster/RTypes.h
