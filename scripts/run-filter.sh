@@ -27,6 +27,11 @@ export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
 
+optionsfile=`dirname $file`/`basename $file .ps`.options
+if [ -f $optionsfile ]; then
+  read < $optionsfile options
+fi
+
 # Don't run this with try since it produces stdout which is passed to our caller
-$CC_BINARY 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS" $file
+$CC_BINARY 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS $options" $file
 exit $?

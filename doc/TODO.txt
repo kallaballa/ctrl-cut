@@ -24,6 +24,8 @@ o Write a simple logger implementation
 
 Testing:
 --------
+o rtlinfo: Summarize laser parameters
+o Test which laser parameters affect actual coordinates in the RTL output
 
 Goodies:
 --------
