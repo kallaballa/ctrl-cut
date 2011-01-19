@@ -1,17 +1,20 @@
 How to run tests:
------------------
+=================
 
-./ec test-any <filename.ps>
+./cc test-any                  # Run all tests
+./cc test-any test-data/<dir>  # Run all tests in <dir>
+./cc test-any <filename.ps>    # Run the specified test
 
 How to add new test cases:
---------------------------
+==========================
 
 Prerequisites:
 
 o Make sure the EpilogCapture printer is installed
   lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/EpilogCapture.ppd
 
-QCAD:
+QCad:
+-----
 
 o Make sure to set the Pen width of all layers to 0.00 mm
   (in View->Toolbars->Layer List->Edit Layer)
@@ -22,6 +25,7 @@ o The test will be automatically run by test-any.
   To test now, run ./ec test-any test-data/qcad/<testcase>.ps
 
 Inkscape:
+---------
 
 o Set up the LaserBed paper size in Inkscape:
   cp doc/LaserBed.svg <templatedir>
@@ -37,3 +41,32 @@ o The test will be automatically run by test-any.
   To test now, run ./ec test-any test-data/inkscape/<testcase>.ps
 
 FIXME: Set up the test case for regression
+
+Corel Draw:
+-----------
+
+Prerequisites:
+- Set up lazzzor page size
+- Helpful: Set lazzor page size as default
+- Install Epilog drivers
+
+o Draw shape as normal for laser cutting
+o Save corel draw file -> copy to test-data/corel/ as .cdr
+o Print to file using "Generic PostScript Printer"
+  - NB! It's important to take note of the following!
+  - Printing to "Device Independent PostScript File" doesn't work
+  - The "Generic PostScript Printer" can be installed from here:
+    http://www.adobe.com/support/downloads/thankyou.jsp?ftpID=1500&fileID=1438
+  - Check "Use PPD" -> Use etc/ppd/EpilogPostscript.ppd
+  - Uncheck "Misc->Apply ICC profile"
+  - copy to test-data/corel/ as .ps
+o Print to file using Epilog driver (or to lazzzor-capture printer)
+o Settings:
+  - Auto Focus on
+  - Vector speed = 33
+  - Vector power = 80
+  - Vector freq = 1053
+  - Vector Sorting on
+  - NB! If any of the settings are changed, this must be encoded into a
+    <testcase>.options file and put in test-data/corel/
+o copy to test-data/corel/ as .prn
