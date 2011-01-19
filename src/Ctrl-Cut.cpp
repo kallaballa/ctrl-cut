@@ -91,25 +91,7 @@ gsdll_stdout(void *, const char *str, int len)
 bool execute_ghostscript(char *filename_eps, char *filename_bitmap, 
                          const char *bmp_mode, int resolution, int height,
                          int width) {
-
-#ifndef USE_GHOSTSCRIPT_API
-  char buf[8192];
-  sprintf(
-      buf,
-      "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-      GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
-      (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
-      filename_eps, filename_vector);
-
-  if (lconf.debug) {
-    LOG_DEBUG(buf);
-  }
-
-  if (system(buf)) {
-    return false;
-  }
-  return true;
-#else
+#ifdef USE_GHOSTSCRIPT_API
   std::vector<std::string> argstrings;
   argstrings.push_back("gs");
   argstrings.push_back("-q");
@@ -146,11 +128,33 @@ bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
   if ((code == 0) || (code == e_Quit)) {
     return true;
   }
-
-  return false;
 #endif
+  return false;
 }
 
+bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, char *filename_vector,
+                         const char *bmp_mode, int resolution, int height,
+                         int width) {
+
+
+  char buf[8192];
+  sprintf(
+      buf,
+      "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
+      GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
+      (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
+      filename_eps, filename_vector);
+
+  if (lconf.debug) {
+    LOG_DEBUG(buf);
+  }
+
+  if (system(buf)) {
+    return false;
+  }
+
+  return true;
+}
 /*!
  Copy supported options into the supplied laser_config:
 
@@ -201,11 +205,9 @@ void process_print_job_options(cups_option_t *options, int numOptions,
   if ((v = cupsGetOption("Debug", numOptions, options))) {
     lconf->debug = atoi(v);
   }
-  if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
     lconf->enable_raster = true;
-  }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-    lconf->enable_vector = true;
+    lconf->enable_vector = atoi(v);
   }
   LOG_DEBUG(lconf->focus);
   LOG_DEBUG(lconf->resolution);
@@ -402,6 +404,8 @@ int main(int argc, char *argv[]) {
   char filename_bitmap[FILENAME_NCHARS];
   char filename_cups_debug[FILENAME_NCHARS];
   char filename_eps[FILENAME_NCHARS];
+  char filename_vector[FILENAME_NCHARS];
+
 
   /* File handles. */
   FILE *file_debug;
@@ -421,6 +425,9 @@ int main(int argc, char *argv[]) {
   sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
   sprintf(filename_bitmap, "%s.ppm", file_basename);
   sprintf(filename_eps, "%s.eps", file_basename);
+#ifndef USE_GHOSTSCRIPT_API
+  sprintf(filename_vector, "%s.vector", file_basename);
+#endif
 
   /* Write out the incoming cups data if debug is enabled. */
   // FIXME: This is disabled for now since it has a bug:
@@ -478,11 +485,19 @@ int main(int argc, char *argv[]) {
     rm = "nullpage";
   }
 
+#ifdef USE_GHOSTSCRIPT_API
   if (!execute_ghostscript(filename_eps, filename_bitmap, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
     LOG_FATAL_STR("ghostscript failed");
     return 1;
   }
+#else
+  if (!execute_ghostscript_cmd(filename_eps, filename_bitmap, filename_vector,rm,
+                           lconf.resolution, lconf.height, lconf.width)) {
+    LOG_FATAL_STR("ghostscript failed");
+    return 1;
+  }
+#endif
 
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
 
@@ -494,7 +509,11 @@ int main(int argc, char *argv[]) {
   Cut *cut = NULL;
 
   if (lconf.enable_vector) {
+#ifdef USE_GHOSTSCRIPT_API
     cut = Cut::load(vectorbuffer);
+#else
+    cut = Cut::load(filename_vector);
+#endif
     job.addCut(cut);
   }
 
