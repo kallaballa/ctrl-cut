@@ -129,5 +129,5 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
     }
   }
 
-  out << SEP << HPGL_END << PCL_SECTION_END << HPGL_PEN_UP;
+  out << SEP << HPGL_END;
 }

@@ -69,127 +69,88 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
-    // repeated (over printed)
-    int pass;
-    int passes;
-
-    if (lconf->raster_mode == 'c') {
-      passes = 7;
-    } else {
-      passes = 1;
-    }
-
     w = tile->width();
     h = tile->height();
 
-    char buf[102400];
-
-    LOG_DEBUG_STR(format("Width %d Height %d") % w % h);
+    char buf[w];
+    float power_scale = lconf->raster_power / (float) 255;
 
     for (offx = w * (lconf->x_repeat - 1); offx >= 0; offx -= w) {
       for (offy = h * (lconf->y_repeat - 1); offy >= 0; offy -= h) {
-        for (pass = 0; pass < passes; pass++) {
-          // raster (basic)
-          int y;
-          char dir = 0;
+        // raster (basic)
+        int y;
+        char dir = 0;
 
-          for (y = h - 1; y >= 0; y--) {
-            int l;
+        for (y = h - 1; y >= 0; y--) {
+          int l;
 
-            switch (lconf->raster_mode) {
-            case 'g': // grey level
-            {
-              for (int x = 0; x < w; x++) {
-                Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
-                buf[x] = (255 - (uint8_t) p->intensity());
-                delete p;
+          for (int x = 0; x < w; x++) {
+            Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
+            // invert intensity (black -> 255, white -> 0) and apply raster power scale
+            buf[x] = (uint8_t) (255 - p->intensity()) * power_scale;
+            delete p;
+          }
+
+          // find left/right of data
+          for (l = 0; l < h && !buf[l]; l++) {
+          }
+
+          if (l < h) {
+            // a line to print
+            int r;
+            int n;
+            char pack[sizeof(buf) * 5 / 4 + 1];
+            for (r = h - 1; r > l && !buf[r]; r--) {
+            }
+            r++;
+            out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + offy + y);
+            out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + offx + l);
+
+            if (dir) {
+              LOG_DEBUG_STR("reverse");
+              out << format(R_INTENSITY) % (-(r - l));
+              // reverse bytes!
+              for (n = 0; n < (r - l) / 2; n++) {
+                char t = buf[l + n];
+                buf[l + n] = buf[r - n - 1];
+                buf[r - n - 1] = t;
               }
+            } else {
+              out << format(R_INTENSITY) % (r - l);
             }
-              break;
-            case 'c': // colour (passes)
-            {}
-              break;
-            default: // mono
-            {}
-            }
-            LOG_DEBUG_STR("read");
-            LOG_DEBUG(buf);
-            if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g') {
-              for (l = 0; l < h; l++) {
-                //Raster value is multiplied by the power scale.
-                buf[l] = (uint8_t) buf[l] * lconf->raster_power / 255;
-              }
-            }
-
-            // find left/right of data
-            for (l = 0; l < h && !buf[l]; l++) {
-              ;
-            }
-
-            if (l < h) {
-              LOG_DEBUG_STR("print line");
-
-              // a line to print
-              int r;
-              int n;
-              char pack[sizeof(buf) * 5 / 4 + 1];
-              for (r = h - 1; r > l && !buf[r]; r--) {
+            dir = 1 - dir;
+            // pack
+            n = 0;
+            while (l < r) {
+              int p;
+              for (p = l; p < r && p < l + 128 && buf[p] == buf[l]; p++) {
                 ;
               }
-              r++;
-              out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + offy
-                  + y);
-              out << format(PCL_POS_X)
-                  % (tile->offsetX() + lconf->basex + offx
-                      + ((lconf->raster_mode == 'c' || lconf->raster_mode
-                          == 'g') ? l : l * 8));
-              if (dir) {
-                LOG_DEBUG_STR("reverse");
-                out << format(R_INTENSITY) % (-(r - l));
-                // reverse bytes!
-                for (n = 0; n < (r - l) / 2; n++) {
-                  char t = buf[l + n];
-                  buf[l + n] = buf[r - n - 1];
-                  buf[r - n - 1] = t;
-                }
+              if (p - l >= 2) {
+                // run length
+                pack[n++] = 257 - (p - l);
+                pack[n++] = buf[l];
+                l = p;
               } else {
-                out << format(R_INTENSITY) % (r - l);
-              }
-              dir = 1 - dir;
-              // pack
-              n = 0;
-              while (l < r) {
-                int p;
-                for (p = l; p < r && p < l + 128 && buf[p] == buf[l]; p++) {
+                for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p]
+                    != buf[p + 1]); p++) {
                   ;
                 }
-                if (p - l >= 2) {
-                  // run length
-                  pack[n++] = 257 - (p - l);
-                  pack[n++] = buf[l];
-                  l = p;
-                } else {
-                  for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p]
-                      != buf[p + 1]); p++) {
-                    ;
-                  }
 
-                  pack[n++] = p - l - 1;
-                  while (l < p) {
-                    pack[n++] = buf[l++];
-                  }
+                pack[n++] = p - l - 1;
+                while (l < p) {
+                  pack[n++] = buf[l++];
                 }
               }
-              LOG_DEBUG_MSG("write row", ((n + 7) / 8 * 8));
-              out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
-              r = 0;
-              while (r < n) {
-                out << pack[r++];
-              }
-              while (r & 7) {
-                r++;
-                out << "\x80";
-              }
+            }
+            out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
+            r = 0;
+            while (r < n) {
+              out << pack[r++];
+            }
+            while (r & 7) {
+              r++;
+              out << "\x80";
             }
           }
         }
