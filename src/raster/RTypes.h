@@ -24,7 +24,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <stdint.h>
 using namespace std;
 
 struct Point2D {
@@ -37,21 +37,34 @@ struct Point2D {
 template<class T>
 class Pixel {
 public:
-	/* complete rgb 2 ihs conversion
-	 	 	i = (r + g + b) / 3;
-			s = 1 - 3 * (min(min(r, g), b)) / (r + g + b);
-			h = acos(0.5 * ((r - g) + (r - b))) / sqrt((r - g) * (r - g) + (r - b) * (g - b));
-	 */
 
 	T rgb[3];
 
 	Pixel(T r, T g, T b) {
-		this->rgb[0] = r;
-		this->rgb[1] = g;
-		this->rgb[2] = b;
+	  setRGB(r,g,b);
 	}
 
-	T intensity() {
+	void setRGB(T r, T g, T b) {
+    this->rgb[0] = r;
+    this->rgb[1] = g;
+    this->rgb[2] = b;
+  }
+
+  /**
+   * invert intensity (black -> 255, white -> 0) and apply raster power scale
+   */
+	uint8_t pclValue(float power_scale){
+    return (uint8_t) (255 - this->intensity()) * power_scale;
+  }
+
+private:
+  /* complete rgb 2 ihs conversion
+      i = (r + g + b) / 3;
+      s = 1 - 3 * (min(min(r, g), b)) / (r + g + b);
+      h = acos(0.5 * ((r - g) + (r - b))) / sqrt((r - g) * (r - g) + (r - b) * (g - b));
+   */
+
+  T intensity() {
 		if (rgb[0] == 0 && rgb[1] == 0 && rgb[2] == 0)
 			return 0;
 		else

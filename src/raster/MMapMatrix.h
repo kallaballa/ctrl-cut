@@ -95,9 +95,13 @@ public:
 		return this->y;
 	}
 
-	Pixel<T>* pixel(Point2D p) {
+	Pixel<T>* pixel(Point2D p, Pixel<T>* pix = NULL) {
 	  T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
-		Pixel<T>* pix = new Pixel<T> (*sample, *++sample, *++sample);
+
+	  if(pix)
+	    pix->setRGB(*sample, *++sample, *++sample);
+	  else
+	    pix = new Pixel<T> (*sample, *++sample, *++sample);
 
 		return pix;
 	}

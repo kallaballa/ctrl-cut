@@ -84,29 +84,28 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         for (y = h - 1; y >= 0; y--) {
           int l;
 
+          // read scanline from right to left
           for (int x = 0; x < w; x++) {
             Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
-            // invert intensity (black -> 255, white -> 0) and apply raster power scale
-            buf[x] = (uint8_t) (255 - p->intensity()) * power_scale;
+            buf[x] = p->pclValue(power_scale);
             delete p;
           }
 
-          // find left/right of data
-          for (l = 0; l < h && !buf[l]; l++) {
-          }
+          // find left/right of data (dir==0 ? left : right)
+          for (l = 0; l < h && !buf[l]; l++) {}
 
           if (l < h) {
             // a line to print
             int r;
             int n;
             char pack[sizeof(buf) * 5 / 4 + 1];
-            for (r = h - 1; r > l && !buf[r]; r--) {
-            }
+            // find left/right of data (dir==0 ? right : left )
+            for (r = h - 1; r > l && !buf[r]; r--) {}
             r++;
             out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + offy + y);
             out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + offx + l);
 
-            if (dir) {
+            if (r < l) {
               LOG_DEBUG_STR("reverse");
               out << format(R_INTENSITY) % (-(r - l));
               // reverse bytes!
