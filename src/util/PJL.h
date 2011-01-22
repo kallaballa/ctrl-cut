@@ -87,13 +87,13 @@ PJL_STRING(R_WIDTH, "\e*r%dS");
 PJL_STRING(R_COMPRESSION, "\e*b%dM");
 
 /* Raster direction (1 = up) */
-PJL_STRING(R_DIRECTION_UP, "\e&y1O");
+PJL_STRING(R_DIRECTION_UP, "\e&y0O");
 
 /* Start raster operation at current position */
 PJL_STRING(R_START_AT_POS, "\e*r1A");
 
 /* The intensity (relative amount of the defined R_POWER) used for the current raster row */
-PJL_STRING(R_INTENSITY, "\e*b%dA");
+PJL_STRING(R_ROW_PIXELS, "\e*b%dA");
 
 /* The number of bytes in the raster row */
 PJL_STRING(R_ROW_BYTES, "\e*b%dW");
