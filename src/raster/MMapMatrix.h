@@ -95,15 +95,9 @@ public:
 		return this->y;
 	}
 
-	Pixel<T>* pixel(Point2D p, Pixel<T>* pix = NULL) {
-	  T* sample = (static_cast<T*> (addr)) + ((p.y * w + p.x) * 3);
-
-	  if(pix)
-	    pix->setRGB(*sample, *++sample, *++sample);
-	  else
-	    pix = new Pixel<T> (*sample, *++sample, *++sample);
-
-		return pix;
+	void readPixel(const int x, const int y, Pixel<T>& pix) const {
+	  T* sample = (static_cast<T*> (addr)) + ((y * w + x) * 3);
+	  pix.setRGB(sample);
 	}
 
 	MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {

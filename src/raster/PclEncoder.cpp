@@ -34,12 +34,12 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   // Raster Orientation
   out << format(R_ORIENTATION) % 0;
   // Raster power
-  out << format(R_POWER) % ((lconf->raster_mode == 'c' || lconf->raster_mode
-      == 'g') ? 100 : lconf->raster_power);
+  out << format(R_POWER) % 100;
 
-  out << PCL_UNKNOWN_BLAFOO3;
   // Raster speed
   out << format(R_SPEED) % lconf->raster_speed;
+
+  out << PCL_UNKNOWN_BLAFOO3;
   out << format(R_HEIGHT) % (lconf->height * lconf->y_repeat);
   out << format(R_WIDTH) % (lconf->width * lconf->x_repeat);
   // Raster compression
@@ -61,7 +61,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
 }
 
 void PclEncoder::encodeTile(Image* tile, ostream& out) {
-  int h;
+  int height;
   int w;
   int offx;
   int offy;
@@ -70,52 +70,51 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
     w = tile->width();
-    h = tile->height();
+    height = tile->height();
 
     char buf[w];
+    Pixel<uint8_t> p;
+
     float power_scale = lconf->raster_power / (float) 255;
 
     for (offx = w * (lconf->x_repeat - 1); offx >= 0; offx -= w) {
-      for (offy = h * (lconf->y_repeat - 1); offy >= 0; offy -= h) {
+      for (offy = height * (lconf->y_repeat - 1); offy >= 0; offy -= height) {
         // raster (basic)
         int y;
         char dir = 0;
 
-        for (y = h - 1; y >= 0; y--) {
+        for (y = height - 1; y >= 0; y--) {
           int l;
 
           // read scanline from right to left
           for (int x = 0; x < w; x++) {
-            Pixel<uint8_t>* p = tile->pixel(Point2D(x, y));
-            buf[x] = p->pclValue(power_scale);
-            delete p;
+            tile->readPixel(x,y,p);
+            buf[x] = p.pclValue(power_scale);
           }
 
           // find left/right of data (dir==0 ? left : right)
-          for (l = 0; l < h && !buf[l]; l++) {}
+          for (l = 0; l < height && !buf[l]; l++) {}
 
-          if (l < h) {
+          if (l < height) {
             // a line to print
             int r;
             int n;
             char pack[sizeof(buf) * 5 / 4 + 1];
             // find left/right of data (dir==0 ? right : left )
-            for (r = h - 1; r > l && !buf[r]; r--) {}
+            for (r = height - 1; r > l && !buf[r]; r--) {}
             r++;
             out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + offy + y);
             out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + offx + l);
 
-            if (r < l) {
-              LOG_DEBUG_STR("reverse");
-              out << format(R_INTENSITY) % (-(r - l));
-              // reverse bytes!
+            if (dir) {
+              out << format(R_ROW_PIXELS) % (-(r - l));
               for (n = 0; n < (r - l) / 2; n++) {
                 char t = buf[l + n];
                 buf[l + n] = buf[r - n - 1];
                 buf[r - n - 1] = t;
               }
             } else {
-              out << format(R_INTENSITY) % (r - l);
+              out << format(R_ROW_PIXELS) % (r - l);
             }
             dir = 1 - dir;
             // pack

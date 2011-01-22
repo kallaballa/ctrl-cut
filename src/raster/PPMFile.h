@@ -66,18 +66,4 @@ Image* loadppm(string filename) {
 	return new Image(filename, w, h, 0, 0, data_offset);
 }
 
-void printImage(Image* img) {
-	int w = img->width();
-	int h = img->height();
-
-	for (int y = 0; y < h; ++y) {
-	  stringstream ss;
-	  for (int x = 0; x < w; ++x) {
-			Pixel<unsigned char>* p = img->pixel(Point2D(x, y));
-			ss << x << "/" << y << ": " << (int) p->rgb[0] << " " << (int) p->rgb[1] << " " << (int) p->rgb[2] << "\t";
-		}
-    LOG_ULTRA_MSG("scanline", ss.str());
-	}
-}
-
 #endif /* PPMFILE_H_ */
