@@ -128,15 +128,15 @@ bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
   if ((code == 0) || (code == e_Quit)) {
     return true;
   }
-#endif
+#else
   return false;
+#endif
 }
 
 bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, char *filename_vector,
                          const char *bmp_mode, int resolution, int height,
                          int width) {
-
-
+#ifndef USE_GHOSTSCRIPT_API
   char buf[8192];
   sprintf(
       buf,
@@ -154,6 +154,9 @@ bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, char *fi
   }
 
   return true;
+#else
+  return false;
+#endif
 }
 /*!
  Copy supported options into the supplied laser_config:
