@@ -208,7 +208,9 @@ void process_print_job_options(cups_option_t *options, int numOptions,
   if ((v = cupsGetOption("Debug", numOptions, options))) {
     lconf->debug = atoi(v);
   }
-    lconf->enable_raster = true;
+  if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
+    lconf->enable_raster = atoi(v);
+  }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
     lconf->enable_vector = atoi(v);
   }

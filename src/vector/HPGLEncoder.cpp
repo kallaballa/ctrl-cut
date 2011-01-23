@@ -44,8 +44,9 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
-  for (VecPolyline::iterator it_p = cut->polylines.begin(); it_p
-         != cut->polylines.end(); it_p++) {
+  for (VecPolyline::iterator it_p = cut->polylines.begin();
+       it_p != cut->polylines.end();
+       it_p++) {
     Polyline *p = *it_p;
     for (vector<Edge*>::iterator it_s = p->edges.begin(); it_s != p->edges.end(); it_s++) {
       ls = *it_s;
@@ -127,6 +128,7 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
         out << format(",%d,%d") % beginX % beginY;
       }
     }
+    if (writingPolyline) out << SEP;
   }
 
   out << HPGL_END;
