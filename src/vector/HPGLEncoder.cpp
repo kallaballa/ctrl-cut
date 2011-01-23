@@ -128,8 +128,8 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
         out << format(",%d,%d") % beginX % beginY;
       }
     }
-    if (writingPolyline) out << SEP;
   }
 
+  if (writingPolyline) out << SEP;
   out << HPGL_END;
 }
