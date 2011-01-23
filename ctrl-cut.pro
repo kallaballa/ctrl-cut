@@ -1,20 +1,14 @@
 TARGET = ctrl-cut
 #CONFIG += raster
+#CONFIG += gsapi
 CONFIG -= qt
+
 macx {
   CONFIG -= app_bundle
   INCLUDEPATH += /opt/local/include 
 }
 
-CONFIG += gsapi
-gsapi {
-  DEFINES += USE_GHOSTSCRIPT_API
-  macx {
-   INCLUDEPATH += /opt/local/include
-   LIBS += -L/opt/local/lib
-  }
-  LIBS += -lgs
-}
+include(ghostscript.pri)
 
 OBJECTS_DIR = objects
 
