@@ -4,6 +4,10 @@ cd $CC_BASE
 
 . $CC_FUNCTIONS
 
+if test $VERBOSE; then
+  set -x
+fi
+
 [ ! -d "./tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
