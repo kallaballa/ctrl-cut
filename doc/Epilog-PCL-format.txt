@@ -22,7 +22,7 @@ PCL standard:
 *r21600S              Raster width in dots                            Piece Size V * Res
 *b2M                  Raster compression
 E                     Reset printer (used at end of HPGL section)
-%#B (#=0,1)           Enter HP-GL/2
+%#B (#=0,1)           Enter or leave HP-GL/2 (1 = enter, 0 = leave)
 *rC                   End Raster Graphics
 
 Unknown:
@@ -49,4 +49,8 @@ LT              Line Type
 Unknown:
 WA [???]         (e.g. WA1)
 
+Misc structural notes:
+----------------------
 
+Empty cut section: %1BIN;YP050;ZS050;XR2500;%0B%1BPUE
+Vector disabled:                                   %1BPUE
