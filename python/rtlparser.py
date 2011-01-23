@@ -33,18 +33,29 @@ class RTLParser:
         buffer = f.read()
 
         # Look for start of HP-GL/2 section
-        pos = buffer.find("\x1b%1BIN;");
+        pos = buffer.find("\x1b%1BIN;")
         if pos > 0: pos += 7
 
-        while pos < len(buffer):
+        hpglend = buffer.find('\x1b%0B', pos)
+        if hpglend == -1:
+            print "Error: End of HP/GL-2 section no found"
+            exit(1)
+
+        prevpos = pos;
+        while pos < hpglend:
             # This signifies the end of HP-GL/2 section
-            if buffer[pos] == '\x1b': break
-            end = buffer.find(";", pos)
-            if end <= pos:
-                print "Error: Unexpected ';'"
+            if buffer[pos] == '\x1b%0B': break
+            end = buffer.find(";", pos, hpglend)
+            if end == -1:
+                print "Error: Command not terminated: '" + buffer[pos:hpglend] + "'"
+                print "       Previous command: '" + buffer[prevpos:pos] + "'"
+                exit(1)
+            if end == pos:
+                print "Error: Unexpected ';' at '" + buffer[pos-10:pos+1]
                 exit(1)
 
             self.parseCommand(buffer, pos, end)
+            prevpos = pos
             pos = end + 1
 
         # FIXME: Assert that there aren't more HP-GL/2 sections
