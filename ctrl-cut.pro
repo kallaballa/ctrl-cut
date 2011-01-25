@@ -1,13 +1,25 @@
 TARGET = ctrl-cut
 #CONFIG += raster
-#CONFIG += gsapi
+CONFIG += gsapi
 CONFIG -= qt
+CONFIG += boost
 
 macx {
   CONFIG -= app_bundle
-  INCLUDEPATH += /opt/local/include 
+
+  DEPLOYDIR = $$(MACOSX_DEPLOY_DIR)
+  !isEmpty(DEPLOYDIR) {
+    INCLUDEPATH += $$DEPLOYDIR/include
+    LIBS += -L$$DEPLOYDIR/lib
+  }
+  # add CONFIG+=deploy to the qmake command-line to make a deployment build
+  deploy {
+    message("Building deployment version")
+    CONFIG += x86 x86_64
+  }
 }
 
+include(boost.pri)
 include(ghostscript.pri)
 
 OBJECTS_DIR = objects
