@@ -303,8 +303,11 @@ void ppm2pcl(string filename) {
   exit(0);
 }
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 void printUsage(const char *name) {
-  fprintf(stderr, "%s V0.1\n", name);
+  fprintf(stderr, "%s %s\n", name, TOSTRING(CTRLCUT_VERSION));
   fprintf(stderr,
       "Usage: %s [options] job-id user title copies options [file]\n\n", name);
 

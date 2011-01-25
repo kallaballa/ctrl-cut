@@ -4,6 +4,9 @@ CONFIG += gsapi
 CONFIG -= qt
 CONFIG += boost
 
+isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
+DEFINES += CTRLCUT_VERSION=$$VERSION
+
 macx {
   CONFIG -= app_bundle
 
