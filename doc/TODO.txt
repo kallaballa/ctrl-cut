@@ -10,7 +10,6 @@ Postscript:
 Installer:
 ----------
 o Linux installer
-o Mac OS X installer
 
 Filter:
 -------

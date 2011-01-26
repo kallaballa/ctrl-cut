@@ -25,6 +25,7 @@ macx {
 include(boost.pri)
 include(ghostscript.pri)
 
+INCLUDEPATH += src
 OBJECTS_DIR = objects
 
 QMAKE_CXXFLAGS+=-DETLOG

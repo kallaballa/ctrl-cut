@@ -24,7 +24,7 @@
 
 #include "stdio.h"
 #include <fstream>
-#include "../util/Logger.h"
+#include "util/Logger.h"
 #include "MMapMatrix.h"
 
 using namespace std;
