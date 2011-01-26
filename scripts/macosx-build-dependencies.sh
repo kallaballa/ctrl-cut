@@ -33,6 +33,7 @@ build_ghostscript()
   sed -e "s|__PREFIX__|${prefix}|" -i "" base/unix-dll.mak
   ./configure --prefix=$DEPLOYDIR --enable-compile-inits --disable-cups --disable-gtk --without-x --disable-fontconfig --with-drivers=PBM "CFLAGS=-mmacosx-version-min=10.5 -arch x86_64 -arch i386" LDFLAGS="-mmacosx-version-min=10.5 -arch x86_64 -arch i386"
   make -j4 soinstall
+  install_name_tool -id libgs.9.00.dylib $DEPLOYDIR/lib/libgs.9.00.dylib
 }
 
 echo "Using basedir:" $BASEDIR
