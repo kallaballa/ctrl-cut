@@ -45,6 +45,14 @@ bool get_bbox_from_end(cups_file_t *ps_file,
   return false;
 }
 
+bool get_bbox_from_string(const char *str, int &lower_left_x, int &lower_left_y, 
+                          int &upper_right_x, int &upper_right_y)
+{
+  return (sscanf(str, "%d %d %d %d",
+                 &lower_left_x, &lower_left_y, 
+                 &upper_right_x, &upper_right_y) == 4);
+}
+
 /**
  * Convert the given postscript file (ps) converting it to an encapsulated
  * postscript file (eps).
@@ -61,7 +69,9 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
   int xoffset = 0;
   int yoffset = 0;
   bool created_by_cairo = false;
-  bool landscape_flipped = false;
+  bool bboxfound = false;
+  bool landscape = false;
+  bool portrait = false;
 
   int l;
   while (cupsFileGetLine(ps_file, (char *) buf, sizeof(buf))) {
@@ -69,35 +79,30 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
     if (*buf != '%') {
       continue; // We're only looking for comment lines
     }
-    // Check for Inkscape with landscape bug
-    if (created_by_cairo && landscape_flipped) {
-      if (!strncasecmp((char *) buf, "%%EndPageSetup", 14)) {
+    if (!strncasecmp((char *) buf, "%%Creator: cairo", 16)) {
+      created_by_cairo = true;
+    }
+    else if (!strncasecmp((char *) buf, "%%EndPageSetup", 14)) {
+      LOG_DEBUG_STR("%%EndPageSetup");
+      // Check for Inkscape with landscape bug
+      if (created_by_cairo && landscape && portrait) {
+        LOG_DEBUG_STR("Broken Inkscape detected");
         // Revert Inkscape fuckup
         fprintf(eps_file, "0 -1 1 0 0 1728 6 array astore concat\n");
       }
     }
-    if (!strncasecmp((char *) buf, "%%Creator: cairo", 16)) {
-      created_by_cairo = true;
+    else if (!strncasecmp((char *) buf, "%%PageOrientation: Landscape", 27)) {
+      LOG_DEBUG_STR("%%PageOrientation: Landscape");
+      landscape = true;
     }
-    else if (!strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
+    else if (!bboxfound && !strncasecmp((char *) buf, "%%PageBoundingBox:", 18)) {
       int lower_left_x;
       int lower_left_y;
       int upper_right_x;
       int upper_right_y;
-      bool found = false;
-      if (!strncasecmp((char *) buf+15, "(atend)", 7)) {
-        off_t pos = cupsFileTell(ps_file);
-        found = get_bbox_from_end(ps_file, lower_left_x, lower_left_y, 
-                                  upper_right_x, upper_right_y);
-        cupsFileSeek(ps_file, pos);
-      }
-      else {
-        found = (sscanf((char *) buf + 14, "%d %d %d %d",
-                        &lower_left_x, &lower_left_y, 
-                        &upper_right_x, &upper_right_y) == 4);
-      }
-
-      if (found) {
+      bboxfound = get_bbox_from_string(buf + 18, lower_left_x, lower_left_y, upper_right_x, upper_right_y);
+      if (bboxfound) {
+        LOG_DEBUG_STR("Found bbox from %%PageBoundingBox");
         xoffset = lower_left_x;
         yoffset = lower_left_y;
         int width = upper_right_x - lower_left_x;
@@ -108,7 +113,7 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         // If the laser itself has a portrait layout, this check is inherently wrong
         // -> rethink this later.
         if (height > width) {
-          landscape_flipped = true;
+          portrait = true;
         }
 
         // FIXME: Sometimes (e.g. from Inkscape) the width and height is swapped.
@@ -128,6 +133,20 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
                   lconf->width);
         }
 #endif
+      }
+    }
+    else if (!bboxfound && !strncasecmp((char *) buf, "%%BoundingBox:", 14)) {
+      int lower_left_x;
+      int lower_left_y;
+      int upper_right_x;
+      int upper_right_y;
+      bboxfound = get_bbox_from_string(buf + 14, lower_left_x, lower_left_y, upper_right_x, upper_right_y);
+      if (bboxfound) {
+        LOG_DEBUG_STR("Found bbox from %%BoundingBox");
+        xoffset = lower_left_x;
+        yoffset = lower_left_y;
+        // int width = upper_right_x - lower_left_x;
+        // int height = upper_right_y - lower_left_y;
       }
     }
     else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
