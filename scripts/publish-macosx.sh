@@ -27,3 +27,4 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "FIXME: Create installer package"
+/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut.pkg
