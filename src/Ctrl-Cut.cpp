@@ -176,7 +176,7 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     LaserConfig *lconf) {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
-    lconf->focus = atoi(v);
+    lconf->focus = strcmp(v, "false");
   }
   if ((v = cupsGetOption("Resolution", numOptions, options))) {
     lconf->resolution = atoi(v);
@@ -203,16 +203,16 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->vector_freq = atoi(v);
   }
   if ((v = cupsGetOption("FlipX", numOptions, options))) {
-    lconf->flip = true;
+    lconf->flip = strcmp(v, "false");
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-    cc_loglevel = (atoi(v)) ? CC_DEBUG : (LogLevel)DEBUG;
+    cc_loglevel = strcmp(v, "false") ? CC_DEBUG : (LogLevel)DEBUG;
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
-    lconf->enable_raster = atoi(v);
+    lconf->enable_raster = strcmp(v, "false");
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-    lconf->enable_vector = atoi(v);
+    lconf->enable_vector = strcmp(v, "false");
   }
   LOG_DEBUG(lconf->focus);
   LOG_DEBUG(lconf->resolution);
@@ -477,7 +477,7 @@ int main(int argc, char *argv[]) {
     LOG_FATAL_MSG("Can't open", filename_eps);
     return 1;
   }
-  LOG_DEBUG_MSG("Converting to eps file:", filename_eps);
+  LOG_DEBUG_MSG("Converting to eps file", filename_eps);
 
   /* Convert PS to EPS (for vector extraction) */
   if (!ps_to_eps(&lconf, input_file, file_eps)) {
@@ -497,7 +497,7 @@ int main(int argc, char *argv[]) {
     rm = "nullpage";
   }
 
-  LOG_DEBUG_MSG("Running ghostscript. Raster output:", filename_bitmap);
+  LOG_DEBUG_MSG("Running ghostscript. Raster output", filename_bitmap);
 #ifdef USE_GHOSTSCRIPT_API
   if (!execute_ghostscript(filename_eps, filename_bitmap, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
@@ -505,7 +505,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 #else
-  LOG_DEBUG_MSG("                     Vector output:", filename_vector);
+  LOG_DEBUG_MSG("                     Vector output", filename_vector);
   if (!execute_ghostscript_cmd(filename_eps, filename_bitmap, filename_vector,rm,
                                lconf.resolution, lconf.height, lconf.width)) {
     LOG_FATAL_STR("ghostscript failed");
