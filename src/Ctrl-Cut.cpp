@@ -56,7 +56,7 @@ using boost::format;
 /** The laser cutter configuration **/
 LaserConfig lconf;
 #ifndef DEBUG
-#define DEBUG 2
+#define DEBUG 4
 #endif
 LogLevel cc_loglevel = (LogLevel)DEBUG;
 
@@ -93,7 +93,7 @@ gsdll_stdout(void *, const char *str, int len)
  * otherwise.
  */
 #ifdef USE_GHOSTSCRIPT_API
-bool execute_ghostscript(char *filename_eps, char *filename_bitmap, 
+bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
                          const char *bmp_mode, int resolution, int height,
                          int width) {
   std::vector<std::string> argstrings;
@@ -108,7 +108,7 @@ bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
   argstrings.push_back(str(format("-sDEVICE=%s") % bmp_mode));
   argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
   argstrings.push_back(filename_eps);
-  
+
   int gsargc = argstrings.size();
   const char *gsargv[gsargc];
   for (int i=0;i<gsargc;i++) {
@@ -137,7 +137,7 @@ bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
 #endif
 
 #ifndef USE_GHOSTSCRIPT_API
-bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, 
+bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap,
                              char *filename_vector, const char *bmp_mode, int resolution,
                              int height, int width) {
   char buf[8192];
@@ -327,6 +327,7 @@ void printUsage(const char *name) {
  */
 
 int main(int argc, char *argv[]) {
+  LOG_INFO_MSG("log level", cc_loglevel);
   clock_t start = clock();
 
   // Make sure status messages are not buffered
@@ -348,10 +349,11 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-
+  /** FIXME: free of cwd impairs logger???
   char *cwd = getwd(NULL);
   LOG_DEBUG(cwd);
   free(cwd);
+  */
 
   // Now, only standard CUPS parameters should be left
   int cupsargs = argc - optind;
@@ -433,7 +435,7 @@ int main(int argc, char *argv[]) {
   /* Determine and set the names of all files that will be manipulated by the
    * program.
    */
-  sprintf(file_basename, "%s/%s-%d", TMP_DIRECTORY, FILE_BASENAME, getpid());
+  sprintf(file_basename, "%s/%s", TMP_DIRECTORY, FILE_BASENAME);
   sprintf(filename_bitmap, "%s.ppm", file_basename);
   sprintf(filename_eps, "%s.eps", file_basename);
 #ifndef USE_GHOSTSCRIPT_API
