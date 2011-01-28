@@ -1,7 +1,7 @@
 #!/bin/bash
 
-function green { echo -e "\033[32;1m $1 \033[0m" 1>&2; tput sgr0; }
-function red { echo -e "\033[31;1m $1 \033[0m" 1>&2; tput sgr0; }
+function green { echo -e "\033[32;1m $1 \033[0m" 1>&2; tput sgr0 1>&2; }
+function red { echo -e "\033[31;1m $1 \033[0m" 1>&2; tput sgr0 1>&2; }
 function warn { red "$1"; }
 function ok { green "ok"; }
 function verbose { [ ! -z $VERBOSE ] && echo "$@ " 1>&2; }
