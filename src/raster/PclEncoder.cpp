@@ -41,8 +41,8 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << format(R_SPEED) % lconf->raster_speed;
 
   out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % lconf->height;
-  out << format(R_WIDTH) % lconf->width;
+  out << format(R_HEIGHT) % ((lconf->height  * lconf->resolution) / POINTS_PER_INCH);
+  out << format(R_WIDTH) % ((lconf->width  * lconf->resolution) / POINTS_PER_INCH);
   // Raster compression
   int compressionLevel = 2;
   if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g')
@@ -141,7 +141,6 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         }
 
         out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
-        r = 0;
         while (r < n) {
           out << pack[r++];
         }
