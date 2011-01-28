@@ -1,15 +1,31 @@
 TARGET = ctrl-cut
 #CONFIG += raster
-#CONFIG += gsapi
+CONFIG += gsapi
 CONFIG -= qt
+CONFIG += boost
+
+isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
+DEFINES += CTRLCUT_VERSION=$$VERSION
 
 macx {
   CONFIG -= app_bundle
-  INCLUDEPATH += /opt/local/include 
+
+  DEPLOYDIR = $$(MACOSX_DEPLOY_DIR)
+  !isEmpty(DEPLOYDIR) {
+    INCLUDEPATH += $$DEPLOYDIR/include
+    LIBS += -L$$DEPLOYDIR/lib
+  }
+  # add CONFIG+=deploy to the qmake command-line to make a deployment build
+  deploy {
+    message("Building deployment version")
+    CONFIG += x86 x86_64
+  }
 }
 
+include(boost.pri)
 include(ghostscript.pri)
 
+INCLUDEPATH += src
 OBJECTS_DIR = objects
 
 QMAKE_CXXFLAGS+=-DETLOG

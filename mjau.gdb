@@ -1,2 +1,2 @@
-set environment DEVICE_URI file://out.prn
-set args 300 kintel Terminal 1 "" ../test/circle.ps 
+set environment DYLD_LIBRARY_PATH=/Users/kintel/code/metalab/checkout/Ctrl-Cut/libraries/install/lib
+

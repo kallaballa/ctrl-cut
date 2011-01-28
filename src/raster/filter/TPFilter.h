@@ -19,8 +19,8 @@
 
 #ifndef TPFILTER_H_
 #define TPFILTER_H_
-#include "../Raster.h"
-#include "../DownSample.h"
+#include "raster/Raster.h"
+#include "raster/DownSample.h"
 
 #include <list>
 

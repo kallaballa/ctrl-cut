@@ -22,7 +22,7 @@ o Save DXF to test-data/qcad/<testcase>.dxf
 o Print to EpilogCapture
 o copy /tmp/epilogcapture.ps to test-data/qcad/<testcase>.ps
 o The test will be automatically run by test-any.
-  To test now, run ./ec test-any test-data/qcad/<testcase>.ps
+  To test now, run ./cc test-any test-data/qcad/<testcase>.ps
 
 Inkscape:
 ---------
@@ -38,7 +38,7 @@ o Save Inkscape SVG to test-data/inkscape/<testcase>.svg
 o Print to EpilogCapture
 o copy /tmp/epilogcapture.ps to test-data/inkscape/<testcase>.ps
 o The test will be automatically run by test-any.
-  To test now, run ./ec test-any test-data/inkscape/<testcase>.ps
+  To test now, run ./cc test-any test-data/inkscape/<testcase>.ps
 
 FIXME: Set up the test case for regression
 

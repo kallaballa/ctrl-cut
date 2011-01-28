@@ -55,6 +55,10 @@ using boost::format;
 
 /** The laser cutter configuration **/
 LaserConfig lconf;
+#ifndef DEBUG
+#define DEBUG 2
+#endif
+LogLevel cc_loglevel = (LogLevel)DEBUG;
 
 /** Temporary buffer for building our strings. */
 char buf[102400];
@@ -88,10 +92,10 @@ gsdll_stdout(void *, const char *str, int len)
  * @return Return true if the execution of ghostscript succeeds, false
  * otherwise.
  */
+#ifdef USE_GHOSTSCRIPT_API
 bool execute_ghostscript(char *filename_eps, char *filename_bitmap, 
                          const char *bmp_mode, int resolution, int height,
                          int width) {
-#ifdef USE_GHOSTSCRIPT_API
   std::vector<std::string> argstrings;
   argstrings.push_back("gs");
   argstrings.push_back("-q");
@@ -128,15 +132,14 @@ bool execute_ghostscript(char *filename_eps, char *filename_bitmap,
   if ((code == 0) || (code == e_Quit)) {
     return true;
   }
-#else
   return false;
-#endif
 }
+#endif
 
-bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, char *filename_vector,
-                         const char *bmp_mode, int resolution, int height,
-                         int width) {
 #ifndef USE_GHOSTSCRIPT_API
+bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, 
+                             char *filename_vector, const char *bmp_mode, int resolution,
+                             int height, int width) {
   char buf[8192];
   sprintf(
       buf,
@@ -145,19 +148,16 @@ bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap, char *fi
       (height * resolution) / POINTS_PER_INCH, bmp_mode, filename_bitmap,
       filename_eps, filename_vector);
 
-  if (lconf.debug) {
-    LOG_DEBUG(buf);
-  }
+  LOG_DEBUG(buf);
 
   if (system(buf)) {
     return false;
   }
 
   return true;
-#else
-  return false;
-#endif
 }
+#endif
+
 /*!
  Copy supported options into the supplied laser_config:
 
@@ -176,7 +176,7 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     LaserConfig *lconf) {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
-    lconf->focus = atoi(v);
+    lconf->focus = strcmp(v, "false");
   }
   if ((v = cupsGetOption("Resolution", numOptions, options))) {
     lconf->resolution = atoi(v);
@@ -203,16 +203,16 @@ void process_print_job_options(cups_option_t *options, int numOptions,
     lconf->vector_freq = atoi(v);
   }
   if ((v = cupsGetOption("FlipX", numOptions, options))) {
-    lconf->flip = true;
+    lconf->flip = strcmp(v, "false");
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
-    lconf->debug = atoi(v);
+    cc_loglevel = strcmp(v, "false") ? CC_DEBUG : (LogLevel)DEBUG;
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
-    lconf->enable_raster = atoi(v);
+    lconf->enable_raster = strcmp(v, "false");
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
-    lconf->enable_vector = atoi(v);
+    lconf->enable_vector = strcmp(v, "false");
   }
   LOG_DEBUG(lconf->focus);
   LOG_DEBUG(lconf->resolution);
@@ -224,7 +224,6 @@ void process_print_job_options(cups_option_t *options, int numOptions,
   LOG_DEBUG(lconf->vector_power);
   LOG_DEBUG(lconf->vector_freq);
   LOG_DEBUG(lconf->flip);
-  LOG_DEBUG(lconf->debug);
   LOG_DEBUG(lconf->enable_raster);
   LOG_DEBUG(lconf->enable_vector);
 }
@@ -303,8 +302,11 @@ void ppm2pcl(string filename) {
   exit(0);
 }
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 void printUsage(const char *name) {
-  fprintf(stderr, "%s V0.1\n", name);
+  fprintf(stderr, "%s %s\n", name, TOSTRING(CTRLCUT_VERSION));
   fprintf(stderr,
       "Usage: %s [options] job-id user title copies options [file]\n\n", name);
 
@@ -346,6 +348,10 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
+
+  char *cwd = getwd(NULL);
+  LOG_DEBUG(cwd);
+  free(cwd);
 
   // Now, only standard CUPS parameters should be left
   int cupsargs = argc - optind;
@@ -440,7 +446,7 @@ int main(int argc, char *argv[]) {
   // the dumped file as a FILE*. Otherwise, we'll keep the cups_file_t.
   // Subsequence code doeesn't handle the difference.
 #if 0
-  if (lconf.debug) {
+  if (cc_loglevel >= CC_DEBUG) {
     /* We save the incoming cups data to the filesystem. */
     sprintf(filename_cups_debug, "%s.cups", file_basename);
     file_debug = fopen(filename_cups_debug, "w");
@@ -471,6 +477,7 @@ int main(int argc, char *argv[]) {
     LOG_FATAL_MSG("Can't open", filename_eps);
     return 1;
   }
+  LOG_DEBUG_MSG("Converting to eps file", filename_eps);
 
   /* Convert PS to EPS (for vector extraction) */
   if (!ps_to_eps(&lconf, input_file, file_eps)) {
@@ -490,6 +497,7 @@ int main(int argc, char *argv[]) {
     rm = "nullpage";
   }
 
+  LOG_DEBUG_MSG("Running ghostscript. Raster output", filename_bitmap);
 #ifdef USE_GHOSTSCRIPT_API
   if (!execute_ghostscript(filename_eps, filename_bitmap, rm,
                            lconf.resolution, lconf.height, lconf.width)) {
@@ -497,8 +505,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 #else
+  LOG_DEBUG_MSG("                     Vector output", filename_vector);
   if (!execute_ghostscript_cmd(filename_eps, filename_bitmap, filename_vector,rm,
-                           lconf.resolution, lconf.height, lconf.width)) {
+                               lconf.resolution, lconf.height, lconf.width)) {
     LOG_FATAL_STR("ghostscript failed");
     return 1;
   }
@@ -523,7 +532,7 @@ int main(int argc, char *argv[]) {
   }
 
   /* Cleanup unneeded files provided that debug mode is disabled. */
-  if (!lconf.debug) {
+  if (cc_loglevel > CC_DEBUG) {
     if (lconf.enable_raster) {
       if (unlink(filename_bitmap)) {
         LOG_FATAL_MSG("unlink failed", filename_bitmap);

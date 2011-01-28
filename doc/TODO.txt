@@ -1,5 +1,7 @@
 CUPS:
 -----
+o CUPS (at least on Mac OS X) complains that "Remote host did not accept data file (1)" when spooling
+  and lpd job.
 o Generate EpilogLegend36EXT.ppd with ppdc
   This should open up for easy generation of PPD's for any Epilog other laser
 
@@ -10,7 +12,6 @@ Postscript:
 Installer:
 ----------
 o Linux installer
-o Mac OS X installer
 
 Filter:
 -------

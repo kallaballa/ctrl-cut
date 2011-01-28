@@ -16,12 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "../../util/Logger.h"
+#include "util/Logger.h"
 #include "Join.h"
-#include "../VTypes.h"
-#include "../Edge.h"
-#include "../Polyline.h"
-#include "../Cut.h"
+#include "vector/VTypes.h"
+#include "vector/Edge.h"
+#include "vector/Polyline.h"
+#include "vector/Cut.h"
 
 #include <boost/format.hpp>
 

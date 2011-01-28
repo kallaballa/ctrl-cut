@@ -22,8 +22,8 @@
 
 #include <map>
 
-#include "../util/LaserConfig.h"
-#include "../util/PJL.h"
+#include "util/LaserConfig.h"
+#include "util/PJL.h"
 #include "RTypes.h"
 #include "Raster.h"
 #include "MMapMatrix.h"

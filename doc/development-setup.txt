@@ -57,3 +57,11 @@ Epilog Windows drivers.
 6) Set up the Epilog CUPS driver for local printing
 
 lpadmin -p lazzzor -E -v file:///tmp/out.prn -P etc/ppd/EpilogLegend36EXT.ppd
+
+7) Use Ctrl-Cut in development mode
+
+install_name_tool -change libgs.9.00.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.00.dylib ctrl-cut
+sudo chown root ctrl-cut
+sudo ln -s /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
+lpadmin -p lazzzor -E -v lpd://10.20.30.27 -P etc/ppd/EpilogLegend36EXT.ppd
+

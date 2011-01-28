@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "util/Logger.h"
 
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)
@@ -127,9 +128,6 @@ struct LaserConfig
 
   /** Variable to track whether or not the X axis should be flipped. */
   bool flip;
-
-  // Are we running in debug mode?
-  bool debug;
 
   // Are we running performing raster passes
   bool enable_raster;
