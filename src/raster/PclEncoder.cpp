@@ -26,6 +26,7 @@ PclEncoder::PclEncoder(LaserConfig *lconf) {
 }
 
 PclEncoder::~PclEncoder() {
+
 }
 
 void PclEncoder::encode(Raster* raster, ostream& out) {
@@ -40,8 +41,8 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << format(R_SPEED) % lconf->raster_speed;
 
   out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % (lconf->height * lconf->y_repeat);
-  out << format(R_WIDTH) % (lconf->width * lconf->x_repeat);
+  out << format(R_HEIGHT) % lconf->height;
+  out << format(R_WIDTH) % lconf->width;
   // Raster compression
   int compressionLevel = 2;
   if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g')
@@ -62,98 +63,93 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
 
 void PclEncoder::encodeTile(Image* tile, ostream& out) {
   int height;
-  int w;
-  int offx;
-  int offy;
+  int width;
   int repeat;
 
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
-    w = tile->width();
+    width = tile->width();
     height = tile->height();
 
-    char buf[w];
+    char buf[width];
     Pixel<uint8_t> p;
 
     float power_scale = lconf->raster_power / (float) 255;
 
-    for (offx = w * (lconf->x_repeat - 1); offx >= 0; offx -= w) {
-      for (offy = height * (lconf->y_repeat - 1); offy >= 0; offy -= height) {
-        // raster (basic)
-        int y;
-        char dir = 0;
+    // raster (basic)
+    int y;
+    char dir = 0;
 
-        for (y = height - 1; y >= 0; y--) {
-          int l;
+    for (y = height - 1; y >= 0; y--) {
+      int l;
 
-          // read scanline from right to left
-          for (int x = 0; x < w; x++) {
-            tile->readPixel(x,y,p);
-            buf[x] = p.pclValue(power_scale);
+      // read scanline from right to left
+      for (int x = 0; x < width; x++) {
+        tile->readPixel(x, y, p);
+        buf[x] = p.pclValue(power_scale);
+      }
+
+      // find left/right of data (dir==0 ? left : right)
+      for (l = 0; l < width && !buf[l]; l++) {}
+
+      if (l < width) {
+        // a line to print
+        int r;
+        int n;
+        char pack[sizeof(buf) * 5 / 4 + 1];
+        // find left/right of data (dir==0 ? right : left )
+        for (r = width - 1; r > l && !buf[r]; r--) {
+        }
+        r++;
+        out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
+        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + l);
+
+        if (dir) {
+          out << format(R_ROW_PIXELS) % (-(r - l));
+          for (n = 0; n < (r - l) / 2; n++) {
+            char t = buf[l + n];
+            buf[l + n] = buf[r - n - 1];
+            buf[r - n - 1] = t;
           }
-
-          // find left/right of data (dir==0 ? left : right)
-          for (l = 0; l < height && !buf[l]; l++) {}
-
-          if (l < height) {
-            // a line to print
-            int r;
-            int n;
-            char pack[sizeof(buf) * 5 / 4 + 1];
-            // find left/right of data (dir==0 ? right : left )
-            for (r = height - 1; r > l && !buf[r]; r--) {}
-            r++;
-            out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + offy + y);
-            out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + offx + l);
-
-            if (dir) {
-              out << format(R_ROW_PIXELS) % (-(r - l));
-              for (n = 0; n < (r - l) / 2; n++) {
-                char t = buf[l + n];
-                buf[l + n] = buf[r - n - 1];
-                buf[r - n - 1] = t;
-              }
-            } else {
-              out << format(R_ROW_PIXELS) % (r - l);
+        } else {
+          out << format(R_ROW_PIXELS) % (r - l);
+        }
+        dir = 1 - dir;
+        // pack
+        n = 0;
+        while (l < r) {
+          int p;
+          for (p = l; p < r && p < l + 128 && buf[p] == buf[l]; p++) {
+            ;
+          }
+          if (p - l >= 2) {
+            // run length
+            pack[n++] = 257 - (p - l);
+            pack[n++] = buf[l];
+            l = p;
+          } else {
+            for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p] != buf[p
+                + 1]); p++) {
+              ;
             }
-            dir = 1 - dir;
-            // pack
-            n = 0;
-            while (l < r) {
-              int p;
-              for (p = l; p < r && p < l + 128 && buf[p] == buf[l]; p++) {
-                ;
-              }
-              if (p - l >= 2) {
-                // run length
-                pack[n++] = 257 - (p - l);
-                pack[n++] = buf[l];
-                l = p;
-              } else {
-                for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p]
-                    != buf[p + 1]); p++) {
-                  ;
-                }
 
-                pack[n++] = p - l - 1;
-                while (l < p) {
-                  pack[n++] = buf[l++];
-                }
-              }
-            }
-            out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
-            r = 0;
-            while (r < n) {
-              out << pack[r++];
-            }
-            while (r & 7) {
-              r++;
-              out << "\x80";
+            pack[n++] = p - l - 1;
+            while (l < p) {
+              pack[n++] = buf[l++];
             }
           }
         }
+
+        out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
+        r = 0;
+        while (r < n) {
+          out << pack[r++];
+        }
+        while (r & 7) {
+          r++;
+          out << "\x80";
+        }
       }
     }
-
   }
 }
