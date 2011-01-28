@@ -155,61 +155,6 @@ Cut *Cut::load(const string &filename)
   return Cut::load(infile);
 }
 
-/*
-  void Cut::print(ostream &stream)
-  {
-  Edge *ls;
-  for (EdgeList::iterator it_s = this->freeEdges.begin();  it_s != this->freeEdges.end(); it_s++) {
-  ls = *it_s;
-
-  stream << ls->getStart()->getX() << "," << ls->getStart()->getY() << "  -  "
-  << ls->getEnd()->getX() << "," << ls->getEnd()->getY() << "\n";
-  }
-
-
-  EdgeList skin_segm;
-  EdgeList::reverse_iterator it_i;
-
-  if (skins.size() > 0) {
-  stream << "Skins: " << skins.size() << "\n";
-    
-  for (int i = skins.size() - 1; i >= 0; i--) {
-  skin_segm = skins.at(i)->getLineSegments();
-  printf("s: %d\n", skin_segm.size());
-      
-  for (it_i = skin_segm.rbegin(); it_i != skin_segm.rend(); it_i++) {
-  ls = *it_i;
-  if (it_i != skin_segm.rbegin())
-  ls->invertDirection();
-  if (ls != NULL) {
-  //print_line(ls);
-  stream << "P";
-  stream << ls->getPower();
-  stream << "\n";
-  stream << "M";
-  stream << ls->getStart()->getX();
-  stream << ",";
-  stream << ls->getStart()->getY();
-  stream << "\n";
-  stream << "L";
-  stream << ls->getStart()->getX();
-  stream << ",";
-  stream << ls->getStart()->getY();
-  stream << "\n";
-  stream << "L";
-  stream << ls->getEnd()->getX();
-  stream << ",";
-  stream << ls->getEnd()->getY();
-  stream << "\n";
-  }
-  }
-  }
-  }
-  stream << "X\n";
-  }
-
-*/
-
 void Cut::xml(std::string s) {
   ofstream os(s.c_str(), ios_base::out);
   Cut c = *((Cut*)this);
