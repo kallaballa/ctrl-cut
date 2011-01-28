@@ -45,11 +45,11 @@ public:
    * calculate intensity, invert it (black -> 255, white -> 0) and apply raster power scale
    */
 	void setRGB(T* sampleOff) {
-	  this->i = (*sampleOff + *(sampleOff+1) + *(sampleOff + 2)) / 3;
+	  this->i = round(0.2989 * *sampleOff + 0.5870 * *(sampleOff + 1) + 0.1140 * *(sampleOff + 2));
   }
 
 	uint8_t pclValue(float power_scale){
-	  return (uint8_t) (255 - ((this->i) / 3)) * power_scale;
+	  return (uint8_t) (255 - this->i) * power_scale;
   }
 
 private:
