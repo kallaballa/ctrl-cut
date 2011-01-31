@@ -26,7 +26,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.63356459" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.918037137" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.1759030236" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-DDEBUG=4 -DETLOG -lgs -Wno-format  -W -lm -c -fmessage-length=0 -I/usr/include/X11 -Dcimg_use_xshm -Dcimg_use_xrandr -L/usr/lib/X11 -L/usr/lib/ -lpthread -lX11 -lXext -lXrandr -lcups" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.624805491" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.624805491" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1495451413" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -57,7 +57,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="tools/Delme.h|tools/Delme.cpp|raster/filter|raster/bak|PCLTiffEncoder.h|PCLTiffEncoder.cpp|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|raster/filter|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -691,7 +691,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="tools/Delme.h|tools/Delme.cpp|raster|raster/bak|PCLTiffEncoder.h|PCLTiffEncoder.cpp|FilterChain.h|FilterChain.cpp|PrinterConnection.h|PrinterConnection.cpp|CuttingOptimizer.h|CuttingOptimizer.cpp|TileMarker.h|TileMarker.cpp|CupsParser.h|CupsParser.cpp|cups-epilog.cpp|cups_epilog.h|point_map.c|geom.h|geom.c|CuttingOptimizer.c|cutting_optimizer.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|raster|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
