@@ -1,4 +1,4 @@
-TARGET = epilog
+TARGET = lpd-epilog
 macx {
   LIBS += -framework CoreFoundation
 }
