@@ -32,7 +32,7 @@ export CC_TEST_DATA="$CC_BASE/test-data"
 export CC_TEST_CODE="$CC_BASE/test-code"
 export CC_PYTHON="$CC_BASE/python"
 export CC_ETC="$CC_BASE/etc"
-export CC_BINARY="$CC_BASE/ctrl-cut"
+export CC_BINARY="$CC_BASE/src/cups-filter/ctrl-cut"
 
 . $CC_FUNCTIONS
 
