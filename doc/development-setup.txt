@@ -65,3 +65,11 @@ sudo chown root ctrl-cut
 sudo ln -s /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
 lpadmin -p lazzzor -E -v lpd://10.20.30.27 -P etc/ppd/EpilogLegend36EXT.ppd
 
+8) Use Ctrl-Cut in epilog LPD mode 
+
+install_name_tool -change libgs.9.00.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.00.dylib ctrl-cut
+sudo chown root ctrl-cut
+sudo ln -s /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
+lpadmin -p lazzzor -E -v epilog://10.20.30.27 -P etc/ppd/EpilogLegend36EXT.ppd
+
+
