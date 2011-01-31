@@ -25,6 +25,9 @@
 *% Provide icon (Apple extension)
 *APPrinterIconPath: "/Library/Printers/CtrlCut/Icons/EpilogLegend36EXT.icns"
 
+*% Epilog doesn't support SNMP
+*cupsSNMPSupplies: False
+
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
 *ColorDevice: True
