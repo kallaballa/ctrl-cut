@@ -2,7 +2,7 @@
 
 . $CC_FUNCTIONS
 
-svg2pdf="$CC_TEST_CODE/svg2pdf/svg2pdf"
+svg2pdf="$CC_BASE/src/svg2pdf/svg2pdf"
 
 shift $(($OPTIND - 1))
 
