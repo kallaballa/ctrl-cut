@@ -1,4 +1,5 @@
 gsapi {
+  message("Configuring Ghostscript...")
   DEFINES += USE_GHOSTSCRIPT_API
   macx {
    isEmpty(DEPLOYDIR) {
