@@ -156,8 +156,8 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
   if (argc == 1)
   {
-    printf("network lpd \"Unknown\" \"%s\"\n",
-           _cupsLangString(cupsLangDefault(), _("LPD/LPR Host or Printer")));
+    printf("network lpd-epilog \"Epilog\" \"%s\"\n",
+           _cupsLangString(cupsLangDefault(), _("Epilog LPD")));
     return (CUPS_BACKEND_OK);
   }
   else if (argc < 6 || argc > 7)
