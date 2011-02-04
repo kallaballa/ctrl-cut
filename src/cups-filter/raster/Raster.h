@@ -28,9 +28,10 @@ using namespace std;
 
 class Raster
 {
- public:
-	static Raster *load(const string &filename);
-	Image* sourceImage;
+public:
+  Image* sourceImage;
+	static Raster* load(const string &filename);
+
   list<Image*> tiles;
   list<DownSample*> grids;
 
@@ -39,8 +40,6 @@ class Raster
   }
 
   virtual ~Raster() {}
-
-  void addSourceImage(Image* img);
   void addTile(Image* tile);
 };
 

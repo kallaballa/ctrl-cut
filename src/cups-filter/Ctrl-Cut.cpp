@@ -293,15 +293,6 @@ static void printEnv(const char *env) {
   }
 }
 
-void ppm2pcl(string filename) {
-  Raster *raster = Raster::load(filename);
-  raster->addTile(raster->sourceImage);
-  lconf.raster_repeat = 1;
-  PclEncoder renderer(&lconf);
-  renderer.encode(raster, cout);
-  exit(0);
-}
-
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 

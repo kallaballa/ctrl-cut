@@ -31,12 +31,12 @@
 class PclEncoder {
 
 public:
-	LaserConfig *lconf;
+	LaserConfig* lconf;
 
-	void encode(Raster *raster, ostream &out);
+	void encode(Raster* raster, ostream &out);
 	void encodeTile(Image* tile, ostream& out);
 
-	PclEncoder(LaserConfig *lconf);
+	PclEncoder(LaserConfig* lconf);
 	virtual ~PclEncoder();
 };
 

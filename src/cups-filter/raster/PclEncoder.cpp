@@ -21,8 +21,7 @@
 #include "boost/format.hpp"
 using boost::format;
 
-PclEncoder::PclEncoder(LaserConfig *lconf) {
-  this->lconf = lconf;
+PclEncoder::PclEncoder(LaserConfig* lconf) : lconf(lconf) {
 }
 
 PclEncoder::~PclEncoder() {
@@ -31,7 +30,7 @@ PclEncoder::~PclEncoder() {
 
 void PclEncoder::encode(Raster* raster, ostream& out) {
   LOG_DEBUG_MSG("Encode raster", raster->tiles.size());
-  list<Image*>::iterator it;
+
   // Raster Orientation
   out << format(R_ORIENTATION) % 0;
   // Raster power
@@ -56,6 +55,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   // start at current position
   out << R_START_AT_POS;
 
+  list<Image*>::iterator it;
   for (it = raster->tiles.begin(); it != raster->tiles.end(); it++) {
     encodeTile(*it, out);
   }
@@ -135,9 +135,7 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
             l = p;
           } else {
             for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p] != buf[p
-                + 1]); p++) {
-              ;
-            }
+                + 1]); p++) {}
 
             pack[n++] = p - l - 1;
             while (l < p) {

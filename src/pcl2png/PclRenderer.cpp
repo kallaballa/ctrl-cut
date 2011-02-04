@@ -67,6 +67,9 @@ char* readPclToken(fstream& rtlfile) {
 }
 
 PclToken* readPclCommand(fstream& rtlfile) {
+  if(!rtlfile.good())
+    return NULL;
+
   const char * signature = "*bW";
   char* token = readPclToken(rtlfile);
   if (token) {
@@ -93,8 +96,8 @@ PclToken* readPclCommand(fstream& rtlfile) {
   return NULL;
 }
 
-int main(int argc, char *argv[]) {
-  fstream rtlfile("test-data/raster/rgb-stripes_600.prn", ios::in
+int mains(int argc, char *argv[]) {
+  fstream rtlfile("rgb-stripes.prn", ios::in
       | ios::binary);
   if (!readMagic(rtlfile)) {
     cerr << "Couldn't read magic" << std::endl;
@@ -134,6 +137,8 @@ int main(int argc, char *argv[]) {
 
   do {
     yCmd = readPclCommand(rtlfile);
+    if(!(yCmd && memcmp(yCmd, "*pY", 3) == 0))
+      continue;
     xCmd = readPclCommand(rtlfile);
     pixlen = readPclCommand(rtlfile);
     bytelen = readPclCommand(rtlfile);
@@ -142,25 +147,27 @@ int main(int argc, char *argv[]) {
     for (int i = 0; bytelen && bytelen->data && (i < bytelen->value); ++i) {
       rl = *bytelen->data++;
 
-      cerr << "rl: " << (int) rl << std::endl;
+
       if (rl > 128) {
         rl = 257 - rl;
+        cerr << "rl: " << (int) rl << std::endl;
         intensity = 255 - *bytelen->data++;
 
         for (int j = 0; j < rl; ++j) {
           if(pixlen->value > 0) {
-            x = off + xCmd->valuef + j;
+            x = off + xCmd->value + j;
           } else {
-            x = -off + xCmd->value - pixlen->value - j - 1;
+            x = xCmd->value - off + (pixlen->value * -1) - j - 1;
           }
           img(x, yCmd->value, 0) = intensity;
           cerr << x << "/" << yCmd->value << "=" << (unsigned int) intensity << "\t";
         }
       } else {
+        cerr << "rl: " << (int) rl << std::endl;
         for (int j = 0; j < rl; ++j) {
           intensity = *bytelen->data++;
-          img(off + xCmd->value + j, yCmd->value, 0) = intensity;
-          ;
+      //    img(off + xCmd->value + j, yCmd->value, 0) = intensity;
+
           cerr << (xCmd->value + j) << "/" << yCmd->value << "="
               << (unsigned int) intensity << "\t";
         }
@@ -168,8 +175,9 @@ int main(int argc, char *argv[]) {
       off += rl;
       cerr << std::endl;
     }
-  } while (xCmd && yCmd && pixlen && bytelen);
-  cerr << "after" << std::endl;
+  } while (rtlfile.good());
+
+  //cerr << "after" << std::endl;
   img.crop(0, height->value -100, width->value, height->value, 1);
   img.save_png("/tmp/rtlrender.png", 1);
   return 0;

@@ -25,7 +25,8 @@ void Raster::addTile(Image* tile) {
   this->tiles.push_back(tile);
 }
 
-Raster *Raster::load(const string &filename) {
+Raster* Raster::load(const string &filename) {
   return new Raster(loadppm(filename));
+
 }
 

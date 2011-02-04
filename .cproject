@@ -25,9 +25,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.694145543" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.63356459" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.918037137" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1759030236" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-DDEBUG=4 -DETLOG -lgs -Wno-format  -W -lm -c -fmessage-length=0 -I/usr/include/X11 -Dcimg_use_xshm -Dcimg_use_xrandr -L/usr/lib/X11 -L/usr/lib/ -lpthread -lX11 -lXext -lXrandr -lcups" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.1759030236" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-I/usr/include/librsvg-2 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/gtk-2.0 -I/usr/include/cairo -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12 -DDEBUG=4 -DETLOG -lgs -Wno-format  -W -lm -c -fmessage-length=0 -I/usr/include/X11 -Dcimg_use_xshm -Dcimg_use_xrandr -L/usr/lib/X11 -L/usr/lib/ -lpthread -lX11 -lXext -lXrandr -lcups" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.624805491" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cups-filter}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1495451413" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -57,7 +57,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|raster/filter|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|raster/filter|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -691,7 +691,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|raster|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|raster|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
