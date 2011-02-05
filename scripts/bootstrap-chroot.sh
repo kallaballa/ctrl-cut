@@ -14,5 +14,3 @@ chrtrun "Install dependencies and build tool chain..."          "apt-get -y --al
 chrtrun "install packages required for testing..."              "apt-get -y --allow-unauthenticated install pkg-config python-minimal xqilla librsvg2-dev libcairo2 unzip"
 chrtrun "Fixing qt lib symlinks"                                "ln -s /usr/lib/libQtCore.so.4 /usr/lib/libQtCore.so; ln -s /usr/lib/libQtGui.so.4 /usr/lib/libQtGui.so"
 
-
-

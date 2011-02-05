@@ -4,7 +4,7 @@
 # only $CHROOT and $MOUNTS are relevant to chrtsetup
 #
 
-CHROOT="$EC_BASE/chroot"
+CHROOT="$CC_BASE/chroot"
 
 #from		to                      fstype  mount-options   do-chroot
 MOUNTS=`echo -e "\
