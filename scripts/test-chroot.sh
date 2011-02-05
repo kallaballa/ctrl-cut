@@ -39,9 +39,7 @@ echo -e "\nDownloading and building..."
 
 # clone ec source and build
 $chrtrun "cd ~/; rm -r ctrl-cut; git clone $CC_GIT_URL; \
-    cd ctrl-cut/; qmake; make; \
-    cd test-code/; qmake passthroughfilter.pro; make; \
-    cd svg2pdf/; make"
+    cd ctrl-cut/; qmake -recursive; make;"
 
 # download and install pysvg 
 $chrtrun "cd /tmp; wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip pysvg-0.2.1.zip; \
@@ -50,5 +48,5 @@ $chrtrun "cd /tmp; wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip
 
 echo -e "\nInstalling passthrough printer"
 # install the printer with passthrough backend
-$chrtrun "cd ~/ctrl-cut; ./ec install lazzzor EpilogLegend36EXT.ppd dump://"
+$chrtrun "cd ~/ctrl-cut; ./cc install lazzzor EpilogLegend36EXT.ppd dump://"
 
