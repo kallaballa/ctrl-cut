@@ -46,8 +46,9 @@ if [ ! $SKIP_BUILD ]; then
     cd ctrl-cut/; qmake -recursive; make;"
 
     # download and install pysvg 
-    $chrtrun "cd /tmp; wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip pysvg-0.2.1.zip; \
-       cd pysvg-0.2.1/; python setup.py install" 
+    $chrtrun "cd /tmp; rm -r pysvg-0.2.1.zip pysvg-0.2.1/; \
+        wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip pysvg-0.2.1.zip; \
+        cd pysvg-0.2.1/; python setup.py install" 
 
     echo -e "\nInstalling passthrough printer"
     # install the printer with passthrough backend
