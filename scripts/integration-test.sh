@@ -6,7 +6,7 @@ CHRTFS="$CC_TEST_CHROOT"
 chrtrun="$CC_SCRIPTS/chrtsetup.sh test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_SCRIPTS/bootstrap-chroot.sh"
 
-while getopts 'c' c
+while getopts 'cs' c
 do
     case $c in
         s) SKIP_BUILD=-s; shift;;
