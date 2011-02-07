@@ -18,5 +18,6 @@ FILTER_PATH="`cups-config --serverbin`/filter"
 BACKEND_PATH="`cups-config --serverbin`/backend"
 
 try "Installing filter binary..." "cp $CC_BINARY $FILTER_PATH/"
-try "Installing dump backend..." "cp $CC_TEST_CODE/dump $BACKEND_PATH ; chmod u+x $BACKEND_PATH/dump"
+try "Installing dump backend..." "cp $CC_TEST_CODE/dump $BACKEND_PATH"
+try "Fixing file permissions..." "chmod u+x $BACKEND_PATH/dump"
 try "Installing printer Name: $PRINTER PPD: $PPDFILE Device:$DEVICEURL..." "lpadmin -p $PRINTER -P $PPDFILE -v $DEVICEURL"
