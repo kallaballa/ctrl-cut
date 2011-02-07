@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! $# -eq 2 ]; then
-    echo "install.sh PRINTERNAME PPDNAME"
+    echo "install.sh PRINTERNAME PPDFILE"
 fi
 
 cd $CC_BASE
@@ -9,7 +9,7 @@ cd $CC_BASE
 . $CC_FUNCTIONS
 
 PRINTER=$1
-PPDNAME=$2
+PPDFILE=$2
 DEVICEURL=$3
 
 try "find cups-config..." "type -p cups-config"
@@ -19,5 +19,5 @@ BACKEND_PATH="`cups-config --serverbin`/backend"
 
 try "Installing filter binary..." "cp $CC_BINARY $FILTER_PATH/"
 try "Installing dump backend..." "cp $CC_TEST_CODE/dump $BACKEND_PATH"
-try "Installing printer..." "/usr/sbin/lpadmin -p \"$PRINTER\" -P \"$CC_PPD_DIR/$PPDNAME\" -v \"$DEVICEURL\""
+try "Installing printer..." "lpadmin -p \"$PRINTER\" -P \"$PPDFILE\" -v \"$DEVICEURL\""
 
