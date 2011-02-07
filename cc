@@ -21,6 +21,8 @@ do
 done
 
 export CC_BASE="`pwd`"
+export CC_PRINTERNAME="lazzzor"
+export CC_PRINTERPPD="EpilogLegend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
 export CC_CHROOT_MIRROR="http://debian.inode.at/debian/"
 export CC_CHROOT_FLAVOUR="squeeze"
