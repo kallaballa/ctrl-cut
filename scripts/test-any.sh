@@ -109,6 +109,12 @@ runtest()
         lenstr="OK"
     fi
     echo -n $lenstr
+
+    scripts/integration-test.sh -s $prnfile 2>> $testcase.log
+    integration="Err"
+    if [ $? == 0 ]; then
+      integration="OK"  
+    fi
   fi
   echo
 }
