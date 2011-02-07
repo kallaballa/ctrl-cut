@@ -52,7 +52,7 @@ if [ ! $SKIP_BUILD ]; then
 
     echo -e "\nInstalling passthrough printer"
     # install the printer with passthrough backend
-    $chrtrun "cd ~/ctrl-cut; ./cc install $CC_PRINTERNAME $CC_PRINTERPPD dump://"
+    $chrtrun "cd ~/ctrl-cut; ./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"
 fi
 
 #test print
