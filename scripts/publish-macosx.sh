@@ -50,5 +50,5 @@ cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root/Ctrl-Cut/lib
 
 rm -r root
 
-hdiutil create Ctrl-Cut.dmg -srcfolder Ctrl-Cut.pkg -format UDZO -volname Ctrl-Cut
+hdiutil create Ctrl-Cut.dmg -ov -srcfolder Ctrl-Cut.pkg -format UDZO -volname Ctrl-Cut
 hdiutil internet-enable -yes -quiet

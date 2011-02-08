@@ -1,0 +1,26 @@
+Preface: Are we ready to release?
+o FIXME: Run all tests etc.
+
+Release checklist:
+o FIXME: Update version numbers
+  ./scripts/public-macosx.sh
+o FIXME: Update release notes
+o git tag "ctrl-cut-$VERSION"
+o Create source package
+  git archive --format=tar ctrl-cut-$VERSION  --prefix=ctrl-cut-$VERSION/ | gzip > ctrl-cut-$VERSION.tar.gz
+
+o Unpack source package and run the rest from there
+  cd <safe location>
+  tar xzf ctrl-cut-$VERSION.tar.gz
+  cd ctrl-cut-$VERSION
+
+o Mac:
+  - ./scripts/publish-macosx.sh
+  - ./cc test-any
+
+o Linux
+  - FIXME: integration tests
+  - FIXME: Create src and binary packages
+
+o FIXME: Upload source and binary packages to download area
+o FIXME: Announce
