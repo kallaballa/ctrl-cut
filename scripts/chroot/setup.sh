@@ -7,7 +7,7 @@ cd $CC_BASE
 while getopts 'c' c
 do
         case $c in
-            p) CLEAR=-c; shift;;
+            c) CLEAR=-c; shift;;
             ?) printUsage; exit 1 ;;
         esac
 done
