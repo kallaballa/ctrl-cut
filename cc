@@ -40,7 +40,7 @@ export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 
 . $CC_FUNCTIONS
 
-[ ! $CC_BASE ] && export CC_BASE="`pwd`"
+verbose "CC_BASE=$CC_BASE"
 verbose "CC_PRINTERNAME=$CC_PRINTERNAME"
 verbose "CC_PRINTERPPD=$CC_PRINTERPPD"
 verbose "CC_TEST_CHROOT=$CC_TEST_CHROOT"
