@@ -34,7 +34,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "cups-string.h"
+
 #ifdef WIN32
 #  include <winsock.h>
 #else
@@ -94,6 +94,9 @@ static int	lpd_queue(const char *hostname, int port, const char *printer,
 			  int manual_copies, int timeout, int contimeout);
 static void	lpd_timeout(int sig);
 static int	lpd_write(int lpd_fd, char *buffer, int length);
+#ifndef HAVE_RRESVPORT_AF
+static int	rresvport_af(int *port, int family);
+#endif /* !HAVE_RRESVPORT_AF */
 static void	sigterm_handler(int sig);
 
 
@@ -133,6 +136,7 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 		timeout,		/* Timeout */
 		contimeout,		/* Connection timeout */
 		copies;			/* Number of copies */
+  struct sigaction action;		/* Actions for POSIX signals */
 
  /*
   * Make sure status messages are not buffered...
@@ -144,8 +148,14 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
   * Ignore SIGPIPE and catch SIGTERM signals...
   */
 
-  sigset(SIGPIPE, SIG_IGN);
-  sigset(SIGTERM, sigterm_handler);
+  memset(&action, 0, sizeof(action));
+  action.sa_handler = SIG_IGN;
+  sigaction(SIGPIPE, &action, NULL);
+
+  sigemptyset(&action.sa_mask);
+  sigaddset(&action.sa_mask, SIGTERM);
+  action.sa_handler = sigterm_handler;
+  sigaction(SIGTERM, &action, NULL);
 
  /*
   * Check command-line...
@@ -153,8 +163,8 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
   if (argc == 1)
   {
-    printf("network lpd-epilog \"Epilog\" \"%s\"\n",
-           _cupsLangString(cupsLangDefault(), _("Epilog LPD")));
+    printf("network lpd \"Unknown\" \"%s\"\n",
+           _cupsLangString(cupsLangDefault(), _("LPD/LPR Host or Printer")));
     return (CUPS_BACKEND_OK);
   }
   else if (argc < 6 || argc > 7)
@@ -404,7 +414,6 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
     http_addrlist_t	*addrlist;	/* Address list */
 
-
     fputs("STATE: +connecting-to-device\n", stderr);
     fprintf(stderr, "DEBUG: Looking up \"%s\"...\n", hostname);
 
@@ -422,6 +431,9 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
     }
 
     _cupsLangPuts(stderr, _("INFO: Copying print data...\n"));
+
+    backendRunLoop(-1, fd, -1 , &(addrlist->addr), 0, 0, 
+		   backendNetworkSideCB);
 
     httpAddrFreeList(addrlist);
   }
@@ -625,12 +637,17 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
   size_t		nbytes;		/* Number of bytes written */
   off_t			tbytes;		/* Total bytes written */
   char			buffer[32768];	/* Output buffer */
+  struct sigaction	action;		/* Actions for POSIX signals */
 
  /*
   * Setup an alarm handler for timeouts...
   */
 
-  sigset(SIGALRM, lpd_timeout);
+  memset(&action, 0, sizeof(action));
+
+  sigemptyset(&action.sa_mask);
+  action.sa_handler = lpd_timeout;
+  sigaction(SIGALRM, &action, NULL);
 
  /*
   * Find the printer...
@@ -698,7 +715,11 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       else if (lport < 1)
 	lport = 1023;
 
+#ifdef HAVE_GETEUID
       if (geteuid() || !reserve)
+#else
+      if (getuid() || !reserve)
+#endif /* HAVE_GETEUID */
       {
        /*
 	* Just create a regular socket...
@@ -926,7 +947,6 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
     if (order == ORDER_CONTROL_DATA)
     {
-
      /*
       * Send the control file...
       */
@@ -975,7 +995,6 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
     if (status == 0)
     {
-
      /*
       * Send the print file...
       */
@@ -1058,13 +1077,11 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 	                _("WARNING: Remote host did not accept data file (%d). This is a known Epilog issue, so we close our eyes and look in opposite direction.\n"), status);
         status = 0;
       }
-      else
-	_cupsLangPuts(stderr, _("INFO: Data file sent successfully\n"));
+      _cupsLangPuts(stderr, _("INFO: Data file sent successfully\n"));
     }
 
     if (status == 0 && order == ORDER_DATA_CONTROL)
     {
-
      /*
       * Send control file...
       */
@@ -1146,6 +1163,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 static void
 lpd_timeout(int sig)			/* I - Signal number */
 {
+  (void)sig;
 }
 
 
@@ -1180,6 +1198,95 @@ lpd_write(int  lpd_fd,			/* I - LPD socket */
   else
     return (length);
 }
+
+
+#ifndef HAVE_RRESVPORT_AF
+/*
+ * 'rresvport_af()' - A simple implementation of rresvport_af().
+ */
+
+static int				/* O  - Socket or -1 on error */
+rresvport_af(int *port,			/* IO - Port number to bind to */
+             int family)		/* I  - Address family */
+{
+  http_addr_t	addr;			/* Socket address */
+  int		fd;			/* Socket file descriptor */
+
+
+ /*
+  * Try to create an IPv4 socket...
+  */
+
+  if ((fd = socket(family, SOCK_STREAM, 0)) < 0)
+    return (-1);
+
+ /*
+  * Initialize the address buffer...
+  */
+
+  memset(&addr, 0, sizeof(addr));
+  addr.addr.sa_family = family;
+
+ /*
+  * Try to bind the socket to a reserved port...
+  */
+
+  while (*port > 511)
+  {
+   /*
+    * Set the port number...
+    */
+
+#  ifdef AF_INET6
+    if (family == AF_INET6)
+      addr.ipv6.sin6_port = htons(*port);
+    else
+#  endif /* AF_INET6 */
+    addr.ipv4.sin_port = htons(*port);
+
+   /*
+    * Try binding the port to the socket; return if all is OK...
+    */
+
+    if (!bind(fd, (struct sockaddr *)&addr, sizeof(addr)))
+      return (fd);
+
+   /*
+    * Stop if we have any error other than "address already in use"...
+    */
+
+    if (errno != EADDRINUSE)
+    {
+#  ifdef WIN32
+      closesocket(fd);
+#  else
+      close(fd);
+#  endif /* WIN32 */
+
+      return (-1);
+    }
+
+   /*
+    * Try the next port...
+    */
+
+    (*port)--;
+  }
+
+ /*
+  * Wasn't able to bind to a reserved port, so close the socket and return
+  * -1...
+  */
+
+#  ifdef WIN32
+  closesocket(fd);
+#  else
+  close(fd);
+#  endif /* WIN32 */
+
+  return (-1);
+}
+#endif /* !HAVE_RRESVPORT_AF */
 
 
 /*

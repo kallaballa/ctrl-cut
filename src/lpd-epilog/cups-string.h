@@ -1,9 +1,9 @@
 /*
- * "$Id: string.h 8635 2009-05-14 21:18:35Z mike $"
+ * "$Id: string.h 9261 2010-08-13 21:54:11Z mike $"
  *
- *   String definitions for the Common UNIX Printing System (CUPS).
+ *   String definitions for CUPS.
  *
- *   Copyright 2007-2009 by Apple Inc.
+ *   Copyright 2007-2010 by Apple Inc.
  *   Copyright 1997-2006 by Easy Software Products.
  *
  *   These coded instructions, statements, and computer programs are the
@@ -27,12 +27,21 @@
 #  include <stdarg.h>
 #  include <ctype.h>
 #  include <locale.h>
+#  include <errno.h>
 
 #  include <config.h>
 
+#  ifdef HAVE_STRING_H
 #    include <string.h>
+#  endif /* HAVE_STRING_H */
 
+#  ifdef HAVE_STRINGS_H
 #    include <strings.h>
+#  endif /* HAVE_STRINGS_H */
+
+#  ifdef HAVE_BSTRING_H
+#    include <bstring.h>
+#  endif /* HAVE_BSTRING_H */
 
 
 /*
@@ -71,10 +80,81 @@ typedef struct _cups_sp_item_s		/**** String Pool Item ****/
 
 
 /*
+ * Replacements for the ctype macros that are not affected by locale, since we
+ * really only care about testing for ASCII characters when parsing files, etc.
+ * These are used only within libcups since the rest of CUPS doesn't call
+ * setlocale() for LC_CTYPE and doesn't have to worry about third-party
+ * libraries doing so (and if they do that is a bug: NetSNMP, I'm looking at
+ * you!)
+ *
+ * The _CUPS_INLINE definition controls whether we get an inline function body,
+ * and external function body, or an external definition.
+ */
+
+#  if defined(__GNUC__) || __STDC_VERSION__ >= 199901L
+#    define _CUPS_INLINE static inline
+#  elif defined(_MSC_VER)
+#    define _CUPS_INLINE static __inline
+#  elif defined(_CUPS_STRING_C_)
+#    define _CUPS_INLINE
+#  endif /* __GNUC__ || __STDC_VERSION__ */
+
+#  ifdef _CUPS_INLINE
+_CUPS_INLINE int			/* O - 1 on match, 0 otherwise */
+_cups_isalnum(int ch)			/* I - Character to test */
+{
+  return ((ch >= '0' && ch <= '9') ||
+          (ch >= 'A' && ch <= 'Z') ||
+          (ch >= 'a' && ch <= 'z'));
+}
+
+_CUPS_INLINE int			/* O - 1 on match, 0 otherwise */
+_cups_isalpha(int ch)			/* I - Character to test */
+{
+  return ((ch >= 'A' && ch <= 'Z') ||
+          (ch >= 'a' && ch <= 'z'));
+}
+
+_CUPS_INLINE int			/* O - 1 on match, 0 otherwise */
+_cups_isspace(int ch)			/* I - Character to test */
+{
+  return (ch == ' ' || ch == '\f' || ch == '\n' || ch == '\r' || ch == '\t' ||
+          ch == '\v');
+}
+
+_CUPS_INLINE int			/* O - 1 on match, 0 otherwise */
+_cups_isupper(int ch)			/* I - Character to test */
+{
+  return (ch >= 'A' && ch <= 'Z');
+}
+#  else
+extern int _cups_isalnum(int ch);
+extern int _cups_isalpha(int ch);
+extern int _cups_isspace(int ch);
+extern int _cups_isupper(int ch);
+#  endif /* _CUPS_INLINE */
+
+
+/*
  * Prototypes...
  */
 
 extern void	_cups_strcpy(char *dst, const char *src);
+
+#  ifndef HAVE_STRDUP
+extern char	*_cups_strdup(const char *);
+#    define strdup _cups_strdup
+#  endif /* !HAVE_STRDUP */
+
+#  ifndef HAVE_STRCASECMP
+extern int	_cups_strcasecmp(const char *, const char *);
+#    define strcasecmp _cups_strcasecmp
+#  endif /* !HAVE_STRCASECMP */
+
+#  ifndef HAVE_STRNCASECMP
+extern int	_cups_strncasecmp(const char *, const char *, size_t n);
+#    define strncasecmp _cups_strncasecmp
+#  endif /* !HAVE_STRNCASECMP */
 
 #  ifndef HAVE_STRLCAT
 extern size_t _cups_strlcat(char *, const char *, size_t);
@@ -85,6 +165,20 @@ extern size_t _cups_strlcat(char *, const char *, size_t);
 extern size_t _cups_strlcpy(char *, const char *, size_t);
 #    define strlcpy _cups_strlcpy
 #  endif /* !HAVE_STRLCPY */
+
+#  ifndef HAVE_SNPRINTF
+extern int	_cups_snprintf(char *, size_t, const char *, ...)
+#    ifdef __GNUC__
+__attribute__ ((__format__ (__printf__, 3, 4)))
+#    endif /* __GNUC__ */
+;
+#    define snprintf _cups_snprintf
+#  endif /* !HAVE_SNPRINTF */
+
+#  ifndef HAVE_VSNPRINTF
+extern int	_cups_vsnprintf(char *, size_t, const char *, va_list);
+#    define vsnprintf _cups_vsnprintf
+#  endif /* !HAVE_VSNPRINTF */
 
 /*
  * String pool functions...
@@ -118,5 +212,5 @@ extern double	_cupsStrScand(const char *buf, char **bufptr,
 #endif /* !_CUPS_STRING_H_ */
 
 /*
- * End of "$Id: string.h 8635 2009-05-14 21:18:35Z mike $".
+ * End of "$Id: string.h 9261 2010-08-13 21:54:11Z mike $".
  */
