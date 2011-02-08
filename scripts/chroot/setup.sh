@@ -12,22 +12,22 @@ do
         esac
 done
 
-if [ $CLEAR ]; then
-    cd $CC_BASE/..
-
-    try "Clear ctrl-cut"        "rm -r $CC_BASE"
-    try "Clone"                 "git clone $CC_GIT_URL"
-    cd /tmp
-    try "Download pysvg"        "wget $CC_PYSVG_URL"
-    try "Unpack"                "unzip pysvg-*.zip"
-    cd pysvg-*
-    try "Install"               "python setup.py install"
-
-    cd $CC_BASE
+cd ..
+[ $CLEAR ] && try "Clear build directory" "rm -r $CC_BASE"
+if [ -d $CC_BASE ]; then 
+    try "Pull ctrl-cut"         "git --git-dir=$CC_BASE pull"
 else
-    try "Pull ctrl-cut"         "git pull"
+    try "Clone" "git clone $CC_GIT_URL"
 fi
 
+cd /tmp
+try "Download pysvg"        "wget $CC_PYSVG_URL"
+try "Unpack"                "unzip pysvg-*.zip"
+cd pysvg-*
+try "Install"               "python setup.py install"
+try "Clean up"              "rm -r pysvg-*"
+
+cd $CC_BASE
 try "Generate Makefile"         "qmake -recursive"
 try "Build"                     "make"
 try "Installing printer"        "./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"

@@ -4,8 +4,11 @@ VERBOSE=
 POPULATE=
 PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
-chrtrun="$CC_SCRIPTS/chrtsetup.sh test-$CC_CHROOT_FLAVOUR --run "
-bootstrap="$CC_SCRIPTS/bootstrap-chroot.sh"
+CC_ENV="$CC_BASE/cc"
+chrtrun="$CC_ENV chrtsetup test-$CC_CHROOT_FLAVOUR --run "
+bootstrap="$CC_ENV bootstrap-chroot"
+setup="$CC_ENV chroot/setup.sh"
+testany="$CC_ENV test-any"
 
 while getopts 'cs' c
 do
@@ -41,24 +44,11 @@ populate
 
 
 if [ ! $SKIP_BUILD ]; then 
-    echo -e "\nDownloading and building..."
-
-    # clone ec source and build
-    $chrtrun "cd ~/; rm -r ctrl-cut; git clone $CC_GIT_URL; \
-    cd ctrl-cut/; qmake -recursive; make;"
-
-    # download and install pysvg 
-    $chrtrun "cd /tmp; rm -r pysvg-0.2.1.zip pysvg-0.2.1/; \
-        wget http://pysvg.googlecode.com/files/pysvg-0.2.1.zip; unzip pysvg-0.2.1.zip; \
-        cd pysvg-0.2.1/; python setup.py install" 
-
-    echo -e "\nInstalling passthrough printer"
-    # install the printer with passthrough backend
-    $chrtrun "cd ~/ctrl-cut; ./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"
+    $chrtrun "$setup"
 fi
 
 #run tests
-$chrtrun "cd ~/ctrl-cut; ./cc test-any"
+$chrtrun "$testany"
 
 #test print
 $chrtrun "lp -d $CC_PRINTERNAME $TEST_JOB"
