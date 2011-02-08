@@ -10,7 +10,7 @@ PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
 chrtrun="$CC_BASE/cc chrtsetup test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_BASE/cc bootstrap-chroot"
-setup="$CC_CHROOT_BUILDDIR/scripts/chroot/setup -c $CC_CHROOT_BUILDDIR"
+setup="$CC_CHROOT_BUILDDIR/scripts/chroot/setup.sh -c $CC_CHROOT_BUILDDIR"
 testany="$CC_CHROOT_BUILDDIR/cc test-any"
 
 while getopts 'pcs' c
