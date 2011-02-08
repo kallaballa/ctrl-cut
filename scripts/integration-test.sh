@@ -9,7 +9,7 @@ POPULATE=
 PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
 chrtrun="$CC_BASE/cc chrtsetup test-$CC_CHROOT_FLAVOUR --run "
-bootstrap="$CC_CHROOT_BUILDDIR/cc bootstrap-chroot"
+bootstrap="$CC_BASE/cc bootstrap-chroot"
 setup="$CC_CHROOT_BUILDDIR/cc chroot/setup -c $CC_CHROOT_BUILDDIR"
 testany="$CC_CHROOT_BUILDDIR/cc test-any"
 
