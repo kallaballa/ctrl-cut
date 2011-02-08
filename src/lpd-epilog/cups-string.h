@@ -31,17 +31,9 @@
 
 #  include <config.h>
 
-#  ifdef HAVE_STRING_H
 #    include <string.h>
-#  endif /* HAVE_STRING_H */
 
-#  ifdef HAVE_STRINGS_H
 #    include <strings.h>
-#  endif /* HAVE_STRINGS_H */
-
-#  ifdef HAVE_BSTRING_H
-#    include <bstring.h>
-#  endif /* HAVE_BSTRING_H */
 
 
 /*
@@ -141,21 +133,6 @@ extern int _cups_isupper(int ch);
 
 extern void	_cups_strcpy(char *dst, const char *src);
 
-#  ifndef HAVE_STRDUP
-extern char	*_cups_strdup(const char *);
-#    define strdup _cups_strdup
-#  endif /* !HAVE_STRDUP */
-
-#  ifndef HAVE_STRCASECMP
-extern int	_cups_strcasecmp(const char *, const char *);
-#    define strcasecmp _cups_strcasecmp
-#  endif /* !HAVE_STRCASECMP */
-
-#  ifndef HAVE_STRNCASECMP
-extern int	_cups_strncasecmp(const char *, const char *, size_t n);
-#    define strncasecmp _cups_strncasecmp
-#  endif /* !HAVE_STRNCASECMP */
-
 #  ifndef HAVE_STRLCAT
 extern size_t _cups_strlcat(char *, const char *, size_t);
 #    define strlcat _cups_strlcat
@@ -165,20 +142,6 @@ extern size_t _cups_strlcat(char *, const char *, size_t);
 extern size_t _cups_strlcpy(char *, const char *, size_t);
 #    define strlcpy _cups_strlcpy
 #  endif /* !HAVE_STRLCPY */
-
-#  ifndef HAVE_SNPRINTF
-extern int	_cups_snprintf(char *, size_t, const char *, ...)
-#    ifdef __GNUC__
-__attribute__ ((__format__ (__printf__, 3, 4)))
-#    endif /* __GNUC__ */
-;
-#    define snprintf _cups_snprintf
-#  endif /* !HAVE_SNPRINTF */
-
-#  ifndef HAVE_VSNPRINTF
-extern int	_cups_vsnprintf(char *, size_t, const char *, va_list);
-#    define vsnprintf _cups_vsnprintf
-#  endif /* !HAVE_VSNPRINTF */
 
 /*
  * String pool functions...

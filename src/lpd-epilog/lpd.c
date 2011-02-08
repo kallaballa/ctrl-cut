@@ -21,7 +21,6 @@
  *   lpd_queue()       - Queue a file using the Line Printer Daemon protocol.
  *   lpd_timeout()     - Handle timeout alarms...
  *   lpd_write()       - Write a buffer of data to an LPD server.
- *   rresvport_af()    - A simple implementation of rresvport_af().
  *   sigterm_handler() - Handle 'terminate' signals that stop the backend.
  */
 
@@ -94,9 +93,6 @@ static int	lpd_queue(const char *hostname, int port, const char *printer,
 			  int manual_copies, int timeout, int contimeout);
 static void	lpd_timeout(int sig);
 static int	lpd_write(int lpd_fd, char *buffer, int length);
-#ifndef HAVE_RRESVPORT_AF
-static int	rresvport_af(int *port, int family);
-#endif /* !HAVE_RRESVPORT_AF */
 static void	sigterm_handler(int sig);
 
 
@@ -715,11 +711,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       else if (lport < 1)
 	lport = 1023;
 
-#ifdef HAVE_GETEUID
       if (geteuid() || !reserve)
-#else
-      if (getuid() || !reserve)
-#endif /* HAVE_GETEUID */
       {
        /*
 	* Just create a regular socket...
@@ -1010,11 +1002,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       }
 
       _cupsLangPrintf(stderr,
-#ifdef HAVE_LONG_LONG
 		      _("INFO: Sending data file (%lld bytes)\n"),
-#else
-		      _("INFO: Sending data file (%ld bytes)\n"),
-#endif /* HAVE_LONG_LONG */
 		      CUPS_LLCAST filestats.st_size);
 
       tbytes = 0;
@@ -1198,96 +1186,6 @@ lpd_write(int  lpd_fd,			/* I - LPD socket */
   else
     return (length);
 }
-
-
-#ifndef HAVE_RRESVPORT_AF
-/*
- * 'rresvport_af()' - A simple implementation of rresvport_af().
- */
-
-static int				/* O  - Socket or -1 on error */
-rresvport_af(int *port,			/* IO - Port number to bind to */
-             int family)		/* I  - Address family */
-{
-  http_addr_t	addr;			/* Socket address */
-  int		fd;			/* Socket file descriptor */
-
-
- /*
-  * Try to create an IPv4 socket...
-  */
-
-  if ((fd = socket(family, SOCK_STREAM, 0)) < 0)
-    return (-1);
-
- /*
-  * Initialize the address buffer...
-  */
-
-  memset(&addr, 0, sizeof(addr));
-  addr.addr.sa_family = family;
-
- /*
-  * Try to bind the socket to a reserved port...
-  */
-
-  while (*port > 511)
-  {
-   /*
-    * Set the port number...
-    */
-
-#  ifdef AF_INET6
-    if (family == AF_INET6)
-      addr.ipv6.sin6_port = htons(*port);
-    else
-#  endif /* AF_INET6 */
-    addr.ipv4.sin_port = htons(*port);
-
-   /*
-    * Try binding the port to the socket; return if all is OK...
-    */
-
-    if (!bind(fd, (struct sockaddr *)&addr, sizeof(addr)))
-      return (fd);
-
-   /*
-    * Stop if we have any error other than "address already in use"...
-    */
-
-    if (errno != EADDRINUSE)
-    {
-#  ifdef WIN32
-      closesocket(fd);
-#  else
-      close(fd);
-#  endif /* WIN32 */
-
-      return (-1);
-    }
-
-   /*
-    * Try the next port...
-    */
-
-    (*port)--;
-  }
-
- /*
-  * Wasn't able to bind to a reserved port, so close the socket and return
-  * -1...
-  */
-
-#  ifdef WIN32
-  closesocket(fd);
-#  else
-  close(fd);
-#  endif /* WIN32 */
-
-  return (-1);
-}
-#endif /* !HAVE_RRESVPORT_AF */
-
 
 /*
  * 'sigterm_handler()' - Handle 'terminate' signals that stop the backend.
