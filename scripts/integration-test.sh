@@ -8,7 +8,7 @@ VERBOSE=
 POPULATE=
 PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
-CC_ENV="$CC_BASE/cc"
+CC_ENV="$CC_CHROOT_BUILDDIR/cc"
 chrtrun="$CC_ENV chrtsetup test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_ENV bootstrap-chroot"
 setup="$CC_ENV chroot/setup -c $CC_CHROOT_BUILDDIR"
@@ -39,7 +39,7 @@ function populate() {
         echo -e "\nChroot already populated $CHRTFS"
     fi
 
-    cd $BASEDIR
+    cd $CC_BASE
 }
 
 populate
