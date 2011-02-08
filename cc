@@ -20,6 +20,7 @@ do
     esac
 done
 
+[ ! $CUPS_SERVER_BIN ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
 [ ! $CC_BASE ] && export CC_BASE="`pwd`"
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="EpilogLegend36EXT.ppd"
