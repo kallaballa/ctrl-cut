@@ -26,7 +26,7 @@ FILTER_PATH="`cups-config --serverbin`/filter"
 BACKEND_PATH="`cups-config --serverbin`/backend"
 
 try "Install filter binary" "cp $CC_BINARY $FILTER_PATH/"
-try "Install lpd backend" "cp $CC_BASE/src/lpd-epilog/lpd $BACKEND_PATH"
+try "Install lpd backend" "cp $CC_BASE/src/lpd-epilog/lpd-epilog $BACKEND_PATH"
 #try "Installing dump backend" "cp $CC_TEST_CODE/dump $BACKEND_PATH"
 #try "Fixing file permissions" "chmod u+x $BACKEND_PATH/dump"
 [ $PRINTER_INSTALL ] && try "Installing printer Name: $PRINTER PPD: $PPDFILE Device:$DEVICEURL" "lpadmin -E -p $PRINTER -P $PPDFILE -v $DEVICEURL"
