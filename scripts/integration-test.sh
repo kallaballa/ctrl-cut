@@ -1,5 +1,9 @@
 #!/bin/bash
 
+cd $CC_BASE
+
+. $CC_FUNCTIONS
+
 VERBOSE=
 POPULATE=
 PURGE_JOBS_TIMEOUT=
@@ -7,7 +11,7 @@ CHRTFS="$CC_TEST_CHROOT"
 CC_ENV="$CC_BASE/cc"
 chrtrun="$CC_ENV chrtsetup test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_ENV bootstrap-chroot"
-setup="$CC_ENV chroot/setup -c"
+setup="$CC_ENV chroot/setup -c $CC_CHROOT_BUILDDIR"
 testany="$CC_ENV test-any"
 
 while getopts 'pcs' c
@@ -24,15 +28,13 @@ TEST_JOB=$1
 
 function populate() {
     if [ $CLEAR ]; then
-        echo -e "\nClearing chroot $CHRTFS"
-        rm -r $CHRTFS
+        try "Clear chroot $CHRTFS" "rm -r $CHRTFS"
     fi
 
     if [ ! -d $CHRTFS ]; then
-        echo -e "\nPopulating chroot $CHRTFS"
-        mkdir $CHRTFS
+        try "Create $CHRTFS" "mkdir $CHRTFS"
         cd $CHRTFS
-        $bootstrap
+        try "Bootstrap" "$bootstrap"
     else
         echo -e "\nChroot already populated $CHRTFS"
     fi
@@ -54,6 +56,6 @@ $chrtrun "$testany"
 $chrtrun "lp -d $CC_PRINTERNAME $TEST_JOB"
 
 if [ $PURGE_JOBS_TIMEOUT ]; then
-    sleep $PURGE_JOBS_TIMEOUT
+    try "Waiting for $PURGE_JOBS_TIMEOUT sec before purging jobs" "sleep $PURGE_JOBS_TIMEOUT"
     $chrtrun "lprm -P $CC_PRINTERNAME -"
 fi
