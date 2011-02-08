@@ -8,11 +8,10 @@ VERBOSE=
 POPULATE=
 PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
-CC_ENV="$CC_CHROOT_BUILDDIR/cc"
-chrtrun="$CC_ENV chrtsetup test-$CC_CHROOT_FLAVOUR --run "
-bootstrap="$CC_ENV bootstrap-chroot"
-setup="$CC_ENV chroot/setup -c $CC_CHROOT_BUILDDIR"
-testany="$CC_ENV test-any"
+chrtrun="$CC_BASE/cc chrtsetup test-$CC_CHROOT_FLAVOUR --run "
+bootstrap="$CC_CHROOT_BUILDDIR/cc bootstrap-chroot"
+setup="$CC_CHROOT_BUILDDIR/cc chroot/setup -c $CC_CHROOT_BUILDDIR"
+testany="$CC_CHROOT_BUILDDIR/cc test-any"
 
 while getopts 'pcs' c
 do
