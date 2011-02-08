@@ -19,32 +19,36 @@ INSTALL_CTRLCUT_DIR=${INSTALL_PRINTERS_DIR}/Ctrl-Cut
 INSTALL_FILTER_DIR=/usr/libexec/cups/filter
 INSTALL_BACKEND_DIR=/usr/libexec/cups/backend
 
-EXECUTABLE=src/cups-filter/ctrl-cut
+FILTER_EXE=src/cups-filter/ctrl-cut
+BACKEND_EXE=src/lpd-epilog/lpd-epilog
 
-echo "Sanity check of the executable..."
-DYLD_LIBRARY_PATH=${MACOSX_DEPLOY_DIR}/lib `dirname $0`/macosx-sanity-check.py $EXECUTABLE
+echo "Sanity check of the executables..."
+echo `basename $FILTER_EXE`
+DYLD_LIBRARY_PATH=${MACOSX_DEPLOY_DIR}/lib `dirname $0`/macosx-sanity-check.py $FILTER_EXE
+if [[ $? != 0 ]]; then
+  exit 1
+fi
+echo `basename $BACKEND_EXE`
+DYLD_LIBRARY_PATH=${MACOSX_DEPLOY_DIR}/lib `dirname $0`/macosx-sanity-check.py $BACKEND_EXE
 if [[ $? != 0 ]]; then
   exit 1
 fi
 
 echo "Building package..."
 # Point the executable to the installed location of the libraries
-install_name_tool -change libgs.9.00.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.00.dylib $EXECUTABLE
+install_name_tool -change libgs.9.00.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.00.dylib $FILTER_EXE
 
 # Copy files to folder structure
 rm -rf root
-mkdir -p root${INSTALL_CTRLCUT_DIR}/Icons
-cp images/EpilogLegend36EXT.icns root${INSTALL_CTRLCUT_DIR}/Icons
-mkdir -p root${INSTALL_CTRLCUT_DIR}/lib
-cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root${INSTALL_CTRLCUT_DIR}/lib
-mkdir -p root${INSTALL_PRINTERS_DIR}/PPDs/Contents/Resources
-cp etc/ppd/EpilogLegend36EXT.ppd root${INSTALL_PRINTERS_DIR}/PPDs/Contents/Resources
-mkdir -p root${INSTALL_FILTER_DIR}
-cp $EXECUTABLE root${INSTALL_FILTER_DIR}
-mkdir -p root${INSTALL_BACKEND_DIR}
-cp src/lpd-epilog/lpd-epilog root${INSTALL_BACKEND_DIR}
+mkdir -p root/Ctrl-Cut/Icons
+cp images/EpilogLegend36EXT.icns root/Ctrl-Cut/Icons
+mkdir -p root/Ctrl-Cut/lib
+cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root/Ctrl-Cut/lib
 
 # Build package
 /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut.pkg
 
 rm -r root
+
+hdiutil create Ctrl-Cut.dmg -srcfolder Ctrl-Cut.pkg -format UDZO -volname Ctrl-Cut
+hdiutil internet-enable -yes -quiet
