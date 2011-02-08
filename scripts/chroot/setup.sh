@@ -47,10 +47,10 @@ try "Download pysvg" "wget $CC_PYSVG_URL"
 try "Unpack" "unzip pysvg-*.zip"
 cd pysvg-*
 try "Install" "python setup.py install"
-try "Clean up" "rm -r pysvg-*"
+try "Clean up" "rm -r /tmp/pysvg-*"
 
 cd $BUILD_DIR
-. ./cc
+CC_BASE=$BUILD_DIR ./cc
 try "Generate Makefile" "qmake -recursive"
 try "Build" "make"
 try "Installing printer" "./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"
