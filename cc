@@ -20,7 +20,7 @@ do
     esac
 done
 
-export CC_BASE="`pwd`"
+[ ! $CC_BASE ] && export CC_BASE="`pwd`"
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="EpilogLegend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
