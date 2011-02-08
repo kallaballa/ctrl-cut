@@ -14,7 +14,7 @@ export RASTER_OFF="y"
 [ $# != 1 ] && error "Usage: $0 ps-file" 1
 file=$1
 
-try "locating cups-config..." "type cups-config" 
+try "locating cups-config" "type cups-config" 
 
 export CHARSET=utf-8
 export CONTENT_TYPE=application/pdf

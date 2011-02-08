@@ -6,7 +6,7 @@ VERSION=`date "+%Y.%m.%d"`
 # This is the same location as DEPLOYDIR in macosx-build-dependencies.sh
 export MACOSX_DEPLOY_DIR=$PWD/../libraries/install
 
-echo "Building ctrl-cut-$VERSION..."
+echo "Building ctrl-cut-$VERSION"
 qmake -recursive VERSION=$VERSION CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 make -s clean
 make -j4
@@ -34,7 +34,7 @@ if [[ $? != 0 ]]; then
   exit 1
 fi
 
-echo "Building package..."
+echo "Building package"
 # Point the executable to the installed location of the libraries
 install_name_tool -change libgs.9.00.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.00.dylib $FILTER_EXE
 

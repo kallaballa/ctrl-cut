@@ -2,6 +2,7 @@
 
 VERBOSE=
 POPULATE=
+PURGE_JOBS_TIMEOUT=
 CHRTFS="$CC_TEST_CHROOT"
 chrtrun="$CC_SCRIPTS/chrtsetup.sh test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_SCRIPTS/bootstrap-chroot.sh"
@@ -9,6 +10,7 @@ bootstrap="$CC_SCRIPTS/bootstrap-chroot.sh"
 while getopts 'cs' c
 do
     case $c in
+        p) PURGE_JOBS_TIMEOUT="$2"; shift;;
         s) SKIP_BUILD=-s; shift;;
         c) CLEAR=-c ; shift;;
         ?) printUsage; exit 1 ;;

@@ -15,7 +15,7 @@ function error {
 
 function try { 
     errcode=0; 
-    echo -n "$1 " 1>&2; 
+    echo -n "$1... " 1>&2; 
     shift;
 
     verbose $@; $@ 1>&2;
