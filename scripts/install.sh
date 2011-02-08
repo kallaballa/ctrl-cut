@@ -12,7 +12,8 @@ PRINTER=$1
 PPDFILE=$2
 DEVICEURL=$3
 
-try "find cups-config..." "type -p cups-config"
+a
+try "find cups-config" "type -p cups-config 1> /dev/null"
 
 FILTER_PATH="`cups-config --serverbin`/filter"
 BACKEND_PATH="`cups-config --serverbin`/backend"
