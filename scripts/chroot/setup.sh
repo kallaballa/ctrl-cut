@@ -34,11 +34,11 @@ done
 
 BUILD_DIR=$1
 
-[ $CLEAR ] && try "Clear build directory" "rm -r $BUILD_DIR"
+[ "$CLEAR" == "-c" -a -d $BUILD_DIR ] && try "Clear build directory" "rm -r $BUILD_DIR"
 if [ -d $BUILD_DIR ]; then 
     try "Pull" "git --git-dir=$BUILD_DIR pull"
 else
-    try "Clone" "git --git-dir=$BUILD_DIR clone $CC_GIT_URL"
+    try "Clone" "git --git-dir=`dirname $BUILD_DIR` clone $CC_GIT_URL"
 fi
 
 cd /tmp
