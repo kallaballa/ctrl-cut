@@ -10,7 +10,7 @@ bootstrap="$CC_ENV bootstrap-chroot"
 setup="$CC_ENV chroot/setup -c"
 testany="$CC_ENV test-any"
 
-while getopts 'cs' c
+while getopts 'pcs' c
 do
     case $c in
         p) PURGE_JOBS_TIMEOUT="$2"; shift;;
@@ -53,3 +53,7 @@ $chrtrun "$testany"
 #test print
 $chrtrun "lp -d $CC_PRINTERNAME $TEST_JOB"
 
+if [ $PURGE_JOBS_TIMEOUT ]; then
+    sleep $PURGE_JOBS_TIMEOUT
+    $chrtrun "lprm -P $CC_PRINTERNAME -"
+fi
