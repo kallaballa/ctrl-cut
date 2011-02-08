@@ -28,9 +28,10 @@
 #  include "ppd-private.h"
 #  include "debug.h"
 #  include "i18n.h"
+#  include "snmp-private.h"
 #  include <stdlib.h>
 #  include <errno.h>
-#  include "string.h"
+#  include "cups-string.h"
 #  include <signal.h>
 
 #  ifdef __linux

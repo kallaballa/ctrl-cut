@@ -21,7 +21,6 @@
  *   lpd_queue()       - Queue a file using the Line Printer Daemon protocol.
  *   lpd_timeout()     - Handle timeout alarms...
  *   lpd_write()       - Write a buffer of data to an LPD server.
- *   rresvport_af()    - A simple implementation of rresvport_af().
  *   sigterm_handler() - Handle 'terminate' signals that stop the backend.
  */
 
@@ -34,7 +33,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "cups-string.h"
+
 #ifdef WIN32
 #  include <winsock.h>
 #else
@@ -133,6 +132,7 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 		timeout,		/* Timeout */
 		contimeout,		/* Connection timeout */
 		copies;			/* Number of copies */
+  struct sigaction action;		/* Actions for POSIX signals */
 
  /*
   * Make sure status messages are not buffered...
@@ -144,8 +144,14 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
   * Ignore SIGPIPE and catch SIGTERM signals...
   */
 
-  sigset(SIGPIPE, SIG_IGN);
-  sigset(SIGTERM, sigterm_handler);
+  memset(&action, 0, sizeof(action));
+  action.sa_handler = SIG_IGN;
+  sigaction(SIGPIPE, &action, NULL);
+
+  sigemptyset(&action.sa_mask);
+  sigaddset(&action.sa_mask, SIGTERM);
+  action.sa_handler = sigterm_handler;
+  sigaction(SIGTERM, &action, NULL);
 
  /*
   * Check command-line...
@@ -153,8 +159,8 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
   if (argc == 1)
   {
-    printf("network lpd-epilog \"Epilog\" \"%s\"\n",
-           _cupsLangString(cupsLangDefault(), _("Epilog LPD")));
+    printf("network lpd \"Unknown\" \"%s\"\n",
+           _cupsLangString(cupsLangDefault(), _("LPD/LPR Host or Printer")));
     return (CUPS_BACKEND_OK);
   }
   else if (argc < 6 || argc > 7)
@@ -404,7 +410,6 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
     http_addrlist_t	*addrlist;	/* Address list */
 
-
     fputs("STATE: +connecting-to-device\n", stderr);
     fprintf(stderr, "DEBUG: Looking up \"%s\"...\n", hostname);
 
@@ -422,6 +427,9 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
     }
 
     _cupsLangPuts(stderr, _("INFO: Copying print data...\n"));
+
+    backendRunLoop(-1, fd, -1 , &(addrlist->addr), 0, 0, 
+		   backendNetworkSideCB);
 
     httpAddrFreeList(addrlist);
   }
@@ -625,12 +633,17 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
   size_t		nbytes;		/* Number of bytes written */
   off_t			tbytes;		/* Total bytes written */
   char			buffer[32768];	/* Output buffer */
+  struct sigaction	action;		/* Actions for POSIX signals */
 
  /*
   * Setup an alarm handler for timeouts...
   */
 
-  sigset(SIGALRM, lpd_timeout);
+  memset(&action, 0, sizeof(action));
+
+  sigemptyset(&action.sa_mask);
+  action.sa_handler = lpd_timeout;
+  sigaction(SIGALRM, &action, NULL);
 
  /*
   * Find the printer...
@@ -926,7 +939,6 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
     if (order == ORDER_CONTROL_DATA)
     {
-
      /*
       * Send the control file...
       */
@@ -975,7 +987,6 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
     if (status == 0)
     {
-
      /*
       * Send the print file...
       */
@@ -991,11 +1002,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       }
 
       _cupsLangPrintf(stderr,
-#ifdef HAVE_LONG_LONG
 		      _("INFO: Sending data file (%lld bytes)\n"),
-#else
-		      _("INFO: Sending data file (%ld bytes)\n"),
-#endif /* HAVE_LONG_LONG */
 		      CUPS_LLCAST filestats.st_size);
 
       tbytes = 0;
@@ -1058,13 +1065,11 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 	                _("WARNING: Remote host did not accept data file (%d). This is a known Epilog issue, so we close our eyes and look in opposite direction.\n"), status);
         status = 0;
       }
-      else
-	_cupsLangPuts(stderr, _("INFO: Data file sent successfully\n"));
+      _cupsLangPuts(stderr, _("INFO: Data file sent successfully\n"));
     }
 
     if (status == 0 && order == ORDER_DATA_CONTROL)
     {
-
      /*
       * Send control file...
       */
@@ -1146,6 +1151,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 static void
 lpd_timeout(int sig)			/* I - Signal number */
 {
+  (void)sig;
 }
 
 
@@ -1180,7 +1186,6 @@ lpd_write(int  lpd_fd,			/* I - LPD socket */
   else
     return (length);
 }
-
 
 /*
  * 'sigterm_handler()' - Handle 'terminate' signals that stop the backend.
