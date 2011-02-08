@@ -60,16 +60,10 @@ lpadmin -p lazzzor -E -v file:///tmp/out.prn -P etc/ppd/EpilogLegend36EXT.ppd
 
 7) Use Ctrl-Cut in development mode
 
-install_name_tool -change libgs.9.00.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.00.dylib ctrl-cut
-sudo chown root ctrl-cut
-sudo ln -s /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
-lpadmin -p lazzzor -E -v lpd://10.20.30.27 -P etc/ppd/EpilogLegend36EXT.ppd
-
-8) Use Ctrl-Cut in epilog LPD mode 
-
-install_name_tool -change libgs.9.00.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.00.dylib ctrl-cut
-sudo chown root ctrl-cut
-sudo ln -s /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
+install_name_tool -change libgs.9.00.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.00.dylib src/cups-filter/ctrl-cut
+sudo chown root src/cups-filter/ctrl-cut
+sudo ln -sf /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/src/cups-filter/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
+sudo chown root src/lpd-epilog/lpd-epilog
+sudo chmod 700 src/lpd-epilog/lpd-epilog
+sudo ln -sf /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/src/lpd-epilog/lpd-epilog /usr/libexec/cups/backend/lpd-epilog
 lpadmin -p lazzzor -E -v lpd-epilog://10.20.30.27 -P etc/ppd/EpilogLegend36EXT.ppd
-
-
