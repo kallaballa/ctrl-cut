@@ -8,6 +8,14 @@ cd $CC_BASE
 
 . $CC_FUNCTIONS
 
+while getopts 'p' c
+do
+    case $c in
+        c) PRINTER_INSTALL=-p ; shift;;
+        --) shift; break ;;
+    esac
+done
+
 PRINTER=$1
 PPDFILE=$2
 DEVICEURL=$3
@@ -20,4 +28,4 @@ BACKEND_PATH="`cups-config --serverbin`/backend"
 try "Installing filter binary" "cp $CC_BINARY $FILTER_PATH/"
 try "Installing dump backend" "cp $CC_TEST_CODE/dump $BACKEND_PATH"
 try "Fixing file permissions" "chmod u+x $BACKEND_PATH/dump"
-try "Installing printer Name: $PRINTER PPD: $PPDFILE Device:$DEVICEURL" "lpadmin -E -p $PRINTER -P $PPDFILE -v $DEVICEURL"
+[ $PRINTER_INSTALL ] && try "Installing printer Name: $PRINTER PPD: $PPDFILE Device:$DEVICEURL" "lpadmin -E -p $PRINTER -P $PPDFILE -v $DEVICEURL"
