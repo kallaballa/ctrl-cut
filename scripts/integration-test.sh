@@ -7,7 +7,7 @@ CHRTFS="$CC_TEST_CHROOT"
 CC_ENV="$CC_BASE/cc"
 chrtrun="$CC_ENV chrtsetup test-$CC_CHROOT_FLAVOUR --run "
 bootstrap="$CC_ENV bootstrap-chroot"
-setup="$CC_ENV chroot/setup.sh"
+setup="$CC_ENV chroot/setup -c"
 testany="$CC_ENV test-any"
 
 while getopts 'cs' c
