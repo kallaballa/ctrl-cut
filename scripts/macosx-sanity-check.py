@@ -105,7 +105,7 @@ if __name__ == '__main__':
         dep = pending.pop()
         if DEBUG: print "Evaluating " + dep
         deps = find_dependencies(dep)
-        assert(deps)
+        if DEBUG: print "  Deps: " + str(deps)
         for d in deps:
             absfile = lookup_library(d)
             if absfile == None:
