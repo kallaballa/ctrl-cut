@@ -55,6 +55,9 @@ if [ ! $SKIP_BUILD ]; then
     $chrtrun "cd ~/ctrl-cut; ./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"
 fi
 
+#run tests
+$chrtrun "cd ~/ctrl-cut; ./cc test-any"
+
 #test print
 $chrtrun "lp -d $CC_PRINTERNAME $TEST_JOB"
 
