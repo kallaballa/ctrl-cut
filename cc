@@ -35,6 +35,7 @@ export CC_TEST_CODE="$CC_BASE/test-code"
 export CC_PYTHON="$CC_BASE/python"
 export CC_ETC="$CC_BASE/etc"
 export CC_BINARY="$CC_BASE/src/cups-filter/ctrl-cut"
+export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 
 . $CC_FUNCTIONS
 
