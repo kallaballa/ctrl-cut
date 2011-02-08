@@ -38,7 +38,8 @@ BUILD_DIR=$1
 if [ -d $BUILD_DIR ]; then 
     try "Pull" "git --git-dir=$BUILD_DIR pull"
 else
-    try "Clone" "git --git-dir=`dirname $BUILD_DIR` clone $CC_GIT_URL"
+    cd `dirname $BUILD_DIR`
+    try "Clone" "git clone $CC_GIT_URL"
 fi
 
 cd /tmp
@@ -48,7 +49,7 @@ cd pysvg-*
 try "Install" "python setup.py install"
 try "Clean up" "rm -r pysvg-*"
 
-cd $BUILD_DI
+cd $BUILD_DIR
 . ./cc
 try "Generate Makefile" "qmake -recursive"
 try "Build" "make"
