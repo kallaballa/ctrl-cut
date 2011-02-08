@@ -40,31 +40,6 @@
 #    define closesocket(f) close(f)
 #  endif /* WIN32 */
 
-#  ifdef HAVE_GSSAPI
-#    ifdef HAVE_GSSAPI_GSSAPI_H
-#      include <gssapi/gssapi.h>
-#    endif /* HAVE_GSSAPI_GSSAPI_H */
-#    ifdef HAVE_GSSAPI_GSSAPI_GENERIC_H
-#      include <gssapi/gssapi_generic.h>
-#    endif /* HAVE_GSSAPI_GSSAPI_GENERIC_H */
-#    ifdef HAVE_GSSAPI_GSSAPI_KRB5_H
-#      include <gssapi/gssapi_krb5.h>
-#    endif /* HAVE_GSSAPI_GSSAPI_KRB5_H */
-#    ifdef HAVE_GSSAPI_H
-#      include <gssapi.h>
-#    endif /* HAVE_GSSAPI_H */
-#    ifndef HAVE_GSS_C_NT_HOSTBASED_SERVICE
-#      define GSS_C_NT_HOSTBASED_SERVICE gss_nt_service_name
-#    endif /* !HAVE_GSS_C_NT_HOSTBASED_SERVICE */
-#    ifdef HAVE_KRB5_H
-#      include <krb5.h>
-#    endif /* HAVE_KRB5_H */
-#  endif /* HAVE_GSSAPI */
-
-#  ifdef HAVE_AUTHORIZATION_H
-#    include <Security/Authorization.h>
-#  endif /* HAVE_AUTHORIZATION_H */
-
 #  if defined(__sgi) || (defined(__APPLE__) && !defined(_SOCKLEN_T))
 /*
  * IRIX and MacOS X 10.2.x do not define socklen_t, and in fact use an int instead of
@@ -77,60 +52,6 @@ typedef int socklen_t;
 #  include <cups/http.h>
 #  include "md5.h"
 #  include "ipp-private.h"
-
-#  if defined HAVE_LIBSSL
-/*
- * The OpenSSL library provides its own SSL/TLS context structure for its
- * IO and protocol management.  However, we need to provide our own BIO
- * (basic IO) implementation to do timeouts...
- */
-
-#    include <openssl/err.h>
-#    include <openssl/rand.h>
-#    include <openssl/ssl.h>
-
-typedef SSL http_tls_t;
-
-extern BIO_METHOD *_httpBIOMethods(void);
-
-#  elif defined HAVE_GNUTLS
-/*
- * The GNU TLS library is more of a "bare metal" SSL/TLS library...
- */
-#    include <gnutls/gnutls.h>
-#    include <gcrypt.h>
-
-typedef struct
-{
-  gnutls_session	session;	/* GNU TLS session object */
-  void			*credentials;	/* GNU TLS credentials object */
-} http_tls_t;
-
-extern ssize_t	_httpReadGNUTLS(gnutls_transport_ptr ptr, void *data,
-		                size_t length);
-extern ssize_t	_httpWriteGNUTLS(gnutls_transport_ptr ptr, const void *data,
-		                 size_t length);
-
-#  elif defined(HAVE_CDSASSL)
-/*
- * Darwin's Security framework provides its own SSL/TLS context structure
- * for its IO and protocol management...
- */
-
-#    include <Security/SecureTransport.h>
-
-typedef struct				/**** CDSA connection information ****/
-{
-  SSLContextRef		session;	/* CDSA session object */
-  CFArrayRef		certsArray;	/* Certificates array */
-} http_tls_t;
-
-extern OSStatus	_httpReadCDSA(SSLConnectionRef connection, void *data,
-		              size_t *dataLength);
-extern OSStatus	_httpWriteCDSA(SSLConnectionRef connection, const void *data,
-		               size_t *dataLength);
-#  endif /* HAVE_LIBSSL */
-
 
 struct _http_s				/**** HTTP connection structure. ****/
 {
@@ -181,14 +102,6 @@ struct _http_s				/**** HTTP connection structure. ****/
   char			*field_authorization;
 					/* Authorization field @since CUPS 1.3@ */
   char			*authstring;	/* Current authorization field @since CUPS 1.3 */
-#  ifdef HAVE_GSSAPI
-  gss_OID 		gssmech;	/* Authentication mechanism @since CUPS 1.3@ */
-  gss_ctx_id_t		gssctx;		/* Authentication context @since CUPS 1.3@ */
-  gss_name_t		gssname;	/* Authentication server name @since CUPS 1.3@ */
-#  endif /* HAVE_GSSAPI */
-#  ifdef HAVE_AUTHORIZATION_H
-  AuthorizationRef	auth_ref;	/* Authorization ref */
-#  endif /* HAVE_AUTHORIZATION_H */
 };
 
 

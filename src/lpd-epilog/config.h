@@ -211,9 +211,12 @@
 #define HAVE_STRDUP 1
 #define HAVE_STRCASECMP 1
 #define HAVE_STRNCASECMP 1
+
+
+#ifdef __APPLE__
 #define HAVE_STRLCAT 1
 #define HAVE_STRLCPY 1
-
+#endif
 
 /*
  * Do we have the geteuid() function?
@@ -235,15 +238,6 @@
 
 #define HAVE_SNPRINTF 1
 #define HAVE_VSNPRINTF 1
-
-
-/*
- * What signal functions to use?
- */
-
-#define HAVE_SIGSET 1
-#define HAVE_SIGACTION 1
-
 
 /*
  * What wait functions to use?
