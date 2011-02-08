@@ -1,8 +1,28 @@
 #!/bin/bash
 
-cd $CC_BASE
+function green { echo -e "\033[32;1m $1 \033[0m" 1>&2; tput sgr0 1>&2; }
+function red { echo -e "\033[31;1m $1 \033[0m" 1>&2; tput sgr0 1>&2; }
+function warn { red "$1"; }
+function ok { green "ok"; }
+function verbose { [ ! -z $VERBOSE ] && echo "$@ " 1>&2; }
+function error { 
+    msg=$1; 
+    errcode=$2; 
+    [ -z "$errcode" ] && errcode=1; 
+    [ -z "$msg" ] && msg="failed"; 
+    red "$msg"; exit $errcode; 
+}
 
-. $CC_FUNCTIONS
+
+function try { 
+    errcode=0; 
+    echo -n "$1... " 1>&2; 
+    shift;
+    verbose $@; $@ 1>&2;
+    errcode=$?; 
+    if [ $errcode != 0 ]; then error; else ok; fi
+    return $errcode; 
+}
 
 while getopts 'c' c
 do
@@ -28,7 +48,8 @@ cd pysvg-*
 try "Install" "python setup.py install"
 try "Clean up" "rm -r pysvg-*"
 
-cd $BUILD_DIR
+cd $BUILD_DI
+. ./cc
 try "Generate Makefile" "qmake -recursive"
 try "Build" "make"
 try "Installing printer" "./cc install $CC_PRINTERNAME $CC_PPD_DIR/$CC_PRINTERPPD dump://"
