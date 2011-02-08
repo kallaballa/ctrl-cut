@@ -392,17 +392,6 @@ backendRunLoop(
       }
     }
 
-   /*
-    * Do SNMP updates periodically...
-    */
-
-    if (snmp_fd >= 0 && time(&curtime) >= snmp_update)
-    {
-      if (backendSNMPSupplies(snmp_fd, addr, NULL, NULL))
-        snmp_update = INT_MAX;
-      else
-        snmp_update = curtime + 5;
-    }
   }
 
  /*

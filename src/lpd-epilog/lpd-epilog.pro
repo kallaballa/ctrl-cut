@@ -6,7 +6,7 @@ include(common.pri)
 
 LIBS += -lcups
 
-SOURCES += lpd.c network.c snmp-supplies.c runloop.c
+SOURCES += lpd.c network.c runloop.c
 
 HEADERS  += \
             config.h \
