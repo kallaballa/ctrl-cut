@@ -1,7 +1,5 @@
 CUPS:
 -----
-o CUPS (at least on Mac OS X) complains that "Remote host did not accept data file (1)" when spooling
-  and lpd job.
 o Generate EpilogLegend36EXT.ppd with ppdc
   This should open up for easy generation of PPD's for any Epilog other laser
 
@@ -11,17 +9,14 @@ Postscript:
 
 Installer:
 ----------
-o Linux installer
+
 
 Filter:
 -------
-o Write a pcl renderer
-o Make debug options available via cups filter options
 o Write a svg frontend
 o Writer raster test framework
 o Use stdint everywhere
 o Find out how to control the auto focus touch off point precisely
-o Write a simple logger implementation
 
 Testing:
 --------
@@ -30,5 +25,5 @@ o Test which laser parameters affect actual coordinates in the RTL output
 
 Goodies:
 --------
-
+o Automatically trace stencils from raster images
 o Estimate cutting time
