@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VERSION=`date "+%Y.%m.%d"`
-#VERSION=2010.05
+#VERSION=2011.02
 
 # This is the same location as DEPLOYDIR in macosx-build-dependencies.sh
 export MACOSX_DEPLOY_DIR=$PWD/../libraries/install
@@ -46,9 +46,9 @@ mkdir -p root/Ctrl-Cut/lib
 cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root/Ctrl-Cut/lib
 
 # Build package
-/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut.pkg
+/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut-$VERSION.pkg
 
 rm -r root
 
-hdiutil create Ctrl-Cut.dmg -ov -srcfolder Ctrl-Cut.pkg -format UDZO -volname Ctrl-Cut
-hdiutil internet-enable -yes -quiet
+hdiutil create Ctrl-Cut-$VERSION.dmg -ov -srcfolder Ctrl-Cut-$VERSION.pkg -format UDZO -volname Ctrl-Cut
+hdiutil internet-enable -yes -quiet Ctrl-Cut-$VERSION.dmg

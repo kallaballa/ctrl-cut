@@ -26,7 +26,8 @@
 *APPrinterIconPath: "/Library/Printers/CtrlCut/Icons/EpilogLegend36EXT.icns"
 
 *% Epilog doesn't support SNMP
-*cupsSNMPSupplies: False
+*% FIXME: Only available in CUPS >= 1.4
+*% cupsSNMPSupplies: False
 
 *%*********** Device Capabilities ************
 *LanguageLevel: "3"
