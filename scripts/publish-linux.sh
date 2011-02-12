@@ -8,8 +8,6 @@ cd $CC_PACKAGING
 
 RELEASE_NAME="ctrl-cut-$CC_VERSION"
 FILES="`cat included`"
-tar="tar -X excluded -chjf $RELEASE_NAME.tar.bz2 $RELEASE_NAME"
-build="rpmbuild -ta $RELEASE_NAME.tar.bz2"
 
 function  cleanup() {
     [ -d "$RELEASE_NAME/" ] && rm -r "$RELEASE_NAME"
@@ -26,8 +24,8 @@ function populate() {
 
 cleanup
 populate
-$tar
-$build
+tar -X excluded -chjf "$RELEASE_NAME.tar.bz2" "$RELEASE_NAME"
+rpmbuild -ta $RELEASE_NAME.tar.bz2 --define "CUPSBIN `cups-config --serverbin`" --define "CUPSDATA `cups-config --datadir`"
 cleanup
 
 
