@@ -26,6 +26,7 @@ done
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
+export CC_CHROOT_ARCH="amd64"
 export CC_CHROOT_MIRROR="http://archive.ubuntu.com/ubuntu"
 export CC_CHROOT_FLAVOUR="maverick"
 export CC_CHROOT_BUILDDIR="/root/ctrl-cut"
