@@ -44,6 +44,9 @@ mkdir -p root/Ctrl-Cut/Icons
 cp images/EpilogLegend36EXT.icns root/Ctrl-Cut/Icons
 mkdir -p root/Ctrl-Cut/lib
 cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root/Ctrl-Cut/lib
+mkdir -p root/ppd
+cp etc/ppd/Epilog/Legend36EXT.ppd "root/ppd/Epilog Legend 36EXT"
+gzip "root/ppd/Epilog Legend 36EXT"
 
 # Build package
 /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut-$VERSION.pkg
