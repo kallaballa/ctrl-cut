@@ -53,8 +53,8 @@ make %{?jobs:-j%jobs}
 
 %install
 export CC_BASE=`pwd`
-export CUPS_SERVER_BIN=$RPM_BUILD_ROOT/%{CUPSBIN}
-export CUPS_SERVER_DATA=$RPM_BUILD_ROOT/%{CUPSDATA}
+export CUPS_SERVER_BIN=$RPM_BUILD_ROOT/usr/lib/cups/
+export CUPS_SERVER_DATA=$RPM_BUILD_ROOT/usr/share/cups/
 
 mkdir -p $CUPS_SERVER_BIN/filter
 mkdir -p $CUPS_SERVER_BIN/backend
@@ -75,7 +75,7 @@ mkdir -p $CUPS_SERVER_DATA/model
 %files
 %defattr(-,root,root,-)
 %doc README.md LICENSE
-%{CUPSBIN}/filter/ctrl-cut
-%{CUPSBIN}/backend/lpd-epilog
-%{CUPSDATA}/model/Epilog/
-%{CUPSDATA}/model/Epilog/Legend36EXT.ppd
+/usr/lib/cups/filter/ctrl-cut
+/usr/lib/cups/backend/lpd-epilog
+/usr/share/cups/model/Epilog/
+/usr/share/cups/model/Epilog/Legend36EXT.ppd
