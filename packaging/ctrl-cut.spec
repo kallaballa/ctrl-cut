@@ -25,7 +25,7 @@ URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
 BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11
-PreReq: /bin/chmod tput cups cups-client cups-libs ncurses-utils
+PreReq: /bin/chmod cups cups-client ncurses-utils
 Requires: cups ghostscript-library
 %else
 BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11
@@ -52,6 +52,12 @@ qmake -recursive
 make %{?jobs:-j%jobs}
 
 %install
+export CC_BASE=`pwd`
+export CUPS_SERVER_BIN=$RPM_BUILD_ROOT/usr/lib/cups/ 
+echo "##### $CUPS_SERVER_BIN"
+
+mkdir -p $CUPS_SERVER_BIN/filter
+mkdir -p $CUPS_SERVER_BIN/backend
 ./cc install
 
 %post
