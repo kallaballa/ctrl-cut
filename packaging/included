@@ -1,0 +1,13 @@
+doc/
+etc/
+python/
+scripts/
+src/
+cc
+ctrl-cut.pro
+LICENSE
+README.md
+boost.pri
+common.pri
+ghostscript.pri
+
