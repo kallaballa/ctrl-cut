@@ -38,6 +38,8 @@ export CC_PYTHON="$CC_BASE/python"
 export CC_ETC="$CC_BASE/etc"
 export CC_BINARY="$CC_BASE/src/cups-filter/ctrl-cut"
 export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
+export CC_PACKAGING="$CC_BASE/packaging"
+export CC_VERSION="0.1"
 
 . $CC_FUNCTIONS
 
