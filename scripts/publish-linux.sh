@@ -8,7 +8,8 @@ cd $CC_PACKAGING
 
 RELEASE_NAME="ctrl-cut-$CC_VERSION"
 FILES="`cat included`"
-TAR="tar -X excluded -chjf $RELEASE_NAME.tar.bz2 $RELEASE_NAME"
+tar="tar -X excluded -chjf $RELEASE_NAME.tar.bz2 $RELEASE_NAME"
+build="rpmbuild -ta $RELEASE_NAME.tar.bz2"
 
 function  cleanup() {
     [ -d "$RELEASE_NAME/" ] && rm -r "$RELEASE_NAME"
@@ -17,7 +18,7 @@ function  cleanup() {
 function populate() {
     mkdir $RELEASE_NAME
 
-    
+    cp ctrl-cut.spec $RELEASE_NAME
     echo "$FILES" | while read incl; do
         cp -r "$CC_BASE/$incl" "$RELEASE_NAME/"
     done
@@ -25,7 +26,8 @@ function populate() {
 
 cleanup
 populate
-$TAR
+$tar
+$build
 cleanup
-build
+
 
