@@ -1,0 +1,16 @@
+#!bin/bash
+
+#
+# only $CHROOT and $MOUNTS are relevant to chrtsetup
+#
+
+CHROOT="$CC_BASE/chroot"
+
+#from		to                      fstype  mount-options   do-chroot
+MOUNTS=`echo -e "\
+/dev            $CHROOT/dev             none    bind            false	\n\
+none            /proc                   proc    defaults        true	\n\
+none            /sys                    sysfs   defaults        true	\n\
+none		/dev/pts                devpts  defaults        true	\n\
+"`
+
