@@ -23,7 +23,7 @@ done
 [ ! $CUPS_SERVER_BIN ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
 [ ! $CC_BASE ] && export CC_BASE="`pwd`"
 export CC_PRINTERNAME="lazzzor"
-export CC_PRINTERPPD="EpilogLegend36EXT.ppd"
+export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
 export CC_CHROOT_MIRROR="http://archive.ubuntu.com/ubuntu"
 export CC_CHROOT_FLAVOUR="maverick"
