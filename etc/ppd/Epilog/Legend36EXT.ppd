@@ -157,28 +157,24 @@ restore
 *OpenUI *VectorOptimize/VectorOptimize: PickOne
 *DefaultVectorOptimize: 2
 *OrderDependency: 140 AnySetup *VectorOptimize
-*VectorOptimize 0/None: "
+*VectorOptimize 0/Simple: "
         <</DeviceRenderingInfo <</Type 29 /VectorOptimize 0>> >>
                 setpagedevice"
 *End
-*VectorOptimize 1/Simple: "
-        <</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
-                setpagedevice"
-*End
-*VectorOptimize 2/Inner-Outer: "
-	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 2>> >>
+*VectorOptimize 1/Inner-Outer: "
+	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
 	setpagedevice"
 *End
-*VectorOptimize 3/Flat: "
-	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 3>> >>
+*VectorOptimize 2/Flat: "
+	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 2>> >>
 	setpagedevice"
 *End
 
 *?VectorOptimize: "
 	save
-	[/0 /1 /2 /3]
+	[/0 /1 /2]
 	currentpagedevice /DeviceRenderingInfo get /VectorOptimize get dup 0 gt
-	{dup 5 lt {get}{pop pop (1)}ifelse} {pop pop (1)} ifelse = flush
+	{dup 4 lt {get}{pop pop (1)}ifelse} {pop pop (1)} ifelse = flush
 	restore
 "
 *End
