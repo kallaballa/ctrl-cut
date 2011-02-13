@@ -42,8 +42,7 @@ void Flat::filter(Cut *cut) {
   DownSample * grid;
   Polyline* pl;
 
-  for (Cut::iterator it = cut->begin(); it
-      != cut->end(); it++) {
+  for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     pl = (*it);
     Point2D* p;
     BBox* bb = pl->getBoundingBox();

@@ -69,7 +69,7 @@ Cut *Cut::load(istream &input)
         break;
       case 'C': // close
         if (lx != mx || ly != my) {
-          mesh.create(new Vertex(lx, ly), new Vertex(mx, my), power);
+          mesh.create(lx, ly, mx, my);
         }
         break;
       case 'P': // power
@@ -81,9 +81,7 @@ Cut *Cut::load(istream &input)
         break;
       case 'L': // line to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-          start = new Vertex(lx, ly);
-          end = new Vertex(x, y);
-          mesh.create(start, end, power);
+          mesh.create(lx, ly, x, y);
           lx = x;
           ly = y;
         }

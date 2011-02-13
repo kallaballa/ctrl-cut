@@ -19,12 +19,13 @@
 
 #include "Mesh.h"
 
-/*!
-  Adds the given edge to the vector pass.
-  power is the laser power in percent.
+void Mesh::create(int startX, int startY, int endX, int endY, int power, int speed, int frequency){
+  this->create(new Vertex(startX, startY), new Vertex(endX, endY), power, speed, frequency);
+}
 
-  FIXME: Speed and frequency should be specified as well
-*/
+/*
+ * Adds the given edge to the vector pass.
+ */
 void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequency)
 {
   //filter zero length edges
