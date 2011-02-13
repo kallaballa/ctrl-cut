@@ -1,8 +1,20 @@
 /*
- * Mesh.cpp
+ * Ctrl-Cut - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
- *  Created on: Feb 13, 2011
- *      Author: elchaschab
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Mesh.h"
@@ -22,7 +34,7 @@ Mesh::~Mesh() {
 
   FIXME: Speed and frequency should be specified as well
 */
-void Mesh::createEdge(Vertex *start, Vertex *end, int power)
+void Mesh::create(Vertex *start, Vertex *end, int power)
 {
   //filter zero length edges
   if(start->getKey() == end->getKey())
@@ -56,17 +68,12 @@ void Mesh::createEdge(Vertex *start, Vertex *end, int power)
   this->std::list<Edge *>::push_back(ls);
 }
 
-void Mesh::removeEdge(Edge* e, bool detach) {
-  if(detach)
-    e->detach();
+void Mesh::remove(Edge* e) {
   this->std::list<Edge *>::remove(e);
 }
 
-Mesh::iterator Mesh::removeEdge(Mesh::iterator it_e, bool detach) {
-  Edge *e = *it_e;
-  if(detach)
-    e->detach();
-
+Mesh::iterator Mesh::eliminate(Mesh::iterator it_e) {
+  (*it_e)->detach();
   return this->std::list<Edge *>::erase(it_e);
 }
 

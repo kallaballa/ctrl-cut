@@ -84,7 +84,7 @@ void Join::filter(Cut *cut)
   for(Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     Polyline *p = *it;
     for(Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
-      mesh.removeEdge(*it_e, false);
+      mesh.remove(*it_e);
     }
   }
 }
