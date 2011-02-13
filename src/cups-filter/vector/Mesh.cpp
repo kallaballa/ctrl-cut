@@ -19,15 +19,6 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh() {
-  // TODO Auto-generated constructor stub
-
-}
-
-Mesh::~Mesh() {
-  // TODO Auto-generated destructor stub
-}
-
 /*!
   Adds the given edge to the vector pass.
   power is the laser power in percent.

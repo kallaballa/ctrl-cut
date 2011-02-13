@@ -18,10 +18,9 @@
  */
 
 #include "util/Logger.h"
-#include "Explode.h"
-#include "vector/VTypes.h"
 #include "vector/Edge.h"
 #include "vector/Cut.h"
+#include "Explode.h"
 
 using boost::format;
 

@@ -34,10 +34,10 @@ HEADERS += \
           util/Eps.h \
           util/LaserConfig.h \
           util/PJL.h \
+          util/2D.h \
           vector/Cut.h \
           vector/Mesh.h \
           vector/Polyline.h \
-          vector/VTypes.h \
           vector/Edge.h \
           vector/HPGLEncoder.h \
           vector/Vertex.h \
@@ -60,5 +60,4 @@ HEADERS  += \
           raster/PclEncoder.h \
           raster/PPMFile.h \
           raster/Raster.h \
-          raster/RTypes.h
 

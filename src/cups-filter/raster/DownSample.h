@@ -26,59 +26,7 @@
 #include <algorithm>
 #include "boost/multi_array.hpp"
 #include <limits>
-#include "RTypes.h"
-
-using namespace std;
-
-class BBox: public Rectangle {
- public:
-  bool inside(uint16_t x, uint16_t y, uint16_t tol_x = 0, uint16_t tol_y = 0) {
-    return (x < (lr_x + tol_x) && x > (ul_x - tol_x) && y < (lr_y + tol_y)
-            && y > (ul_y - tol_y));
-  }
-
-  bool isValid() {
-    return this->ul_x < this->lr_x &&
-           this->ul_y < this->lr_y &&
-           this->ul_x < numeric_limits<int>::max() &&
-           this->ul_y < numeric_limits<int>::max() &&
-           this->lr_x >= 0 &&
-           this->lr_y >= 0;
-  }
-
-  void invalidate() {
-    this->ul_x = std::numeric_limits<int>::max();
-    this->ul_y = std::numeric_limits<int>::max();
-    this->lr_x = -1;
-    this->lr_y = -1;
-  }
-
-  void adjustTo(int x, int y) {
-    this->ul_x = min(x, ul_x);
-    this->ul_y = min(y, ul_y);
-    this->lr_x = max(x, lr_x);
-    this->lr_y = max(y, lr_y);
-  }
-
-  void adjustTo(Point2D* m) {
-    this->ul_x = min(m->x, ul_x);
-    this->ul_y = min(m->y, ul_y);
-    this->lr_x = max(m->x, lr_x);
-    this->lr_y = max(m->y, lr_y);
-  }
-
-  void adjustTo(Rectangle* r) {
-    this->ul_x = min(r->ul_x, ul_x);
-    this->ul_y = min(r->ul_y, ul_y);
-    this->lr_x = max(r->lr_x, lr_x);
-    this->lr_y = max(r->lr_y, lr_y);
-  }
-
-  int distanceToOrigin(){
-    return sqrt(pow(this->ul_x, 2) + pow(this->ul_y, 2));
-  }
-
-};
+#include "util/2D.h"
 
 typedef Rectangle PixelBox;
 

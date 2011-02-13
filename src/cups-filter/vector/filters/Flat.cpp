@@ -16,14 +16,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "util/Logger.h"
-#include "vector/VTypes.h"
-#include "vector/Edge.h"
-#include "vector/Polyline.h"
-#include "vector/Cut.h"
-#include "Flat.h"
-#include "raster/DownSample.h"
+
+#include <math.h>
+#include <iostream>
 #include <algorithm>
+#include "util/Logger.h"
+#include "vector/Cut.h"
+#include "vector/Polyline.h"
+#include "raster/DownSample.h"
+#include "Flat.h"
 
 Flat::~Flat() {
 }

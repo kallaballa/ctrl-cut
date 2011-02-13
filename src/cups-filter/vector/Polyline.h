@@ -25,7 +25,7 @@
 #include "iostream"
 #include <cmath>
 #include "raster/DownSample.h"
-#include "VTypes.h"
+#include "Edge.h"
 
 class Polyline : public std::vector<Edge *> {
 public:

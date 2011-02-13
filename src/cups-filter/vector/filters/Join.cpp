@@ -18,7 +18,6 @@
  */
 #include "util/Logger.h"
 #include "Join.h"
-#include "vector/VTypes.h"
 #include "vector/Edge.h"
 #include "vector/Polyline.h"
 #include "vector/Cut.h"
@@ -34,15 +33,13 @@ Join::~Join() {
 /**
  * Recursive function
  */
-void find_connected(SetEdge *occupied, Polyline *polyline,
+void find_connected(set<Edge*> *occupied, Polyline *polyline,
                     Edge* current) {
-  SetEdge connectors = current->end->getAttachedEdges();
-  SetEdge::iterator it;
   Edge* candidate;
 
   occupied->insert(current);
 
-  for (it = connectors.begin(); it != connectors.end(); it++) {
+  for (Vertex::iterator it = current->end->begin(); it != current->end->end(); it++) {
     candidate = *it;
     if (candidate == current || occupied->find(candidate) != occupied->end())
       continue;
@@ -62,7 +59,7 @@ void Join::filter(Cut *cut)
 {
   LOG_INFO_STR("Join");
 
-  SetEdge *occupied = new SetEdge();
+  set<Edge*> *occupied = new set<Edge*>();
 
   Edge* ls;
   list<Edge*>::iterator it;

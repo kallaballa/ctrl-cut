@@ -46,16 +46,13 @@ Vertex::~Vertex() {
 }
 
 void Vertex::attach(Edge* ls) {
-  attachedEdges.insert(ls);
+  this->std::set<Edge*>::insert(ls);
 }
 
 void Vertex::detach(Edge* ls) {
-  attachedEdges.erase(ls);
+  this->std::set<Edge*>::erase(ls);
 }
 
-std::set<Edge*> Vertex::getAttachedEdges() {
-  return attachedEdges;
-}
 
 int Vertex::getX() {
   return this->x;

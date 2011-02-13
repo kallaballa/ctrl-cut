@@ -20,7 +20,7 @@
 #ifndef RASTER_H_
 #define RASTER_H_
 
-#include "RTypes.h"
+#include "util/2D.h"
 #include "DownSample.h"
 #include "MMapMatrix.h"
 

@@ -1,9 +1,6 @@
 #ifndef EDGE_H_
 #define EDGE_H_
 
-#include <set>
-#include <list>
-#include <vector>
 #include <string>
 #include <cmath>
 #include <algorithm>

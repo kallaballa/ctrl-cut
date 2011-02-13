@@ -16,8 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <math.h>
+#include <iostream>
 #include "util/Logger.h"
-#include "vector/VTypes.h"
 #include "vector/Edge.h"
 #include "vector/Polyline.h"
 #include "vector/Cut.h"
@@ -28,8 +29,6 @@ Deonion::~Deonion() {
 
 void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
 {
-  SetEdge connectors = edge->end->getAttachedEdges();
-  SetEdge::iterator it;
   Edge *next_edge = NULL;
 
   float edge_slope = edge->getSlope(true);
@@ -42,7 +41,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
     p->remove(edge);
   }
 
-  for (it = connectors.begin(); it != connectors.end(); it++) {
+  for (Vertex::iterator it = edge->end->begin(); it != edge->end->end(); it++) {
     Edge *candidate = *it;
 
     if (candidate == edge || !p->contains(candidate)) continue;

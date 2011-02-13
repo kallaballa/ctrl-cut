@@ -89,12 +89,10 @@ Edge* Polyline::findLeftmostClockwise() {
   }
 
   // Find next clockwise edge
-  SetEdge connected = leftmostvertex->getAttachedEdges();
-
   Edge *edge = NULL;
   float steapest = 2 * M_PI;
   Edge *ls;
-  for (SetEdge::iterator it_c = connected.begin(); it_c != connected.end(); it_c++) {
+  for (Vertex::iterator it_c = leftmostvertex->begin(); it_c != leftmostvertex->end(); it_c++) {
     ls = *it_c;
 
     // make sure we're pointing into the positive halfsphere

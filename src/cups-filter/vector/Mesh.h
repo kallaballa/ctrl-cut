@@ -20,11 +20,16 @@
 #ifndef MESH_H_
 #define MESH_H_
 
+#include <map>
 #include <list>
 #include "Vertex.h"
 #include "Edge.h"
 
-class Mesh : public std::list<Edge *> {
+using std::map;
+using std::list;
+using std::pair;
+
+class Mesh : public list<Edge *> {
 public:
   map<string, Vertex*>& getVertexMap(){
     return this->vertices;
@@ -34,8 +39,8 @@ public:
   void remove(Edge *e);
   Mesh::iterator eliminate(Mesh::iterator it_e);
 
-  Mesh();
-  virtual ~Mesh();
+  Mesh() {};
+  virtual ~Mesh() {};
 
   friend std::ostream& operator <<(std::ostream &os, Mesh &mesh);
 private:

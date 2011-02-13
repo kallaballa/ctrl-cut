@@ -2,14 +2,16 @@
 #define VERTEX_H_
 
 #include <set>
-#include <map>
 #include <string>
 #include <cmath>
-#include "VTypes.h"
+#include <iostream>
 
-using namespace std;
+using std::set;
+using std::ostream;
+using std::string;
 
-class Vertex {
+class Edge;
+class Vertex : public set<Edge*> {
 public:
   Vertex(int x, int y);
   virtual ~Vertex();
@@ -19,9 +21,20 @@ public:
   void setY(int y, bool updateKey=true);
   bool equals(Vertex *other);
   string getKey();
+
   void attach(class Edge *ls);
   void detach(Edge *ls);
-  SetEdge getAttachedEdges();
+
+  Vertex::iterator begin() { return this->set<Edge *>::begin(); }
+  Vertex::iterator end() { return this->set<Edge *>::end(); }
+  Vertex::iterator find(Edge* e) {
+    for (Vertex::iterator it = this->begin(); it != this->end(); it++) {
+      if (*it == e)
+        return it;
+    }
+    return (Vertex::iterator) NULL;
+  }
+
   friend ostream& operator <<(ostream &os,const Vertex &v);
 
 private:
@@ -30,7 +43,6 @@ private:
   int x;
   int y;
   string key;
-  SetEdge attachedEdges;
 
   void updateKey();
 };

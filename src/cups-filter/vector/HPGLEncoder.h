@@ -5,7 +5,6 @@
 
 #include "util/LaserConfig.h"
 #include "LaserJob.h"
-#include "VTypes.h"
 #include "Cut.h"
 
 class HPGLEncoder {

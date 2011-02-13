@@ -26,10 +26,9 @@
 #include <string>
 #include <iostream>
 #include "util/Logger.h"
-#include "RTypes.h"
+#include "util/2D.h"
 #include "stdint.h"
 
-using namespace std;
 using namespace boost::interprocess;
 
 template<class T>
