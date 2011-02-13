@@ -25,6 +25,7 @@
 #include <string>
 #include <iostream>
 #include <stdint.h>
+#include <limits>
 using namespace std;
 
 struct Point2D {
@@ -67,7 +68,7 @@ class Rectangle {
 public:
 	int ul_x, ul_y, lr_x, lr_y, width, height;
 
-	Rectangle(int ul_x = 0, int ul_y = 0, int lr_x = 0, int lr_y = 0) {
+	Rectangle(int ul_x = std::numeric_limits<int>::max(), int ul_y = std::numeric_limits<int>::max(), int lr_x = 0, int lr_y = 0) {
 		this->ul_x = ul_x;
 		this->ul_y = ul_y;
 		this->lr_x = lr_x;

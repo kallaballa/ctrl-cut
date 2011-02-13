@@ -37,6 +37,13 @@ class BBox: public Rectangle {
             && y > (ul_y - tol_y));
   }
 
+  void adjustTo(int x, int y) {
+    this->ul_x = min(x, ul_x);
+    this->ul_y = min(y, ul_y);
+    this->lr_x = max(x, lr_x);
+    this->lr_y = max(y, lr_y);
+  }
+
   void adjustTo(Point2D* m) {
     this->ul_x = min(m->x, ul_x);
     this->ul_y = min(m->y, ul_y);
@@ -62,9 +69,12 @@ class DownSample {
   uint16_t tolerance, pixel_width, pixel_height, res_x, res_y;
 
  public:
-  DownSample(Point2D* m_ul, uint16_t res_x, uint16_t res_y,
+  DownSample(BBox* bbox, uint16_t res_x, uint16_t res_y,
+     uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
+    DownSample(Point2D* m_ul, uint16_t res_x, uint16_t res_y,
   		uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
   virtual ~DownSample(){}
+  bool sample(BBox* bbox);
   bool sample(Point2D* m);
   BBox getBoundingBox();
   void resize(uint16_t width, uint16_t height);
