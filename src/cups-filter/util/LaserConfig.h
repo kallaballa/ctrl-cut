@@ -109,7 +109,7 @@ struct LaserConfig
   int vector_freq;
 
   /** Which optimization to perform (Default: Inner-Outer) */
-  int vector_optimize = 2;
+  int vector_optimize;
 
   /** X re-center (0 = not). */
   int x_center;
