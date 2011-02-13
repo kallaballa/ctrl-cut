@@ -155,7 +155,7 @@ restore
 
 *%******** VectorOptimize ********
 *OpenUI *VectorOptimize/VectorOptimize: PickOne
-*DefaultVectorOptimize: 2
+*DefaultVectorOptimize: 1
 *OrderDependency: 140 AnySetup *VectorOptimize
 *VectorOptimize 0/Simple: "
         <</DeviceRenderingInfo <</Type 29 /VectorOptimize 0>> >>
