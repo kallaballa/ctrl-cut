@@ -67,7 +67,8 @@ void Join::filter(Cut *cut)
   Edge* ls;
   list<Edge*>::iterator it;
   int cnt = 0;
-  for (it = cut->mesh.begin(); it != cut->mesh.end(); it++) {
+  Mesh mesh = cut->getMesh();
+  for (it = mesh.begin(); it != mesh.end(); it++) {
     ls = *it;
 
     Polyline *polyline = new Polyline();
@@ -75,15 +76,15 @@ void Join::filter(Cut *cut)
     if (occupied->find(ls) == occupied->end()) {
       polyline->add(ls);
       find_connected(occupied, polyline, ls);
-      cut->polylines.push_back(polyline);
+      cut->add(polyline);
     }
     cnt++;
   }
 
-  for(vector<Polyline*>::iterator it = cut->polylines.begin(); it != cut->polylines.end(); it++) {
+  for(Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     Polyline *p = *it;
-    for(vector<Edge*>::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
-      cut->removeEdge(*it_e, false);
+    for(Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
+      mesh.removeEdge(*it_e, false);
     }
   }
 }

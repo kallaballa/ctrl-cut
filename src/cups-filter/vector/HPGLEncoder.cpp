@@ -40,18 +40,16 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
   out << format(V_SPEED) % this->lconf->vector_speed << SEP;
   out << format(V_FREQUENCY) % this->lconf->vector_freq << SEP;
 
-  Edge* ls;
+  Edge* edge;
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
-  for (VecPolyline::iterator it_p = cut->polylines.begin();
-       it_p != cut->polylines.end();
-       it_p++) {
+  for (Cut::iterator it_p = cut->begin(); it_p != cut->end(); it_p++) {
     Polyline *p = *it_p;
     for (Polyline::iterator it_s = p->begin(); it_s != p->end(); it_s++) {
-      ls = *it_s;
+      edge = *it_s;
 
-      int power = ls->getPower();
+      int power = edge->getPower();
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;
@@ -82,10 +80,10 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
         out << format(V_POWER) % epower << SEP;
       }
 
-      int startX = this->lconf->basex + ls->getStart()->getX() + HPGLX;
-      int startY = this->lconf->basey + ls->getStart()->getY() + HPGLY;
-      int endX = this->lconf->basex + ls->getEnd()->getX() + HPGLX;
-      int endY = this->lconf->basey + ls->getEnd()->getY() + HPGLY;
+      int startX = this->lconf->basex + edge->getStart()->getX() + HPGLX;
+      int startY = this->lconf->basey + edge->getStart()->getY() + HPGLY;
+      int endX = this->lconf->basex + edge->getEnd()->getX() + HPGLX;
+      int endY = this->lconf->basey + edge->getEnd()->getY() + HPGLY;
 
       //     if (beginX < 0) {
       //       beginX = startX;

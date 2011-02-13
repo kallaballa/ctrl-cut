@@ -32,17 +32,17 @@ bool closerToOrigin(Polyline* p1, Polyline* p2) {
 }
 
 void Flat::filter(Cut *cut) {
-  LOG_INFO_MSG("Flat", cut->polylines.size());
-  sort(cut->polylines.begin(), cut->polylines.end(), closerToOrigin);
+  LOG_INFO_MSG("Flat", cut->size());
+  sort(cut->begin(), cut->end(), closerToOrigin);
 
   list<DownSample*> grids;
   list<DownSample*>::iterator it_g;
-  map<DownSample*, VecPolyline*> clusters;
+  map<DownSample*, vector<Polyline*>*> clusters;
   DownSample * grid;
   Polyline* pl;
 
-  for (vector<Polyline*>::iterator it = cut->polylines.begin(); it
-      != cut->polylines.end(); it++) {
+  for (Cut::iterator it = cut->begin(); it
+      != cut->end(); it++) {
     pl = (*it);
     Point2D* p;
     BBox* bb = pl->getBoundingBox();
@@ -51,7 +51,7 @@ void Flat::filter(Cut *cut) {
       grid = *it_g;
       p = new Point2D(bb->ul_x, bb->ul_y);
       if ((added = grid->sample(p))) {
-        VecPolyline* vp = (*clusters.find(grid)).second;
+        vector<Polyline* >* vp = (*clusters.find(grid)).second;
         vp->push_back(pl);
         break;
       }
@@ -61,19 +61,19 @@ void Flat::filter(Cut *cut) {
       DownSample* gridnew = new DownSample(p, 25, 25, 5, 5, 20);
       grids.push_back(gridnew);
 
-      VecPolyline* vp = new VecPolyline();
+      vector<Polyline* >* vp = new vector<Polyline* >();
       vp->push_back(pl);
-      clusters.insert(pair<DownSample*, VecPolyline*> (gridnew, vp));
+      clusters.insert(pair<DownSample*, vector<Polyline* >*> (gridnew, vp));
     }
   }
 
-  VecPolyline* newPolylines = new VecPolyline();
+  vector<Polyline* >* newPolylines = new vector<Polyline* >();
   for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
     grid = *it_g;
-    VecPolyline* vp = (*clusters.find(grid)).second;
+    vector<Polyline* >* vp = (*clusters.find(grid)).second;
     newPolylines->insert(newPolylines->end(), vp->begin(), vp->end());
   }
 
-  cut->polylines.swap(*newPolylines);
+  cut->swap(*newPolylines);
   delete newPolylines;
 }

@@ -37,19 +37,20 @@ void Explode::filter(Cut *cut) {
   Vertex *intersec = NULL;
   Edge *pick, *candidate;
 
-  LstEdge::iterator it_i;
-  LstEdge::iterator it_j;
+  Mesh::iterator it_i;
+  Mesh::iterator it_j;
 
   int cntLines = 0;
-  for (it_i = cut->mesh.begin(); it_i != cut->mesh.end(); it_i++) {
+  Mesh& mesh = cut->getMesh();
+  for (it_i = mesh.begin(); it_i != mesh.end(); it_i++) {
     cntLines++;
 
-    for (it_j = cut->mesh.begin(); it_j != cut->mesh.end(); it_j++) {
+    for (it_j = mesh.begin(); it_j != mesh.end(); it_j++) {
       pick = *it_i;
       candidate = *it_j;
 
       //no more free edges
-      if (it_i == cut->mesh.end())
+      if (it_i == mesh.end())
         break;
 
       // collision
@@ -58,23 +59,20 @@ void Explode::filter(Cut *cut) {
 
       // check if pick does intersect candidate
       if ((intersec = pick->intersects(candidate)) != NULL) {
-        // register the resulting vertex
-        intersec = cut->mapVertex(intersec);
-
 
         // if pick doesnt tip intersect remove it and split it in two
         if (!pick->getStart()->equals(intersec) && !pick->getEnd()->equals(intersec)) {
-          it_i = cut->removeEdge(it_i, true);
-          cut->createEdge((Vertex*) pick->getStart(), intersec, pick->getPower());
-          cut->createEdge((Vertex*) pick->getEnd(), intersec, pick->getPower());
+          it_i = mesh.removeEdge(it_i, true);
+          mesh.createEdge((Vertex*) pick->getStart(), intersec, pick->getPower());
+          mesh.createEdge((Vertex*) pick->getEnd(), intersec, pick->getPower());
         }
 
         // if candidate doesnt tip intersect remove it and split it in two
         if (!candidate->getStart()->equals(intersec) && !candidate->getEnd()->equals(
                                                                          intersec)) {
-          it_j = cut->removeEdge(it_j, true);
-          cut->createEdge((Vertex*) candidate->getStart(), intersec, candidate->getPower());
-          cut->createEdge((Vertex*) candidate->getEnd(), intersec, candidate->getPower());
+          it_j = mesh.removeEdge(it_j, true);
+          mesh.createEdge((Vertex*) candidate->getStart(), intersec, candidate->getPower());
+          mesh.createEdge((Vertex*) candidate->getEnd(), intersec, candidate->getPower());
         }
       }
     }

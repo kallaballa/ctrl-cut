@@ -81,14 +81,13 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
 
 void Deonion::filter(Cut *cut)
 {
-  LOG_INFO_MSG("Deonion", cut->polylines.size());
-  
-  unsigned int i;
-  Polyline* p;
-  VecPolyline* skins = new VecPolyline();
+  LOG_INFO_MSG("Deonion", cut->size());
 
-  for (i = 0; i < cut->polylines.size(); i++) {
-    p = cut->polylines.at(i);
+  Polyline* p;
+  vector<Polyline*>* skins = new vector<Polyline*>();
+
+  for (Cut::iterator it_c = cut->begin(); it_c != cut->end(); it_c++) {
+    p = *it_c;
 
     while (p->size() > 0) {
       Polyline *skin = new Polyline();
@@ -97,6 +96,6 @@ void Deonion::filter(Cut *cut)
     }
 
   }
-  cut->polylines.swap(*skins);
+  cut->swap(*skins);
   delete skins;
 }

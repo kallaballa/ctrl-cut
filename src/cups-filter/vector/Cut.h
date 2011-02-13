@@ -4,27 +4,38 @@
 #include <fstream>
 #include <iostream>
 #include "boost/format.hpp"
-
-#include "VTypes.h"
+#include "Polyline.h"
+#include "Mesh.h"
 
 #ifndef VECTOR_POWER_DEFAULT
 #define VECTOR_POWER_DEFAULT (80)
 #endif
 
-class Cut {
+class Cut : public std::vector<Polyline *> {
 public:
-  VecPolyline polylines;
-  LstEdge mesh;
-  MapVertex vertices;
+  Mesh& getMesh() {
+    return this->mesh;
+  }
 
   static Cut* load(const std::string &filename);
   static Cut* load(std::istream &input);
 
-  void createEdge(Vertex *start, Vertex *end, int power);
-  void removeEdge(Edge *e, bool detach);
-  LstEdge::iterator removeEdge(LstEdge::iterator it_e, bool detach);
-  Vertex* mapVertex(Vertex* p);
+  void add(Polyline* ls);
+  void remove(Polyline* ls);
+  bool contains(Polyline* ls);
 
+  int size() { return this->std::vector<Polyline *>::size(); }
+  Polyline* front() { return this->std::vector<Polyline *>::front(); }
+  Polyline* back() { return this->std::vector<Polyline *>::back(); }
+  Cut::iterator begin() { return this->std::vector<Polyline *>::begin(); }
+  Cut::iterator end() { return this->std::vector<Polyline *>::end(); }
+  Cut::iterator find(Polyline* e) {
+    for (Cut::iterator it = this->begin(); it != this->end(); it++) {
+      if (*it == e)
+        return it;
+    }
+    return (Cut::iterator)NULL;
+  }
   bool wasClipped() const {
     return this->clipped;
   }
@@ -36,6 +47,7 @@ public:
   virtual ~Cut() {}
 private:
   bool clipped;
+  Mesh mesh;
 };
 
 

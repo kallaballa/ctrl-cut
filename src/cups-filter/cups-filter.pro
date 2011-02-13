@@ -16,6 +16,7 @@ SOURCES += \
           util/Eps.cpp \
           util/LaserConfig.cpp \
           vector/Cut.cpp \
+          vector/Mesh.cpp \
           vector/Polyline.cpp \
           vector/Vertex.cpp \
           vector/Edge.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
           util/LaserConfig.h \
           util/PJL.h \
           vector/Cut.h \
+          vector/Mesh.h \
           vector/Polyline.h \
           vector/VTypes.h \
           vector/Edge.h \
