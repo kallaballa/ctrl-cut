@@ -5,7 +5,7 @@
 #include "climits"
 #include "iostream"
 #include <cmath>
-
+#include "raster/DownSample.h"
 #include "VTypes.h"
 
 class Polyline {
@@ -18,8 +18,10 @@ public:
   void add(Edge* ls);
   void remove(Edge* ls);
   int count();
+  int distanceToOrigin();
   Edge *findLeftmostClockwise();
   VecEdge::iterator find(Edge* ls);
+  BBox* getBoundingBox();
 
   friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
 

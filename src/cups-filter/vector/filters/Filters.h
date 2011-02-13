@@ -4,5 +4,6 @@
 #include "Explode.h"
 #include "Join.h"
 #include "Deonion.h"
+#include "Flat.h"
 
 #endif /* FILTERS_H_ */
