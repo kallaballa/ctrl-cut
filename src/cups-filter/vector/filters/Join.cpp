@@ -36,7 +36,7 @@ Join::~Join() {
  */
 void find_connected(SetEdge *occupied, Polyline *polyline,
                     Edge* current) {
-  SetEdge connectors = current->getEnd()->getAttachedEdges();
+  SetEdge connectors = current->end->getAttachedEdges();
   SetEdge::iterator it;
   Edge* candidate;
 
@@ -46,9 +46,9 @@ void find_connected(SetEdge *occupied, Polyline *polyline,
     candidate = *it;
     if (candidate == current || occupied->find(candidate) != occupied->end())
       continue;
-    if (candidate->getStart() != current->getEnd()) {
-      candidate->setEnd(candidate->getStart());
-      candidate->setStart(current->getEnd());
+    if (candidate->start != current->end) {
+      candidate->end = candidate->start;
+      candidate->start = current->end;
     }
     polyline->add(candidate);
     find_connected(occupied, polyline, candidate);

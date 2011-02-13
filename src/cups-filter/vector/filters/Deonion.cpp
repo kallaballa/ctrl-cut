@@ -28,7 +28,7 @@ Deonion::~Deonion() {
 
 void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
 {
-  SetEdge connectors = edge->getEnd()->getAttachedEdges();
+  SetEdge connectors = edge->end->getAttachedEdges();
   SetEdge::iterator it;
   Edge *next_edge = NULL;
 
@@ -47,7 +47,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
 
     if (candidate == edge || !p->contains(candidate)) continue;
 
-    if (candidate->getStart() != edge->getEnd()) {
+    if (candidate->start != edge->end) {
       candidate->invertDirection();
     }
 
@@ -67,7 +67,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   if (next_edge == NULL && cw) {
     // if we traversed a closed polyline, emit a skin and continue,
     // else, we reached a possible blind alley and must backtrack
-    if (skin->front()->getStart() == skin->back()->getEnd()) return;
+    if (skin->front()->start == skin->back()->end) return;
 
     edge->invertDirection();
     walkTheEdge(p, skin, edge, !cw);

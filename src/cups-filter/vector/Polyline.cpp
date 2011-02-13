@@ -53,8 +53,8 @@ BBox* Polyline::getBoundingBox() {
 
     for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
       e = (*it);
-      start = e->getStart();
-      end = e->getEnd();
+      start = e->start;
+      end = e->end;
       this->bb.adjustTo(start->getX(), start->getY());
       this->bb.adjustTo(end->getX(), end->getY());
     }
@@ -75,16 +75,16 @@ Edge* Polyline::findLeftmostClockwise() {
 
   // Find leftmost vertex
   for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
-    startx = (*it)->getStart()->getX();
-    endx = (*it)->getEnd()->getX();
+    startx = (*it)->start->getX();
+    endx = (*it)->end->getX();
 
     if (startx < min_x) {
       min_x = startx;
-      leftmostvertex = (*it)->getStart();
+      leftmostvertex = (*it)->start;
     }
     if (endx < min_x) {
       min_x = endx;
-      leftmostvertex = (*it)->getEnd();
+      leftmostvertex = (*it)->end;
     }
   }
 
@@ -98,7 +98,7 @@ Edge* Polyline::findLeftmostClockwise() {
     ls = *it_c;
 
     // make sure we're pointing into the positive halfsphere
-    if (ls->getStart()->getX() > ls->getEnd()->getX()) {
+    if (ls->start->getX() > ls->end->getX()) {
       ls->invertDirection();
     }
 

@@ -61,18 +61,18 @@ void Explode::filter(Cut *cut) {
       if ((intersec = pick->intersects(candidate)) != NULL) {
 
         // if pick doesnt tip intersect remove it and split it in two
-        if (!pick->getStart()->equals(intersec) && !pick->getEnd()->equals(intersec)) {
+        if (!pick->start->equals(intersec) && !pick->end->equals(intersec)) {
           it_i = mesh.eliminate(it_i);
-          mesh.create((Vertex*) pick->getStart(), intersec, pick->getPower());
-          mesh.create((Vertex*) pick->getEnd(), intersec, pick->getPower());
+          mesh.create((Vertex*) pick->start, intersec, pick->power);
+          mesh.create((Vertex*) pick->end, intersec, pick->power);
         }
 
         // if candidate doesnt tip intersect remove it and split it in two
-        if (!candidate->getStart()->equals(intersec) && !candidate->getEnd()->equals(
+        if (!candidate->start->equals(intersec) && !candidate->end->equals(
                                                                          intersec)) {
           it_j = mesh.eliminate(it_j);
-          mesh.create((Vertex*) candidate->getStart(), intersec, candidate->getPower());
-          mesh.create((Vertex*) candidate->getEnd(), intersec, candidate->getPower());
+          mesh.create((Vertex*) candidate->start, intersec, candidate->power);
+          mesh.create((Vertex*) candidate->end, intersec, candidate->power);
         }
       }
     }

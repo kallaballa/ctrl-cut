@@ -34,7 +34,7 @@ Mesh::~Mesh() {
 
   FIXME: Speed and frequency should be specified as well
 */
-void Mesh::create(Vertex *start, Vertex *end, int power)
+void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequency)
 {
   //filter zero length edges
   if(start->getKey() == end->getKey())
@@ -55,17 +55,17 @@ void Mesh::create(Vertex *start, Vertex *end, int power)
     end->setX(end->getX()-1);
   }
 
-  Edge *ls = new Edge(start, end, power);
+  Edge *edge = new Edge(start, end, power, speed, frequency);
 
   start = mapVertex(start);
-  ls->setStart(start);
-  start->attach(ls);
+  edge->start = start;
+  start->attach(edge);
 
   end = mapVertex(end);
-  ls->setEnd(end);
-  end->attach(ls);
+  edge->end = end;
+  end->attach(edge);
 
-  this->std::list<Edge *>::push_back(ls);
+  this->std::list<Edge *>::push_back(edge);
 }
 
 void Mesh::remove(Edge* e) {

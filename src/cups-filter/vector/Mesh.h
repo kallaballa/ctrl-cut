@@ -30,7 +30,7 @@ public:
     return this->vertices;
   }
 
-  void create(Vertex *start, Vertex *end, int power);
+  void create(Vertex *start, Vertex *end, int power = 0, int speed = 0, int frequency = 0);
   void remove(Edge *e);
   Mesh::iterator eliminate(Mesh::iterator it_e);
 

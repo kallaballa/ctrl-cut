@@ -10,21 +10,22 @@
 #include <iostream>
 #include "Vertex.h"
 
-
 class Edge {
 public:
-  int pos;
+  Vertex* start;
+  Vertex* end;
+  int power;
+  int speed;
+  int frequency;
+
   enum IntersectResult { PARALLEL, COINCIDENT, NOT_INTERSECTING, INTERSECTING };
 
-  Edge(Vertex *start, Vertex *end, int power);
+  Edge(Vertex *start, Vertex *end, int power=0, int speed=0, int frequency=0) : start(start), end(end), power(power), speed(speed), frequency(frequency) {
+    this->id = cnt++;
+  }
+
   virtual ~Edge() {}
 
-  void setStart(Vertex *start) { v[0] = start; }
-  void setEnd(Vertex *end) { v[1] = end; }
-  Vertex *getStart() { return v[0]; }
-  Vertex *getEnd() { return v[1]; }
-  void setPower(int power);
-  int getPower();
   float getSlope(bool invert=false);
   void invertDirection();
   Vertex *intersects(Edge *otherLine);
@@ -35,8 +36,6 @@ public:
 private:
   static int cnt;
   int id;
-  Vertex *v[2];
-  int power;
 };
 
 #endif /* LINE_H_ */

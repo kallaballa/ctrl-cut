@@ -49,7 +49,7 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
     for (Polyline::iterator it_s = p->begin(); it_s != p->end(); it_s++) {
       edge = *it_s;
 
-      int power = edge->getPower();
+      int power = edge->power;
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;
@@ -80,10 +80,10 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
         out << format(V_POWER) % epower << SEP;
       }
 
-      int startX = this->lconf->basex + edge->getStart()->getX() + HPGLX;
-      int startY = this->lconf->basey + edge->getStart()->getY() + HPGLY;
-      int endX = this->lconf->basex + edge->getEnd()->getX() + HPGLX;
-      int endY = this->lconf->basey + edge->getEnd()->getY() + HPGLY;
+      int startX = this->lconf->basex + edge->start->getX() + HPGLX;
+      int startY = this->lconf->basey + edge->start->getY() + HPGLY;
+      int endX = this->lconf->basex + edge->end->getX() + HPGLX;
+      int endY = this->lconf->basey + edge->end->getY() + HPGLY;
 
       //     if (beginX < 0) {
       //       beginX = startX;
