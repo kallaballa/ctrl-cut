@@ -552,7 +552,7 @@ int main(int argc, char *argv[]) {
     delete cut;
 
   clock_t end = clock() - start;
-  int seconds = 1.0 * end / CLOCKS_PER_SEC;
+  float seconds = 1.0 * end / CLOCKS_PER_SEC;
   LOG_DEBUG(seconds);
   return 0;
 }
