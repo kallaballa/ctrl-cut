@@ -39,11 +39,6 @@ public:
   Edge *findLeftmostClockwise();
   BBox* getBoundingBox();
 
-  int size() { return this->std::vector<Edge *>::size(); }
-  Edge* front() { return this->std::vector<Edge *>::front(); }
-  Edge* back() { return this->std::vector<Edge *>::back(); }
-  Polyline::iterator begin() { return this->std::vector<Edge *>::begin(); }
-  Polyline::iterator end() { return this->std::vector<Edge *>::end(); }
   Polyline::iterator find(Edge* e) {
     for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
       if (*it == e)

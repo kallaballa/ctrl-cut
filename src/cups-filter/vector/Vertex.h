@@ -25,8 +25,6 @@ public:
   void attach(class Edge *ls);
   void detach(Edge *ls);
 
-  Vertex::iterator begin() { return this->set<Edge *>::begin(); }
-  Vertex::iterator end() { return this->set<Edge *>::end(); }
   Vertex::iterator find(Edge* e) {
     for (Vertex::iterator it = this->begin(); it != this->end(); it++) {
       if (*it == e)

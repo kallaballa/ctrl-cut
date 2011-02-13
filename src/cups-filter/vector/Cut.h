@@ -42,11 +42,6 @@ public:
   void remove(Polyline* ls);
   bool contains(Polyline* ls);
 
-  int size() { return this->std::vector<Polyline *>::size(); }
-  Polyline* front() { return this->std::vector<Polyline *>::front(); }
-  Polyline* back() { return this->std::vector<Polyline *>::back(); }
-  Cut::iterator begin() { return this->std::vector<Polyline *>::begin(); }
-  Cut::iterator end() { return this->std::vector<Polyline *>::end(); }
   Cut::iterator find(Polyline* e) {
     for (Cut::iterator it = this->begin(); it != this->end(); it++) {
       if (*it == e)
