@@ -82,7 +82,7 @@ void Join::filter(Cut *cut)
 
   for(vector<Polyline*>::iterator it = cut->polylines.begin(); it != cut->polylines.end(); it++) {
     Polyline *p = *it;
-    for(vector<Edge*>::iterator it_e = p->edges.begin(); it_e != p->edges.end(); it_e++) {
+    for(vector<Edge*>::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
       cut->removeEdge(*it_e, false);
     }
   }

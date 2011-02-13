@@ -28,11 +28,11 @@
 Flat::~Flat() {
 }
 bool closerToOrigin(Polyline* p1, Polyline* p2) {
-  return (p1->distanceToOrigin() < p2->distanceToOrigin());
+  return (p1->getBoundingBox()->distanceToOrigin() < p2->getBoundingBox()->distanceToOrigin() );
 }
 
 void Flat::filter(Cut *cut) {
-  LOG_INFO_MSG("Sort", cut->polylines.size());
+  LOG_INFO_MSG("Flat", cut->polylines.size());
   sort(cut->polylines.begin(), cut->polylines.end(), closerToOrigin);
 
   list<DownSample*> grids;
@@ -45,10 +45,11 @@ void Flat::filter(Cut *cut) {
       != cut->polylines.end(); it++) {
     pl = (*it);
     Point2D* p;
+    BBox* bb = pl->getBoundingBox();
     bool added = false;
     for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
       grid = *it_g;
-      p = new Point2D(pl->getBoundingBox()->ul_x, pl->getBoundingBox()->ul_y);
+      p = new Point2D(bb->ul_x, bb->ul_y);
       if ((added = grid->sample(p))) {
         VecPolyline* vp = (*clusters.find(grid)).second;
         vp->push_back(pl);

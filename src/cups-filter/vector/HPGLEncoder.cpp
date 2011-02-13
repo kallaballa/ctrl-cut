@@ -48,7 +48,7 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
        it_p != cut->polylines.end();
        it_p++) {
     Polyline *p = *it_p;
-    for (vector<Edge*>::iterator it_s = p->edges.begin(); it_s != p->edges.end(); it_s++) {
+    for (VecEdge::iterator it_s = p->begin(); it_s != p->end(); it_s++) {
       ls = *it_s;
 
       int power = ls->getPower();

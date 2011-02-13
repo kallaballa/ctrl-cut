@@ -10,24 +10,37 @@
 
 class Polyline {
 public:
-  VecEdge edges;
   Polyline();
   virtual ~Polyline(){}
 
-  bool contains(Edge* ls);
   void add(Edge* ls);
   void remove(Edge* ls);
-  int count();
-  int distanceToOrigin();
+  bool contains(Edge* ls);
+
+  int size();
   Edge *findLeftmostClockwise();
-  VecEdge::iterator find(Edge* ls);
   BBox* getBoundingBox();
+
+  Edge* front() { return this->edges.front(); }
+  Edge* back() { return this->edges.back(); }
+  VecEdge::iterator begin() { return this->edges.begin(); }
+  VecEdge::iterator end() { return this->edges.end(); }
+  VecEdge::iterator find(Edge* ls) {
+    for (VecEdge::iterator it = this->begin(); it != this->end(); it++) {
+      if (*it == ls)
+        return it;
+    }
+    return (VecEdge::iterator)NULL;
+  }
 
   friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
 
 private:
   static int cnt;
   int id;
+
+  VecEdge edges;
+  BBox bb;
 };
 
 #endif /* POLYGON_H_ */

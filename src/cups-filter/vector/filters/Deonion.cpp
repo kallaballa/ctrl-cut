@@ -67,7 +67,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   if (next_edge == NULL && cw) {
     // if we traversed a closed polyline, emit a skin and continue,
     // else, we reached a possible blind alley and must backtrack
-    if (skin->edges.front()->getStart() == skin->edges.back()->getEnd()) return;
+    if (skin->front()->getStart() == skin->back()->getEnd()) return;
 
     edge->invertDirection();
     walkTheEdge(p, skin, edge, !cw);
@@ -90,7 +90,7 @@ void Deonion::filter(Cut *cut)
   for (i = 0; i < cut->polylines.size(); i++) {
     p = cut->polylines.at(i);
 
-    while (p->count() > 0) {
+    while (p->size() > 0) {
       Polyline *skin = new Polyline();
       walkTheEdge(p, skin, p->findLeftmostClockwise(), true);
       skins->push_back(skin);

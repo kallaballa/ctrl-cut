@@ -22,64 +22,55 @@
 
 int Polyline::cnt = 0;
 
-Polyline::Polyline() { this->id++; }
+Polyline::Polyline() {
+  this->id++;
+}
 
 void Polyline::add(Edge* ls) {
-  edges.push_back(ls);
-}
-
-VecEdge::iterator Polyline::find(Edge* ls) {
-  for (VecEdge::iterator it = this->edges.begin(); it != this->edges.end(); it++) {
-    if (*it == ls)
-      return it;
-  }
-
-  return (VecEdge::iterator)NULL;
-}
-
-bool Polyline::contains(Edge* ls) {
-  VecEdge::iterator it = find(ls);
-  return  it != (VecEdge::iterator) NULL && it != edges.end();
+  this->edges.push_back(ls);
+  this->bb.invalidate();
 }
 
 void Polyline::remove(Edge* ls) {
   VecEdge::iterator it = find(ls);
-  if(it != (VecEdge::iterator) NULL)
-    edges.erase(it);
+  if (it != (VecEdge::iterator) NULL) {
+    this->edges.erase(it);
+    this->bb.invalidate();
+  }
 }
 
-int Polyline::count() {
-  return edges.size();
+bool Polyline::contains(Edge* ls) {
+  VecEdge::iterator it = find(ls);
+  return it != (VecEdge::iterator) NULL && it != end();
 }
 
-int Polyline::distanceToOrigin(){
-  return sqrt(pow(this->getBoundingBox()->ul_x, 2) + pow(this->getBoundingBox()->ul_y, 2));
+int Polyline::size() {
+  return this->edges.size();
 }
 
 BBox* Polyline::getBoundingBox() {
-  BBox* bb = new BBox();
-  Edge* e;
-  Vertex* start;
-  Vertex* end;
+  if (!this->bb.isValid()) {
+    Edge* e;
+    Vertex* start;
+    Vertex* end;
 
-  for (VecEdge::iterator it = this->edges.begin(); it != this->edges.end(); it++) {
-    e = (*it);
-    start = e->getStart();
-    end = e->getEnd();
-    bb->adjustTo(start->getX(), start->getY());
-    bb->adjustTo(end->getX(), end->getY());
+    for (VecEdge::iterator it = this->begin(); it != this->end(); it++) {
+      e = (*it);
+      start = e->getStart();
+      end = e->getEnd();
+      this->bb.adjustTo(start->getX(), start->getY());
+      this->bb.adjustTo(end->getX(), end->getY());
+    }
   }
-
-  return bb;
+  return &this->bb;
 }
 
 /*!
-  Finds the "first leftmost clockwise" edge. This is the edge connected to
-  the leftmost vertex which is the first we would traverse when doing a clockwise
-  traversal. This is the edge which has the smallest positive angle to the positive Y axis.
-*/
-Edge* Polyline::findLeftmostClockwise()
-{
+ Finds the "first leftmost clockwise" edge. This is the edge connected to
+ the leftmost vertex which is the first we would traverse when doing a clockwise
+ traversal. This is the edge which has the smallest positive angle to the positive Y axis.
+ */
+Edge* Polyline::findLeftmostClockwise() {
   int min_x = INT_MAX;
   Vertex *leftmostvertex = NULL;
   int startx;
@@ -104,7 +95,7 @@ Edge* Polyline::findLeftmostClockwise()
   SetEdge connected = leftmostvertex->getAttachedEdges();
 
   Edge *edge = NULL;
-  float steapest = 2*M_PI;
+  float steapest = 2 * M_PI;
   Edge *ls;
   for (SetEdge::iterator it_c = connected.begin(); it_c != connected.end(); it_c++) {
     ls = *it_c;
@@ -122,17 +113,17 @@ Edge* Polyline::findLeftmostClockwise()
   }
 
   assert(edge->getSlope() >= 0);
- 
+
   return edge;
 }
 
 ostream& operator <<(ostream &os, Polyline &pl) {
-  os << "<polyline id=\"" << pl.id << "\" >"
-     << std::endl;
+  os << "<polyline id=\"" << pl.id << "\" >" << std::endl;
   BBox* bb = pl.getBoundingBox();
-  os << "<bbox distToOrigin=\"" << pl.distanceToOrigin() << "\" ul_x=\"" << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x << "\" lr_y=\"" << bb->lr_y << "\" \\>" << std::endl;
-  for (VecEdge::iterator it = pl.edges.begin(); it
-         != pl.edges.end(); it++) {
+  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul_x=\""
+      << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x
+      << "\" lr_y=\"" << bb->lr_y << "\" \\>" << std::endl;
+  for (VecEdge::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
     os << *((Edge*) *it);
   }
   os << "</polyline>" << std::endl;
