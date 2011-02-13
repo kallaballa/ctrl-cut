@@ -13,6 +13,10 @@
 
 class Mesh : public std::list<Edge *> {
 public:
+  map<string, Vertex*>& getVertexMap(){
+    return this->vertices;
+  }
+
   void createEdge(Vertex *start, Vertex *end, int power);
   void removeEdge(Edge *e, bool detach);
   Mesh::iterator removeEdge(Mesh::iterator it_e, bool detach);
@@ -20,6 +24,7 @@ public:
   Mesh();
   virtual ~Mesh();
 
+  friend std::ostream& operator <<(std::ostream &os, Mesh &mesh);
 private:
   map<string, Vertex* > vertices;
 

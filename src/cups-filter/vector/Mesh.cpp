@@ -56,18 +56,6 @@ void Mesh::createEdge(Vertex *start, Vertex *end, int power)
   this->std::list<Edge *>::push_back(ls);
 }
 
-Vertex* Mesh::mapVertex(Vertex *p)
-{
-  map<string, Vertex* >::iterator it = vertices.find(p->getKey());
-
-  if (it != vertices.end()) {
-    return (Vertex *)it->second;
-  }
-
-  vertices.insert(pair<string, Vertex*> (p->getKey(), p));
-  return p;
-}
-
 void Mesh::removeEdge(Edge* e, bool detach) {
   if(detach)
     e->detach();
@@ -82,15 +70,29 @@ Mesh::iterator Mesh::removeEdge(Mesh::iterator it_e, bool detach) {
   return this->std::list<Edge *>::erase(it_e);
 }
 
-ostream& operator<< (ostream &os, Cut &cut) {
+Vertex* Mesh::mapVertex(Vertex *p)
+{
+  map<string, Vertex* >::iterator it = vertices.find(p->getKey());
+
+  if (it != vertices.end()) {
+    return (Vertex *)it->second;
+  }
+
+  vertices.insert(pair<string, Vertex*> (p->getKey(), p));
+  return p;
+}
+
+ostream& operator<< (ostream &os, Mesh &mesh) {
   os << "<mesh>" << std::endl;
-  os << "<edges cnt=\"" << this->size() << "\" >" << std::endl;
-  for(Mesh::iterator it = this->begin(); it != this->end(); it++) {
+  os << "<edges cnt=\"" << mesh.size() << "\" >" << std::endl;
+  for(Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
     os << *((Edge*)*it);
   }
   os << "</edges>" << std::endl;
-  os << "<vertices cnt=\"" << this->vertices.size() << "\" >" << std::endl;
-  for (map<string, Vertex*>::iterator it = this->vertices.begin(); it != this->vertices.end(); it++) {
+  map<string, Vertex* >& vertices = mesh.getVertexMap();
+
+  os << "<vertices cnt=\"" << vertices.size() << "\" >" << std::endl;
+  for (map<string, Vertex*>::iterator it = vertices.begin(); it != vertices.end(); it++) {
     Vertex* vec = (Vertex*) (*it).second;
     os << *vec;
   }
