@@ -20,7 +20,6 @@
 #include "LaserJob.h"
 #include "vector/filters/Filters.h"
 
-
 Driver::Driver() : dumpxml(false)
 {
 }
@@ -36,21 +35,27 @@ void Driver::filter(LaserJob *job) {
   Explode explode;
   Join join;
   Deonion deonion;
-
+  Flat flat;
   list<Cut*> cuts = job->getCuts();
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
+    if (job->lconf->vector_optimize > 0) {
+      cut->xml("/tmp/xml/input/ctrl-cut.xml");
+      explode.filter(cut);
+      cut->xml("/tmp/xml/explode/ctrl-cut.xml");
+      join.filter(cut);
+      cut->xml("/tmp/xml/join/ctrl-cut.xml");
 
-    if (this->dumpxml) cut->xml("test-data/xml/input/ctrl-cut.xml");
-    explode.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/explode/ctrl-cut.xml");
-    join.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/join/ctrl-cut.xml");
-    deonion.filter(cut);
-    if (this->dumpxml) cut->xml("test-data/xml/deonion/ctrl-cut.xml");
+      if (job->lconf->vector_optimize == 2) {
+        deonion.filter(cut);
+        cut->xml("/tmp/xml/deonion/ctrl-cut.xml");
+      } else if (job->lconf->vector_optimize == 3) {
+        flat.filter(cut);
+        cut->xml("/tmp/xml/sort/ctrl-cut.xml");
+      }
+    }
   }
 }
-
 
 void Driver::process(LaserJob *job) {
   filter(job);

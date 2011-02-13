@@ -85,7 +85,7 @@ void Deonion::filter(Cut *cut)
   
   unsigned int i;
   Polyline* p;
-  VecPolyline skins;
+  VecPolyline* skins = new VecPolyline();
 
   for (i = 0; i < cut->polylines.size(); i++) {
     p = cut->polylines.at(i);
@@ -93,9 +93,10 @@ void Deonion::filter(Cut *cut)
     while (p->count() > 0) {
       Polyline *skin = new Polyline();
       walkTheEdge(p, skin, p->findLeftmostClockwise(), true);
-      skins.push_back(skin);
+      skins->push_back(skin);
     }
 
   }
-  cut->polylines = skins;
+  cut->polylines.swap(*skins);
+  delete skins;
 }

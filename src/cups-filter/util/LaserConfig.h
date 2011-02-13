@@ -108,6 +108,9 @@ struct LaserConfig
   /** Variable to track the vector frequency. FIXME */
   int vector_freq;
 
+  /** Which optimization to perform (Default: Inner-Outer) */
+  int vector_optimize = 2;
+
   /** X re-center (0 = not). */
   int x_center;
 
