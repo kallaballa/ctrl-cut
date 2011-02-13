@@ -23,6 +23,7 @@ SOURCES += \
           vector/filters/Deonion.cpp \
           vector/filters/Explode.cpp \
           vector/filters/Join.cpp \
+          vector/filters/Flat.cpp \
           tri_logger/tri_logger.cpp
 
 HEADERS += \
@@ -42,6 +43,7 @@ HEADERS += \
           vector/filters/Filters.h \
           vector/filters/Explode.h \
           vector/filters/Join.h \
+          vector/filters/Flat.h \
           tri_logger/tri_logger.hpp \
           tri_logger/nullstream.hpp
 
