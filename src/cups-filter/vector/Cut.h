@@ -14,7 +14,7 @@
 class Cut {
 public:
   VecPolyline polylines;
-  LstEdge freeEdges;
+  LstEdge mesh;
   MapVertex vertices;
 
   static Cut* load(const std::string &filename);

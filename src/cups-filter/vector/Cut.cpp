@@ -64,7 +64,7 @@ void Cut::createEdge(Vertex *start, Vertex *end, int power)
   ls->setEnd(end);
   end->attach(ls);
 
-  freeEdges.push_back(ls);
+  mesh.push_back(ls);
 }
 
 Vertex *Cut::mapVertex(Vertex *p)
@@ -82,7 +82,7 @@ Vertex *Cut::mapVertex(Vertex *p)
 void Cut::removeEdge(Edge* e, bool detach) {
   if(detach)
     e->detach();
-  freeEdges.remove(e);
+  mesh.remove(e);
 }
 
 LstEdge::iterator Cut::removeEdge(LstEdge::iterator it_e, bool detach) {
@@ -90,7 +90,7 @@ LstEdge::iterator Cut::removeEdge(LstEdge::iterator it_e, bool detach) {
   if(detach)
     e->detach();
 
-  return freeEdges.erase(it_e);
+  return mesh.erase(it_e);
 }
 
 Cut *Cut::load(istream &input)
@@ -165,8 +165,8 @@ void Cut::xml(std::string s) {
 ostream& operator<< (ostream &os, Cut &cut) {
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
 
-  os << "<edges cnt=\"" << cut.freeEdges.size() << "\" >" << std::endl;
-  for(LstEdge::iterator it = cut.freeEdges.begin(); it != cut.freeEdges.end(); it++) {
+  os << "<edges cnt=\"" << cut.mesh.size() << "\" >" << std::endl;
+  for(LstEdge::iterator it = cut.mesh.begin(); it != cut.mesh.end(); it++) {
     os << *((Edge*)*it);
   }
   os << "</edges>" << std::endl;

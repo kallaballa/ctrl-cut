@@ -41,15 +41,15 @@ void Explode::filter(Cut *cut) {
   LstEdge::iterator it_j;
 
   int cntLines = 0;
-  for (it_i = cut->freeEdges.begin(); it_i != cut->freeEdges.end(); it_i++) {
+  for (it_i = cut->mesh.begin(); it_i != cut->mesh.end(); it_i++) {
     cntLines++;
 
-    for (it_j = cut->freeEdges.begin(); it_j != cut->freeEdges.end(); it_j++) {
+    for (it_j = cut->mesh.begin(); it_j != cut->mesh.end(); it_j++) {
       pick = *it_i;
       candidate = *it_j;
 
       //no more free edges
-      if (it_i == cut->freeEdges.end())
+      if (it_i == cut->mesh.end())
         break;
 
       // collision

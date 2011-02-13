@@ -8,7 +8,7 @@
 #include "raster/DownSample.h"
 #include "VTypes.h"
 
-class Polyline {
+class Polyline : public std::vector<Edge *> {
 public:
   Polyline();
   virtual ~Polyline(){}
@@ -17,20 +17,20 @@ public:
   void remove(Edge* ls);
   bool contains(Edge* ls);
 
-  int size();
   Edge *findLeftmostClockwise();
   BBox* getBoundingBox();
 
-  Edge* front() { return this->edges.front(); }
-  Edge* back() { return this->edges.back(); }
-  VecEdge::iterator begin() { return this->edges.begin(); }
-  VecEdge::iterator end() { return this->edges.end(); }
-  VecEdge::iterator find(Edge* ls) {
-    for (VecEdge::iterator it = this->begin(); it != this->end(); it++) {
-      if (*it == ls)
+  int size() { return this->std::vector<Edge *>::size(); }
+  Edge* front() { return this->std::vector<Edge *>::front(); }
+  Edge* back() { return this->std::vector<Edge *>::back(); }
+  Polyline::iterator begin() { return this->std::vector<Edge *>::begin(); }
+  Polyline::iterator end() { return this->std::vector<Edge *>::end(); }
+  Polyline::iterator find(Edge* e) {
+    for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
+      if (*it == e)
         return it;
     }
-    return (VecEdge::iterator)NULL;
+    return (Polyline::iterator)NULL;
   }
 
   friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
@@ -39,7 +39,6 @@ private:
   static int cnt;
   int id;
 
-  VecEdge edges;
   BBox bb;
 };
 

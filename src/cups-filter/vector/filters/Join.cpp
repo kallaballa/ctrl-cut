@@ -67,7 +67,7 @@ void Join::filter(Cut *cut)
   Edge* ls;
   list<Edge*>::iterator it;
   int cnt = 0;
-  for (it = cut->freeEdges.begin(); it != cut->freeEdges.end(); it++) {
+  for (it = cut->mesh.begin(); it != cut->mesh.end(); it++) {
     ls = *it;
 
     Polyline *polyline = new Polyline();

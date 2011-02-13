@@ -27,26 +27,23 @@ Polyline::Polyline() {
 }
 
 void Polyline::add(Edge* ls) {
-  this->edges.push_back(ls);
+  this->push_back(ls);
   this->bb.invalidate();
 }
 
 void Polyline::remove(Edge* ls) {
-  VecEdge::iterator it = find(ls);
-  if (it != (VecEdge::iterator) NULL) {
-    this->edges.erase(it);
+  Polyline::iterator it = find(ls);
+  if (it != (Polyline::iterator) NULL) {
+    this->erase(it);
     this->bb.invalidate();
   }
 }
 
 bool Polyline::contains(Edge* ls) {
-  VecEdge::iterator it = find(ls);
-  return it != (VecEdge::iterator) NULL && it != end();
+  Polyline::iterator it = find(ls);
+  return it != (Polyline::iterator) NULL && it != end();
 }
 
-int Polyline::size() {
-  return this->edges.size();
-}
 
 BBox* Polyline::getBoundingBox() {
   if (!this->bb.isValid()) {
@@ -54,7 +51,7 @@ BBox* Polyline::getBoundingBox() {
     Vertex* start;
     Vertex* end;
 
-    for (VecEdge::iterator it = this->begin(); it != this->end(); it++) {
+    for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
       e = (*it);
       start = e->getStart();
       end = e->getEnd();
@@ -77,7 +74,7 @@ Edge* Polyline::findLeftmostClockwise() {
   int endx;
 
   // Find leftmost vertex
-  for (VecEdge::iterator it = edges.begin(); it != edges.end(); it++) {
+  for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
     startx = (*it)->getStart()->getX();
     endx = (*it)->getEnd()->getX();
 
@@ -123,7 +120,7 @@ ostream& operator <<(ostream &os, Polyline &pl) {
   os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul_x=\""
       << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x
       << "\" lr_y=\"" << bb->lr_y << "\" \\>" << std::endl;
-  for (VecEdge::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
+  for (Polyline::iterator it = pl.begin(); it != pl.end(); it++) {
     os << *((Edge*) *it);
   }
   os << "</polyline>" << std::endl;
