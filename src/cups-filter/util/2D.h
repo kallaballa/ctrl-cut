@@ -131,7 +131,7 @@ class BBox: public Rectangle {
   }
 
   int distanceToOrigin(){
-    return sqrt(pow(this->ul_x, 2) + pow(this->ul_y, 2));
+    return sqrt(this->ul_x * this->ul_x + this->ul_y * this->ul_y);
   }
 
 };
