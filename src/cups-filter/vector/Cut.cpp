@@ -23,21 +23,27 @@
 
 using boost::format;
 
-void Cut::add(Polyline* pl) {
-  this->std::vector<Polyline *>::push_back(pl);
+void Cut::add(Polyline* pl)
+{
+  this->polylines.push_back(pl);
 }
 
-void Cut::remove(Polyline* pl) {
+void Cut::remove(Polyline* pl)
+{
   Cut::iterator it = this->find(pl);
-  if (it != (Cut::iterator) NULL)
-    this->std::vector<Polyline *>::erase(it);
+  if (it != (Cut::iterator) NULL) {
+    this->polylines.erase(it);
+  }
 }
 
 bool Cut::contains(Polyline* pl) {
   Cut::iterator it = this->find(pl);
-  return it != (Cut::iterator) NULL && it != this->end();
+  return it != (Cut::iterator) NULL && it != this->polylines.end();
 }
 
+/*!
+  Loads vector data from EPS/Ghostscript output
+*/
 Cut *Cut::load(istream &input)
 {
   Cut *cut = new Cut();
@@ -46,9 +52,7 @@ Cut *Cut::load(istream &input)
   int power, x, y;
   int lx, ly;
   int mx, my;
-  Vertex *start;
-  Vertex *end;
-  Mesh& mesh = cut->getMesh();
+  Mesh &mesh = cut->mesh;
 
   while (std::getline(input, line)) {
     first = line[0];
@@ -93,24 +97,26 @@ Cut *Cut::load(istream &input)
   return cut;
 }
 
+/*!
+  Loads vector data from EPS/Ghostscript output from the given file
+*/
 Cut *Cut::load(const string &filename)
 {
   ifstream infile(filename.c_str(), ios_base::in);
   return Cut::load(infile);
 }
 
-void Cut::xml(std::string s) {
+void Cut::xml(const std::string &s) const {
   ofstream os(s.c_str(), ios_base::out);
-  Cut c = *((Cut*)this);
-  os << c;
+  os << *this;
   os.close();
 }
 
-ostream& operator<< (ostream &os, Cut &cut) {
+ostream &operator<<(ostream &os, const Cut &cut) {
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
-  os << "<polylines cnt=\"" << cut.size() << "\" >" << std::endl;
-  for(Cut::iterator it = cut.begin(); it != cut.end(); it++) {
-    os << *((Polyline*)*it);
+  os << "<polylines cnt=\"" << cut.polylines.size() << "\" >" << std::endl;
+  for (Cut::const_iterator it = cut.polylines.begin(); it != cut.polylines.end(); it++) {
+    os << **it;
   }
   os << "</polylines>" << std::endl;
 

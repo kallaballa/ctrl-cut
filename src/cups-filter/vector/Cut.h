@@ -22,18 +22,31 @@
 #include <fstream>
 #include <iostream>
 #include "boost/format.hpp"
-#include "Polyline.h"
 #include "Mesh.h"
 
 #ifndef VECTOR_POWER_DEFAULT
 #define VECTOR_POWER_DEFAULT (80)
 #endif
 
-class Cut : public std::vector<Polyline *> {
+class Cut
+{
 public:
-  Mesh& getMesh() {
-    return this->mesh;
-  }
+  typedef std::vector<class Polyline*> PolylineVector;
+  typedef PolylineVector::iterator iterator;
+  typedef PolylineVector::const_iterator const_iterator;
+
+  Cut() : clipped(false) {}
+  virtual ~Cut() {}
+
+  iterator begin() { return this->polylines.begin(); }
+  const_iterator begin() const  { return this->polylines.begin(); }
+  iterator end() { return this->polylines.end(); }
+  const_iterator end() const  { return this->polylines.end(); }
+  size_t size() const { return this->polylines.size(); }
+  void swap(PolylineVector &v) { this->polylines.swap(v); }
+
+  Mesh &getMesh() { return this->mesh; }
+  const Mesh &getMesh() const { return this->mesh; }
 
   static Cut* load(const std::string &filename);
   static Cut* load(std::istream &input);
@@ -43,7 +56,7 @@ public:
   bool contains(Polyline* ls);
 
   Cut::iterator find(Polyline* e) {
-    for (Cut::iterator it = this->begin(); it != this->end(); it++) {
+    for (Cut::iterator it = this->polylines.begin(); it != this->polylines.end(); it++) {
       if (*it == e)
         return it;
     }
@@ -52,16 +65,16 @@ public:
   bool wasClipped() const {
     return this->clipped;
   }
-  void xml(std::string s);
+  void xml(const std::string &s) const;
   // Print debug info
   void print(std::ostream &stream);
-  friend std::ostream& operator <<(std::ostream &os, Cut &cut);
-  Cut() : clipped(false) {}
-  virtual ~Cut() {}
+
+  friend ostream &operator<<(ostream &os, const Cut &cut);
 private:
   bool clipped;
   Mesh mesh;
-};
 
+  PolylineVector polylines;
+};
 
 #endif

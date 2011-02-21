@@ -57,16 +57,16 @@ void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequenc
   edge->end = end;
   end->attach(edge);
 
-  this->std::list<Edge *>::push_back(edge);
+  this->edges.push_back(edge);
 }
 
 void Mesh::remove(Edge* e) {
-  this->std::list<Edge *>::remove(e);
+  this->edges.remove(e);
 }
 
 Mesh::iterator Mesh::eliminate(Mesh::iterator it_e) {
   (*it_e)->detach();
-  return this->std::list<Edge *>::erase(it_e);
+  return this->edges.erase(it_e);
 }
 
 Vertex* Mesh::mapVertex(Vertex *p)
@@ -81,17 +81,17 @@ Vertex* Mesh::mapVertex(Vertex *p)
   return p;
 }
 
-ostream& operator<< (ostream &os, Mesh &mesh) {
+ostream& operator<< (ostream &os, const Mesh &mesh) {
   os << "<mesh>" << std::endl;
-  os << "<edges cnt=\"" << mesh.size() << "\" >" << std::endl;
-  for(Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
-    os << *((Edge*)*it);
+  os << "<edges cnt=\"" << mesh.edges.size() << "\" >" << std::endl;
+  for(Mesh::EdgeList::const_iterator it = mesh.edges.begin(); it != mesh.edges.end(); it++) {
+    os << **it;
   }
   os << "</edges>" << std::endl;
-  map<string, Vertex* >& vertices = mesh.getVertexMap();
+  const map<string, Vertex* > &vertices = mesh.getVertexMap();
 
   os << "<vertices cnt=\"" << vertices.size() << "\" >" << std::endl;
-  for (map<string, Vertex*>::iterator it = vertices.begin(); it != vertices.end(); it++) {
+  for (map<string, Vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); it++) {
     Vertex* vec = (Vertex*) (*it).second;
     os << *vec;
   }

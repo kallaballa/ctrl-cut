@@ -29,22 +29,33 @@ using std::map;
 using std::list;
 using std::pair;
 
-class Mesh : public list<Edge *> {
+class Mesh {
 public:
-  map<string, Vertex*>& getVertexMap(){
+  typedef list<Edge*> EdgeList;
+  typedef EdgeList::iterator iterator;
+  typedef EdgeList::const_iterator const_iterator;
+
+  Mesh() {};
+  virtual ~Mesh() {};
+
+  iterator begin() { return this->edges.begin(); }
+  const_iterator begin() const  { return this->edges.begin(); }
+  iterator end() { return this->edges.end(); }
+  const_iterator end() const  { return this->edges.end(); }
+  size_t size() const { return this->edges.size(); }
+
+  const map<string, Vertex*>& getVertexMap() const {
     return this->vertices;
   }
   void create(int startX, int startY, int endX, int endY, int power = -1, int speed = -1, int frequency = -1);
   void create(Vertex *start, Vertex *end, int power = -1, int speed = -1, int frequency = -1);
   void remove(Edge *e);
-  Mesh::iterator eliminate(Mesh::iterator it_e);
+  iterator eliminate(iterator it_e);
 
-  Mesh() {};
-  virtual ~Mesh() {};
-
-  friend std::ostream& operator <<(std::ostream &os, Mesh &mesh);
+  friend std::ostream& operator <<(std::ostream &os, const Mesh &mesh);
 private:
   map<string, Vertex* > vertices;
+  EdgeList edges;
 
   Vertex* mapVertex(Vertex* p);
 };

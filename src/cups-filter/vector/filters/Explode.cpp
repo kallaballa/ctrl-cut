@@ -40,7 +40,7 @@ void Explode::filter(Cut *cut) {
   Mesh::iterator it_j;
 
   int cntLines = 0;
-  Mesh& mesh = cut->getMesh();
+  Mesh &mesh = cut->getMesh();
   for (it_i = mesh.begin(); it_i != mesh.end(); it_i++) {
     cntLines++;
 

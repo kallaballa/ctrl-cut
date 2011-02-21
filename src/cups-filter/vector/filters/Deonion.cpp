@@ -83,7 +83,7 @@ void Deonion::filter(Cut *cut)
   LOG_INFO_MSG("Deonion", cut->size());
 
   Polyline* p;
-  vector<Polyline*>* skins = new vector<Polyline*>();
+  Cut::PolylineVector skins;
 
   for (Cut::iterator it_c = cut->begin(); it_c != cut->end(); it_c++) {
     p = *it_c;
@@ -91,10 +91,9 @@ void Deonion::filter(Cut *cut)
     while (p->size() > 0) {
       Polyline *skin = new Polyline();
       walkTheEdge(p, skin, p->findLeftmostClockwise(), true);
-      skins->push_back(skin);
+      skins.push_back(skin);
     }
 
   }
-  cut->swap(*skins);
-  delete skins;
+  cut->swap(skins);
 }
