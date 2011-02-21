@@ -18,6 +18,7 @@
  */
 #include "Driver.h"
 #include "LaserJob.h"
+#include "vector/Cut.h"
 #include "vector/filters/Filters.h"
 
 Driver::Driver() : dumpxml(false)
