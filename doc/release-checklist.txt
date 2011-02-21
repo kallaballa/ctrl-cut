@@ -9,6 +9,7 @@ o FIXME: Update version numbers
   ./packaging/Ctrl-Cut.pmdoc (increase all Package Version number - just increase, not sync with Ctrl-Cut version)
 o FIXME: Update release notes
 o git tag "ctrl-cut-$VERSION"
+  git push --tags
 o Create source package
   git archive --format=tar ctrl-cut-$VERSION  --prefix=ctrl-cut-$VERSION/ | gzip > ctrl-cut-$VERSION.tar.gz
 
