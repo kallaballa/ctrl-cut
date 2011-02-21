@@ -1,6 +1,7 @@
 #!/bin/sh
 
-VERSION=`date "+%Y.%m.%d"`
+VERSION=0.1
+#VERSION=`date "+%Y.%m.%d"`
 #VERSION=2011.02
 
 # This is the same location as DEPLOYDIR in macosx-build-dependencies.sh
@@ -50,8 +51,6 @@ gzip "root/ppd/Epilog Legend 36EXT"
 
 # Build package
 /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut-$VERSION.pkg
-
-rm -r root
 
 hdiutil create Ctrl-Cut-$VERSION.dmg -ov -srcfolder Ctrl-Cut-$VERSION.pkg -format UDZO -volname Ctrl-Cut
 hdiutil internet-enable -yes -quiet Ctrl-Cut-$VERSION.dmg

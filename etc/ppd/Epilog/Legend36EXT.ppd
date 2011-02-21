@@ -23,7 +23,7 @@
 *cupsFilter: "application/vnd.cups-postscript          0       ctrl-cut"
 
 *% Provide icon (Apple extension)
-*APPrinterIconPath: "/Library/Printers/CtrlCut/Icons/EpilogLegend36EXT.icns"
+*APPrinterIconPath: "/Library/Printers/Ctrl-Cut/Icons/EpilogLegend36EXT.icns"
 
 *% Epilog doesn't support SNMP
 *% FIXME: Only available in CUPS >= 1.4
