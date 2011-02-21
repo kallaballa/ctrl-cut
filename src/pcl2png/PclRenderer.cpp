@@ -121,7 +121,7 @@ int mains(int argc, char *argv[]) {
 
   std::map<string, PclToken*>::iterator it;
   for (it = parameters.begin(); it != parameters.end(); it++) {
-    cerr << "param: " << (*it).first << std::endl;
+//    cerr << "param: " << (*it).start << std::endl;
   }
 
   PclToken* height = parameters["*rT"];

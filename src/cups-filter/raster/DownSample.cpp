@@ -52,50 +52,8 @@ DownSample::DownSample(BBox* bbox, uint16_t res_x, uint16_t res_y,
   this->boundingBox.lr_x = bbox->ul_x + pixel_width;
   this->boundingBox.lr_y = bbox->ul_y + pixel_height;
   this->image = NULL;
-  sample(bbox);
 }
 
-
-bool DownSample::sample(BBox* region) {
-  if (!boundingBox.inside(region->ul_x, region->ul_y, region->lr_x
-      + (pixel_width * tolerance), region->lr_y + (pixel_height * tolerance)))
-    return false;
-  else {
-    uint16_t rwidth = region->lr_x - region->ul_x;
-    uint16_t rheight = region->lr_y - region->ul_y;
-    uint16_t cx = 0;
-    uint16_t cy = 0;
-
-    for (int j = 0; j < rheight; j += pixel_height) {
-      for (int i = 0; i < rwidth; i += pixel_width) {
-        cx = (region->ul_x + i) / pixel_width;
-        cy = (region->ul_y + j) / pixel_height;
-
-        //TODO figure appropriate growth rate
-        if (image == NULL || cx >= this->res_x || cy >= this->res_y) {
-          uint16_t ncx = max(this->res_x, (cx));
-          uint16_t ncy = max(this->res_y, (cy));
-          resize(ncx * 2, ncy * 2);
-        }
-
-        PixelBox* pb = (*image)[cx][cy];
-
-        if (pb == NULL) {
-          uint16_t ul_x = cx * pixel_width;
-          uint16_t ul_y = cy * pixel_height;
-          uint16_t lr_x = ul_x + pixel_width;
-          uint16_t lr_y = ul_y + pixel_height;
-          pb = new PixelBox(ul_x, ul_y, lr_x, lr_y);
-          (*image)[cx][cy] = pb;
-        }
-
-        boundingBox.adjustTo(pb);
-        pixelBoxes.push_back(pb);
-      }
-    }
-  }
-  return true;
-}
 
   bool DownSample::sample(Point2D* p) {
     if (!boundingBox.inside(p->x, p->y, pixel_width * tolerance, pixel_height
