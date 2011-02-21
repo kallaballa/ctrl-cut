@@ -49,7 +49,7 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
     for (Polyline::iterator it_s = p->begin(); it_s != p->end(); it_s++) {
       edge = *it_s;
 
-      int power = edge->power;
+      int power = (edge->power != -1) ? edge->power : this->lconf->vector_power;
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;

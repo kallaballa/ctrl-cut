@@ -34,8 +34,8 @@ public:
   map<string, Vertex*>& getVertexMap(){
     return this->vertices;
   }
-  void create(int startX, int startY, int endX, int endY, int power = 0, int speed = 0, int frequency = 0);
-  void create(Vertex *start, Vertex *end, int power = 0, int speed = 0, int frequency = 0);
+  void create(int startX, int startY, int endX, int endY, int power = -1, int speed = -1, int frequency = -1);
+  void create(Vertex *start, Vertex *end, int power = -1, int speed = -1, int frequency = -1);
   void remove(Edge *e);
   Mesh::iterator eliminate(Mesh::iterator it_e);
 
