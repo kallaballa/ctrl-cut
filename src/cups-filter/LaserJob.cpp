@@ -19,6 +19,7 @@
 #define PJL_PARAM
 
 #include "LaserJob.h"
+#include "vector/Cut.h"
 
 using boost::format;
 

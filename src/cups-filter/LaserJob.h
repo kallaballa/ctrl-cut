@@ -10,7 +10,6 @@
 
 #include "util/PJL.h"
 #include "util/LaserConfig.h"
-#include "vector/Cut.h"
 #include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
 #include "raster/PclEncoder.h"
@@ -24,7 +23,7 @@ public:
   string user;   /*! User name that submitted the print job. */
   string title;  /*! Title for the print job. */
 
-  list<Cut*> cuts;
+  list<class Cut*> cuts;
   list<Raster*> rasters;
   LaserConfig *lconf;
 
