@@ -159,18 +159,7 @@ bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap,
 #endif
 
 /*!
- Copy supported options into the supplied laser_config:
-
- VectorPower=98
- PageSize=LaserBed
- Resolution=75
- RasterSpeed=9
- AutoFocus
- number-up=1
- RasterPower=99
- VectorMode=Engrave
- VectorSpeed=8
- RasterMode=Color
+ Copy supported options into the supplied laser_config
  */
 void process_print_job_options(cups_option_t *options, int numOptions,
     LaserConfig *lconf) {

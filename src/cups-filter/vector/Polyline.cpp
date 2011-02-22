@@ -18,6 +18,7 @@
  */
 #include "Polyline.h"
 #include "Edge.h"
+#include "Vertex.h"
 #include <assert.h>
 
 int Polyline::cnt = 0;

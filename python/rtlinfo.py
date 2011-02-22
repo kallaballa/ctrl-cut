@@ -66,6 +66,27 @@ def usage():
     print >> sys.stderr, "  -v           Verbose"
     print >> sys.stderr, "  -c           Crop result"
 
+def getStatistics(rtlfile):
+    parser = RTLParser(verbose=verbose)
+    parser.registerHandler("YP", handleYP)
+    parser.registerHandler("ZS", handleZS)
+    parser.registerHandler("XR", handleXR)
+    parser.registerHandler("PU", handlePU)
+    parser.registerHandler("PD", handlePD)
+    parser.parse(rtlfile)
+    totlength = 0
+    segments = 0
+    for i in range(len(polylines)):
+        pl = polylines[i]
+        length = pl.length()
+        totlength += length
+        segments += pl.numVertices() - 1
+        if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
+    totlength = (totlength * 25.4 / 600) 
+
+    return (len(polylines), totlength * 25.4 / 600, segments, parser.bbox)
+
+
 if __name__ == "__main__":
 
     try:
@@ -96,68 +117,46 @@ if __name__ == "__main__":
 
     global pd_was_seen
     pd_was_seen = False;
-    parser = RTLParser(verbose=verbose)
-    parser.registerHandler("YP", handleYP)
-    parser.registerHandler("ZS", handleZS)
-    parser.registerHandler("XR", handleXR)
-    parser.registerHandler("PU", handlePU)
-    parser.registerHandler("PD", handlePD)
-    parser.parse(rtlfile)
 
-    totlength = 0
-    for i in range(len(polylines)):
-        pl = polylines[i]
-        length = pl.length()
-        totlength += length
-        if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
-    totlength = (totlength * 25.4 / 600) 
+    stats = getStatistics(rtlfile)
 
     if len(args) == 1:
-        print "polylines: %d" % (len(polylines))
-        print "length: %.2f" % (totlength * 25.4 / 600) 
-        print "boundingbox: %s" % (" ".join(map(str, sum(parser.bbox, []))))
+        print "polylines: %d" % (stats[0])
+        print "length: %.2f" % (stats[1])
+        print "segments: %d" % (stats[2])
+        print "boundingbox: %s" % (" ".join(map(str, sum(stats[3], []))))
     else:
         first_polylines = polylines
-        first_bbox = parser.bbox
-        first_totlength = totlength
 
         polylines = []
-        parser.reset()
-        parser.parse(second_rtlfile)
-
-        second_polylines = polylines
-        second_bbox = parser.bbox
-        second_totlength = 0
-        for i in range(len(second_polylines)):
-            pl = second_polylines[i]
-            length = pl.length()
-            second_totlength += length
-            if verbose: print "%d: %.2f (%d)" % (i, length, pl.numVertices())
-        second_totlength = (second_totlength * 25.4 / 600) 
-
-#        print "second polylines: %d" % (len(second_polylines))
-#        print "second length: %.2f" % (second_totlength * 25.4 / 600) 
-#        print "second boundingbox: %s" % (" ".join(map(str, sum(second_bbox, []))))
+        stats2 = getStatistics(second_rtlfile)
 
         fail = False
-        polyline_diff = abs(len(first_polylines) - len(second_polylines))
+        polyline_diff = abs(len(first_polylines) - len(polylines))
         if polyline_diff > 1:
             print str(len(first_polylines)) + "->" + str(len(second_polylines))
             fail = True
         else:
             print "0",
 
-        totlen_diff = math.fabs(first_totlength - second_totlength)
+        totlen_diff = math.fabs(stats[1] - stats2[1])
         if totlen_diff > 1:
-            print "%.2f" % (first_totlength) + "->" + "%.2f" % (second_totlength),
+            print "%.2f" % (stats[1]) + "->" + "%.2f" % (stats2[1]),
             fail = True
         else:
             print "0",
 
-        if abs(first_bbox[0][0] - second_bbox[0][0]) > 1 or \
-           abs(first_bbox[0][1] - second_bbox[0][1]) > 1 or \
-           abs(first_bbox[1][0] - second_bbox[1][0]) > 1 or \
-           abs(first_bbox[1][1] - second_bbox[1][1]) > 1:
+        segments_diff = math.fabs(stats[2] - stats2[2])
+        if segments_diff > 1:
+            print "%d" % (stats[2]) + "->" + "%d" % (stats2[2]),
+            fail = True
+        else:
+            print "0",
+
+        if abs(stats[3][0][0] - stats2[3][0][0]) > 1 or \
+           abs(stats[3][0][1] - stats2[3][0][1]) > 1 or \
+           abs(stats[3][1][0] - stats2[3][1][0]) > 1 or \
+           abs(stats[3][1][1] - stats2[3][1][1]) > 1:
             print "1"
             fail = True
         else:

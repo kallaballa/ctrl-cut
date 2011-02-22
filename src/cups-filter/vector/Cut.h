@@ -19,14 +19,9 @@
 #ifndef CUT_H_
 #define CUT_H_
 
-#include <fstream>
 #include <iostream>
-#include "boost/format.hpp"
+#include <vector>
 #include "Mesh.h"
-
-#ifndef VECTOR_POWER_DEFAULT
-#define VECTOR_POWER_DEFAULT (80)
-#endif
 
 class Cut
 {
@@ -53,28 +48,20 @@ public:
 
   void add(Polyline* ls);
   void remove(Polyline* ls);
-  bool contains(Polyline* ls);
+  bool contains(Polyline* ls) const;
 
-  Cut::iterator find(Polyline* e) {
-    for (Cut::iterator it = this->polylines.begin(); it != this->polylines.end(); it++) {
-      if (*it == e)
-        return it;
-    }
-    return (Cut::iterator)NULL;
-  }
   bool wasClipped() const {
     return this->clipped;
   }
   void xml(const std::string &s) const;
-  // Print debug info
-  void print(std::ostream &stream);
 
-  friend ostream &operator<<(ostream &os, const Cut &cut);
 private:
   bool clipped;
   Mesh mesh;
 
   PolylineVector polylines;
 };
+
+std::ostream &operator<<(std::ostream &os, const Cut &cut);
 
 #endif

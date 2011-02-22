@@ -20,6 +20,7 @@
 #include <iostream>
 #include "util/Logger.h"
 #include "vector/Edge.h"
+#include "vector/Vertex.h"
 #include "vector/Polyline.h"
 #include "vector/Cut.h"
 #include "Deonion.h"

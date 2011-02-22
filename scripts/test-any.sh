@@ -86,7 +86,7 @@ runtest()
     # Compare bboxes, number of polylines and total cut length
     rtlcompare=`python/rtlinfo.py $prnfile $outfile`
 
-    bbox_diff=`echo $rtlcompare | awk '{print $3}'`
+    bbox_diff=`echo $rtlcompare | awk '{print $4}'`
     if [ $bbox_diff != "0" ]; then
         bboxstr="Err"
     else

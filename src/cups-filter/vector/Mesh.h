@@ -22,8 +22,7 @@
 
 #include <map>
 #include <list>
-#include "Vertex.h"
-#include "Edge.h"
+#include <string>
 
 using std::map;
 using std::list;
@@ -31,9 +30,10 @@ using std::pair;
 
 class Mesh {
 public:
-  typedef list<Edge*> EdgeList;
+  typedef list<class Edge*> EdgeList;
   typedef EdgeList::iterator iterator;
   typedef EdgeList::const_iterator const_iterator;
+  typedef map<std::string, class Vertex*> VertexMap;
 
   Mesh() {};
   virtual ~Mesh() {};
@@ -44,20 +44,23 @@ public:
   const_iterator end() const  { return this->edges.end(); }
   size_t size() const { return this->edges.size(); }
 
-  const map<string, Vertex*>& getVertexMap() const {
+  const VertexMap &getVertexMap() const {
     return this->vertices;
   }
-  void create(int startX, int startY, int endX, int endY, int power = -1, int speed = -1, int frequency = -1);
-  void create(Vertex *start, Vertex *end, int power = -1, int speed = -1, int frequency = -1);
+  void create(int startX, int startY, int endX, int endY, 
+              int power = -1, int speed = -1, int frequency = -1);
+  void create(Vertex *start, Vertex *end,
+              int power = -1, int speed = -1, int frequency = -1);
   void remove(Edge *e);
-  iterator eliminate(iterator it_e);
+  iterator eliminate(iterator it);
 
-  friend std::ostream& operator <<(std::ostream &os, const Mesh &mesh);
 private:
-  map<string, Vertex* > vertices;
+  VertexMap vertices;
   EdgeList edges;
 
-  Vertex* mapVertex(Vertex* p);
+  Vertex *mapVertex(Vertex *p);
 };
+
+std::ostream& operator <<(std::ostream &os, const Mesh &mesh);
 
 #endif /* MESH_H_ */

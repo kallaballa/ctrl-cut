@@ -1,0 +1,14 @@
+AutoFocus / noAutoFocus
+Resolution=75/150/300/600/1200
+RasterSpeed=[0-1000]
+RasterPower=[0-100]
+RasterMode
+RasterRepeat
+VectorSpeed=[0-100]
+VectorPower=[0-100]
+VectorFrequency=[0-5000]
+VectorOptimize=0/1/2
+FlipX / noFlipX
+Debug / noDebug
+EnableRaster / noEnableRaster
+EnableVector / noEnableVector
