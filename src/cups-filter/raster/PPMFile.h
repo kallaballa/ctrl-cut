@@ -30,7 +30,9 @@
 using namespace std;
 
 Image* loadppm(string filename) {
-	char buf[PPMREADBUFLEN], *t;
+  LOG_DEBUG_MSG("loading: ", filename);
+
+  char buf[PPMREADBUFLEN], *t;
 	unsigned int w, h, d;
 	int r;
 	int data_offset = 0;
