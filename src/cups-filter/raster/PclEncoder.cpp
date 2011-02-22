@@ -45,9 +45,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
       / POINTS_PER_INCH);
   // Raster compression
-  int compressionLevel = 2;
-  if (lconf->raster_mode == 'c' || lconf->raster_mode == 'g')
-    compressionLevel = 7;
+  int compressionLevel = 7;
 
   out << format(R_COMPRESSION) % compressionLevel;
   // Raster direction (1 = up)
