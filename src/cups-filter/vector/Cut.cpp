@@ -20,6 +20,7 @@
 #include "Vertex.h"
 #include "Edge.h"
 #include "Polyline.h"
+#include <algorithm>
 
 using boost::format;
 
@@ -30,15 +31,15 @@ void Cut::add(Polyline* pl)
 
 void Cut::remove(Polyline* pl)
 {
-  Cut::iterator it = this->find(pl);
-  if (it != (Cut::iterator) NULL) {
+  Cut::iterator it = find(this->begin(), this->end(), pl);
+  if (it != this->end()) {
     this->polylines.erase(it);
   }
 }
 
-bool Cut::contains(Polyline* pl) {
-  Cut::iterator it = this->find(pl);
-  return it != (Cut::iterator) NULL && it != this->polylines.end();
+bool Cut::contains(Polyline* pl) const {
+  Cut::const_iterator it = find(this->begin(), this->end(), pl);
+  return it != this->end();
 }
 
 /*!

@@ -53,15 +53,8 @@ public:
 
   void add(Polyline* ls);
   void remove(Polyline* ls);
-  bool contains(Polyline* ls);
+  bool contains(Polyline* ls) const;
 
-  Cut::iterator find(Polyline* e) {
-    for (Cut::iterator it = this->polylines.begin(); it != this->polylines.end(); it++) {
-      if (*it == e)
-        return it;
-    }
-    return (Cut::iterator)NULL;
-  }
   bool wasClipped() const {
     return this->clipped;
   }
