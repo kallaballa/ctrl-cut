@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "Edge.h"
+#include "Vertex.h"
 
 // initialize counter
 int Edge::cnt = 0;
@@ -97,7 +98,7 @@ Vertex* Edge::intersects(Edge *otherLine) {
   return NULL; //NOT_INTERSECTING;
 }
 
-ostream& operator <<(ostream &os, Edge &e) {
+std::ostream &operator<<(std::ostream &os, const Edge &e) {
   os << "<edge power=\"" << e.power << "\" id=\"" << e.id << "\" >" << std::endl;
   os << *e.start;
   os << *e.end;

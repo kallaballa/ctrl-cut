@@ -16,11 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "Vertex.h"
+#include "Edge.h"
+
 #include <set>
 #include <string>
 #include <sstream>
 #include <iostream>
-#include "Edge.h"
 
 int Vertex::cnt = 0;
 
@@ -42,24 +44,12 @@ void Vertex::updateKey() {
   this->key += out.str();
 }
 
-Vertex::~Vertex() {
-}
-
 void Vertex::attach(Edge* ls) {
-  this->std::set<Edge*>::insert(ls);
+  this->edges.insert(ls);
 }
 
 void Vertex::detach(Edge* ls) {
-  this->std::set<Edge*>::erase(ls);
-}
-
-
-int Vertex::getX() {
-  return this->x;
-}
-
-int Vertex::getY() {
-  return this->y;
+  this->edges.erase(ls);
 }
 
 void Vertex::setX(int x, bool update) {
@@ -74,16 +64,12 @@ void Vertex::setY(int y, bool update) {
     updateKey();
 }
 
-std::string Vertex::getKey() {
+const std::string &Vertex::getKey() const {
   return this->key;
 }
 
-bool Vertex::equals(Vertex *other) {
-  return x == other->x && y == other->y;
-}
-
-ostream& operator <<(ostream &os,const Vertex &v) {
-  os << "<vertex x=\"" << v.x << "\" y=\"" << v.y << "\" id=\"" << v.id
-     << "\" key=\"" << v.key << "\" />" << std::endl;
+std::ostream &operator<<(std::ostream &os, const Vertex &v) {
+  os << "<vertex x=\"" << v.getX() << "\" y=\"" << v.getY() << "\" id=\"" << v.getID()
+     << "\" key=\"" << v.getKey() << "\" />" << std::endl;
   return os;
 }

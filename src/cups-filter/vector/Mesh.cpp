@@ -87,7 +87,7 @@ Vertex *Mesh::mapVertex(Vertex *p)
   return p;
 }
 
-ostream& operator<<(ostream &os, const Mesh &mesh) {
+std::ostream &operator<<(std::ostream &os, const Mesh &mesh) {
   os << "<mesh>" << std::endl;
   os << "<edges cnt=\"" << mesh.size() << "\" >" << std::endl;
   for(Mesh::EdgeList::const_iterator it = mesh.begin(); it != mesh.end(); it++) {

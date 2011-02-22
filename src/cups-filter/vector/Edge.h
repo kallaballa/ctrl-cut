@@ -6,11 +6,10 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include "Vertex.h"
 
 class Edge {
 public:
-  Vertex* start;
+  class Vertex* start;
   Vertex* end;
   int power;
   int speed;
@@ -22,7 +21,7 @@ public:
   Vertex *intersects(Edge *otherLine);
   void detach();
 
-  friend ostream& operator <<(ostream &os, Edge &e);
+  friend std::ostream &operator<<(std::ostream &os, const Edge &e);
 
   Edge(Vertex *start, Vertex *end, int power=0, int speed=0, int frequency=0) : start(start), end(end), power(power), speed(speed), frequency(frequency) {
     this->id = cnt++;

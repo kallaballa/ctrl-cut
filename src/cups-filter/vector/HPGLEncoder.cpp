@@ -19,6 +19,7 @@
 #include "HPGLEncoder.h"
 #include "Polyline.h"
 #include "Edge.h"
+#include "Vertex.h"
 #include "Cut.h"
 #include "boost/format.hpp"
 
