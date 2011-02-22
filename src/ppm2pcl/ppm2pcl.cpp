@@ -104,7 +104,22 @@ int main(int argc, char **argv) {
   lconf.resolution = resolution;
   lconf.raster_speed = speed;
   lconf.raster_power = power;
+  lconf.enable_raster = true;
+  lconf.enable_vector = true;
 
+  LOG_DEBUG(lconf.focus);
+  LOG_DEBUG(lconf.resolution);
+  LOG_DEBUG(lconf.raster_speed);
+  LOG_DEBUG(lconf.raster_power);
+  LOG_DEBUG(lconf.raster_mode);
+  LOG_DEBUG(lconf.raster_repeat);
+  LOG_DEBUG(lconf.vector_speed);
+  LOG_DEBUG(lconf.vector_power);
+  LOG_DEBUG(lconf.vector_freq);
+  LOG_DEBUG(lconf.vector_optimize);
+  LOG_DEBUG(lconf.flip);
+  LOG_DEBUG(lconf.enable_raster);
+  LOG_DEBUG(lconf.enable_vector);
   LaserJob job(&lconf, "ppm2pcl", "convert", *ifilename);
   Raster *raster = Raster::load(*ifilename);
   raster->addTile(raster->sourceImage);

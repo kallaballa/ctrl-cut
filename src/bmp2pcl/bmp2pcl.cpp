@@ -676,6 +676,13 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
+  if (optind + 1 < argc) {
+    ofilename = new string(argv[optind + 1]);
+  } else {
+    ofilename = new string("/dev/stdout");
+    exit(1);
+  }
+
   laser_config lconf;
   init_laser_config(&lconf);
   lconf.width = width;
