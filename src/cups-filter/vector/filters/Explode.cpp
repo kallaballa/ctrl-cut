@@ -21,6 +21,7 @@
 #include "vector/Edge.h"
 #include "vector/Cut.h"
 #include "Explode.h"
+#include <boost/format.hpp>
 
 using boost::format;
 

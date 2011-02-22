@@ -20,7 +20,10 @@
 #include "Vertex.h"
 #include "Edge.h"
 #include "Polyline.h"
+
+#include <fstream>
 #include <algorithm>
+#include <boost/format.hpp>
 
 using boost::format;
 
@@ -81,7 +84,7 @@ Cut *Cut::load(istream &input)
         if (sscanf(line.c_str() + 1, "%d", &x) == 1) {
           // FIXME: While testing, ignore the strange color-intensity-is-power convension
           //          power = x;
-          power = VECTOR_POWER_DEFAULT;
+          power = -1;
         }
         break;
       case 'L': // line to
@@ -115,8 +118,8 @@ void Cut::xml(const std::string &s) const {
 
 ostream &operator<<(ostream &os, const Cut &cut) {
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
-  os << "<polylines cnt=\"" << cut.polylines.size() << "\" >" << std::endl;
-  for (Cut::const_iterator it = cut.polylines.begin(); it != cut.polylines.end(); it++) {
+  os << "<polylines cnt=\"" << cut.size() << "\" >" << std::endl;
+  for (Cut::const_iterator it = cut.begin(); it != cut.end(); it++) {
     os << **it;
   }
   os << "</polylines>" << std::endl;

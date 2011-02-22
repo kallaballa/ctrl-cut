@@ -11,7 +11,7 @@ using std::ostream;
 using std::string;
 
 class Edge;
-class Vertex : public set<Edge*> {
+class Vertex : public std::set<Edge*> {
 public:
   Vertex(int x, int y);
   virtual ~Vertex();
@@ -20,7 +20,7 @@ public:
   void setX(int x, bool updateKey=true);
   void setY(int y, bool updateKey=true);
   bool equals(Vertex *other);
-  string getKey();
+  std::string getKey();
 
   void attach(class Edge *ls);
   void detach(Edge *ls);
@@ -40,7 +40,7 @@ private:
   int id;
   int x;
   int y;
-  string key;
+  std::string key;
 
   void updateKey();
 };

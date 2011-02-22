@@ -8,8 +8,6 @@
 #include <iostream>
 #include "Vertex.h"
 
-using std::pair;
-
 class Edge {
 public:
   Vertex* start;

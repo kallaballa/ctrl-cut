@@ -19,14 +19,9 @@
 #ifndef CUT_H_
 #define CUT_H_
 
-#include <fstream>
 #include <iostream>
-#include "boost/format.hpp"
+#include <vector>
 #include "Mesh.h"
-
-#ifndef VECTOR_POWER_DEFAULT
-#define VECTOR_POWER_DEFAULT (80)
-#endif
 
 class Cut
 {
@@ -59,15 +54,14 @@ public:
     return this->clipped;
   }
   void xml(const std::string &s) const;
-  // Print debug info
-  void print(std::ostream &stream);
 
-  friend ostream &operator<<(ostream &os, const Cut &cut);
 private:
   bool clipped;
   Mesh mesh;
 
   PolylineVector polylines;
 };
+
+std::ostream &operator<<(std::ostream &os, const Cut &cut);
 
 #endif
