@@ -28,11 +28,6 @@ using boost::format;
 using std::istringstream;
 using std::string;
 
-LogLevel cc_loglevel = (LogLevel)DEBUG;
-
-/** Temporary buffer for building our strings. */
-char buf[102400];
-
 int stringtoint(string s) {
   istringstream iss(s);
   int i;

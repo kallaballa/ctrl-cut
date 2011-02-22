@@ -57,14 +57,13 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|raster/filter|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="cups-filter/tools|cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|raster/filter|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
 				<externalSettings containerId="COTD;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 			<storageModule moduleId="scannerConfiguration">
@@ -647,6 +646,18 @@
 						</scannerInfoProvider>
 					</profile>
 				</scannerConfigBuildInfo>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+				<buildTargets>
+					<target name="bmp2pcl" path="src/cups-filter/tools" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments>-j</buildArguments>
+						<buildTarget>bmp2pcl</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>true</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+				</buildTargets>
 			</storageModule>
 		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.release.585713042">
@@ -691,12 +702,11 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|raster|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="cups-filter/tools|cups-filter/raster/filter|lpd-epilog|lpd-epilog/lpd.c|svg2pdf/svg2pdf.c|geom.c|tools/Delme.h|CuttingOptimizer.cpp|CupsParser.h|FilterChain.cpp|cups-epilog.cpp|TileMarker.cpp|CuttingOptimizer.c|geom.h|PrinterConnection.cpp|PCLTiffEncoder.h|CupsParser.cpp|tools/Delme.cpp|raster/bak|raster|CuttingOptimizer.h|PCLTiffEncoder.cpp|point_map.c|cutting_optimizer.h|FilterChain.h|cups_epilog.h|TileMarker.h|PrinterConnection.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
-			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 			<storageModule moduleId="scannerConfiguration">
@@ -1279,6 +1289,18 @@
 						</scannerInfoProvider>
 					</profile>
 				</scannerConfigBuildInfo>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+				<buildTargets>
+					<target name="bmp2pcl" path="src/cups-filter/tools" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+						<buildCommand>make</buildCommand>
+						<buildArguments>-j</buildArguments>
+						<buildTarget>bmp2pcl</buildTarget>
+						<stopOnError>true</stopOnError>
+						<useDefaultCommand>true</useDefaultCommand>
+						<runAllBuilders>true</runAllBuilders>
+					</target>
+				</buildTargets>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>
