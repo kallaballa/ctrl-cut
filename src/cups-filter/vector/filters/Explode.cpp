@@ -22,44 +22,27 @@
 #include "vector/Vertex.h"
 #include "vector/Cut.h"
 #include "Explode.h"
-#include <boost/format.hpp>
-
-using boost::format;
-
-Explode::~Explode() {
-}
 
 /*
  * Split edges at intersection points.
  */
-void Explode::filter(Cut *cut) {
+void Explode::filter(Cut *cut)
+{
   LOG_INFO_STR("Explode");
 
   Vertex *intersec = NULL;
   Edge *pick, *candidate;
 
-  Mesh::iterator it_i;
-  Mesh::iterator it_j;
-
-  int cntLines = 0;
   Mesh &mesh = cut->getMesh();
-  for (it_i = mesh.begin(); it_i != mesh.end(); it_i++) {
-    cntLines++;
-
-    for (it_j = mesh.begin(); it_j != mesh.end(); it_j++) {
+  for (Mesh::iterator it_i = mesh.begin(); it_i != mesh.end(); it_i++) {
+    for (Mesh::iterator it_j = it_i; ++it_j != mesh.end(); ) {
       pick = *it_i;
       candidate = *it_j;
 
-      //no more free edges
-      if (it_i == mesh.end())
-        break;
-
-      // collision
-      if (pick == candidate)
-        continue;
-
       // check if pick does intersect candidate
-      if ((intersec = pick->intersects(candidate)) != NULL) {
+      if ((intersec = pick->intersects(*candidate)) != NULL) {
+
+        // FIXME: We should inherit speed and frequency too
 
         // if pick doesnt tip intersect remove it and split it in two
         if (!pick->start->equals(intersec) && !pick->end->equals(intersec)) {
@@ -69,8 +52,7 @@ void Explode::filter(Cut *cut) {
         }
 
         // if candidate doesnt tip intersect remove it and split it in two
-        if (!candidate->start->equals(intersec) && !candidate->end->equals(
-                                                                         intersec)) {
+        if (!candidate->start->equals(intersec) && !candidate->end->equals(intersec)) {
           it_j = mesh.eliminate(it_j);
           mesh.create((Vertex*) candidate->start, intersec, candidate->power);
           mesh.create((Vertex*) candidate->end, intersec, candidate->power);

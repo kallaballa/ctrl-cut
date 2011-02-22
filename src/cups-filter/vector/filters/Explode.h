@@ -3,9 +3,8 @@
 
 class Explode {
 public:
-  Explode() {
-  }
-  virtual ~Explode();
+  Explode() {}
+  virtual ~Explode() {}
   void filter(class Cut *cut);
 };
 

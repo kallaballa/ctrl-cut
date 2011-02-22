@@ -23,27 +23,20 @@
 #include "vector/Polyline.h"
 #include "vector/Cut.h"
 
-#include <boost/format.hpp>
-
-using boost::format;
-
-Join::~Join() {
-  // TODO Auto-generated destructor stub
-}
-
 /**
  * Recursive function
  */
-void find_connected(set<Edge*> *occupied, Polyline *polyline,
-                    Edge* current) {
+static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *current)
+{
   Edge* candidate;
 
-  occupied->insert(current);
+  occupied.insert(current);
 
   for (Vertex::iterator it = current->end->begin(); it != current->end->end(); it++) {
     candidate = *it;
-    if (candidate == current || occupied->find(candidate) != occupied->end())
+    if (candidate == current || occupied.find(candidate) != occupied.end()) {
       continue;
+    }
     if (candidate->start != current->end) {
       candidate->end = candidate->start;
       candidate->start = current->end;
@@ -60,28 +53,24 @@ void Join::filter(Cut *cut)
 {
   LOG_INFO_STR("Join");
 
-  set<Edge*> *occupied = new set<Edge*>();
+  set<Edge*> occupied;
 
-  Edge* ls;
-  list<Edge*>::iterator it;
-  int cnt = 0;
   Mesh mesh = cut->getMesh();
-  for (it = mesh.begin(); it != mesh.end(); it++) {
-    ls = *it;
+  for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
+    Edge *ls = *it;
 
     Polyline *polyline = new Polyline();
 
-    if (occupied->find(ls) == occupied->end()) {
+    if (occupied.find(ls) == occupied.end()) {
       polyline->add(ls);
       find_connected(occupied, polyline, ls);
       cut->add(polyline);
     }
-    cnt++;
   }
 
-  for(Cut::iterator it = cut->begin(); it != cut->end(); it++) {
+  for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     Polyline *p = *it;
-    for(Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
+    for (Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
       mesh.remove(*it_e);
     }
   }
