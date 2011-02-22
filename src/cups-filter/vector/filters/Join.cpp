@@ -28,7 +28,7 @@
  */
 static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *current)
 {
-  Edge* candidate;
+  Edge *candidate;
 
   occupied.insert(current);
 
@@ -57,13 +57,13 @@ void Join::filter(Cut *cut)
 
   Mesh mesh = cut->getMesh();
   for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
-    Edge *ls = *it;
+    Edge *edge = *it;
 
     Polyline *polyline = new Polyline();
 
-    if (occupied.find(ls) == occupied.end()) {
-      polyline->add(ls);
-      find_connected(occupied, polyline, ls);
+    if (occupied.find(edge) == occupied.end()) {
+      polyline->add(edge);
+      find_connected(occupied, polyline, edge);
       cut->add(polyline);
     }
   }
