@@ -92,9 +92,6 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  printf("s = %d, p = %d, r = %d, w = %d, h = %d, f = %s\n", speed, power,
-      resolution, width, height, ifilename);
-
   LaserConfig lconf;
   init_laser_config(&lconf);
   lconf.width = width;
@@ -102,7 +99,6 @@ int main(int argc, char **argv) {
   lconf.resolution = resolution;
   lconf.raster_speed = speed;
   lconf.raster_power = power;
-
 
   LaserJob job(&lconf, "ppm2pcl", "convert", *ifilename);
   Raster *raster = Raster::load(*ifilename);
