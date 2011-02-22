@@ -55,10 +55,7 @@ using boost::format;
 
 /** The laser cutter configuration **/
 LaserConfig lconf;
-#ifndef DEBUG
-#define DEBUG 4
-#endif
-LogLevel cc_loglevel = (LogLevel)DEBUG;
+LogLevel cc_loglevel = CC_WARNING;
 
 /** Temporary buffer for building our strings. */
 char buf[102400];
