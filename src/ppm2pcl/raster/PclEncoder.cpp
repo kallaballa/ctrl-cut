@@ -19,6 +19,11 @@
 
 #include "PclEncoder.h"
 #include "boost/format.hpp"
+#include <string>
+#include <fstream>
+
+using std::string;
+using std::ofstream;
 using boost::format;
 
 PclEncoder::PclEncoder(LaserConfig* lconf) : lconf(lconf) {
@@ -39,7 +44,6 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   // Raster speed
   out << format(R_SPEED) % lconf->raster_speed;
 
-  out << PCL_UNKNOWN_BLAFOO3;
   out << format(R_HEIGHT) % ((lconf->height * lconf->resolution)
       / POINTS_PER_INCH);
   out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
@@ -49,7 +53,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
 
   out << format(R_COMPRESSION) % compressionLevel;
   // Raster direction (1 = up)
-  out << R_DIRECTION_UP;
+  out << format(R_DIRECTION_UP) % 1;
   // start at current position
   out << R_START_AT_POS;
 
@@ -65,7 +69,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
   int height;
   int width;
   int repeat;
-
+  ofstream xmlout ("pcl.xml");
+  xmlout << "<pcl>";
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
     width = tile->width();
@@ -74,7 +79,7 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
     char buf[width];
     Pixel<uint8_t> p;
 
-    float power_scale = lconf->raster_power / (float) 255;
+    float power_scale = lconf->raster_power / (float) 100.0f;
 
     // raster (basic)
     int y;
@@ -94,27 +99,31 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
       }
 
       if (l < width) {
+        xmlout << "<sl ";
         // a line to print
         int r;
         int n;
-        char pack[sizeof(buf) * 5 / 4 + 1];
+        unsigned char pack[sizeof(buf) * 5 / 4 + 1];
         // find left/right of data (dir==0 ? right : left )
         for (r = width - 1; r > l && !buf[r]; r--) {
         }
         r++;
 
+        xmlout << "x=\"" << tile->offsetX() + lconf->basex + l << "\" y=\"" << tile->offsetY() + lconf->basey + y << "\" ";
         out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
         out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + l);
 
         if (dir) {
           //reverse scan line
+          xmlout << "pixcnt=\"" << (-(r - l)) << "\" ";
           out << format(R_ROW_PIXELS) % (-(r - l));
           for (n = 0; n < (r - l) / 2; n++) {
-            char t = buf[l + n];
+            unsigned char t = buf[l + n];
             buf[l + n] = buf[r - n - 1];
             buf[r - n - 1] = t;
           }
         } else {
+          xmlout << "pixcnt=\"" << (r - l) << "\" ";
           out << format(R_ROW_PIXELS) % (r - l);
         }
         dir = 1 - dir;
@@ -142,17 +151,18 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
           }
         }
 
+        xmlout << "bytescnt=\"" << ((n + 7) / 8 * 8) << "\" />" << std::endl;
         out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
 
         for (int i = 0; i < n; i++) {
           out << pack[i];
         }
-
-        while (r & 7) {
+        while ((r - 4) & 7) {
           r++;
           out << "\x80";
         }
       }
     }
   }
+  xmlout << "</pcl>";
 }

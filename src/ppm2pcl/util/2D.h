@@ -51,12 +51,14 @@ public:
    * calculate intensity, invert it (black -> 255, white -> 0) and apply raster power scale
    */
 	void setRGB(T* sampleOff) {
-	  float i = rf * *sampleOff + gf * *(sampleOff + 1) + bf * *(sampleOff + 2);
+	  /*float i = rf * *sampleOff + gf * *(sampleOff + 1) + bf * *(sampleOff + 2);
 
     //  just fix black instead of proper rounding to save expensive cpu time.
 	  if(i > 254.0f)
-	    i = 255;
-	  this->i = i;
+	    i = 255; */
+
+	  // assume the source image is already greyscale
+	  this->i = *sampleOff;
   }
 
 	uint8_t pclValue(float power_scale){

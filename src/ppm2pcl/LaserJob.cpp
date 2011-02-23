@@ -53,10 +53,6 @@ void LaserJob::serializeTo(ostream &out) {
   out << format(PJL_HEADER) % this->title.c_str();
   /* Set autofocus on or off. */
   out << format(PCL_AUTOFOCUS) % this->lconf->focus;
-  /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO;
-  /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO2;
   /* Left (long-edge) offset registration.  Adjusts the position of the
    * logical page across the width of the page.
    */
@@ -73,6 +69,12 @@ void LaserJob::serializeTo(ostream &out) {
   out << format(PCL_POS_Y) % 0;
   /* PCL resolution. */
   out << format(PCL_RESOLUTION) % this->lconf->resolution;
+
+  /* FIXME unknown purpose. */
+  out << PCL_UNKNOWN_BLAFOO;
+
+  /* FIXME unknown purpose. */
+  // out << PCL_UNKNOWN_BLAFOO2;
 
   /* If raster power is enabled and raster mode is not 'n' then add that
    * information to the print job.

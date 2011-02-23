@@ -27,6 +27,7 @@
 using boost::format;
 using std::istringstream;
 using std::string;
+using std::ofstream;
 
 LogLevel cc_loglevel = (LogLevel)DEBUG;
 
@@ -96,7 +97,11 @@ int main(int argc, char **argv) {
     printUsage();
     exit(1);
   }
-
+  if (optind++ < argc) {
+    ofilename = new string(argv[optind]);
+  } else {
+    ofilename = new string("/dev/stdout");
+  }
   LaserConfig lconf;
   init_laser_config(&lconf);
   lconf.width = width;
@@ -125,8 +130,10 @@ int main(int argc, char **argv) {
   raster->addTile(raster->sourceImage);
   job.addRaster(raster);
 
+  ofstream out(ofilename->c_str());
   Driver drv;
-  drv.process(&job);
+
+  drv.process(&job,out);
 
   return 0;
 }
