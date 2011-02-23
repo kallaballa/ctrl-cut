@@ -19,7 +19,14 @@
 #include "Polyline.h"
 #include "Edge.h"
 #include "Vertex.h"
+#include "raster/DownSample.h"
+
+#include "stddef.h"
+#include "climits"
+#include "iostream"
+#include <cmath>
 #include <assert.h>
+#include <algorithm>
 
 int Polyline::cnt = 0;
 
@@ -27,26 +34,32 @@ Polyline::Polyline() {
   this->id++;
 }
 
-void Polyline::add(Edge* ls) {
-  this->push_back(ls);
+bool Polyline::isClosed() const
+{
+  return this->edges.size() > 0 && this->edges.front()->start == this->edges.back()->end;
+}
+
+void Polyline::add(Edge *edge) {
+  this->edges.push_back(edge);
   this->bb.invalidate();
 }
 
-void Polyline::remove(Edge* ls) {
-  Polyline::iterator it = find(ls);
-  if (it != (Polyline::iterator) NULL) {
-    this->erase(it);
+void Polyline::remove(Edge *edge) {
+  Polyline::iterator it = find(this->edges.begin(), this->edges.end(), edge);
+  if (it != this->edges.end()) {
+    this->edges.erase(it);
     this->bb.invalidate();
   }
 }
 
-bool Polyline::contains(Edge* ls) {
-  Polyline::iterator it = find(ls);
-  return it != (Polyline::iterator) NULL && it != end();
+bool Polyline::contains(Edge *edge) {
+  Polyline::iterator it = find(this->edges.begin(), this->edges.end(), edge);
+  return it != this->edges.end();
 }
 
 
-BBox* Polyline::getBoundingBox() {
+BBox *Polyline::getBoundingBox()
+{
   if (!this->bb.isValid()) {
     Edge* e;
     Vertex* start;
@@ -90,27 +103,26 @@ Edge* Polyline::findLeftmostClockwise() {
   }
 
   // Find next clockwise edge
-  Edge *edge = NULL;
+  Edge *found = NULL;
   float steapest = 2 * M_PI;
-  Edge *ls;
   for (Vertex::iterator it_c = leftmostvertex->begin(); it_c != leftmostvertex->end(); it_c++) {
-    ls = *it_c;
+    Edge *edge = *it_c;
 
     // make sure we're pointing into the positive halfsphere
-    if (ls->start->getX() > ls->end->getX()) {
-      ls->invertDirection();
+    if (edge->start->getX() > edge->end->getX()) {
+      edge->invertDirection();
     }
 
-    float slope = ls->getSlope();
+    float slope = edge->getSlope();
     if (slope < steapest) {
       steapest = slope;
-      edge = ls;
+      found = edge;
     }
   }
 
-  assert(edge->getSlope() >= 0);
+  assert(found->getSlope() >= 0);
 
-  return edge;
+  return found;
 }
 
 ostream& operator <<(ostream &os, Polyline &pl) {
@@ -119,7 +131,7 @@ ostream& operator <<(ostream &os, Polyline &pl) {
   os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul_x=\""
       << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x
       << "\" lr_y=\"" << bb->lr_y << "\" \\>" << std::endl;
-  for (Polyline::iterator it = pl.begin(); it != pl.end(); it++) {
+  for (Polyline::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
     os << *((Edge*) *it);
   }
   os << "</polyline>" << std::endl;

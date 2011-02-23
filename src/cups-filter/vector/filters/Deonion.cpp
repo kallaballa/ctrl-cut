@@ -67,7 +67,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   if (next_edge == NULL && cw) {
     // if we traversed a closed polyline, emit a skin and continue,
     // else, we reached a possible blind alley and must backtrack
-    if ((skin->begin() != skin->end()) && (skin->front()->start == skin->back()->end)) return;
+    if (skin->isClosed()) return;
 
     edge->invertDirection();
     walkTheEdge(p, skin, edge, !cw);
