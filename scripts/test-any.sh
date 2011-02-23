@@ -29,7 +29,7 @@ runtest()
   outfile=$srcdir/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
-  scripts/run-filter.sh $1 > $outfile 2> $testcase.log
+  scripts/run-filter.sh $XML $1 > $outfile 2> $testcase.log
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -131,6 +131,18 @@ printUsage()
   echo "Options:"
   echo "  -v        Verbose"
 }
+
+while getopts 'x' c
+do
+    case $c in
+        x) 
+            XML=-x
+            ;;
+        \?) 
+            echo "Invalid option: -$OPTARG" >&2
+            ;;
+    esac
+done
 
 shift $(($OPTIND - 1))
 
