@@ -40,7 +40,7 @@
 #define RASTER_MODE_DEFAULT 'g'
 
 /** Default power level for raster engraving */
-#define RASTER_POWER_DEFAULT (20)
+#define RASTER_POWER_DEFAULT (50)
 
 /** Whether or not the raster printing is to be repeated. */
 #define RASTER_REPEAT (1)
@@ -57,13 +57,13 @@
 #define SCREEN_DEFAULT (8)
 
 /** FIXME */
-#define VECTOR_FREQUENCY_DEFAULT (1053)
+#define VECTOR_FREQUENCY_DEFAULT (5000)
 
 /** Default power level for vector cutting. */
-#define VECTOR_POWER_DEFAULT (80)
+#define VECTOR_POWER_DEFAULT (10)
 
 /** Default speed level for vector cutting. */
-#define VECTOR_SPEED_DEFAULT (33)
+#define VECTOR_SPEED_DEFAULT (100)
 
 struct LaserConfig
 {

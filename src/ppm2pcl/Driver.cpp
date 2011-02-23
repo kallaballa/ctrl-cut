@@ -56,11 +56,11 @@ void Driver::filter(LaserJob *job) {
   }
 }
 
-void Driver::process(LaserJob *job) {
+void Driver::process(LaserJob *job, ostream& out) {
   filter(job);
   stringstream ss;
   job->serializeTo(ss);
   LOG_DEBUG_MSG("Output size", ss.str().size());
 
-  std::cout << ss.rdbuf();
+  out << ss.rdbuf();
 }

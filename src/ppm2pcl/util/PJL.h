@@ -14,7 +14,7 @@ PJL_STRING(SEP, ";");
  */
 
 /* Print the printer job language header. */
-PJL_STRING(PJL_HEADER, "\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL \r\n");
+PJL_STRING(PJL_HEADER, "\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL\r\n");
 
 /* End job -> go back to PJL */
 PJL_STRING(PJL_FOOTER, "\e%-12345X@PJL EOJ \r\n")
@@ -87,7 +87,7 @@ PJL_STRING(R_WIDTH, "\e*r%dS");
 PJL_STRING(R_COMPRESSION, "\e*b%dM");
 
 /* Raster direction (1 = up) */
-PJL_STRING(R_DIRECTION_UP, "\e&y0O");
+PJL_STRING(R_DIRECTION_UP, "\e&y%dO");
 
 /* Start raster operation at current position */
 PJL_STRING(R_START_AT_POS, "\e*r1A");
