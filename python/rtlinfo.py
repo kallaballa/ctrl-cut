@@ -134,7 +134,7 @@ if __name__ == "__main__":
         fail = False
         polyline_diff = abs(len(first_polylines) - len(polylines))
         if polyline_diff > 1:
-            print str(len(first_polylines)) + "->" + str(len(second_polylines))
+            print str(len(first_polylines)) + "->" + str(len(polylines)),
             fail = True
         else:
             print "0",
