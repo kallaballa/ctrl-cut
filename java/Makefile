@@ -1,20 +1,20 @@
 GCJ = gcj
 COMPOPTS = -O3 -Wall
-SOURCES=./quickfind.java \
-	./quickcompare \
-	./quickcompare.java \
+SOURCES=./find.java \
+	./compare \
+	./compare.java \
 	./flipy.java
 
-all: quickcompare quickfind flipy
+all: compare find flipy
 
-quickcompare:
-	$(GCJ) ${COMPOPTS} --main=quickcompare -o $@ $@.java
+compare:
+	$(GCJ) ${COMPOPTS} --main=compare -o $@ $@.java
 
-quickfind:
-	        $(GCJ) ${COMPOPTS} --main=quickfind -o $@ $@.java 
+find:
+	        $(GCJ) ${COMPOPTS} --main=find -o $@ $@.java 
 
 flipy:
 	        $(GCJ) ${COMPOPTS} --main=flipy -o $@ $@.java
 
 clean:
-	rm quickcompare quickfind flipy
+	rm -f compare find flipy

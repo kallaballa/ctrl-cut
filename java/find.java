@@ -1,12 +1,12 @@
 import java.io.*; 
 import java.util.concurrent.*;
 
-public class quickfind {
+public class find {
   private Semaphore sema;
   private boolean invert; 
   private BufferedInputStream fin;
   private String rawPattern;
-  public quickfind(File f, String pattern, boolean invert, int maxThreads) throws Exception {
+  public find(File f, String pattern, boolean invert, int maxThreads) throws Exception {
     this.sema = new Semaphore(maxThreads);
     this.invert = invert;
     this.fin = new BufferedInputStream(new FileInputStream(f));
@@ -59,7 +59,7 @@ public class quickfind {
         maxThreads = Integer.parseInt(args[3]);
       if(maxThreads <= 0)
         throw new IllegalArgumentException("maxThreads must be >= 0");
-      new quickfind(f,pattern, invert, maxThreads);
+      new find(f,pattern, invert, maxThreads);
       System.exit(1);
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -99,8 +99,10 @@ public class quickfind {
             String op = " does match at ";
             if(!found)
               op = " does not match at ";
-            
-            System.err.println(rawPattern + op + (off + chunkoff + patternoff));
+            long at = off + chunkoff + patternoff;
+            String hexAt = Long.toHexString(at);
+            System.err.println(rawPattern + op + at + "/" + hexAt);
+            System.err.close();
             System.exit(0);
           }
         }

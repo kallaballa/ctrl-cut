@@ -1,10 +1,10 @@
 import java.io.*; 
 import java.util.concurrent.*;
 
-public class quickcompare {
+public class compare {
   private Semaphore sema;
 
-  public quickcompare(File f1, File f2, int maxThreads) throws Exception {
+  public compare(File f1, File f2, int maxThreads) throws Exception {
     this.sema = new Semaphore(maxThreads);
     final BufferedInputStream fin1 = new BufferedInputStream(new FileInputStream(f1));
     final BufferedInputStream fin2 = new BufferedInputStream(new FileInputStream(f2));
@@ -65,7 +65,7 @@ public class quickcompare {
 
       if(maxThreads <= 0)
         throw new IllegalArgumentException("maxThreads must be >= 0");
-      new quickcompare(f1,f2, maxThreads);
+      new compare(f1,f2, maxThreads);
     } catch (Exception ex) {
       ex.printStackTrace();
       System.exit(2);
@@ -91,7 +91,9 @@ public class quickcompare {
     public void run() {
       for(int i = 0; i < len; i++) {
         if(d1[i] != d2[i]) {
-          System.err.println(d1[i] + "!=" + d2[i] + " at " + (off + i));
+          long at = off + i;
+          String hexAt = Long.toHexString(at);
+          System.err.println(d1[i] + "!=" + d2[i] + " at " + at + "/" + hexAt);
           System.exit(1);
         }
       }
