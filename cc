@@ -63,6 +63,6 @@ verbose "CC_BINARY=$CC_BINARY"
 SCRIPTNAME=$1
 shift
 
-[ $SCRIPTNAME ] && "$CC_SCRIPTS/$SCRIPTNAME.sh" "$@" || echo "No script to run"
+if [ ! -f $SCRIPTNAME ];then SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME.sh; fi
 
-
+[ $SCRIPTNAME ] && "$SCRIPTNAME" "$@" || echo "No script to run"
