@@ -28,12 +28,11 @@
  */
 static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *current)
 {
-  Edge *candidate;
 
   occupied.insert(current);
 
   for (Vertex::iterator it = current->end->begin(); it != current->end->end(); it++) {
-    candidate = *it;
+    Edge *candidate = *it;
     if (candidate == current || occupied.find(candidate) != occupied.end()) {
       continue;
     }

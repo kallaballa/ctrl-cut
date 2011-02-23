@@ -20,32 +20,32 @@
 #ifndef POLYLINE_H_
 #define POLYLINE_H_
 
-#include "stddef.h"
-#include "climits"
-#include "iostream"
-#include <cmath>
-#include "raster/DownSample.h"
-#include "Edge.h"
+#include "util/2D.h"
+#include <vector>
 
-class Polyline : public std::vector<Edge *> {
+class Polyline
+{
 public:
+  typedef std::vector<class Edge*> EdgeVector;
+  typedef EdgeVector::iterator iterator;
+  typedef EdgeVector::const_iterator const_iterator;
+
   Polyline();
   virtual ~Polyline(){}
 
+  iterator begin() { return this->edges.begin(); }
+  const_iterator begin() const  { return this->edges.begin(); }
+  iterator end() { return this->edges.end(); }
+  const_iterator end() const  { return this->edges.end(); }
+  size_t size() const { return this->edges.size(); }
+
+  bool isClosed() const;
   void add(Edge* ls);
   void remove(Edge* ls);
   bool contains(Edge* ls);
 
   Edge *findLeftmostClockwise();
   BBox* getBoundingBox();
-
-  Polyline::iterator find(Edge* e) {
-    for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
-      if (*it == e)
-        return it;
-    }
-    return (Polyline::iterator)NULL;
-  }
 
   friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
 
@@ -54,6 +54,8 @@ private:
   int id;
 
   BBox bb;
+
+  EdgeVector edges;
 };
 
 #endif /* POLYGON_H_ */
