@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include "util/Logger.h"
 
 /** Default on whether or not auto-focus is enabled. */
@@ -67,6 +68,10 @@
 
 struct LaserConfig
 {
+  /** Folder where input file lives, /tmp if stdin */
+  std::string datadir;
+  std::string basename;
+
   /** Variable to track auto-focus. */
   int focus;
 

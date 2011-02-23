@@ -25,6 +25,7 @@
 #include <string>
 #include <unistd.h>
 #include <time.h>
+#include <libgen.h>
 
 #include <cups/cups.h>
 #include <cups/file.h>
@@ -158,8 +159,7 @@ bool execute_ghostscript_cmd(char *filename_eps, char *filename_bitmap,
 /*!
  Copy supported options into the supplied laser_config
  */
-void process_print_job_options(cups_option_t *options, int numOptions,
-    LaserConfig *lconf) {
+void process_print_job_options(cups_option_t *options, int numOptions, LaserConfig *lconf) {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
     lconf->focus = strcmp(v, "false");
@@ -382,7 +382,13 @@ int main(int argc, char *argv[]) {
   if (cupsargs == 5) {
     input_file = cupsFileStdin();
     input_is_stdin = true;
+    lconf.datadir = "/tmp";
+    lconf.basename = "stdin";
   } else {
+    lconf.datadir = dirname(strdup(arg_filename));
+    string base = basename(strdup(arg_filename));
+    lconf.basename = base.erase(base.rfind("."));
+
     // Try to open the print file...
     if ((input_file = cupsFileOpen(arg_filename, "r")) == NULL) {
       LOG_FATAL_MSG("unable to open print file", arg_filename);
@@ -530,12 +536,12 @@ int main(int argc, char *argv[]) {
   }
 
   Driver drv;
-  if (dumpxml)
+  if (dumpxml) {
     drv.enableXML(true);
+  }
   drv.process(&job);
 
-  if (cut)
-    delete cut;
+  if (cut) delete cut;
 
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;
