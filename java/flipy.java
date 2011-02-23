@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class flipY {
+public class flipy {
   public static void main(String[] args) {
     try{
       File f = new File(args[0]);
