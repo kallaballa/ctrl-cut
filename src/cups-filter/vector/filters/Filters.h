@@ -5,5 +5,6 @@
 #include "Join.h"
 #include "Deonion.h"
 #include "Flat.h"
+#include "Reduce.h"
 
 #endif /* FILTERS_H_ */

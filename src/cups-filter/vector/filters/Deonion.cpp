@@ -42,12 +42,12 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
     p->remove(edge);
   }
 
-  for (Vertex::iterator it = edge->end->begin(); it != edge->end->end(); it++) {
+  for (Vertex::iterator it = edge->end()->begin(); it != edge->end()->end(); it++) {
     Edge *candidate = *it;
 
     if (candidate == edge || !p->contains(candidate)) continue;
 
-    if (candidate->start != edge->end) {
+    if (candidate->start() != edge->end()) {
       candidate->invertDirection();
     }
 

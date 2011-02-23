@@ -53,13 +53,11 @@ void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequenc
 
   Edge *edge = new Edge(start, end, power, speed, frequency);
 
-  start = mapVertex(start);
-  edge->start = start;
-  start->attach(edge);
+  edge->setStart(mapVertex(start));
+  edge->start()->attach(edge);
 
-  end = mapVertex(end);
-  edge->end = end;
-  end->attach(edge);
+  edge->setEnd(mapVertex(end));
+  edge->end()->attach(edge);
 
   this->edges.push_back(edge);
 }
@@ -73,6 +71,13 @@ Mesh::iterator Mesh::eliminate(Mesh::iterator it)
 {
   (*it)->detach();
   return this->edges.erase(it);
+}
+
+void Mesh::clear()
+{
+  // FIXME: Memory leaks, but we need to keep a subset of the vertices..
+  this->vertices.clear();
+  this->edges.clear();
 }
 
 Vertex *Mesh::mapVertex(Vertex *p)

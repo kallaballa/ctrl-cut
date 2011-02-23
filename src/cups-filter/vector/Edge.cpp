@@ -22,15 +22,28 @@
 // initialize counter
 int Edge::cnt = 0;
 
-void Edge::invertDirection() {
-  Vertex* tmp = this->start;
-  this->start = end;
-  this->end = tmp;
+/*!
+  Calculates the distance from the vertex to the infinite line segment defined by this edge
+*/
+float Edge::distance(const Vertex &p) const
+{
+  return 
+    fabs(((*v[0])[1] - (*v[1])[1]) * p[0] + ((*v[1])[0] - (*v[0])[0]) * p[1] +
+     (*v[0])[0] * (*v[1])[1] - (*v[1])[0] * (*v[0])[1]) /
+    sqrt(((*v[1])[0] - (*v[0])[0]) * ((*v[1])[0] - (*v[0])[0]) +
+         ((*v[1])[1] - (*v[0])[1]) * ((*v[1])[1] - (*v[0])[1]));
+}
+
+void Edge::invertDirection()
+{
+  Vertex* tmp = this->v[0];
+  this->v[0] = this->v[1];
+  this->v[1] = tmp;
 }
 
 void Edge::detach() {
-  this->start->detach(this);
-  this->end->detach(this);
+  this->v[0]->detach(this);
+  this->v[1]->detach(this);
 }
 
 /*!
@@ -40,11 +53,11 @@ float Edge::getSlope(bool invert) {
   int d_x;
   int d_y;
   if (invert) {
-    d_x = this->start->getX() - this->end->getX();
-    d_y = this->start->getY() - this->end->getY();
+    d_x = (*this)[0][0] - (*this)[1][0];
+    d_y = (*this)[0][1] - (*this)[1][1];
   } else {
-    d_x = this->end->getX() - this->start->getX();
-    d_y = this->end->getY() - this->start->getY();
+    d_x = (*this)[1][0] - (*this)[0][0];
+    d_y = (*this)[1][1] - (*this)[0][1];
   }
 
   // Swap x and y since we're measuring relative to the Y axis.
@@ -61,22 +74,16 @@ float Edge::getSlope(bool invert) {
 Vertex* Edge::intersects(const Edge &other) const
 {
   float denom =
-    ((other.end->getY() - other.start->getY()) *
-     (this->end->getX() - this->start->getX())) -
-    ((other.end->getX() - other.start->getX()) *
-     (this->end->getY() - this->start->getY()));
+    ((other[1][1] - other[0][1]) * ((*this)[1][0] - (*this)[0][0])) -
+    ((other[1][0] - other[0][0]) * ((*this)[1][1] - (*this)[0][1]));
 
   float nume_a =
-    ((other.end->getX() - other.start->getX()) *
-     (this->start->getY() - other.start->getY())) -
-    ((other.end->getY() - other.start->getY()) *
-     (this->start->getX() - other.start->getX()));
+    ((other[1][0] - other[0][0]) * ((*this)[0][1] - other[0][1])) -
+    ((other[1][1] - other[0][1]) * ((*this)[0][0] - other[0][0]));
 
   float nume_b =
-    ((this->end->getX() - this->start->getX()) *
-     (this->start->getY() - other.start->getY())) -
-    ((this->end->getY() - this->start->getY()) *
-     (this->start->getX() - other.start->getX()));
+    (((*this)[1][0] - (*this)[0][0]) * ((*this)[0][1] - other[0][1])) -
+    (((*this)[1][1] - (*this)[0][1]) * ((*this)[0][0] - other[0][0]));
 
   if (denom == 0.0f) {
     if (nume_a == 0.0f && nume_b == 0.0f) {
@@ -90,12 +97,12 @@ Vertex* Edge::intersects(const Edge &other) const
 
   if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
     // Get the intersection LSPoint.
-    int ix = this->start->getX() + ua * (this->end->getX() - this->start->getX());
-    int iy = this->start->getY() + ua * (this->end->getY() - this->start->getY());
+    int ix = (*this)[0][0] + ua * ((*this)[1][0] - (*this)[0][0]);
+    int iy = (*this)[0][1] + ua * ((*this)[1][1] - (*this)[0][1]);
     
     Vertex* intersection = new Vertex(ix, iy);
-    if ((this->start->equals(intersection) || this->end->equals(intersection)) &&
-        (other.start->equals(intersection) || other.end->equals(intersection))) {
+    if (((*this)[0].equals(intersection) || (*this)[1].equals(intersection)) &&
+        (other[0].equals(intersection) || other[1].equals(intersection))) {
       return NULL; //tip intersection
     }
     else {
@@ -108,8 +115,7 @@ Vertex* Edge::intersects(const Edge &other) const
 
 std::ostream &operator<<(std::ostream &os, const Edge &e) {
   os << "<edge power=\"" << e.power << "\" id=\"" << e.id << "\" >" << std::endl;
-  os << *e.start;
-  os << *e.end;
+  os << e[0] << e[1];
   os << "</edge>" << std::endl;
   return os;
 }

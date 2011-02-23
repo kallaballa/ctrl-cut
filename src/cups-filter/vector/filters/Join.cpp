@@ -31,14 +31,14 @@ static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *curre
 
   occupied.insert(current);
 
-  for (Vertex::iterator it = current->end->begin(); it != current->end->end(); it++) {
+  for (Vertex::iterator it = (*current)[1].begin(); it != (*current)[1].end(); it++) {
     Edge *candidate = *it;
     if (candidate == current || occupied.find(candidate) != occupied.end()) {
       continue;
     }
-    if (candidate->start != current->end) {
-      candidate->end = candidate->start;
-      candidate->start = current->end;
+    if (&(*candidate)[0] != &(*current)[1]) {
+      candidate->setEnd(candidate->start());
+      candidate->setStart(current->end());
     }
     polyline->add(candidate);
     find_connected(occupied, polyline, candidate);

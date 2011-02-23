@@ -36,7 +36,7 @@ Polyline::Polyline() {
 
 bool Polyline::isClosed() const
 {
-  return this->edges.size() > 0 && this->edges.front()->start == this->edges.back()->end;
+  return this->edges.size() > 0 && (*this->edges.front())[0] == (*this->edges.back())[1];
 }
 
 void Polyline::add(Edge *edge) {
@@ -61,16 +61,10 @@ bool Polyline::contains(Edge *edge) {
 BBox *Polyline::getBoundingBox()
 {
   if (!this->bb.isValid()) {
-    Edge* e;
-    Vertex* start;
-    Vertex* end;
-
     for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
-      e = (*it);
-      start = e->start;
-      end = e->end;
-      this->bb.adjustTo(start->getX(), start->getY());
-      this->bb.adjustTo(end->getX(), end->getY());
+      Edge &e = **it;
+      this->bb.adjustTo(e[0][0], e[0][1]);
+      this->bb.adjustTo(e[1][0], e[1][1]);
     }
   }
   return &this->bb;
@@ -89,16 +83,16 @@ Edge* Polyline::findLeftmostClockwise() {
 
   // Find leftmost vertex
   for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
-    startx = (*it)->start->getX();
-    endx = (*it)->end->getX();
+    startx = (**it)[0][0];
+    endx = (**it)[1][0];
 
     if (startx < min_x) {
       min_x = startx;
-      leftmostvertex = (*it)->start;
+      leftmostvertex = (*it)->start();
     }
     if (endx < min_x) {
       min_x = endx;
-      leftmostvertex = (*it)->end;
+      leftmostvertex = (*it)->end();
     }
   }
 
@@ -109,7 +103,7 @@ Edge* Polyline::findLeftmostClockwise() {
     Edge *edge = *it_c;
 
     // make sure we're pointing into the positive halfsphere
-    if (edge->start->getX() > edge->end->getX()) {
+    if ((*edge)[0][0] > (*edge)[1][0]) {
       edge->invertDirection();
     }
 
@@ -130,7 +124,7 @@ ostream& operator <<(ostream &os, Polyline &pl) {
   BBox* bb = pl.getBoundingBox();
   os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul_x=\""
       << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x
-      << "\" lr_y=\"" << bb->lr_y << "\" \\>" << std::endl;
+      << "\" lr_y=\"" << bb->lr_y << "\" />" << std::endl;
   for (Polyline::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
     os << *((Edge*) *it);
   }

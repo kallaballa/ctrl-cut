@@ -36,11 +36,11 @@ void Vertex::updateKey() {
   this->key = "";
 
   std::stringstream out;
-  out << this->x;
+  out << this->v[0];
   this->key += out.str();
   out.str("");
   this->key += "/";
-  out << this->y;
+  out << this->v[1];
   this->key += out.str();
 }
 
@@ -53,13 +53,13 @@ void Vertex::detach(Edge* ls) {
 }
 
 void Vertex::setX(int x, bool update) {
-  this->x = x;
+  this->v[0] = x;
   if (update)
     updateKey();
 }
 
 void Vertex::setY(int y, bool update) {
-  this->y = y;
+  this->v[1] = y;
   if (update)
     updateKey();
 }
@@ -69,7 +69,7 @@ const std::string &Vertex::getKey() const {
 }
 
 std::ostream &operator<<(std::ostream &os, const Vertex &v) {
-  os << "<vertex x=\"" << v.getX() << "\" y=\"" << v.getY() << "\" id=\"" << v.getID()
+  os << "<vertex x=\"" << v[0] << "\" y=\"" << v[1] << "\" id=\"" << v.getID()
      << "\" key=\"" << v.getKey() << "\" />" << std::endl;
   return os;
 }

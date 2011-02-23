@@ -130,3 +130,16 @@ ostream &operator<<(ostream &os, const Cut &cut) {
 
   return os;
 }
+
+void Cut::rebuildMesh()
+{
+  this->mesh.clear();
+
+  for (Cut::iterator it = this->begin(); it != this->end(); it++) {
+    Polyline *pl = *it;
+    for (Polyline::iterator pit = pl->begin(); pit != pl->end(); pit++) {
+      Edge *e = *pit;
+      this->mesh.create(e->start(), e->end(), e->power, e->speed, e->frequency);
+    }
+  }
+}

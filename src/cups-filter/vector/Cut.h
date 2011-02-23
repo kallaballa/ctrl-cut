@@ -55,6 +55,8 @@ public:
   }
   void xml(const std::string &s) const;
 
+  void rebuildMesh();
+
 private:
   bool clipped;
   Mesh mesh;

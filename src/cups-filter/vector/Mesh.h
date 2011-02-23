@@ -43,6 +43,7 @@ public:
   iterator end() { return this->edges.end(); }
   const_iterator end() const  { return this->edges.end(); }
   size_t size() const { return this->edges.size(); }
+  void clear();
 
   const VertexMap &getVertexMap() const {
     return this->vertices;

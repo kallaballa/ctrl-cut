@@ -20,15 +20,18 @@ public:
   iterator end() { return this->edges.end(); }
   const_iterator end() const  { return this->edges.end(); }
 
-  int getX() const { return this->x; }
-  int getY() const { return this->y; }
+  int getX() const { return this->v[0]; }
+  int getY() const { return this->v[1]; }
+  int &operator[](size_t idx) { return v[idx]; }
+  const int operator[](size_t idx) const { return v[idx]; }
+
   int getID() const { return this->id; }
   const std::string &getKey() const;
 
   void setX(int x, bool updateKey=true);
   void setY(int y, bool updateKey=true);
   bool operator==(const Vertex &other) const {
-    return this->x == other.x && this->y == other.y;
+    return this->v[0] == other.v[0] && this->v[1] == other.v[1];
   }
   bool equals(const Vertex *other) const {
     return *this == *other;
@@ -42,8 +45,7 @@ private:
 
   static int cnt;
   int id;
-  int x;
-  int y;
+  int v[2];
   std::string key;
 
   EdgeSet edges;
