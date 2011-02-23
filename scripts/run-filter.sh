@@ -4,6 +4,21 @@ cd $CC_BASE
 
 . $CC_FUNCTIONS
 
+while getopts 'x' c
+do
+    case $c in
+        x) 
+            XML=-x
+            ;;
+        \?) 
+            echo "Invalid option: -$OPTARG" >&2
+            ;;
+    esac
+done
+
+# Get rid of processed arguments
+shift $(($OPTIND - 1))
+
 if test $VERBOSE; then
   set -x
 fi
@@ -37,5 +52,5 @@ if [ -f $optionsfile ]; then
 fi
 
 # Don't run this with try since it produces stdout which is passed to our caller
-$CC_BINARY 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS $options" $file
+$CC_BINARY $XML 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS $options" $file
 exit $?
