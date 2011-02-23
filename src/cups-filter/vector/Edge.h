@@ -18,7 +18,7 @@ public:
 
   float getSlope(bool invert=false);
   void invertDirection();
-  Vertex *intersects(Edge *otherLine);
+  Vertex *intersects(const Edge &other) const;
   void detach();
 
   friend std::ostream &operator<<(std::ostream &os, const Edge &e);

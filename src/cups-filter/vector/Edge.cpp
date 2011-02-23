@@ -52,21 +52,31 @@ float Edge::getSlope(bool invert) {
   return atan2(d_x, -d_y);
 }
 
-Vertex* Edge::intersects(Edge *otherLine) {
-  float denom = ((otherLine->end->getY() - otherLine->start->getY())
-                 * (this->end->getX() - this->start->getX()))
-    - ((otherLine->end->getX() - otherLine->start->getX())
-       * (this->end->getY() - this->start->getY()));
+/*!
+  Intersection test.
+  If the two edges intersect, returns a new vertex at the intersection point.
 
-  float nume_a = ((otherLine->end->getX() - otherLine->start->getX())
-                  * (this->start->getY() - otherLine->start->getY()))
-    - ((otherLine->end->getY() - otherLine->start->getY())
-       * (this->start->getX() - otherLine->start->getX()));
+  Returns NULL on no intersection
+*/
+Vertex* Edge::intersects(const Edge &other) const
+{
+  float denom =
+    ((other.end->getY() - other.start->getY()) *
+     (this->end->getX() - this->start->getX())) -
+    ((other.end->getX() - other.start->getX()) *
+     (this->end->getY() - this->start->getY()));
 
-  float nume_b = ((this->end->getX() - this->start->getX())
-                  * (this->start->getY() - otherLine->start->getY()))
-    - ((this->end->getY() - this->start->getY()) * (this->start->getX()
-                                                    - otherLine->start->getX()));
+  float nume_a =
+    ((other.end->getX() - other.start->getX()) *
+     (this->start->getY() - other.start->getY())) -
+    ((other.end->getY() - other.start->getY()) *
+     (this->start->getX() - other.start->getX()));
+
+  float nume_b =
+    ((this->end->getX() - this->start->getX()) *
+     (this->start->getY() - other.start->getY())) -
+    ((this->end->getY() - this->start->getY()) *
+     (this->start->getX() - other.start->getX()));
 
   if (denom == 0.0f) {
     if (nume_a == 0.0f && nume_b == 0.0f) {
@@ -80,19 +90,17 @@ Vertex* Edge::intersects(Edge *otherLine) {
 
   if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
     // Get the intersection LSPoint.
-    int ix = this->start->getX() + ua * (this->end->getX()
-                                         - this->start->getX());
-    int iy = this->start->getY() + ua * (this->end->getY()
-                                         - this->start->getY());
-
+    int ix = this->start->getX() + ua * (this->end->getX() - this->start->getX());
+    int iy = this->start->getY() + ua * (this->end->getY() - this->start->getY());
+    
     Vertex* intersection = new Vertex(ix, iy);
-    if ((this->start->equals(intersection) || this->end->equals(
-                                                                intersection)) && (otherLine->start->equals(intersection)
-                                                                                   || otherLine->end->equals(intersection)))
+    if ((this->start->equals(intersection) || this->end->equals(intersection)) &&
+        (other.start->equals(intersection) || other.end->equals(intersection))) {
       return NULL; //tip intersection
-    else
+    }
+    else {
       return intersection;
-
+    }
   }
 
   return NULL; //NOT_INTERSECTING;

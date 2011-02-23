@@ -40,19 +40,19 @@ void Driver::filter(LaserJob *job) {
   list<Cut*> cuts = job->getCuts();
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
-      cut->xml("/tmp/xml/input/ctrl-cut.xml");
-      explode.filter(cut);
-      cut->xml("/tmp/xml/explode/ctrl-cut.xml");
-      join.filter(cut);
-      cut->xml("/tmp/xml/join/ctrl-cut.xml");
-
-      if (job->lconf->vector_optimize == 1) {
-        deonion.filter(cut);
-        cut->xml("/tmp/xml/deonion/ctrl-cut.xml");
-      } else if (job->lconf->vector_optimize == 2) {
-        flat.filter(cut);
-        cut->xml("/tmp/xml/sort/ctrl-cut.xml");
-      }
+    cut->xml("/tmp/xml/input/ctrl-cut.xml");
+    explode.filter(cut);
+    cut->xml("/tmp/xml/explode/ctrl-cut.xml");
+    join.filter(cut);
+    cut->xml("/tmp/xml/join/ctrl-cut.xml");
+    
+    if (job->lconf->vector_optimize == 1) {
+      deonion.filter(cut);
+      cut->xml("/tmp/xml/deonion/ctrl-cut.xml");
+    } else if (job->lconf->vector_optimize == 2) {
+      flat.filter(cut);
+      cut->xml("/tmp/xml/sort/ctrl-cut.xml");
+    }
   }
 }
 
