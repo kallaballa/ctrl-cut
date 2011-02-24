@@ -11,7 +11,7 @@ public class compare {
     long length1 = f1.length();
     long length2 = f2.length();
     long minlen = Math.min(length1, length2);
-    int chunklen = 1024 * 256;
+    int chunklen = 1024 * 512;
 
     if(length1 != length2) 
       System.err.println("files differ in length");
@@ -93,7 +93,7 @@ public class compare {
         if(d1[i] != d2[i]) {
           long at = off + i;
           String hexAt = Long.toHexString(at);
-          System.err.println(d1[i] + "!=" + d2[i] + " at " + at + "/" + hexAt);
+          System.err.println(Integer.toHexString(d1[i]) + "!=" + Integer.toHexString(d2[i]) + " at " + at + "/" + hexAt);
           System.exit(1);
         }
       }

@@ -6,12 +6,15 @@ public class find {
   private boolean invert; 
   private BufferedInputStream fin;
   private String rawPattern;
-  public find(File f, String pattern, boolean invert, int maxThreads) throws Exception {
+  private long skip;
+  public find(File f, String pattern, boolean invert, long skip, int maxThreads) throws Exception {
     this.sema = new Semaphore(maxThreads);
     this.invert = invert;
+    this.skip = skip;
     this.fin = new BufferedInputStream(new FileInputStream(f));
     this.rawPattern = pattern;
-    long flen = f.length();
+    long flen = f.length() - skip;
+    fin.skip(skip);    
     
     int patternLen = rawPattern.length();
     if(rawPattern.length() % 2 > 0) {
@@ -23,7 +26,7 @@ public class find {
     for (int i = 0; i < patternLen; i+=2)
       binPattern[i/2] = (byte) Integer.parseInt(rawPattern.substring(i, i + 2), 16);
 
-    int chunklen = 1024 * 256;
+    int chunklen = 1024 * 512;
     chunklen -= chunklen % binPattern.length;
     
     for (long i = 0; i < flen; i += chunklen) {
@@ -51,15 +54,21 @@ public class find {
       File f = new File(args[0]);
       String pattern = args[1];
       boolean invert = false;
+      long seek = 0;
       int maxThreads = 3;
+      
       if(args.length > 2)
         invert = Boolean.parseBoolean(args[2]);
 
       if(args.length > 3)
-        maxThreads = Integer.parseInt(args[3]);
+        seek = Integer.parseInt(args[3]);
+      
+      if(args.length > 4)
+        maxThreads = Integer.parseInt(args[4]);
+      
       if(maxThreads <= 0)
         throw new IllegalArgumentException("maxThreads must be >= 0");
-      new find(f,pattern, invert, maxThreads);
+      new find(f,pattern, invert, seek, maxThreads);
       System.exit(1);
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -86,6 +95,7 @@ public class find {
         int patternoff;
         for(chunkoff = 0; chunkoff < len; chunkoff+=binPattern.length) {
           boolean found = false;
+          
           for (patternoff = 0; patternoff < binPattern.length; patternoff++) {
             if(chunk[chunkoff + patternoff] == binPattern[patternoff]) {
               found = true;
@@ -96,12 +106,19 @@ public class find {
           }
 
           if(found != invert) {
-            String op = " does match at ";
-            if(!found)
-              op = " does not match at ";
-            long at = off + chunkoff + patternoff;
+            String op = " does match";
+            if(!found) {
+              String hexChunk = Integer.toHexString(chunk[chunkoff + patternoff]);
+              String hexPattern = Integer.toHexString(binPattern[patternoff]);
+
+              hexChunk = hexChunk.substring(hexChunk.length() - 2);
+              hexPattern = hexPattern.substring(hexPattern.length() - 2);
+              
+              op = "(" + patternoff + ") does not match: " + hexChunk + "!=" + hexPattern;
+            }
+            long at = skip + off + chunkoff + patternoff;
             String hexAt = Long.toHexString(at);
-            System.err.println(rawPattern + op + at + "/" + hexAt);
+            System.err.println(rawPattern + op + " at " + at + "/" + hexAt);
             System.err.close();
             System.exit(0);
           }
