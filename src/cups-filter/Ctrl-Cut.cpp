@@ -197,15 +197,11 @@ int main(int argc, char *argv[]) {
 
   // Extract non-CUPS cmd-line parameters
   bool dumpxml = false;
-  char *vectorfile = NULL;
   int c;
-  while ((c = getopt(argc, argv, "xf:")) != -1) {
+  while ((c = getopt(argc, argv, "x")) != -1) {
     switch (c) {
     case 'x':
       dumpxml = true;
-      break;
-    case 'f':
-      vectorfile = optarg;
       break;
     case ':':
       printUsage(argv[0]);
@@ -254,7 +250,7 @@ int main(int argc, char *argv[]) {
   const char *arg_title = argv[optind + 2];
   const char *arg_copies = argv[optind + 3];
   const char *arg_options = argv[optind + 4];
-  const char *arg_filename = argv[optind + 5];
+  const char *arg_filename = (cupsargs == 6) ? argv[optind + 5] : NULL;
 
   // Handle CUPS options
   cups_option_t *options;
@@ -271,28 +267,38 @@ int main(int argc, char *argv[]) {
   char file_basename[FILENAME_NCHARS];
   char filename_bitmap[FILENAME_NCHARS];
   char filename_eps[FILENAME_NCHARS];
+  string filename_vector;
 
-  // If no vector file is given read from postscript file or stdin
-  if (!vectorfile) {
-    cups_file_t *input_file;
-    bool input_is_stdin = false;
-    if (cupsargs == 5) {
-      input_file = cupsFileStdin();
-      input_is_stdin = true;
-      lconf.datadir = "/tmp";
-      lconf.basename = "stdin";
-    } else {
-      lconf.datadir = dirname(strdup(arg_filename));
-      string base = basename(strdup(arg_filename));
-      lconf.basename = base.erase(base.rfind("."));
-      
+  enum { FORMAT_POSTSCRIPT, FORMAT_VECTOR } inputformat = FORMAT_POSTSCRIPT;
+
+  cups_file_t *input_file;
+  bool input_is_stdin = false;
+  if (cupsargs == 5) {
+    input_file = cupsFileStdin();
+    input_is_stdin = true;
+    lconf.datadir = "/tmp";
+    lconf.basename = "stdin";
+  } else {
+    lconf.datadir = dirname(strdup(arg_filename));
+    string base = basename(strdup(arg_filename));
+    
+    string suffix = base.substr(base.rfind(".") + 1);
+    lconf.basename = base.erase(base.rfind("."));
+    
+    if (suffix == "vector") {
+      inputformat = FORMAT_VECTOR;
+      filename_vector = arg_filename;
+    }
+    else {
       // Try to open the print file...
       if ((input_file = cupsFileOpen(arg_filename, "r")) == NULL) {
         LOG_FATAL_MSG("unable to open print file", arg_filename);
         return 1;
       }
     }
-    
+  }
+
+  if (inputformat == FORMAT_POSTSCRIPT) {
     /* Determine and set the names of all files that will be manipulated by the
      * program.
      */
@@ -300,8 +306,7 @@ int main(int argc, char *argv[]) {
     sprintf(filename_bitmap, "%s.ppm", file_basename);
     sprintf(filename_eps, "%s.eps", file_basename);
 #ifndef USE_GHOSTSCRIPT_API
-    char filename_vector[FILENAME_NCHARS];
-    sprintf(filename_vector, "%s.vector", file_basename);
+    filename_vector = file_basename + ".vector";
 #endif
     
     // Write out the incoming cups data if debug is enabled.
@@ -365,7 +370,7 @@ int main(int argc, char *argv[]) {
     }
 #else
     LOG_DEBUG_MSG("                     Vector output", filename_vector);
-    if (!execute_ghostscript_cmd(filename_eps, filename_bitmap, filename_vector, rastermode,
+    if (!execute_ghostscript_cmd(filename_eps, filename_bitmap, filename_vector.c_str(), rastermode,
                                  lconf.resolution, lconf.height, lconf.width)) {
       LOG_FATAL_STR("ghostscript failed");
       return 1;
@@ -382,8 +387,8 @@ int main(int argc, char *argv[]) {
 
   Cut *cut = NULL;
   if (lconf.enable_vector) {
-    if (vectorfile) {
-      cut = Cut::load(vectorfile);
+    if (inputformat == FORMAT_VECTOR) {
+      cut = Cut::load(filename_vector);
     }
     else {
 #ifdef USE_GHOSTSCRIPT_API
