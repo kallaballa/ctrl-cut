@@ -52,5 +52,5 @@ if [ -f $optionsfile ]; then
 fi
 
 # Don't run this with try since it produces stdout which is passed to our caller
-$CC_BINARY $XML 32 kintel `basename $file ps`cdr 1 "$CC_FILTER_OPTIONS $options" $file
+$CC_BINARY $XML 32 kintel `basename $file` 1 "$CC_FILTER_OPTIONS $options" $file
 exit $?

@@ -22,6 +22,14 @@
 // initialize counter
 int Edge::cnt = 0;
 
+Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency)
+  : power(power), speed(speed), frequency(frequency)
+{
+  v[0] = start;
+  v[1] = end;
+  this->id = Edge::cnt++;
+}
+
 /*!
   Calculates the distance from the vertex to the infinite line segment defined by this edge
 */
@@ -44,6 +52,12 @@ void Edge::invertDirection()
 void Edge::detach() {
   this->v[0]->detach(this);
   this->v[1]->detach(this);
+}
+
+void Edge::attach()
+{
+  this->v[0]->attach(this);
+  this->v[1]->attach(this);
 }
 
 /*!

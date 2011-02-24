@@ -54,7 +54,7 @@ void Join::filter(Cut *cut)
 
   set<Edge*> occupied;
 
-  Mesh mesh = cut->getMesh();
+  Mesh &mesh = cut->getMesh();
   for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
     Edge *edge = *it;
 

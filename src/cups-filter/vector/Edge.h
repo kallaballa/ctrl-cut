@@ -9,13 +9,7 @@
 
 class Edge {
 public:
-  Edge(class Vertex *start, Vertex *end, int power=0, int speed=0, int frequency=0)
-    : power(power), speed(speed), frequency(frequency)
-  {
-    v[0] = start;
-    v[1] = end;
-    this->id = Edge::cnt++;
-  }
+  Edge(class Vertex *start, Vertex *end, int power=0, int speed=0, int frequency=0);
   virtual ~Edge() {}
 
   Vertex *start() const { return v[0]; }
@@ -32,6 +26,7 @@ public:
   Vertex *intersects(const Edge &other) const;
   float distance(const Vertex &v) const;
   void detach();
+  void attach();
 
 private:
   static int cnt;

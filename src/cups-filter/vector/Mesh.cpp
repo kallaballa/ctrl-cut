@@ -51,13 +51,11 @@ void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequenc
     end->setX(end->getX()-1);
   }
 
+  start = mapVertex(start);
+  end = mapVertex(end);
+
   Edge *edge = new Edge(start, end, power, speed, frequency);
-
-  edge->setStart(mapVertex(start));
-  edge->start()->attach(edge);
-
-  edge->setEnd(mapVertex(end));
-  edge->end()->attach(edge);
+  edge->attach();
 
   this->edges.push_back(edge);
 }
