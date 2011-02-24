@@ -188,6 +188,9 @@ void process_print_job_options(cups_option_t *options, int numOptions, LaserConf
   if ((v = cupsGetOption("VectorFrequency", numOptions, options))) {
     lconf->vector_freq = atoi(v);
   }
+  if ((v = cupsGetOption("VectorReduce", numOptions, options))) {
+    lconf->vector_reduce = atof(v);
+  }
   if ((v = cupsGetOption("VectorOptimize", numOptions, options))) {
     lconf->vector_optimize = atoi(v);
   }

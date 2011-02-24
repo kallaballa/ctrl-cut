@@ -113,6 +113,9 @@ struct LaserConfig
   /** Variable to track the vector frequency. FIXME */
   int vector_freq;
 
+  /** Epsilon value for vector reduce filter */
+  float vector_reduce;
+
   /** Which optimization to perform (Default: Inner-Outer) */
   int vector_optimize;
 

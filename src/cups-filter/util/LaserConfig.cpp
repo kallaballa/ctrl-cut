@@ -41,6 +41,7 @@ void init_laser_config(LaserConfig *lconf)
 {
   lconf->focus = AUTO_FOCUS;
   lconf->height = BED_HEIGHT;
+  lconf->width = BED_WIDTH;
   lconf->resolution = RESOLUTION_DEFAULT;
   lconf->raster_mode = RASTER_MODE_DEFAULT;
   lconf->raster_speed = RASTER_SPEED_DEFAULT;
@@ -50,8 +51,11 @@ void init_laser_config(LaserConfig *lconf)
   lconf->vector_speed = VECTOR_SPEED_DEFAULT;
   lconf->vector_power = VECTOR_POWER_DEFAULT;
   lconf->vector_freq = VECTOR_FREQUENCY_DEFAULT;
-  lconf->width = BED_WIDTH;
+  lconf->vector_reduce = 0.0f;
+  lconf->vector_optimize = 0;
+  lconf->x_center = 0;
   lconf->x_repeat = 1;
+  lconf->y_center = 0;
   lconf->y_repeat = 1;
   lconf->basex = 0;
   lconf->basey = 0;

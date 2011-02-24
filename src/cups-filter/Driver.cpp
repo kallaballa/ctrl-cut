@@ -37,7 +37,7 @@ void Driver::filter(LaserJob *job) {
   Join join;
   Deonion deonion;
   Flat flat;
-  Reduce reduce;
+  Reduce reduce(job->lconf->vector_reduce);
   list<Cut*> cuts = job->getCuts();
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
@@ -46,8 +46,8 @@ void Driver::filter(LaserJob *job) {
     if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-explode.xml");
     join.filter(cut);
     if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-join.xml");
-    // reduce.filter(cut);
-    // if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-reduce.xml");
+    reduce.filter(cut);
+    if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-reduce.xml");
     
     if (job->lconf->vector_optimize == 1) {
       deonion.filter(cut);
