@@ -41,20 +41,20 @@ void Driver::filter(LaserJob *job) {
   list<Cut*> cuts = job->getCuts();
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
-    if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-input.xml");
+    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-input.xml");
     explode.filter(cut);
-    if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-explode.xml");
+    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-explode.xml");
     join.filter(cut);
-    if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-join.xml");
+    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-join.xml");
     reduce.filter(cut);
-    if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-reduce.xml");
+    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-reduce.xml");
     
     if (job->lconf->vector_optimize == 1) {
       deonion.filter(cut);
-      if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-deonion.xml");
+      if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-deonion.xml");
     } else if (job->lconf->vector_optimize == 2) {
       flat.filter(cut);
-      if (this->dumpxml) cut->xml(job->lconf->datadir + "/" + job->lconf->basename + "-flat.xml");
+      if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-flat.xml");
     }
   }
 }

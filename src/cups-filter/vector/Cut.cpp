@@ -110,8 +110,12 @@ Cut *Cut::load(const string &filename)
   return Cut::load(infile);
 }
 
-void Cut::xml(const std::string &s) const {
-  ofstream os(s.c_str(), ios_base::out);
+/*!
+  Writes this cut to XML with the given filename
+ */
+void Cut::writeXml(const std::string &filename) const
+{
+  ofstream os(filename.c_str(), ios_base::out);
   os << *this;
   os.close();
 }
