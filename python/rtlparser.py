@@ -19,6 +19,9 @@ class RTLParser:
         self.verbose = verbose
         self.reset()
         self.handlers = {}
+        self.commandregexp = re.compile("([a-zA-Z]+)([0-9,]*);")
+        self.coordregexp = re.compile("[0-9]+,[0-9]+$")
+        self.coordsregexp = re.compile("[0-9]+(,[0-9]+)+$")
 
     def reset(self):
         self.bbox = [[sys.maxint, sys.maxint],[0, 0]]
@@ -61,7 +64,7 @@ class RTLParser:
         # FIXME: Assert that there aren't more HP-GL/2 sections
             
         # Implicit PU when ending
-        self.handlePU("");
+        self.handlePU(None);
 
     def parseCommand(self, buffer, pos, end):
         # Extract the command and args
@@ -71,8 +74,7 @@ class RTLParser:
             if self.verbose: print "cmd: " + buffer[pos:pend],
             if end - pos > 30: print "..."
             else: print
-        ro = re.compile("([a-zA-Z]+)([0-9,]*);")
-        m = ro.match(buffer, pos, end+1)
+        m = self.commandregexp.match(buffer, pos, end+1)
 
         # Call handler function
         funcname = "handle%s" % m.group(1)
@@ -102,19 +104,21 @@ class RTLParser:
         if "XR" in self.handlers:
             self.handlers["XR"](freq)
 
+    # pos is a coordinate (x,y)
     def handlePU(self, pos):
-        if self.verbose: print "PU " + pos
+        assert(pos == None or self.coordregexp.match(pos))
+        if self.verbose: print "PU " + str(pos)
+        strokestr = ""
         if self.strokelist != None:
             if self.verbose: print("new stroke")
             self.strokelist.insert(0, self.startpos)
-            strokestr = ""
             for p in self.strokelist:
                 self.expandBBox(int(p[0]), int(p[1]))
                 strokestr += "%s,%s " % (p[0], p[1])
-#            if self.verbose: print(strokestr)a
-            if "PU" in self.handlers:
-                self.handlers["PU"](pos, strokestr)
-        if len(pos) > 0: self.currpos = parsePosition(pos)
+#            if self.verbose: print(strokestr)
+        if "PU" in self.handlers:
+            self.handlers["PU"](pos, strokestr)
+        if pos and len(pos) > 0: self.currpos = parsePosition(pos)
         self.startpos = None
 
     def handleLTPU(self, pos):
@@ -124,6 +128,8 @@ class RTLParser:
         self.handlePU(pos)
 
     def handlePD(self, pointstr):
+        assert(self.startpos == None)
+        assert(self.coordsregexp.match(pointstr))
         if self.verbose: 
             print "PD " + pointstr[0:30],
             if len(pointstr) > 30: print "..."
