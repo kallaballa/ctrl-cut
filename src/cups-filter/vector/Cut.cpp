@@ -54,8 +54,8 @@ Cut *Cut::load(istream &input)
   string line;
   char first;
   int power, x, y;
-  int lx, ly;
-  int mx, my;
+  int lx = 0, ly = 0;
+  int mx = 0, my = 0;
   Mesh &mesh = cut->mesh;
 
   while (std::getline(input, line)) {
