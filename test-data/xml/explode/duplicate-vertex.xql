@@ -1,1 +1,0 @@
-../xql/duplicate-vertex.xql
