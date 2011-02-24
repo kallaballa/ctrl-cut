@@ -3,9 +3,10 @@ COMPOPTS = -O3 -Wall
 SOURCES=./find.java \
 	./compare \
 	./compare.java \
-	./flipy.java
+	./flipy.java \
+	./reverse.java
 
-all: compare find flipy
+all: compare find flipy reverse
 
 compare:
 	$(GCJ) ${COMPOPTS} --main=compare -o $@ $@.java
@@ -16,5 +17,7 @@ find:
 flipy:
 	        $(GCJ) ${COMPOPTS} --main=flipy -o $@ $@.java
 
+reverse:
+		$(GCJ) ${COMPOPTS} --main=reverse -o $@ $@.java
 clean:
-	rm -f compare find flipy
+	rm -f compare find flipy reverse
