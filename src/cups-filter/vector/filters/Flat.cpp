@@ -44,12 +44,11 @@ void Flat::filter(Cut *cut) {
 
   for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     pl = (*it);
-    Point2D* p = NULL;
     BBox* bb = pl->getBoundingBox();
+    Point2D* p = new Point2D(bb->ul_x, bb->ul_y);
     bool added = false;
     for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
       grid = *it_g;
-      p = new Point2D(bb->ul_x, bb->ul_y);
       if ((added = grid->sample(p))) {
         vector<Polyline* >* vp = (*clusters.find(grid)).second;
         vp->push_back(pl);
