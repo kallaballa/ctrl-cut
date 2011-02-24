@@ -12,18 +12,27 @@ function check {
     [ $VERBOSE ] && echo -n "($cmd)";
     echo -n " ... "
     result="`$cmd`"
-    [ "$result" == "0" ] && green "OK" || red $result
+    if [ "$result" == "0" ]; then
+        green "OK"
+        return 0
+    else
+        red $result
+        return 1
+    fi
 }
 
 ### main
 
 [ $# -eq 0 ] && usage
 
+res=0
 for filter in "$@"; do
     echo "testing `basename $filter`..."
     for xql in $CC_TEST_DATA/xml/xql/*.xql
     do
         check $filter $xql
+        res=$(($res || $?))
     done
 done
 
+exit $res

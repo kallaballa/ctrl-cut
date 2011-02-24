@@ -108,8 +108,20 @@ runtest()
     else
         lenstr="OK"
     fi
-    echo -n $lenstr
+    pad $lenstr 10
   fi
+
+  if [ x$XML != "x" ]; then
+    $CC_SCRIPTS/xml-test-filter.sh $srcdir/$testcase-*.xml >> $testcase.log
+    xmlstatus="$?"
+    if [ $xmlstatus != "0" ]; then
+        xmlstr="Err"
+    else
+        xmlstr="OK"
+    fi
+    echo -n $xmlstr
+  fi
+
   echo
 }
 
@@ -161,7 +173,8 @@ pad "bin" 5
 pad "img" 7
 pad "bbox" 6
 pad "polylines" 14
-echo -n "length"
+pad "length" 10
+if [ x$XML != "x" ]; then pad "XML" 3; fi
 echo
 
 # Run given test or all tests
