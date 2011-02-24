@@ -109,6 +109,14 @@ runtest()
         lenstr="OK"
     fi
     pad $lenstr 10
+
+    move_diff=`echo $rtlcompare | awk '{print $3}'`
+    if [ $move_diff != "0" ]; then
+        lenstr="$move_diff"
+    else
+        lenstr="OK"
+    fi
+    pad $lenstr 10
   fi
 
   if [ x$XML != "x" ]; then
@@ -174,6 +182,7 @@ pad "img" 7
 pad "bbox" 6
 pad "polylines" 14
 pad "length" 10
+pad "move" 10
 if [ x$XML != "x" ]; then pad "XML" 3; fi
 echo
 
