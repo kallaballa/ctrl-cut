@@ -46,7 +46,8 @@ export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
 
-optionsfile=`dirname $file`/`basename $file .ps`.options
+filename=`basename $file`
+optionsfile=`dirname $file`/${filename%.*}.options
 if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
