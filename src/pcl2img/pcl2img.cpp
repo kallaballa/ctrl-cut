@@ -22,12 +22,13 @@
 #include "string.h"
 #include "stdlib.h"
 #include <iostream>
-#include <map>
 #include "CImg.h"
 
 using std::string;
 using std::cerr;
+using std::cout;
 using std::endl;
+
 using namespace cimg_library;
 
 uint32_t* parseGeometry(char * optarg) {
@@ -45,7 +46,6 @@ int main(int argc, char *argv[]) {
   string* ofilename = NULL;
 
   int c;
-
   opterr = 0;
 
   while ((c = getopt(argc, argv, "bc:")) != -1)
@@ -76,14 +76,18 @@ int main(int argc, char *argv[]) {
     ofilename = new string("/dev/stdout");
   }
 
-  RLEDecoder dec("in.prn");
-  CImg<uint8_t>* img = dec.decode();
-  if(!img) {
-    cerr << "decoding failed!" << endl;
-    return 1;
+  RLEInterpreter intr("in.prn");
+  if(findBoundingBox) {
+    cout << "bounding box: " << intr.findBoundingBox() << endl;
+  } else {
+    CImg<uint8_t>* img = intr.render();
+    if(!img) {
+      cerr << "decoding failed!" << endl;
+      return 1;
+    }
+    img->crop(0, 0, 10800, 14400);
+    img->save(ofilename->c_str());
   }
 
-  img->crop(0, 0, 10800, 14400);
-  img->save(ofilename->c_str());
   return 0;
 }
