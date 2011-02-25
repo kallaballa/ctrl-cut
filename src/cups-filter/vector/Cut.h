@@ -43,17 +43,17 @@ public:
   Mesh &getMesh() { return this->mesh; }
   const Mesh &getMesh() const { return this->mesh; }
 
-  static Cut* load(const std::string &filename);
-  static Cut* load(std::istream &input);
+  static Cut *load(const std::string &filename);
+  static Cut *load(std::istream &input);
 
-  void add(Polyline* ls);
-  void remove(Polyline* ls);
-  bool contains(Polyline* ls) const;
+  void add(Polyline *ls);
+  void remove(Polyline *ls);
+  bool contains(Polyline *ls) const;
 
   bool wasClipped() const {
     return this->clipped;
   }
-  void xml(const std::string &s) const;
+  void writeXml(const std::string &filename) const;
 
 private:
   bool clipped;

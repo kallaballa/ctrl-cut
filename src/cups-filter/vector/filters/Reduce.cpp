@@ -45,7 +45,6 @@ void Reduce::filter(Cut *cut)
     // Detach vertices since we're rebuilding the polylines
     (*startit)->detach();
 
-    float epsilon = 10;
     // Walk the entire polyline
     Polyline::iterator pit;
     for (pit = startit; ++pit != pl->end(); ) {
@@ -67,7 +66,7 @@ void Reduce::filter(Cut *cut)
       }
 
       // We exceeded the epsilon, split the edge and continue
-      if (largest > epsilon) {
+      if (largest > this->epsilon) {
         Edge *newe = new Edge((*startit)->start(), (*largestit)->end(),
                               (*startit)->power, (*startit)->speed, (*startit)->frequency);
         newe->attach();

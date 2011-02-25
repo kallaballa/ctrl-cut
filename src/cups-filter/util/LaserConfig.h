@@ -66,8 +66,14 @@
 /** Default speed level for vector cutting. */
 #define VECTOR_SPEED_DEFAULT (33)
 
-struct LaserConfig
+class LaserConfig
 {
+public:
+  LaserConfig();
+  ~LaserConfig() {}
+  void setCupsOptions(struct cups_option_s *options, int numOptions);
+  void rangeCheck();
+
   /** Folder where input file lives, /tmp if stdin */
   std::string datadir;
   std::string basename;
@@ -113,6 +119,9 @@ struct LaserConfig
   /** Variable to track the vector frequency. FIXME */
   int vector_freq;
 
+  /** Epsilon value for vector reduce filter */
+  float vector_reduce;
+
   /** Which optimization to perform (Default: Inner-Outer) */
   int vector_optimize;
 
@@ -142,8 +151,9 @@ struct LaserConfig
 
   // Are we running performing vector passes
   bool enable_vector;
-};
 
-void init_laser_config(LaserConfig *lconf);
+private:
+  void calculate_base_position();
+};
 
 #endif /* LASER_CONFIG_H_ */
