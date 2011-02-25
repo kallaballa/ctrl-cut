@@ -212,9 +212,16 @@ public:
 class RLEDecoder {
 
 public:
+  uint8_t packedLen;
+  uint32_t decodedLen;
+  uint32_t x;
+  uint32_t y;
+  bool reverse;
+  bool fill;
+
   RLEDecoder(char* filename): pclfile(filename) {}
 
-  CImg<uint8_t>* decode() {
+  CImg<uint8_t>* decode(uint32_t translate_x=0, uint32_t translate_y=0) {
     if(!this->pclfile.good()) {
       cerr << "Invalid pcl file" << endl;
       return NULL;
@@ -235,12 +242,13 @@ public:
          continue;
 
        rleInstr->limit = rleInstr->value;
-       this->xoffset = xInstr->value;
-       this->slLen = abs(pixlenInstr->value);
+       this->x = translate_x + xInstr->value;
+       this->y = translate_y + yInstr->value;
+       this->decodedLen = abs(pixlenInstr->value);
        this->reverse = pixlenInstr->value < 0;
 
        uint32_t pos = 0;
-       while ((pos = this->decode(img, rleInstr, pos, yInstr->value))) {}
+       while ((pos = this->decode(img, rleInstr, pos))) {}
      } while (this->pclfile.good());
 
     return img;
@@ -248,33 +256,28 @@ public:
 
 private:
   PclFile pclfile;
-  uint8_t length;
-  uint32_t xoffset;
-  uint32_t slLen;
-  bool reverse;
-  bool fill;
 
   void init(int rl) {
     if(rl > 128) {
       this->fill = true;
-      this->length  = 257 - rl;
+      this->packedLen  = 257 - rl;
     }
     else if(rl < 128) {
       this->fill = false;
-      this->length  = rl + 1;
+      this->packedLen  = rl + 1;
     }
     else {
-      this->length = 0;
+      this->packedLen = 0;
     }
   }
 
-  uint32_t decode(CImg<uint8_t>* img, PclInstruction* rleInstr, uint32_t pos, uint32_t y) {
+  uint32_t decode(CImg<uint8_t>* img, PclInstruction* rleInstr, uint32_t pos) {
     if(!rleInstr->hasNext())
       return 0;
 
     init(rleInstr->next());
 
-    if(this->length == 0)
+    if(this->packedLen == 0)
       return 0;
 
     uint8_t intensity = 0;
@@ -284,17 +287,17 @@ private:
     else
       intensity = 0;
 
-    for (int i = 0; i < this->length; ++i) {
+    for (int i = 0; i < this->packedLen; ++i) {
       if (!this->fill)
         intensity = rleInstr->hasNext() ? 255 - rleInstr->next() : 0;
 
       if(!this->reverse)
-        (*img)(xoffset + slLen - (pos + i) - 1, y, 0) = intensity;
+        (*img)(this->x + this->decodedLen - (pos + i) - 1, this->y, 0) = intensity;
       else
-        (*img)(xoffset + pos + i, y, 0) = intensity;
+        (*img)(this->x + pos + i, this->y, 0) = intensity;
     }
 
-    return pos + length;
+    return pos + this->packedLen;
   }
 };
 
