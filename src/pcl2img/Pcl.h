@@ -32,7 +32,10 @@
 #include <list>
 #include "Signatures.h"
 #include "CImg.h"
+#include <pthread.h>
 
+using std::cin;
+using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
@@ -46,7 +49,6 @@ using std::numeric_limits;
 using boost::format;
 using namespace cimg_library;
 
-
 #define PCL_COORD_MAX numeric_limits<uint32_t>::max()
 #define PCL_DIM_MAX numeric_limits<uint32_t>::max()
 
@@ -56,6 +58,9 @@ typedef uint32_t dim;
 char magic[] = { 0x1b, 0x25, 0x2d, 0x31, 0x32, 0x33, 0x34,
         0x35, 0x58, 0x40, 0x50, 0x4a, 0x4c, 0x20, 0x4a, 0x4f, 0x42, 0x20, 0x4e,
         0x41, 0x4d, 0x45, 0x3d };
+
+static uint64_t pcl_plotter_steps;
+static void* pcl_plotter;
 
 class Point {
 public:
@@ -171,13 +176,12 @@ private:
   list<PclInstr*> backlog;
   static Trace* instance;
 
-  Trace(): backlogSize(10) {
-
-  }
+  Trace(): backlogSize(10) {}
 public:
   static Trace* singleton();
 
   void log(PclInstr* instr) {
+    cerr << *instr << endl;
     if(backlog.size() >= backlogSize)
       backlog.erase(backlog.begin());
 
@@ -198,18 +202,86 @@ public:
       os << "(backlog N/A)" << endl;
     }else{
       for(list<PclInstr*>::iterator it = backlogIterator(); it != backlogEnd(); it++)
-        os << *(*it) << endl;
+        os << "\t" << *(*it) << endl;
     }
     os << endl;
   }
 };
 
-Trace* Trace::instance = NULL;
-Trace* Trace::singleton(){
-  if(instance == NULL)
-    instance = new Trace();
+class PclPlotter {
+private:
+  CImg<uint8_t>* img;
+  Point penPos;
+  Point relPos;
+  Point flipAt;
+  bool flip;
+  bool down;
 
-  return instance;
+public:
+
+  uint8_t intensity;
+  Point origin;
+
+  PclPlotter(dim width, dim height): img(new CImg<uint8_t>(width, height, 1, 1, 255)), penPos(0,0), relPos(0,0), flipAt(0,0), flip(false), down(false), intensity(0), origin(0,0)
+  {
+    pcl_plotter=this;
+  };
+
+  void doFlip(Point& at) {
+    this->flip = !this->flip;
+
+    this->flipAt.x += at.x;
+    this->flipAt.y = at.y;
+
+    if (this->flip)
+      this->penPos.y -= (at.y - this->flipAt.y);
+    else
+      this->penPos.y += (at.y - this->flipAt.y);
+  }
+
+  void penUp() {
+    down = false;
+  }
+
+  void penDown() {
+    down = true;
+  }
+
+  void move(Point& to) {
+    this->move(to.x, to.y);
+  }
+
+  void move(coord x, coord y) {
+    if(relPos.x == x && relPos.y == y)
+      return;
+
+    if(down) {
+      uint8_t color [1] = { intensity };
+      img->draw_line(relPos.x, relPos.y, x, y, color);
+    }
+
+    relPos.x = x;
+    relPos.y = y;
+  }
+
+  CImg<uint8_t>* getCanvas() {
+    return img;
+  }
+};
+
+void *interactive(void *arg) {
+  string input_line;
+  while (cin) {
+    getline(cin, input_line);
+    if (input_line.compare("dump") == 0 && pcl_plotter) {
+      CImg<uint8_t>* img = ((PclPlotter*)pcl_plotter)->getCanvas();
+      img->crop(400, 400, 1400, 7000);
+      img->save("dump.png");
+    }
+    else
+      pcl_plotter_steps += strtol(input_line.c_str(), NULL, 10);
+  };
+  return 0;
 }
 
 class PclPlot {
@@ -264,10 +336,15 @@ private:
     }
     printSettings(cerr);
   }
+
 public:
   PclInstr* currentInstr;
 
   PclPlot(char* filename) : inputfile(filename, ios::in | ios::binary), bufSize(1024), buffer(new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true) {
+    pcl_plotter_steps = 0;
+    pthread_t thread;
+    pthread_create(&thread, NULL, interactive, this);
+
     readHeader();
     readSettings();
   };
@@ -277,7 +354,7 @@ public:
     std::map<string, PclInstr*>::iterator it;
     os << "=== settings: " << endl;
     for (it = settings.begin(); it != settings.end(); it++) {
-      os << *((*it).second) << endl;
+      os << "\t" << *((*it).second) << endl;
     }
   }
 
@@ -307,7 +384,15 @@ public:
     return this->valid && this->inputfile.good();
   }
 
+  void waitForStep() {
+    while(pcl_plotter_steps <= 0)
+      sleep(0.1);
+
+    --pcl_plotter_steps;
+  }
+
   PclInstr* readInstr(const char * expected=NULL) {
+    waitForStep();
     if(!this->inputfile.good()) {
       invalidate("broken pipe");
       return NULL;
@@ -361,61 +446,12 @@ public:
   }
 };
 
-class PclPlotter {
-private:
-  CImg<uint8_t>* img;
-  Point penPos;
-  Point relPos;
-  Point flipAt;
-  bool flip;
-  bool down;
+Trace* Trace::instance = NULL;
+Trace* Trace::singleton() {
+  if (instance == NULL)
+    instance = new Trace();
 
-public:
-  uint8_t intensity;
-  Point origin;
-
-  PclPlotter(dim width, dim height): img(new CImg<uint8_t>(width, height, 1, 1, 255)), penPos(0,0), relPos(0,0), flipAt(0,0), flip(false), down(false), intensity(0), origin(0,0) {};
-
-  void doFlip(Point& at) {
-    this->flip = !this->flip;
-
-    this->flipAt.x += at.x;
-    this->flipAt.y = at.y;
-
-    if (this->flip)
-      this->penPos.y -= (at.y - this->flipAt.y);
-    else
-      this->penPos.y += (at.y - this->flipAt.y);
-  }
-
-  void penUp() {
-    down = false;
-  }
-
-  void penDown() {
-    down = true;
-  }
-
-  void move(Point& to) {
-    this->move(to.x, to.y);
-  }
-
-  void move(coord x, coord y) {
-    if(relPos.x == x && relPos.y == y)
-      return;
-
-    if(down) {
-      uint8_t color [1] = { intensity };
-      img->draw_line(relPos.x, relPos.y, x, y, color);
-    }
-
-    relPos.x = x;
-    relPos.y = y;
-  }
-
-  CImg<uint8_t>* getCanvas() {
-    return img;
-  }
-};
+  return instance;
+}
 
 #endif /* PCLFILE_H_ */

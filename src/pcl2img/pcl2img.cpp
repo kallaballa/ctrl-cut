@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
   }
 
   Interpreter intr(ifilename);
+
   if(findBoundingBox) {
     //cout << "bounding box: " << intr.findBoundingBox() << endl;
   } else {
@@ -85,9 +86,10 @@ int main(int argc, char *argv[]) {
       cerr << "decoding failed!" << endl;
       return 1;
     }
-    img->crop(0, 0, 10800, 14400);
+    img->crop(400, 400, 1400, 7000);
     img->save(ofilename);
   }
 
   return 0;
 }
+

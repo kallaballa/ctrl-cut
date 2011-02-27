@@ -20,27 +20,29 @@
 #ifndef INTERPRETER_H_
 #define INTERPRETER_H_
 
+#include "stdlib.h"
 #include "Pcl.h"
 #include "Signatures.h"
 #include "RLEDecoder.h"
 
 class Interpreter {
 public:
-  PclPlot pclfile;
+  PclPlot pclplot;
 
-  Interpreter(char* filename): pclfile(filename){};
+  Interpreter(char* filename): pclplot(filename){
+  };
 
   CImg<uint8_t>* renderRaster() {
-    if(!this->pclfile.good()) {
-      this->pclfile.invalidate("corrupt pcl header");
+    if(!this->pclplot.good()) {
+      this->pclplot.invalidate("corrupt pcl header");
       return NULL;
     }
     dim width = 0;
     dim height = 0;
 
-    if(pclfile.require(PCL_WIDTH) && pclfile.require(PCL_HEIGHT)) {
-      width = pclfile.setting(PCL_WIDTH);
-      height = pclfile.setting(PCL_HEIGHT);
+    if(pclplot.require(PCL_WIDTH) && pclplot.require(PCL_HEIGHT)) {
+      width = pclplot.setting(PCL_WIDTH);
+      height = pclplot.setting(PCL_HEIGHT);
     } else
       return NULL;
 
@@ -50,27 +52,27 @@ public:
     PclPlotter* plotter = new PclPlotter(width, height);
     RLEDecoder rledec(plotter);
     do {
-      if ((yflipInstr = pclfile.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
+      if ((yflipInstr = pclplot.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         if(rledec.currentRun != NULL)
           plotter->doFlip(rledec.currentRun->loc);
         else
           plotter->doFlip(plotter->origin);
-      } else if (pclfile.currentInstr->matches(PCL_RASTER_START)) {
+      } else if (pclplot.currentInstr->matches(PCL_RASTER_START)) {
         plotter->penDown();
-      } else if (pclfile.currentInstr->matches(PCL_RASTER_END)){
+      } else if (pclplot.currentInstr->matches(PCL_RASTER_END)){
         plotter->penUp();
         continue;
       } else if (
-          (yInstr = pclfile.currentInstr)->matches(PCL_Y,true)
-          && (xInstr = pclfile.readInstr(PCL_X))
-          && (pixlenInstr = pclfile.readInstr(PCL_PIXEL_LEN))
-          && (dataInstr = pclfile.readInstr(PCL_RLE_DATA))
+          (yInstr = pclplot.currentInstr)->matches(PCL_Y,true)
+          && (xInstr = pclplot.readInstr(PCL_X))
+          && (pixlenInstr = pclplot.readInstr(PCL_PIXEL_LEN))
+          && (dataInstr = pclplot.readInstr(PCL_RLE_DATA))
           ) {
 
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
         while (rledec.decodeRLE(run) != NULL && !run->isFinished());
       }
-    } while (this->pclfile.good());
+    } while (this->pclplot.good());
 
     return plotter->getCanvas();
   }
