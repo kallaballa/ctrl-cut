@@ -51,6 +51,7 @@ if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
+echo "$CC_BINARY $XML 32 kintel `basename $file` 1 "$CC_FILTER_OPTIONS $options" $file" >&2
 # Don't run this with try since it produces stdout which is passed to our caller
 $CC_BINARY $XML 32 kintel `basename $file` 1 "$CC_FILTER_OPTIONS $options" $file
 exit $?
