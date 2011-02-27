@@ -11,6 +11,9 @@
 
 . $CC_FUNCTIONS
 
+# Makes unmatched globs return a zero list instead of literal glob characters
+shopt -s nullglob
+
 pad()
 {
   echo -n $1
@@ -22,14 +25,15 @@ pad()
 runtest()
 {
   testtype=$2
-  testcase=`basename $1 .ps`
   srcdir=`dirname $1`
+  filename=`basename $1`
+  testcase=${filename%.*} # basename without suffix
   prnfile=$srcdir/$testcase.prn
-  pad "*$testcase" 22
+  pad "$testcase" 22
   outfile=$srcdir/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
-  scripts/run-filter.sh $XML $1 > $outfile 2> $testcase.log
+  scripts/run-filter.sh $VERBOSE $XML $1 > $outfile 2> $testcase.log
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -139,7 +143,7 @@ rundir()
   do
     testtype=`basename $testdir`
     echo "[$testtype]"
-    for f in $testdir/*.ps; do
+    for f in $testdir/*.ps $testdir/*.vector; do
       runtest $f $testtype
     done
   done
