@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "PclFile.h"
+#include "Interpreter.h"
 #include "stdint.h"
 #include "string.h"
 #include "stdlib.h"
@@ -42,8 +42,8 @@ void printUsage() {
 int main(int argc, char *argv[]) {
   bool findBoundingBox = false;
   uint32_t *crop = NULL;
-  string* ifilename = NULL;
-  string* ofilename = NULL;
+  char* ifilename = NULL;
+  char* ofilename = NULL;
 
   int c;
   opterr = 0;
@@ -65,28 +65,28 @@ int main(int argc, char *argv[]) {
     }
 
   if (optind < argc) {
-    ifilename = new string(argv[optind]);
+    ifilename = argv[optind];
   } else {
     printUsage();
     exit(1);
   }
   if (++optind < argc) {
-    ofilename = new string(argv[optind]);
+    ofilename = argv[optind];
   } else {
-    ofilename = new string("/dev/stdout");
+    ofilename = "/dev/stdout";
   }
 
-  RLEInterpreter intr("in.prn");
+  Interpreter intr(ifilename);
   if(findBoundingBox) {
-    cout << "bounding box: " << intr.findBoundingBox() << endl;
+    //cout << "bounding box: " << intr.findBoundingBox() << endl;
   } else {
-    CImg<uint8_t>* img = intr.render();
+    CImg<uint8_t>* img = intr.renderRaster();
     if(!img) {
       cerr << "decoding failed!" << endl;
       return 1;
     }
     img->crop(0, 0, 10800, 14400);
-    img->save(ofilename->c_str());
+    img->save(ofilename);
   }
 
   return 0;
