@@ -33,6 +33,15 @@ public:
   coord x;
   coord y;
   Point(coord x, coord y): x(x), y(y) {}
+
+  Point& operator=(Point &p) {
+    if(this != &p) {
+      this->x = p.x;
+      this->y = p.y;
+    }
+    return *this;
+  }
+
   friend ostream& operator <<(ostream &os, Point &p) {
     os << "(" << p.x << "," << p.y << ")";
     return os;

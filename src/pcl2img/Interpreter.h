@@ -28,55 +28,54 @@
 
 class Interpreter {
 public:
-  PclPlot pclplot;
+  PclPlot plot;
 
-  Interpreter(char* filename): pclplot(filename){
-
+  Interpreter(char* filename): plot(filename){
   };
 
   CImg<uint8_t>* renderRaster() {
-    if(!this->pclplot.good()) {
-      this->pclplot.invalidate("corrupt pcl header");
+    if(!this->plot.good()) {
+      this->plot.invalidate("corrupt pcl header");
       return NULL;
     }
     dim width = 0;
     dim height = 0;
 
-    if(pclplot.require(PCL_WIDTH) && pclplot.require(PCL_HEIGHT)) {
-      width = pclplot.setting(PCL_WIDTH);
-      height = pclplot.setting(PCL_HEIGHT);
+    if(plot.require(PCL_WIDTH) && plot.require(PCL_HEIGHT)) {
+      width = plot.setting(PCL_WIDTH);
+      height = plot.setting(PCL_HEIGHT);
     } else
       return NULL;
 
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
 
     Run *run = new Run();
-    PclPlotter* plotter = new PclPlotter(width, height);
-    RasterPlotter rledec(plotter);
+    PclPlotter* pclPlotter = new PclPlotter(width, height);
+    RasterPlotter raster(pclPlotter);
     do {
-      if ((yflipInstr = pclplot.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-        if(rledec.currentRun != NULL)
-          plotter->doFlip(rledec.currentRun->loc);
+      if ((yflipInstr = plot.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
+        if(raster.currentRun != NULL)
+          pclPlotter->doFlip(raster.currentRun->loc);
         else
-          plotter->doFlip(plotter->origin);
-      } else if (pclplot.currentInstr->matches(PCL_RASTER_START)) {
-        plotter->penDown();
-      } else if (pclplot.currentInstr->matches(PCL_RASTER_END)){
-        plotter->penUp();
+          pclPlotter->doFlip(pclPlotter->origin);
+      } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
+        pclPlotter->penDown();
+      } else if (plot.currentInstr->matches(PCL_RASTER_END)){
+        pclPlotter->penUp();
         continue;
       } else if (
-          (yInstr = pclplot.currentInstr)->matches(PCL_Y,true)
-          && (xInstr = pclplot.readInstr(PCL_X))
-          && (pixlenInstr = pclplot.readInstr(PCL_PIXEL_LEN))
-          && (dataInstr = pclplot.readInstr(PCL_RLE_DATA))
+          (yInstr = plot.currentInstr)->matches(PCL_Y,true)
+          && (xInstr = plot.readInstr(PCL_X))
+          && (pixlenInstr = plot.readInstr(PCL_PIXEL_LEN))
+          && (dataInstr = plot.readInstr(PCL_RLE_DATA))
           ) {
 
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
-        while (rledec.decode(run) != NULL && !run->isFinished());
+        while (raster.decode(run) != NULL && !run->isFinished());
       }
-    } while (this->pclplot.good());
+    } while (this->plot.good());
 
-    return plotter->getCanvas();
+    return pclPlotter->getCanvas();
   }
 
 /*  BoundingBox& findBoundingBox() {
