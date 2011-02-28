@@ -27,6 +27,9 @@
 #include <iostream>
 #include <boost/format.hpp>
 #include "Signatures.h"
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/barrier.hpp>
 
 using std::cout;
 using std::cerr;

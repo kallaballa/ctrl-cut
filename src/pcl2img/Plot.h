@@ -63,7 +63,7 @@ public:
     flip(false), down(false), intensity(0)
   {};
 
-  void doFlip(Point& at) {
+  void doFlip(Point& at=*(new Point(0,0))) {
     this->flip = !this->flip;
 
     this->flipAt.x += at.x;
@@ -161,7 +161,7 @@ private:
 public:
   PclInstr* currentInstr;
 
-  PclPlot(char* filename):
+  PclPlot(const char* filename):
     inputfile(filename, ios::in | ios::binary),
     bufSize(1024), buffer(new char[1024]),
     eof(numeric_limits<off64_t>::max()), valid(true) {

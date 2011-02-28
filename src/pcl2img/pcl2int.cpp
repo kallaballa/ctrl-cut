@@ -17,12 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "Interpreter.h"
-#include "stdint.h"
-#include "string.h"
-#include "stdlib.h"
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 #include <iostream>
 #include "CImg.h"
+#include "Interpreter.h"
 
 using std::string;
 using std::cerr;
@@ -31,30 +31,26 @@ using std::endl;
 
 using namespace cimg_library;
 
-uint32_t* parseGeometry(char * optarg) {
-  return NULL;
-}
-
 void printUsage() {
   cerr << "usage" << endl;
 }
 
 int main(int argc, char *argv[]) {
   bool findBoundingBox = false;
-  uint32_t *crop = NULL;
+  bool interactive = false;
   char* ifilename = NULL;
   char* ofilename = NULL;
 
   int c;
   opterr = 0;
 
-  while ((c = getopt(argc, argv, "bc:")) != -1)
+  while ((c = getopt(argc, argv, "bi")) != -1)
     switch (c) {
     case 'b':
       findBoundingBox = true;
       break;
     case 'c':
-      crop = parseGeometry(optarg);
+      interactive = true;
       break;
     case ':':
       printUsage();
@@ -77,17 +73,16 @@ int main(int argc, char *argv[]) {
   }
 
   Interpreter intr(ifilename);
+  if(true) {
+    Debugger::create(intr.plotter);
+    Debugger::instance->setInteractive(true);
+  }
 
   if(findBoundingBox) {
     //cout << "bounding box: " << intr.findBoundingBox() << endl;
   } else {
-    CImg<uint8_t>* img = intr.renderRaster();
-    if(!img) {
-      cerr << "decoding failed!" << endl;
-      return 1;
-    }
-    img->crop(400, 400, 1400, 7000);
-    img->save(ofilename);
+    intr.renderRaster();
+//    intr.dumpCanvas(ofilename);
   }
 
   return 0;

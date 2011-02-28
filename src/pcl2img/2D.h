@@ -43,7 +43,7 @@ public:
   }
 
   friend ostream& operator <<(ostream &os, Point &p) {
-    os << "(" << p.x << "," << p.y << ")";
+    os << "<" << p.x << "," << p.y << ">";
     return os;
   }
 };
@@ -85,7 +85,7 @@ public:
   }
 
   friend ostream& operator <<(ostream &os, BoundingBox &bbox) {
-    os << "(" << bbox.ul << "," << bbox.lr << ")";
+    os << "<" << bbox.ul << "," << bbox.lr << ">";
     return os;
   }
 };

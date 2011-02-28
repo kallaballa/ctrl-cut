@@ -21,22 +21,28 @@
 #define INTERPRETER_H_
 
 #include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <sstream>
 #include "Pcl.h"
 #include "Signatures.h"
 #include "Raster.h"
 #include "Plot.h"
+#include "CLI.h"
 
+using std::string;
+using std::stringstream;
+using std::cin;
+using std::cerr;
+using std::endl;
 class Interpreter {
 public:
+  PclPlotter* plotter;
   PclPlot plot;
 
-  Interpreter(char* filename): plot(filename){
-  };
-
-  CImg<uint8_t>* renderRaster() {
+  Interpreter(const char* filename): plotter(NULL), plot(filename){
     if(!this->plot.good()) {
       this->plot.invalidate("corrupt pcl header");
-      return NULL;
     }
     dim width = 0;
     dim height = 0;
@@ -45,77 +51,52 @@ public:
       width = plot.setting(PCL_WIDTH);
       height = plot.setting(PCL_HEIGHT);
     } else
-      return NULL;
+      this->plot.invalidate("can't find plot dimensions");
 
+    plotter = new PclPlotter(width,height);
+  };
+
+  void renderRaster() {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
-
     Run *run = new Run();
-    PclPlotter* pclPlotter = new PclPlotter(width, height);
-    RasterPlotter raster(pclPlotter);
+    RasterPlotter raster(this->plotter);
+
     do {
-      if ((yflipInstr = plot.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
+      if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         if(raster.currentRun != NULL)
-          pclPlotter->doFlip(raster.currentRun->loc);
+          this->plotter->doFlip(raster.currentRun->loc);
         else
-          pclPlotter->doFlip(pclPlotter->origin);
+          this->plotter->doFlip();
       } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
-        pclPlotter->penDown();
+        continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_END)){
-        pclPlotter->penUp();
         continue;
       } else if (
           (yInstr = plot.currentInstr)->matches(PCL_Y,true)
-          && (xInstr = plot.readInstr(PCL_X))
-          && (pixlenInstr = plot.readInstr(PCL_PIXEL_LEN))
-          && (dataInstr = plot.readInstr(PCL_RLE_DATA))
+          && (xInstr = nextInstr(PCL_X))
+          && (pixlenInstr = nextInstr(PCL_PIXEL_LEN))
+          && (dataInstr = nextInstr(PCL_RLE_DATA))
           ) {
+        this->plotter->penDown();
 
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
         while (raster.decode(run) != NULL && !run->isFinished());
+
+        this->plotter->penUp();
+        Debugger::instance->animate();
       }
     } while (this->plot.good());
 
-    return pclPlotter->getCanvas();
+    cerr << "Plot finished." << endl;
+    Debugger::instance->setInteractive(true);
+    Debugger::instance->waitSteps();
   }
 
-/*  BoundingBox& findBoundingBox() {
-    if (!this->pclfile.good()) {
-      this->pclfile.invalidate("corrupt pcl header");
-      this->bbox.reset();
-    } else {
-      PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *rleInstr = NULL, *yflipInstr = NULL;
-
-      do {
-        if ((yflipInstr = pclfile.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-          yflip = !yflip;
-          if(rleInstr && yflip)
-            yflip_off = this->y;
-          else
-            yflip_off = 0;
-
-          continue;
-        } else if (pclfile.currentInstr->matches(PCL_RASTER_START) || pclfile.currentInstr->matches(PCL_RASTER_END)){
-          continue;
-        } else if (!(
-            (yInstr = pclfile.currentInstr)->matches(PCL_Y,true)
-            && (xInstr = pclfile.readInstr(PCL_X))
-            && (pixlenInstr = pclfile.readInstr(PCL_PIXEL_LEN))
-            && (rleInstr = pclfile.readInstr(PCL_RLE))
-            )) {
-          continue;
-        }
-
-        rleInstr->limit = rleInstr->value;
-        this->x = xInstr->value;
-        this->y = yInstr->value;
-        this->decodedLen = abs(pixlenInstr->value);
-
-        this->bbox.update(x,this->y + (this->y - this->yflip_off));
-        this->bbox.update(x + decodedLen);
-      } while (this->pclfile.good());
-    }
-    return this->bbox;
-  }*/
+  PclInstr* nextInstr(const char* expected=NULL) {
+    PclInstr* instr = plot.readInstr(expected);
+    Debugger::instance->waitSteps();
+    return instr;
+  }
 };
 
 #endif /* INTERPRETER_H_ */
