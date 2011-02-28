@@ -62,7 +62,7 @@ public:
     this->lr.y=0;
   }
 
-  void update(Point p) {
+  void update(Point& p) {
     update(p.x, p.y);
   }
 

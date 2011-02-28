@@ -46,17 +46,21 @@ using namespace cimg_library;
 class PclPlotter {
 private:
   CImg<uint8_t>* img;
+
   Point penPos;
   Point relPos;
   Point flipAt;
+
   bool flip;
   bool down;
 
 public:
   uint8_t intensity;
-  Point origin;
 
-  PclPlotter(dim width, dim height): img(new CImg<uint8_t>(width, height, 1, 1, 255)), penPos(0,0), relPos(0,0), flipAt(0,0), flip(false), down(false), intensity(0), origin(0,0)
+  PclPlotter(dim width, dim height):
+    img(new CImg<uint8_t>(width, height, 1, 1, 255)),
+    penPos(0,0), relPos(0,0), flipAt(0,0),
+    flip(false), down(false), intensity(0)
   {};
 
   void doFlip(Point& at) {
@@ -108,8 +112,8 @@ private:
   const uint16_t bufSize;
   char* buffer;
   off64_t eof;
-
   bool valid;
+
   std::map<string, PclInstr*> settings;
 
   bool readPattern(const char * pattern, const int off, const int len) {
@@ -157,7 +161,10 @@ private:
 public:
   PclInstr* currentInstr;
 
-  PclPlot(char* filename) : inputfile(filename, ios::in | ios::binary), bufSize(1024), buffer(new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true) {
+  PclPlot(char* filename):
+    inputfile(filename, ios::in | ios::binary),
+    bufSize(1024), buffer(new char[1024]),
+    eof(numeric_limits<off64_t>::max()), valid(true) {
     readHeader();
     readSettings();
   };
