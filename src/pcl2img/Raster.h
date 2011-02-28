@@ -23,6 +23,8 @@
 #include "stdint.h"
 #include "CImg.h"
 #include "Pcl.h"
+#include "2D.h"
+#include "Plot.h"
 
 class Run {
 private:
@@ -90,18 +92,17 @@ public:
   }
 };
 
-class RLEDecoder {
+class RasterPlotter {
 private:
   PclPlotter* plotter;
   BoundingBox bbox;
 
-
 public:
   Run* currentRun;
 
-  RLEDecoder(PclPlotter* plotter): plotter(plotter), currentRun(NULL) {}
+  RasterPlotter(PclPlotter* plotter): plotter(plotter), currentRun(NULL) {}
 
-  Run* decodeRLE(Run *run) {
+  Run* decode(Run *run) {
     this->currentRun = run;
 
     if(!run->valid || run->packedLen == 0)

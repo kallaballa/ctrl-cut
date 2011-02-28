@@ -20,16 +20,18 @@
 #ifndef INTERPRETER_H_
 #define INTERPRETER_H_
 
-#include "stdlib.h"
+#include <stdlib.h>
 #include "Pcl.h"
 #include "Signatures.h"
-#include "RLEDecoder.h"
+#include "Raster.h"
+#include "Plot.h"
 
 class Interpreter {
 public:
   PclPlot pclplot;
 
   Interpreter(char* filename): pclplot(filename){
+
   };
 
   CImg<uint8_t>* renderRaster() {
@@ -50,7 +52,7 @@ public:
 
     Run *run = new Run();
     PclPlotter* plotter = new PclPlotter(width, height);
-    RLEDecoder rledec(plotter);
+    RasterPlotter rledec(plotter);
     do {
       if ((yflipInstr = pclplot.readInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         if(rledec.currentRun != NULL)
@@ -70,7 +72,7 @@ public:
           ) {
 
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
-        while (rledec.decodeRLE(run) != NULL && !run->isFinished());
+        while (rledec.decode(run) != NULL && !run->isFinished());
       }
     } while (this->pclplot.good());
 
