@@ -89,12 +89,12 @@ public:
 
     cerr << "Plot finished." << endl;
     Debugger::instance->setInteractive(true);
-    Debugger::instance->waitSteps();
+    Debugger::instance->announce(NULL);
   }
 
   PclInstr* nextInstr(const char* expected=NULL) {
     PclInstr* instr = plot.readInstr(expected);
-    Debugger::instance->waitSteps();
+    Debugger::instance->announce(instr);
     return instr;
   }
 };
