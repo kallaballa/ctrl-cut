@@ -54,7 +54,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
 {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
-    this->focus = strcmp(v, "false");
+    this->focus = strcmp(v, "false") != 0;
   }
   if ((v = cupsGetOption("Resolution", numOptions, options))) {
     this->resolution = atoi(v);
