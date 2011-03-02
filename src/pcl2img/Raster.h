@@ -95,7 +95,6 @@ public:
 class RasterPlotter {
 private:
   PclPlotter* plotter;
-  BoundingBox bbox;
 
 public:
   Run* currentRun;

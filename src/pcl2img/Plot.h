@@ -45,7 +45,7 @@ using namespace cimg_library;
 
 class PclPlotter {
 private:
-  CImg<uint8_t>* img;
+  BoundingBox *crop;
 
   Point penPos;
   Point relPos;
@@ -54,14 +54,22 @@ private:
   bool flip;
   bool down;
 
+  CImg<uint8_t> *img;
 public:
   uint8_t intensity;
 
-  PclPlotter(dim width, dim height):
-    img(new CImg<uint8_t>(width, height, 1, 1, 255)),
+  PclPlotter(dim width, dim height, BoundingBox* crop = NULL):
+    crop(crop),
     penPos(0,0), relPos(0,0), flipAt(0,0),
     flip(false), down(false), intensity(0)
-  {};
+  {
+    if(crop != NULL) {
+      width = crop->min(width, crop->lr.x - crop->ul.x);
+      height = crop->min(height, crop->lr.y -  crop->ul.y);
+    }
+
+    this->img = new CImg<uint8_t>(width, height, 1, 1, 255);
+  };
 
   void doFlip(Point& at=*(new Point(0,0))) {
     this->flip = !this->flip;
@@ -83,21 +91,28 @@ public:
     down = true;
   }
 
-  void move(Point& to) {
-    this->move(to.x, to.y);
+  void move(coord x, coord y) {
+    Point p(x,y);
+    this->move(p);
   }
 
-  void move(coord x, coord y) {
-    if(relPos.x == x && relPos.y == y)
-      return;
+  void move(Point& to) {
+    coord crop_offX = 0;
+    coord crop_offY = 0;
 
-    if(down) {
-      uint8_t color [1] = { intensity };
-      img->draw_line(relPos.x, relPos.y, x, y, color);
+    if(this->crop) {
+      to = this->crop->shape(to);
+      crop_offX = crop->ul.x;
+      crop_offY = crop->ul.y;
     }
 
-    relPos.x = x;
-    relPos.y = y;
+    if(relPos != to) {
+      if(down) {
+        uint8_t color [1] = { intensity };
+        img->draw_line(relPos.x - crop_offX, relPos.y - crop_offY, to.x, to.y, color);
+      }
+      relPos = to;
+    }
   }
 
   CImg<uint8_t>* getCanvas() {
@@ -117,10 +132,9 @@ private:
   std::map<string, PclInstr*> settings;
 
   bool readPattern(const char * pattern, const int off, const int len) {
-    if (this->inputfile.read(buffer, len)) {
-      return memcmp((pattern + off), buffer, len) == 0;
-    } else
-      return false;
+    return this->inputfile.read(buffer, len)
+        ? memcmp((pattern + off), buffer, len) == 0
+            : false;
   }
 
   off64_t fillBuffer() {

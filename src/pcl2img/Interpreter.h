@@ -40,7 +40,7 @@ public:
   PclPlotter* plotter;
   PclPlot plot;
 
-  Interpreter(const char* filename): plotter(NULL), plot(filename){
+  Interpreter(const char* filename,BoundingBox* crop=NULL): plotter(NULL), plot(filename){
     if(!this->plot.good()) {
       this->plot.invalidate("corrupt pcl header");
     }
@@ -53,7 +53,7 @@ public:
     } else
       this->plot.invalidate("can't find plot dimensions");
 
-    plotter = new PclPlotter(width,height);
+    plotter = new PclPlotter(width,height,crop);
   };
 
   void renderRaster() {

@@ -23,6 +23,7 @@
 #include <iostream>
 #include "CImg.h"
 #include "Interpreter.h"
+#include "2D.h"
 
 using std::string;
 using std::cerr;
@@ -40,17 +41,20 @@ int main(int argc, char *argv[]) {
   bool interactive = false;
   char* ifilename = NULL;
   char* ofilename = NULL;
-
+  BoundingBox* crop = NULL;
   int c;
   opterr = 0;
 
-  while ((c = getopt(argc, argv, "bi")) != -1)
+  while ((c = getopt(argc, argv, "bic:")) != -1)
     switch (c) {
     case 'b':
       findBoundingBox = true;
       break;
-    case 'c':
+    case 'i':
       interactive = true;
+      break;
+    case 'c':
+      crop = BoundingBox::createFromGeometryString(optarg);
       break;
     case ':':
       printUsage();
@@ -72,7 +76,7 @@ int main(int argc, char *argv[]) {
     ofilename = "/dev/stdout";
   }
 
-  Interpreter intr(ifilename);
+  Interpreter intr(ifilename, crop);
   if(true) {
     Debugger::create(intr.plotter);
     Debugger::instance->setInteractive(true);

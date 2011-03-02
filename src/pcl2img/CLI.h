@@ -54,7 +54,7 @@ private:
       this->consume();
     } else if (cmd.compare("show") == 0) {
       this->displayCanvas();
-    } else {
+    } else if (param) {
       if (cmd.compare("break") == 0) {
         off64_t off = strtoll(param.c_str(), NULL, 16);
         if (off > 0)
@@ -74,6 +74,9 @@ private:
         this->dumpCanvas(param.c_str());
         cerr << "dumped: " << param << endl;
       }
+    } else {
+      cerr << "<< invalid command" << endl;
+      return;
     }
     lastCliCmd[0] = cmd;
     lastCliCmd[1] = param;
@@ -183,16 +186,14 @@ public:
 
   void updateCanvas() {
     if (canvas_disp) {
-      CImg<uint8_t> view = *plotter->getCanvas();
-      canvas_disp->display(view.crop(400, 400, 1400, 7000));
+      canvas_disp->display(*plotter->getCanvas());
       canvas_disp->paint();
     }
   }
 
   void displayCanvas() {
     if (!canvas_disp) {
-      CImg<uint8_t> view = *plotter->getCanvas();
-      canvas_disp = new CImgDisplay(view.crop(400, 400, 1400, 7000), "Plot");
+      canvas_disp = new CImgDisplay(*plotter->getCanvas(), "Plot");
     }
     updateCanvas();
   }
@@ -200,7 +201,8 @@ public:
 
 Debugger* Debugger::instance = NULL;
 void Debugger::create(PclPlotter* plotter) {
-  instance = new Debugger(plotter);
+  if(instance == NULL)
+    instance = new Debugger(plotter);
 }
 
 #endif /* CLI_H_ */
