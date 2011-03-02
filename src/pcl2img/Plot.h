@@ -109,9 +109,10 @@ public:
     if(relPos != to) {
       if(down) {
         uint8_t color [1] = { intensity };
-        img->draw_line(relPos.x - crop_offX, relPos.y - crop_offY, to.x, to.y, color);
+        img->draw_line(relPos.x - crop_offX, relPos.y - crop_offY, to.x  - crop_offX, to.y - crop_offY, color);
       }
       relPos = to;
+      Trace::singleton()->logPlotterPos(relPos);
     }
   }
 
@@ -249,7 +250,7 @@ public:
         instr->hasValue = true;
       }
 
-      Trace::singleton()->log(instr);
+      Trace::singleton()->logInstr(instr);
       if(expected && !instr->matches(expected, true)) {
         return NULL;
       } else {
@@ -271,5 +272,6 @@ public:
     return NULL;
   }
 };
+
 
 #endif /* PLOTTER_H_ */

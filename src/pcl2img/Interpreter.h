@@ -32,9 +32,7 @@
 
 using std::string;
 using std::stringstream;
-using std::cin;
-using std::cerr;
-using std::endl;
+
 class Interpreter {
 public:
   PclPlotter* plotter;

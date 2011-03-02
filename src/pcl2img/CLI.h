@@ -46,7 +46,7 @@ private:
   CImgDisplay* canvas_disp;
   bool anim;
   list<off64_t> breakpoints;
-  list<string> signatures;
+  string find;
   string lastCliCmd[2];
 
   void exec(string cmd, string param) {
@@ -54,7 +54,7 @@ private:
       this->consume();
     } else if (cmd.compare("show") == 0) {
       this->displayCanvas();
-    } else if (param) {
+    } else {
       if (cmd.compare("break") == 0) {
         off64_t off = strtoll(param.c_str(), NULL, 16);
         if (off > 0)
@@ -62,9 +62,10 @@ private:
       } else if (cmd.compare("step") == 0) {
         this->waitSteps(strtol(param.c_str(), NULL, 10));
       } else if (cmd.compare("find") == 0) {
-        this->signatures.push_back(param);
+        find = param;
         this->setInteractive(false);
         this->consume();
+        find = "";
       } else if (cmd.compare("anim") == 0) {
         if (param.compare("on") == 0)
           this->anim = true;
@@ -74,10 +75,8 @@ private:
         this->dumpCanvas(param.c_str());
         cerr << "dumped: " << param << endl;
       }
-    } else {
-      cerr << "<< invalid command" << endl;
-      return;
     }
+
     lastCliCmd[0] = cmd;
     lastCliCmd[1] = param;
   }
@@ -111,16 +110,10 @@ private:
   }
 
   void checkSignatures(PclInstr *instr) {
-    if (signatures.size() > 0 && instr) {
-      list<string>::iterator it;
-      for (it = signatures.begin(); it != signatures.end(); it++) {
-        if (instr->matches(*it)) {
-          cerr << "=== found " << (char *) instr << endl;
-          setInteractive(true);
-          this->step_barrier.wait();
-           break;
-        }
-      }
+    if (find.length() > 0 && instr && instr->matches(find)) {
+      cerr << "=== found " << (char *) instr << endl;
+      setInteractive(true);
+      this->step_barrier.wait();
     }
   }
 
