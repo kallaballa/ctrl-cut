@@ -20,8 +20,18 @@
 #ifndef TWOD_H_
 #define TWOD_H_
 
+#include <boost/lexical_cast.hpp>
 #include <cctype>
+#include <limits>
 #include <iostream>
+#include <sstream>
+#include <string>
+
+using std::numeric_limits;
+using std::string;
+using std::stringstream;
+using std::ostream;
+using boost::lexical_cast;
 
 #define PCL_2D_MAX std::numeric_limits<uint32_t>::max()
 
@@ -32,7 +42,9 @@ class Point {
 public:
   coord x;
   coord y;
+
   Point(coord x, coord y): x(x), y(y) {}
+  Point(): x(0), y(0) {}
 
   Point& operator=(Point &p) {
     if(this != &p) {
@@ -40,6 +52,16 @@ public:
       this->y = p.y;
     }
     return *this;
+  }
+  bool operator==(Point &p) {
+    if(this == &p) {
+      return true;
+    } else
+      return (this->x == p.x && this->y == y);
+  }
+
+  bool operator!=(Point &p) {
+    return !this->operator==(p);
   }
 
   friend ostream& operator <<(ostream &os, Point &p) {
@@ -52,7 +74,7 @@ class BoundingBox {
 public:
   Point ul;
   Point lr;
-
+  BoundingBox(Point ul, Point lr): ul(ul), lr(lr) {}
   BoundingBox(): ul(PCL_2D_MAX, PCL_2D_MAX), lr(0,0){}
 
   void reset(){
@@ -84,9 +106,52 @@ public:
     return (c1>=c2?c1:c2);
   }
 
+  Point& shape(Point &p) {
+    if(!inside(p)) {
+      p.x = max(p.x, ul.x);
+      p.x = min(p.x, lr.x);
+      p.y = max(p.y, ul.y);
+      p.y = min(p.y, lr.y);
+    }
+    return p;
+  }
+
+  bool inside(Point &p) {
+    return (p.x < lr.x && p.x > ul.x && p.y < lr.y
+            && p.y > ul.y);
+  }
+
+  bool isValid() {
+    return this->ul.x < this->lr.x &&
+           this->ul.y < this->lr.y &&
+           this->ul.x < numeric_limits<coord>::max() &&
+           this->ul.y < numeric_limits<coord>::max();
+  }
+
   friend ostream& operator <<(ostream &os, BoundingBox &bbox) {
     os << "<" << bbox.ul << "," << bbox.lr << ">";
     return os;
+  }
+
+  static BoundingBox* createFromGeometryString(string geom) {
+    stringstream ss(geom);
+    string strCoord;
+    BoundingBox* bb = new BoundingBox();
+
+    if(!getline(ss,strCoord, 'x'))
+      return NULL;
+    bb->ul.x = strtol(strCoord.c_str(), NULL, 10);
+    if(!getline(ss,strCoord, 'x'))
+      return NULL;
+    bb->ul.y = strtol(strCoord.c_str(), NULL, 10);
+    if(!getline(ss,strCoord, 'x'))
+      return NULL;
+    bb->lr.x = strtol(strCoord.c_str(), NULL, 10);
+    if(!getline(ss,strCoord, 'x'))
+      return NULL;
+    bb->lr.y = strtol(strCoord.c_str(), NULL, 10);
+
+    return bb;
   }
 };
 #endif /* TWOD_H_ */

@@ -49,7 +49,6 @@ private:
 
   Point penPos;
   Point relPos;
-  Point flipAt;
 
   bool flip;
   bool down;
@@ -58,10 +57,8 @@ private:
 public:
   uint8_t intensity;
 
-  PclPlotter(dim width, dim height, BoundingBox* crop = NULL):
-    crop(crop),
-    penPos(0,0), relPos(0,0), flipAt(0,0),
-    flip(false), down(false), intensity(0)
+  PclPlotter(Point& startPos, dim width, dim height, BoundingBox* crop = NULL):
+    crop(crop), flip(false), down(false), intensity(0)
   {
     if(crop != NULL) {
       width = crop->min(width, crop->lr.x - crop->ul.x);
@@ -69,18 +66,12 @@ public:
     }
 
     this->img = new CImg<uint8_t>(width, height, 1, 1, 255);
+    this->penPos = startPos;
+    this->relPos = startPos;
   };
 
-  void doFlip(Point& at=*(new Point(0,0))) {
+  void doFlip() {
     this->flip = !this->flip;
-
-    this->flipAt.x += at.x;
-    this->flipAt.y = at.y;
-
-    if (this->flip)
-      this->penPos.y -= (at.y - this->flipAt.y);
-    else
-      this->penPos.y += (at.y - this->flipAt.y);
   }
 
   void penUp() {
@@ -92,8 +83,8 @@ public:
   }
 
   void move(coord x, coord y) {
-    Point p(x,y);
-    this->move(p);
+    Point m(x,y);
+    move(m);
   }
 
   void move(Point& to) {
@@ -106,13 +97,22 @@ public:
       crop_offY = crop->ul.y;
     }
 
+    Point newPenPos;
+
+    newPenPos = to;
+    if (this->flip)
+      newPenPos.y = (this->penPos.y) + (this->relPos.y - to.y);
+    else
+      newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
+
     if(relPos != to) {
       if(down) {
         uint8_t color [1] = { intensity };
-        img->draw_line(relPos.x - crop_offX, relPos.y - crop_offY, to.x  - crop_offX, to.y - crop_offY, color);
+        img->draw_line(penPos.x - crop_offX, penPos.y - crop_offY, newPenPos.x - crop_offX, newPenPos.y - crop_offY, color);
       }
-      relPos = to;
-      Trace::singleton()->logPlotterPos(relPos);
+      this->relPos = to;
+      this->penPos = newPenPos;
+      Trace::singleton()->logPlotterStat(penPos, relPos);
     }
   }
 
@@ -251,6 +251,7 @@ public:
       }
 
       Trace::singleton()->logInstr(instr);
+
       if(expected && !instr->matches(expected, true)) {
         return NULL;
       } else {
@@ -272,6 +273,5 @@ public:
     return NULL;
   }
 };
-
 
 #endif /* PLOTTER_H_ */

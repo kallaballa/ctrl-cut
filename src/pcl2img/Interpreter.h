@@ -44,6 +44,7 @@ public:
     }
     dim width = 0;
     dim height = 0;
+    Point startPos(0,0);
 
     if(plot.require(PCL_WIDTH) && plot.require(PCL_HEIGHT)) {
       width = plot.setting(PCL_WIDTH);
@@ -51,7 +52,13 @@ public:
     } else
       this->plot.invalidate("can't find plot dimensions");
 
-    plotter = new PclPlotter(width,height,crop);
+    if(plot.require(PCL_X) && plot.require(PCL_Y)) {
+      startPos.x = plot.setting(PCL_X);
+      startPos.y = plot.setting(PCL_Y);
+    } else
+      this->plot.invalidate("can't find start position");
+
+    plotter = new PclPlotter(startPos, width, height, crop);
   };
 
   void renderRaster() {
@@ -61,8 +68,12 @@ public:
 
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-        if(raster.currentRun != NULL)
-          this->plotter->doFlip(raster.currentRun->loc);
+        if(raster.currentRun != NULL) {
+          //Point flipAt = raster.currentRun->loc;
+
+          //flipAt.x = raster.currentRun->decodedLen - flipAt.x;
+          this->plotter->doFlip();
+        }
         else
           this->plotter->doFlip();
       } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
@@ -75,12 +86,13 @@ public:
           && (pixlenInstr = nextInstr(PCL_PIXEL_LEN))
           && (dataInstr = nextInstr(PCL_RLE_DATA))
           ) {
-        this->plotter->penDown();
-
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
-        while (raster.decode(run) != NULL && !run->isFinished());
+        run->nextRun();
 
-        this->plotter->penUp();
+        while(raster.decode(run)) {
+          run->nextRun();
+        }
+
         Debugger::instance->animate();
       }
     } while (this->plot.good());

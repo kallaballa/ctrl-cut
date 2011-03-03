@@ -48,6 +48,7 @@ private:
   list<off64_t> breakpoints;
   string find;
   string lastCliCmd[2];
+  boost::thread* cli_thrd;
 
   void exec(string cmd, string param) {
     if (cmd.compare("run") == 0) {
@@ -129,13 +130,13 @@ public:
   static void create(PclPlotter* plotter);
 
   Debugger(PclPlotter* plotter) :
-    plotter(plotter), canvas_disp(NULL), anim(false), step_barrier(2) {
+    plotter(plotter), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
   }
 
   void loop() {
     string line;
 
-    while (this->isInteractive() && cin) {
+    while (cin) {
       getline(cin, line);
       stringstream ss(line);
       string cmd;
@@ -157,8 +158,9 @@ public:
   void setInteractive(bool i) {
     boost::mutex::scoped_lock ia_lock(ia_mutex);
     //FIXME inclomplete sync: old loop still might be reading from cin
-    if (!this->interactive && i)
-      boost::thread cli_thrd(&Debugger::loop, this->instance);
+    if (!this->interactive && i && this->cli_thrd == NULL)
+     this->cli_thrd = new boost::thread(&Debugger::loop, this->instance);
+
     this->interactive = i;
   }
 

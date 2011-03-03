@@ -30,7 +30,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
-
+#include "2D.h"
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -103,17 +103,24 @@ private:
   const uint8_t backlogSize;
   list<PclInstr*> backlog;
   static Trace* instance;
+  Point penPos;
+  Point relPos;
 
-  Trace(): backlogSize(10) {}
+  Trace(): backlogSize(10), penPos(0,0), relPos(0,0) {}
 public:
   static Trace* singleton();
 
-  void log(PclInstr* instr) {
-    cerr << *instr << endl;
+  void logInstr(PclInstr* instr) {
+    cerr << penPos << relPos << "\t" << *instr << endl;
     if(backlog.size() >= backlogSize)
       backlog.erase(backlog.begin());
 
     backlog.push_back(instr);
+  }
+
+  void logPlotterStat(Point &penPos, Point &relPos) {
+    this->penPos = penPos;
+    this->relPos = relPos;
   }
 
   list<PclInstr*>::iterator backlogIterator() {
