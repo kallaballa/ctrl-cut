@@ -41,7 +41,7 @@
 								<option id="gnu.cpp.link.option.paths.777548038" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/lib/"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1742329861" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pg -lm -lpthread -lX11 -lXext -lXrandr -lcups -lgs" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1742329861" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-pg -lm -lpthread -lX11 -lXext -lXrandr -lcups -lgs -lboost_thread" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.593471936" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -56,22 +56,22 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.2136622841" name="/" resourcePath="src/pcl2img">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1202833614" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.474970279" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1753683383"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1745726477" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.694145543"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1973609276" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1028439664"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1558787452" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.903163046"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1551192897" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1199342356"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1716089775" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1990152385"/>
-						</toolChain>
-					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.1457422446" name="Ctrl-Cut.h" rcbsApplicability="disable" resourcePath="src/cups-filter/Ctrl-Cut.h" toolsToInvoke=""/>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.671395269" name="Driver.h" rcbsApplicability="disable" resourcePath="src/cups-filter/Driver.h" toolsToInvoke=""/>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.241516399" name="LaserJob.h" rcbsApplicability="disable" resourcePath="src/cups-filter/LaserJob.h" toolsToInvoke=""/>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.8142139" name="/" resourcePath="src/pclint">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1399377298" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1306242747" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1753683383"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.2125373227" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.694145543"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1012956051" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1028439664"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.257535262" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.903163046"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.311892023" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1199342356"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.606707188" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1990152385"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry excluding="src|experiments|src/ppm2pcl/raster/filter|test-code|src/pcl2png|src/svg2pdf|src/lpd-epilog|src/cups-filter|src/cups-epilog|src/bmp2pcl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/pcl2img"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/pclint"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -713,16 +713,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1888740785" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1973345964" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
-						</toolChain>
-					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.release.585713042.1862445388" name="/" resourcePath="src/pcl2img">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.418130419" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1901099647" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1851100894"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1026626903" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.844766802"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1712150592" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1759866709"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.694672436" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release.1205079413"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1490347483" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1292774179"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1212304621" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release.1888740785"/>
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.release.585713042.2096271833" name="LaserJob.h" rcbsApplicability="disable" resourcePath="src/cups-filter/LaserJob.h" toolsToInvoke=""/>

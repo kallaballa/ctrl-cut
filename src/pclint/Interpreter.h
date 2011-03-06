@@ -69,9 +69,6 @@ public:
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         if(raster.currentRun != NULL) {
-          //Point flipAt = raster.currentRun->loc;
-
-          //flipAt.x = raster.currentRun->decodedLen - flipAt.x;
           this->plotter->doFlip(raster.currentRun->loc);
         }
         else

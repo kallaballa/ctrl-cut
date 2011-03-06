@@ -197,38 +197,18 @@ public:
 
 class Nullbugger : public Debugger {
 public:
-  Nullbugger() : Debugger(NULL){
-
-  }
-
-  void loop() {
-
-  }
-
+  Nullbugger() : Debugger(NULL){}
   bool isInteractive() {
     return false;
   }
 
-  void setInteractive(bool i) {
-
-  }
-
-  virtual void announce(PclInstr* instr) {
-
-  }
-
-  void animate() {
- }
-
-  void dumpCanvas(const char* filename) {
-  }
-
-  void updateCanvas() {
-
-  }
-
-  virtual void displayCanvas() {
-  }
+  void loop() {}
+  void setInteractive(bool i) {}
+  void announce(PclInstr* instr) {}
+  void animate() {}
+  void dumpCanvas(const char* filename) {}
+  void updateCanvas() {}
+  void displayCanvas() {}
 };
 
 Debugger* Debugger::instance = NULL;
