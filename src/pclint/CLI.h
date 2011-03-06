@@ -131,7 +131,7 @@ public:
   static Debugger* getInstance();
 
   Debugger(PclPlotter* plotter) :
-    plotter(plotter), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
+    plotter(plotter), interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
   }
 
   void loop() {
@@ -213,7 +213,7 @@ public:
 
   }
 
-  void announce(PclInstr* instr) {
+  virtual void announce(PclInstr* instr) {
 
   }
 
@@ -227,7 +227,7 @@ public:
 
   }
 
-  void displayCanvas() {
+  virtual void displayCanvas() {
   }
 };
 

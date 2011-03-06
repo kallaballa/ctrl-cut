@@ -97,8 +97,6 @@ public:
     } while (this->plot.good());
 
     cerr << "Plot finished." << endl;
-    Debugger::getInstance()->setInteractive(true);
-    Debugger::getInstance()->announce(NULL);
   }
 
   PclInstr* nextInstr(const char* expected=NULL) {
