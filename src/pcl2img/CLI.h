@@ -49,6 +49,8 @@ private:
   string find;
   string lastCliCmd[2];
   boost::thread* cli_thrd;
+  static Debugger* instance;
+  boost::barrier step_barrier;
 
   void exec(string cmd, string param) {
     if (cmd.compare("run") == 0) {
@@ -125,9 +127,8 @@ private:
 
 
 public:
-  boost::barrier step_barrier;
-  static Debugger* instance;
   static void create(PclPlotter* plotter);
+  static Debugger* getInstance();
 
   Debugger(PclPlotter* plotter) :
     plotter(plotter), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
@@ -194,7 +195,49 @@ public:
   }
 };
 
+class Nullbugger : public Debugger {
+public:
+  Nullbugger() : Debugger(NULL){
+
+  }
+
+  void loop() {
+
+  }
+
+  bool isInteractive() {
+    return false;
+  }
+
+  void setInteractive(bool i) {
+
+  }
+
+  void announce(PclInstr* instr) {
+
+  }
+
+  void animate() {
+ }
+
+  void dumpCanvas(const char* filename) {
+  }
+
+  void updateCanvas() {
+
+  }
+
+  void displayCanvas() {
+  }
+};
+
 Debugger* Debugger::instance = NULL;
+
+Debugger* Debugger::getInstance() {
+  if(instance == NULL)
+    instance = new Nullbugger();
+  return instance;
+}
 void Debugger::create(PclPlotter* plotter) {
   if(instance == NULL)
     instance = new Debugger(plotter);

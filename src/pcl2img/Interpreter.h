@@ -93,18 +93,18 @@ public:
           run->nextRun();
         }
 
-        Debugger::instance->animate();
+        Debugger::getInstance()->animate();
       }
     } while (this->plot.good());
 
     cerr << "Plot finished." << endl;
-    Debugger::instance->setInteractive(true);
-    Debugger::instance->announce(NULL);
+    Debugger::getInstance()->setInteractive(true);
+    Debugger::getInstance()->announce(NULL);
   }
 
   PclInstr* nextInstr(const char* expected=NULL) {
     PclInstr* instr = plot.readInstr(expected);
-    Debugger::instance->announce(instr);
+    Debugger::getInstance()->announce(instr);
     return instr;
   }
 };
