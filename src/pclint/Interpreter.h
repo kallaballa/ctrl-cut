@@ -34,45 +34,46 @@ using std::string;
 using std::stringstream;
 
 class Interpreter {
+private:
+  dim width;
+  dim height;
+
 public:
   PclPlotter* plotter;
   PclPlot plot;
 
-  Interpreter(const char* filename,BoundingBox* crop=NULL): plotter(NULL), plot(filename){
+  Interpreter(const char* filename): width(0), height(0), plotter(NULL), plot(filename){
     if(!this->plot.good()) {
       this->plot.invalidate("corrupt pcl header");
     }
-    dim width = 0;
-    dim height = 0;
     Point startPos(0,0);
 
-    if(plot.require(PCL_WIDTH) && plot.require(PCL_HEIGHT)) {
-      width = plot.setting(PCL_WIDTH);
-      height = plot.setting(PCL_HEIGHT);
+    if(this->plot.require(PCL_WIDTH) && this->plot.require(PCL_HEIGHT)) {
+      this->width = this->plot.setting(PCL_WIDTH);
+      this->height = this->plot.setting(PCL_HEIGHT);
     } else
       this->plot.invalidate("can't find plot dimensions");
 
-    if(plot.require(PCL_X) && plot.require(PCL_Y)) {
-      startPos.x = plot.setting(PCL_X);
-      startPos.y = plot.setting(PCL_Y);
+    if(this->plot.require(PCL_X) && this->plot.require(PCL_Y)) {
+      startPos.x = this->plot.setting(PCL_X);
+      startPos.y = this->plot.setting(PCL_Y);
     } else
       this->plot.invalidate("can't find start position");
-
-    plotter = new PclPlotter(startPos, width, height, crop);
   };
 
-  void renderRaster() {
+  void render(BoundingBox* crop=NULL,bool onlyBBox=false) {
+    if(onlyBBox)
+      this->plotter = new PclPlotter(crop);
+    else
+      this->plotter = new PclPlotter(this->width, this->height, crop);
+
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
     Run *run = new Run();
     RasterPlotter raster(this->plotter);
     Point origin;
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-        if(raster.currentRun != NULL) {
-          this->plotter->doFlip(raster.currentRun->loc);
-        }
-        else
-          this->plotter->doFlip(origin);
+        continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
         continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_END)){

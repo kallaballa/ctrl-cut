@@ -45,41 +45,34 @@ using namespace cimg_library;
 
 class PclPlotter {
 private:
-  BoundingBox *crop;
-
-  Point relPos;
-
+  BoundingBox *bbox;
+  BoundingBox *clip;
   bool flip;
   bool down;
   coord flipX;
   CImg<uint8_t> *img;
-
+  uint8_t intensity[1];
+  Point relPos;
 public:
-  uint8_t intensity;
   Point penPos;
 
-  PclPlotter(Point& startPos, dim width, dim height, BoundingBox* crop = NULL):
-    crop(crop), flip(false), down(false), intensity(0)
+
+  PclPlotter(dim width, dim height, BoundingBox* clip = NULL):
+    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0,0), penPos(0,0)
   {
-    if(crop != NULL) {
-      width = crop->min(width, crop->lr.x - crop->ul.x);
-      height = crop->min(height, crop->lr.y -  crop->ul.y);
+    if(clip != NULL) {
+      width = clip->min(width, clip->lr.x - clip->ul.x);
+      height = clip->min(height, clip->lr.y -  clip->ul.y);
     }
 
     this->img = new CImg<uint8_t>(width, height, 1, 1, 255);
-    this->penPos = startPos;
-    this->relPos = startPos;
   };
 
-  void doFlip(Point& at) {
-    this->flip = !this->flip;
-    /*if (!this->flip)
-      this->penPos.x -= flipX;
-    else {
-      this->penPos.x += (this->relPos.x - at.x);
-      flipX = (this->relPos.x - at.x);
-    }*/
-  }
+  PclPlotter(BoundingBox* clip = NULL):
+    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0,0), penPos(0,0)
+  {
+    this->img = NULL;
+  };
 
   void penUp() {
     down = false;
@@ -94,32 +87,38 @@ public:
     move(m);
   }
 
-  void move(Point& to) {
-    coord crop_offX = 0;
-    coord crop_offY = 0;
+  void setIntensity(uint8_t intensity) {
+    this->intensity[0] = intensity;
+  }
 
-    if(this->crop) {
-      to = this->crop->shape(to);
-      crop_offX = crop->ul.x;
-      crop_offY = crop->ul.y;
+  uint8_t getIntensity() {
+    return this->intensity[0];
+  }
+
+  virtual void draw(Point& from, Point& to) {
+    coord clip_offX = 0;
+    coord clip_offY = 0;
+
+    if(this->clip) {
+      to = this->clip->shape(to);
+      clip_offX = clip->ul.x;
+      clip_offY = clip->ul.y;
     }
+    this->bbox->update(from);
+    this->bbox->update(to);
 
+    if(img)
+      img->draw_line(from.x  - clip_offX, from.y - clip_offY, to.x - clip_offX, to.y - clip_offY, this->intensity);
+  }
+
+  void move(Point& to) {
     Point newPenPos;
-
-    newPenPos = to;
-
-   /* if (this->flip)
-      newPenPos.y = (this->penPos.y) + (this->relPos.y - to.y);
-    else*/
-      newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
-
+    newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
     newPenPos.x = (this->penPos.x) - (this->relPos.x - to.x);
 
     if(relPos != to) {
       if(down) {
-        uint8_t color [1] = { intensity };
-        img->draw_line(penPos.x - crop_offX, penPos.y - crop_offY, newPenPos.x - crop_offX, newPenPos.y - crop_offY, color);
-        cerr << "\t\tmove: " << penPos << endl;
+        draw(penPos, newPenPos);
       }
       this->relPos = to;
       this->penPos = newPenPos;
@@ -127,7 +126,11 @@ public:
     }
   }
 
-  CImg<uint8_t>* getCanvas() {
+  virtual BoundingBox* getBoundingBox() {
+    return bbox;
+  }
+
+  virtual CImg<uint8_t>* getCanvas() {
     return img;
   }
 };
@@ -135,7 +138,7 @@ public:
 class PclPlot {
 private:
   fstream inputfile;
-  const char* title;
+  string title;
   const uint16_t bufSize;
   char* buffer;
   off64_t eof;
@@ -170,7 +173,7 @@ private:
     if (fillBuffer() == eof)
       invalidate("read title");
     else
-      this->title = this->buffer;
+      this->title = string(this->buffer);
 
     if (fillBuffer() == eof)
       invalidate("skip pcl intro");
@@ -277,6 +280,7 @@ public:
         return instr;
       }
     }
+
     //FIXME invalidate?
     if(expected) {
       cerr << "failed to read: " << expected << std::endl;

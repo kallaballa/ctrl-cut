@@ -120,13 +120,13 @@ public:
       this->plotter->penDown();
 
     if(run->fill) {
-      plotter->intensity = run->nextIntensity();
+      plotter->setIntensity(run->nextIntensity());
       plotter->move(end);
     } else {
       int8_t dir = run->reverse ? -8 : 8;
 
       for (int i = 0; i < run->length; ++i) {
-        plotter->intensity = run->nextIntensity();
+        plotter->setIntensity(run->nextIntensity());
         plotter->move(start.x + (i * dir), start.y);
       }
     }
