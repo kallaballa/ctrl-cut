@@ -65,17 +65,17 @@ public:
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
     Run *run = new Run();
     RasterPlotter raster(this->plotter);
-
+    Point origin;
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         if(raster.currentRun != NULL) {
           //Point flipAt = raster.currentRun->loc;
 
           //flipAt.x = raster.currentRun->decodedLen - flipAt.x;
-          this->plotter->doFlip();
+          this->plotter->doFlip(raster.currentRun->loc);
         }
         else
-          this->plotter->doFlip();
+          this->plotter->doFlip(origin);
       } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
         continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_END)){

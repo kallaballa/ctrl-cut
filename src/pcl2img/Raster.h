@@ -43,13 +43,14 @@ public:
 
   Run(): length(0), lineLen(0), linePos(0) {}
 
-  void init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
+  Run* init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
     this->loc.y = yInstr->value;
     this->loc.x = xInstr->value;
     this->lineLen = abs(pixelLen->value);
     this->linePos = 0;
     this->dataInstr = dataInstr;
     this->reverse = pixelLen->value < 0;
+    return this->nextRun();
   }
 
   Run* nextRun() {
@@ -110,21 +111,44 @@ public:
       end.x = start.x + run->length;
     }
 
+    string dirstring = run->reverse ? " <- " : " -> ";
+    //cerr << "\t" << start << dirstring << end << endl;
+
     this->plotter->penUp();
     this->plotter->move(start);
-    this->plotter->penDown();
+    if (run->reverse)
+      this->plotter->penDown();
+
     if(run->fill) {
+      if (run->reverse)
+        cerr << "\t+fill: " << plotter->penPos << endl;
+
       plotter->intensity = run->nextIntensity();
       plotter->move(end);
+
+      if (run->reverse)
+        cerr << "\t\tx: " << end.x << " y: " << end.y << ": " << (int64_t)plotter->intensity << endl;
+      if (run->reverse)
+            cerr << "\t-fill: " << plotter->penPos << endl;
     } else {
-      uint8_t dir = run->reverse ? -1 : 1;
+      int8_t dir = run->reverse ? -1 : 1;
+
+      if (run->reverse)
+        cerr << "\t+copy: " << plotter->penPos << endl;
+
       for (int i = 0; i < run->length; ++i) {
         plotter->intensity = run->nextIntensity();
         plotter->move(start.x + dir, start.y);
-      }
-    }
 
-    if((run->linePos+= abs(run->length)) < run->lineLen)
+        if (run->reverse)
+          cerr << "\t\tx: " << start.x  + dir << " y: " << start.y << ": " << (int64_t)plotter->intensity << endl;
+      }
+
+      if (run->reverse)
+           cerr << "\t-copy: " << plotter->penPos << endl;
+    }
+    run->linePos+=run->length;
+    if(run->linePos < run->lineLen)
       return true;
     else
       return false;

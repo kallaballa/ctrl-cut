@@ -47,15 +47,16 @@ class PclPlotter {
 private:
   BoundingBox *crop;
 
-  Point penPos;
   Point relPos;
 
   bool flip;
   bool down;
-
+  coord flipX;
   CImg<uint8_t> *img;
+
 public:
   uint8_t intensity;
+  Point penPos;
 
   PclPlotter(Point& startPos, dim width, dim height, BoundingBox* crop = NULL):
     crop(crop), flip(false), down(false), intensity(0)
@@ -70,8 +71,14 @@ public:
     this->relPos = startPos;
   };
 
-  void doFlip() {
+  void doFlip(Point& at) {
     this->flip = !this->flip;
+    /*if (!this->flip)
+      this->penPos.x -= flipX;
+    else {
+      this->penPos.x += (this->relPos.x - at.x);
+      flipX = (this->relPos.x - at.x);
+    }*/
   }
 
   void penUp() {
@@ -100,15 +107,19 @@ public:
     Point newPenPos;
 
     newPenPos = to;
-    if (this->flip)
+
+   /* if (this->flip)
       newPenPos.y = (this->penPos.y) + (this->relPos.y - to.y);
-    else
+    else*/
       newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
+
+    newPenPos.x = (this->penPos.x) - (this->relPos.x - to.x);
 
     if(relPos != to) {
       if(down) {
         uint8_t color [1] = { intensity };
         img->draw_line(penPos.x - crop_offX, penPos.y - crop_offY, newPenPos.x - crop_offX, newPenPos.y - crop_offY, color);
+        cerr << "\t\tmove: " << penPos << endl;
       }
       this->relPos = to;
       this->penPos = newPenPos;
