@@ -87,7 +87,6 @@ public:
           && (dataInstr = nextInstr(PCL_RLE_DATA))
           ) {
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
-        run->nextRun();
 
         while(raster.decode(run)) {
           run->nextRun();

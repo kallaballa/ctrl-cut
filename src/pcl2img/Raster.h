@@ -103,12 +103,12 @@ public:
 
     if(run->reverse) {
       start = end = run->loc;
-      start.x = run->loc.x + run->lineLen - 1 - run->linePos;
-      end.x = start.x - run->length;
+      start.x = run->loc.x + ((run->lineLen - 1) * 8) - (run->linePos * 8);
+      end.x = start.x - (run->length * 8);
     } else {
       start = end = run->loc;
-      start.x = start.x + run->linePos;
-      end.x = start.x + run->length;
+      start.x = start.x + (run->linePos * 8);
+      end.x = start.x + (run->length * 8);
     }
 
     string dirstring = run->reverse ? " <- " : " -> ";
@@ -116,37 +116,21 @@ public:
 
     this->plotter->penUp();
     this->plotter->move(start);
-    if (run->reverse)
+   //if (!run->reverse)
       this->plotter->penDown();
 
     if(run->fill) {
-      if (run->reverse)
-        cerr << "\t+fill: " << plotter->penPos << endl;
-
       plotter->intensity = run->nextIntensity();
       plotter->move(end);
-
-      if (run->reverse)
-        cerr << "\t\tx: " << end.x << " y: " << end.y << ": " << (int64_t)plotter->intensity << endl;
-      if (run->reverse)
-            cerr << "\t-fill: " << plotter->penPos << endl;
     } else {
-      int8_t dir = run->reverse ? -1 : 1;
-
-      if (run->reverse)
-        cerr << "\t+copy: " << plotter->penPos << endl;
+      int8_t dir = run->reverse ? -8 : 8;
 
       for (int i = 0; i < run->length; ++i) {
         plotter->intensity = run->nextIntensity();
-        plotter->move(start.x + dir, start.y);
-
-        if (run->reverse)
-          cerr << "\t\tx: " << start.x  + dir << " y: " << start.y << ": " << (int64_t)plotter->intensity << endl;
+        plotter->move(start.x + (i * dir), start.y);
       }
-
-      if (run->reverse)
-           cerr << "\t-copy: " << plotter->penPos << endl;
     }
+
     run->linePos+=run->length;
     if(run->linePos < run->lineLen)
       return true;
