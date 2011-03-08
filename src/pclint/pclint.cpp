@@ -74,20 +74,17 @@ int main(int argc, char *argv[]) {
     ofilename = argv[optind];
   }
 
-  Interpreter intr(ifilename, crop);
+  Interpreter intr(ifilename);
   if(interactive) {
     Debugger::create(intr.plotter);
     Debugger::getInstance()->setInteractive(true);
   }
 
-  if(findBoundingBox) {
-    //cout << "bounding box: " << intr.findBoundingBox() << endl;
-  } else {
-    intr.renderRaster();
-    if(ofilename != NULL)
-      intr.plotter->getCanvas()->save(ofilename);
-  }
+  intr.render(crop, findBoundingBox);
+  if (!findBoundingBox && ofilename != NULL)
+    intr.plotter->getCanvas()->save(ofilename);
 
+  cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
   return 0;
 }
 
