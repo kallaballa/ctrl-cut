@@ -87,7 +87,7 @@ PJL_STRING(R_WIDTH, "\e*r%dS");
 PJL_STRING(R_COMPRESSION, "\e*b%dM");
 
 /* Raster direction (1 = up) */
-PJL_STRING(R_DIRECTION_UP, "\e&y0O");
+PJL_STRING(R_DIRECTION_UP, "\e&y1O");
 
 /* Start raster operation at current position */
 PJL_STRING(R_START_AT_POS, "\e*r1A");
