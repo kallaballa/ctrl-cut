@@ -30,6 +30,7 @@
 #include <sstream>
 #include <string>
 #include <limits>
+#include <boost/format.hpp>
 #include "CImg.h"
 #include "2D.h"
 
@@ -40,6 +41,7 @@ using std::endl;
 using std::string;
 using std::fstream;
 using std::numeric_limits;
+using boost::format;
 
 using namespace cimg_library;
 
@@ -56,23 +58,24 @@ private:
 public:
   Point penPos;
 
-
-  PclPlotter(dim width, dim height, BoundingBox* clip = NULL):
-    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0,0), penPos(0,0)
-  {
-    if(clip != NULL) {
+  PclPlotter(dim width, dim height, BoundingBox* clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), flip(false), down(false),
+        relPos(0, 0), penPos(0, 0) {
+    if (clip != NULL) {
       width = clip->min(width, clip->lr.x - clip->ul.x);
-      height = clip->min(height, clip->lr.y -  clip->ul.y);
+      height = clip->min(height, clip->lr.y - clip->ul.y);
     }
 
-    this->img = new CImg<uint8_t>(width, height, 1, 1, 255);
-  };
+    this->img = new CImg<uint8_t> (width, height, 1, 1, 255);
+  }
+  ;
 
-  PclPlotter(BoundingBox* clip = NULL):
-    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0,0), penPos(0,0)
-  {
+  PclPlotter(BoundingBox* clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), flip(false), down(false),
+        relPos(0, 0), penPos(0, 0) {
     this->img = NULL;
-  };
+  }
+  ;
 
   void penUp() {
     down = false;
@@ -83,7 +86,7 @@ public:
   }
 
   void move(coord x, coord y) {
-    Point m(x,y);
+    Point m(x, y);
     move(m);
   }
 
@@ -99,7 +102,7 @@ public:
     coord clip_offX = 0;
     coord clip_offY = 0;
 
-    if(this->clip) {
+    if (this->clip) {
       to = this->clip->shape(to);
       clip_offX = clip->ul.x;
       clip_offY = clip->ul.y;
@@ -107,8 +110,9 @@ public:
     this->bbox->update(from);
     this->bbox->update(to);
 
-    if(img)
-      img->draw_line(from.x  - clip_offX, from.y - clip_offY, to.x - clip_offX, to.y - clip_offY, this->intensity);
+    if (img)
+      img->draw_line(from.x - clip_offX, from.y - clip_offY, to.x - clip_offX,
+          to.y - clip_offY, this->intensity);
   }
 
   void move(Point& to) {
@@ -116,8 +120,8 @@ public:
     newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
     newPenPos.x = (this->penPos.x) - (this->relPos.x - to.x);
 
-    if(relPos != to) {
-      if(down) {
+    if (relPos != to) {
+      if (down) {
         draw(penPos, newPenPos);
       }
       this->relPos = to;
@@ -147,9 +151,8 @@ private:
   std::map<string, PclInstr*> settings;
 
   bool readPattern(const char * pattern, const int off, const int len) {
-    return this->inputfile.read(buffer, len)
-        ? memcmp((pattern + off), buffer, len) == 0
-            : false;
+    return this->inputfile.read(buffer, len) ? memcmp((pattern + off), buffer,
+        len) == 0 : false;
   }
 
   off64_t fillBuffer() {
@@ -167,7 +170,7 @@ private:
   }
 
   void readHeader() {
-    if (!readPattern(magic,0, 23))
+    if (!readPattern(magic, 0, 23))
       invalidate("read magic");
 
     if (fillBuffer() == eof)
@@ -190,14 +193,16 @@ private:
 public:
   PclInstr* currentInstr;
 
-  PclPlot(const char* filename):
-    inputfile(filename, ios::in | ios::binary),
-    bufSize(1024), buffer(new char[1024]),
-    eof(numeric_limits<off64_t>::max()), valid(true) {
+  PclPlot(const char* filename) :
+    inputfile(filename, ios::in | ios::binary), bufSize(1024), buffer(
+        new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true) {
     readHeader();
     readSettings();
-  };
-  virtual ~PclPlot(){};
+  }
+  ;
+  virtual ~PclPlot() {
+  }
+  ;
 
   void printSettings(ostream& os) {
     std::map<string, PclInstr*>::iterator it;
@@ -208,7 +213,7 @@ public:
   }
 
   bool require(string signature) {
-    if(isSet(signature))
+    if (isSet(signature))
       return true;
     else
       invalidate("missing setting: " + signature);
@@ -233,56 +238,80 @@ public:
     return this->valid && this->inputfile.good();
   }
 
-  PclInstr* readInstr(const char * expected=NULL) {
-    if(!this->inputfile.good()) {
+  int32_t* readValue() {
+    stringstream ss;
+    char digit;
+    for (int i = 0; this->inputfile.good() && (isdigit(digit
+        = this->inputfile.get()) || digit == '-'); i++) {
+      ss << digit;
+    }
+
+    if (!this->inputfile.good()) {
       invalidate("broken pipe");
       return NULL;
     }
-    off64_t fileoff = fillBuffer();
 
-    if(fileoff == eof) {
-      invalidate("end of file");
+    this->inputfile.unget();
+
+    string strval = ss.str();
+
+    if (strval.size() > 0) {
+      int32_t* val = new int32_t();
+      *val = static_cast<int32_t> (strtoll(strval.c_str(), NULL, 10));
+      return val;
+    }
+    return NULL;
+  }
+
+  PclInstr* readInstr(const char * expected = NULL) {
+    if (!this->inputfile.good()) {
+      invalidate("broken pipe");
       return NULL;
     }
 
-    char* token = this->buffer;
-    if (token) {
-      PclInstr* instr = new PclInstr(fileoff);
-      this->currentInstr = instr;
-      char * endptr;
-      char * cursor = token;
-      instr->type = *cursor;
-      instr->prefix = *(++cursor);
-      char* cval = ++cursor;
-      instr->value = strtol(cval, &endptr, 10);
+    off64_t fileoff = this->inputfile.tellg();
 
-      if (endptr <= cursor) {
-        instr->suffix = *cval;
-      }
-      else {
-        instr->suffix = *endptr;
-        instr->hasValue = true;
-      }
+    PclInstr* instr = new PclInstr(fileoff);
+    this->currentInstr = instr;
+    instr->type = this->inputfile.get();
+    instr->prefix = this->inputfile.get();
+    int32_t * pval = readValue();
+    instr->suffix = this->inputfile.get();
 
-      Trace::singleton()->logInstr(instr);
-
-      if(expected && !instr->matches(expected, true)) {
-        return NULL;
-      } else {
-        if (instr->matches(PCL_RLE_DATA)) {
-          //copy data part of rle instruction
-          instr->data = new uint8_t[instr->value];
-          instr->limit = instr->value;
-          memcpy(instr->data, (++endptr), instr->value);
-          instr->hasData = true;
-        }
-
-        return instr;
-      }
+    if (pval != NULL) {
+      instr->value=*pval;
+      instr->hasValue = true;
     }
 
+    Trace::singleton()->logInstr(instr);
+
+    // copy data part of rle instructions
+    if (instr->matches(PCL_RLE_DATA)) {
+      instr->data = new uint8_t[instr->value];
+      instr->limit = instr->value;
+      instr->hasData = true;
+
+      for (int i = 0; i < instr->limit && this->inputfile.good(); i++)
+        instr->data[i] = this->inputfile.get();
+
+      if (!this->inputfile.good()) {
+        invalidate("broken pipe");
+        return NULL;
+      }
+    }
+    char e;
+    if((e = this->inputfile.get()) != PCL_END_OF_INSTRUCTION) {
+      invalidate((format("corrupt instruction terminator at (%08X)") % this->inputfile.tellg()).str());
+      return NULL;
+    }
+
+    if (expected && !instr->matches(expected, true))
+      return NULL;
+    else
+      return instr;
+
     //FIXME invalidate?
-    if(expected) {
+    if (expected) {
       cerr << "failed to read: " << expected << std::endl;
     }
     return NULL;
