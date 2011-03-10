@@ -122,6 +122,8 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         // lconf->height = height;
 
         // FIXME: Commented out for now as I don't know what this was supposed to do.
+        fprintf(eps_file, "0 %d neg translate\n", lconf->height - upper_right_y);
+
 #if 0
         fprintf(eps_file, "/setpagedevice{pop}def\n"); // use bbox
         fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
@@ -147,6 +149,7 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         yoffset = lower_left_y;
         // int width = upper_right_x - lower_left_x;
         // int height = upper_right_y - lower_left_y;
+        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
       }
     }
     else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
