@@ -45,7 +45,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
       / POINTS_PER_INCH);
   // Raster compression
-  int compressionLevel = 7;
+  int compressionLevel = 2;
 
   out << format(R_COMPRESSION) % compressionLevel;
   // Raster direction (1 = up)
@@ -61,6 +61,15 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << "\26" << "\4"; // some end of file markers
 }
 
+void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
+  uint16_t cumm = 0;
+  for (int x = fromX; x < toX; x++){
+    img->readPixel(x, y, p);
+    cumm += p.i;
+  }
+  p.i = cumm / (toX - fromX);
+}
+
 void PclEncoder::encodeTile(Image* tile, ostream& out) {
   int height;
   int width;
@@ -68,13 +77,13 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
-    width = tile->width();
+    width = tile->width() / 8;
     height = tile->height();
 
     char buf[width];
     Pixel<uint8_t> p;
 
-    float power_scale = lconf->raster_power / (float) 255;
+    float power_scale = 100 / (float) 255;
 
     // raster (basic)
     int y;
@@ -82,10 +91,12 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
     for (y = height - 1; y >= 0; y--) {
       int l;
+      int next;
 
       // read scanline from left to right
       for (int x = 0; x < width; x++) {
-        tile->readPixel(x, y, p);
+        next = x * 8;
+        averageXSequence(tile, next, next + 7, y, p);
         buf[x] = p.pclValue(power_scale);
       }
 
@@ -103,6 +114,7 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         }
         r++;
 
+        //flip y
         out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
         out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + l);
 
