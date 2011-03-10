@@ -33,6 +33,7 @@ class PclEncoder {
 public:
 	LaserConfig* lconf;
 
+	void averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p);
 	void encode(Raster* raster, ostream &out);
 	void encodeTile(Image* tile, ostream& out);
 
