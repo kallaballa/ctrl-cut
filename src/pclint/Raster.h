@@ -56,7 +56,7 @@ public:
   Run* nextRun() {
     if(dataInstr->limit < 2) {
       Trace::singleton()->printBacklog(cerr, "short read: run length");
-      return NULL;
+      exit(2);
     } else {
       uint8_t rl = dataInstr->next();
       if(rl > 128) {
@@ -75,7 +75,7 @@ public:
   uint8_t nextIntensity() {
       if (!this->dataInstr->hasNext()) {
         Trace::singleton()->printBacklog(cerr, "short read: intensity");
-        return 0;
+        exit(2);
       } else
       return 255 - this->dataInstr->next();
   }
@@ -95,8 +95,10 @@ public:
   bool decode(Run *run) {
     this->currentRun = run;
 
-    if (run == NULL || run->length == 0)
-      return false;
+    if (run == NULL || run->length == 0) {
+      cerr << "invalid run" << endl;
+      return NULL;
+    }
 
     Point start;
     Point end;
@@ -117,7 +119,7 @@ public:
     this->plotter->penUp();
     this->plotter->move(start);
    //if (!run->reverse)
-      this->plotter->penDown();
+    this->plotter->penDown();
 
     if(run->fill) {
       plotter->setIntensity(run->nextIntensity());
