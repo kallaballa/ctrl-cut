@@ -17,10 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <boost/format.hpp>
+#include <math.h>
 #include "PclEncoder.h"
-#include "boost/format.hpp"
+
 using boost::format;
 
+bool alreadyFound;
 PclEncoder::PclEncoder(LaserConfig* lconf) : lconf(lconf) {
 }
 
@@ -62,12 +65,18 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
 }
 
 void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
-  uint16_t cumm = 0;
+  float cumm = 0;
+
   for (int x = fromX; x < toX; x++){
-    img->readPixel(x, y, p);
+    img->dither(x, y, p);
     cumm += p.i;
   }
-  p.i = cumm / (toX - fromX);
+  cumm = cumm / (toX - fromX);
+
+  if(cumm < 255 && cumm > 254)
+    cumm = 254;
+
+  p.i = cumm;
 }
 
 void PclEncoder::encodeTile(Image* tile, ostream& out) {
@@ -83,7 +92,7 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
     char buf[width];
     Pixel<uint8_t> p;
 
-    float power_scale = 100 / (float) 255;
+    float power_scale = 1;//100 / (float) 255;
 
     // raster (basic)
     int y;
@@ -94,9 +103,12 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
       int next;
 
       // read scanline from left to right
+      alreadyFound = false;
       for (int x = 0; x < width; x++) {
         next = x * 8;
-        averageXSequence(tile, next, next + 7, y, p);
+//        tile->readPixel(next, y, p);
+        tile->dither(next,y,p);
+//        averageXSequence(tile, next, next + 8, y, p);
         buf[x] = p.pclValue(power_scale);
       }
 
@@ -116,7 +128,7 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
         //flip y
         out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
-        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + l);
+        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + (l * 8));
 
         if (dir) {
           //reverse scan line
@@ -160,8 +172,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
           out << pack[i];
         }
 
-        while (r & 7) {
-          r++;
+        while (n & 7) {
+          n++;
           out << "\x80";
         }
       }
