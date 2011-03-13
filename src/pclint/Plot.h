@@ -55,12 +55,12 @@ private:
   CImg<uint8_t> *img;
   uint8_t intensity[1];
   Point relPos;
+
 public:
   Point penPos;
 
   PclPlotter(dim width, dim height, BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), flip(false), down(false),
-        relPos(0, 0), penPos(0, 0) {
+    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0, 0), penPos(0, 0) {
     if (clip != NULL) {
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
@@ -110,9 +110,9 @@ public:
     this->bbox->update(from);
     this->bbox->update(to);
 
-    if (img)
-      img->draw_line(from.x - clip_offX, from.y - clip_offY, to.x - clip_offX,
-          to.y - clip_offY, this->intensity);
+
+    img->draw_line(from.x - clip_offX, from.y - clip_offY,
+        to.x - clip_offX, to.y - clip_offY, this->intensity);
   }
 
   void move(Point& to) {
@@ -299,6 +299,7 @@ public:
         return NULL;
       }
     }
+
     char e;
     if((e = this->inputfile.get()) != PCL_END_OF_INSTRUCTION) {
       invalidate((format("corrupt instruction terminator at (%08X)") % this->inputfile.tellg()).str());

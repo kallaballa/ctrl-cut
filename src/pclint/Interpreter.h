@@ -42,7 +42,7 @@ public:
   PclPlotter* plotter;
   PclPlot plot;
 
-  Interpreter(const char* filename): width(0), height(0), plotter(NULL), plot(filename){
+  Interpreter(const char* filename,BoundingBox* crop=NULL): width(0), height(0), plotter(NULL), plot(filename){
     if(!this->plot.good()) {
       this->plot.invalidate("corrupt pcl header");
     }
@@ -59,14 +59,11 @@ public:
       startPos.y = this->plot.setting(PCL_Y);
     } else
       this->plot.invalidate("can't find start position");
+
+    this->plotter = new PclPlotter(this->width, this->height, crop);
   };
 
-  void render(BoundingBox* crop=NULL,bool onlyBBox=false) {
-    if(onlyBBox)
-      this->plotter = new PclPlotter(crop);
-    else
-      this->plotter = new PclPlotter(this->width, this->height, crop);
-
+  void render() {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
     Run *run = new Run();
     RasterPlotter raster(this->plotter);
@@ -86,9 +83,8 @@ public:
           ) {
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
 
-        while(raster.decode(run)) {
+        while(raster.decode(run))
           run->nextRun();
-        }
 
         Debugger::getInstance()->animate();
       }
