@@ -49,10 +49,10 @@ public:
 			uint16_t x, uint16_t y, uint64_t region_off) {
 	  LOG_DEBUG(region_off);
 		this->filename = filename;
-		this->m_file = new file_mapping(filename.c_str(), read_only);
+		this->m_file = new file_mapping(filename.c_str(), read_write);
 		this->bytes_per_pixel = sizeof(T) * 3;
     LOG_DEBUG(bytes_per_pixel);
-		this->m_region = mapped_region(*this->m_file, read_only, region_off + (x
+		this->m_region = mapped_region(*this->m_file, read_write, region_off + (x
 				* y * bytes_per_pixel), width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
@@ -68,7 +68,7 @@ public:
 		this->filename = filename;
 		this->m_file = m_file;
 		this->bytes_per_pixel = sizeof(T) * 3;
-		this->m_region = mapped_region(*this->m_file, read_only, x * y
+		this->m_region = mapped_region(*this->m_file, read_write, x * y
 				* bytes_per_pixel, width * height * bytes_per_pixel);
 		this->addr = m_region.get_address();
 		this->size = m_region.get_size();
@@ -99,7 +99,91 @@ public:
 	  pix.setRGB(sample);
 	}
 
-	MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
+  void writePixel(int x, int y, const Pixel<T>& pix) {
+    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * 3);
+    *sample = pix.i;
+    *(sample + 1) = pix.i;
+    *(sample + 2) = pix.i;
+  }
+
+  void averageXSequence(const int fromX, const int toX, const int y, Pixel<uint8_t>& p){
+    float cumm = 0;
+
+    for (int x = fromX; x < toX; x++){
+      this->readPixel(x, y, p);
+      cumm += p.i;
+    }
+    cumm = cumm / (toX - fromX);
+
+/*    if(cumm < 255 && cumm > 254)
+      cumm = 254;*/
+
+    p.i = cumm;
+  }
+
+  void writeXSequence(int fromX, int toX, int y, const Pixel<uint8_t>& p){
+    for (int x = fromX; x < toX; x++){
+      this->writePixel(x, y, p);
+    }
+  }
+
+  void dither(const int x, const int y, Pixel<T>& newpixel) {
+    Pixel<T> oldpix;
+
+    averageXSequence(x, x + 8, y, oldpix);
+    newpixel.i = (((uint8_t)(16.0f * (oldpix.i /255.0f)))/16.0f) * 255;
+    uint8_t quant_error = oldpix.i - newpixel.i;
+
+    /*if(newpixel.i == 255 && oldpix.i < 255)
+      newpixel.i = 254;*/
+
+    writeXSequence(x, x + 8, y, newpixel);
+
+    if(x < (w - 16)) {
+      averageXSequence(x + 8, x + 16, y, oldpix);
+      oldpix.i = add(oldpix.i , (7 * quant_error) / 16);
+      writeXSequence(x + 8, x + 16, y, oldpix);
+
+      if(y < (h - 1)) {
+        averageXSequence(x + 8, x + 16, y + 1,oldpix);
+        oldpix.i = add(oldpix.i, (1 * quant_error) / 16);
+        writeXSequence(x + 8, x + 16, y + 1, oldpix);
+      }
+    }
+
+    if(y < (h - 1)) {
+      averageXSequence(x, x + 8, y + 1,oldpix);
+      oldpix.i = add(oldpix.i, (5 * quant_error) / 16);
+      writeXSequence(x, x + 8, y + 1, oldpix);
+
+      if(x > 7) {
+        averageXSequence(x - 8, x, y + 1,oldpix);
+        oldpix.i = add(oldpix.i, (3 * quant_error) / 16);
+        writeXSequence(x - 8, x, y + 1, oldpix);
+      }
+    }
+  }
+
+  T reduce(const T intensity, const T colors) {
+    return colors * (((float)intensity) /255);
+  }
+
+  //FIXME how to guarantee T is unsigned?
+  const uint8_t add(const uint8_t intensity, const uint8_t carry) {
+	  uint8_t sum = intensity + carry;
+
+	  //overflow?
+	  if(sum < intensity)
+	    sum = 255;
+/*
+	  if(intensity < 255 && sum == 255)
+	    sum = 254;
+*/
+
+	  return sum;
+	}
+
+  MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
 		return new MMapMatrix<T> (this->m_file, this->filename, width, height, x, y);
 	}
 };
