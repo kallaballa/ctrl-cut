@@ -199,10 +199,9 @@ public:
     readHeader();
     readSettings();
   }
-  ;
+
   virtual ~PclPlot() {
   }
-  ;
 
   void printSettings(ostream& os) {
     std::map<string, PclInstr*>::iterator it;
