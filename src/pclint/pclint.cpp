@@ -39,6 +39,7 @@ void printUsage() {
 int main(int argc, char *argv[]) {
   bool findBoundingBox = false;
   bool interactive = false;
+
   char* ifilename = NULL;
   char* ofilename = NULL;
   BoundingBox* crop = NULL;
@@ -74,14 +75,14 @@ int main(int argc, char *argv[]) {
     ofilename = argv[optind];
   }
 
-  Interpreter intr(ifilename);
+  Interpreter intr(ifilename, crop);
   if(interactive) {
     Debugger::create(intr.plotter);
     Debugger::getInstance()->setInteractive(true);
   }
 
-  intr.render(crop, findBoundingBox);
-  if (!findBoundingBox && ofilename != NULL)
+  intr.render();
+  if (ofilename != NULL)
     intr.plotter->getCanvas()->save(ofilename);
 
   cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
