@@ -17,10 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef RLEDECODER_H_
-#define RLEDECODER_H_
+#ifndef RASTER_H_
+#define RASTER_H_
 
-#include "stdint.h"
+#include <stdlib.h>
+#include <stdint.h>
 #include "CImg.h"
 #include "Pcl.h"
 #include "2D.h"
@@ -32,93 +33,111 @@ private:
 
 public:
   Point loc;
-  coord pos;
 
-  uint8_t packedLen;
-  uint8_t decodedLen;
+  uint8_t length;
+  coord lineLen;
+  coord linePos;
 
   bool fill;
   bool reverse;
-  bool valid;
 
-  Run(): loc(0,0), valid(false) {}
+  Run(): length(0), lineLen(0), linePos(0) {}
 
-  void init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixlenInstr,PclInstr* dataInstr) {
+  Run* init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
     this->loc.y = yInstr->value;
     this->loc.x = xInstr->value;
+    this->lineLen = abs(pixelLen->value);
+    this->linePos = 0;
     this->dataInstr = dataInstr;
-    this->decodedLen = abs(pixlenInstr->value);
-    this->reverse = pixlenInstr->value < 0;
+    this->reverse = pixelLen->value < 0;
+    return this->nextRun();
+  }
 
+  Run* nextRun() {
     if(dataInstr->limit < 2) {
       Trace::singleton()->printBacklog(cerr, "short read: run length");
+      exit(2);
     } else {
       uint8_t rl = dataInstr->next();
-
       if(rl > 128) {
         this->fill = true;
-        this->packedLen  = 257 - rl;
+        this->length  = 257 - rl;
       } else if(rl < 128) {
         this->fill = false;
-        this->packedLen  = rl + 1;
+        this->length  = rl + 1;
       } else {
-        this->packedLen = 0;
+        this->length = 0;
       }
-      this->valid = true;
+      return this;
     }
   }
 
   uint8_t nextIntensity() {
       if (!this->dataInstr->hasNext()) {
         Trace::singleton()->printBacklog(cerr, "short read: intensity");
-        return 0;
+        exit(2);
       } else
       return 255 - this->dataInstr->next();
-  }
-
-  coord relativeX() {
-      if(!this->reverse)
-        return this->loc.x + this->decodedLen - (this->pos) - 1;
-      else
-        return this->loc.x + this->pos ;
-  }
-
-  coord relativeY() {
-    return this->loc.y;
-  }
-
-  bool isFinished() {
-    return this->pos >= this->decodedLen;
   }
 };
 
 class RasterPlotter {
 private:
   PclPlotter* plotter;
-  BoundingBox bbox;
 
 public:
   Run* currentRun;
 
-  RasterPlotter(PclPlotter* plotter): plotter(plotter), currentRun(NULL) {}
+  RasterPlotter(PclPlotter* plotter) :
+    plotter(plotter), currentRun(NULL) {
+  }
 
-  Run* decode(Run *run) {
+  bool decode(Run *run) {
     this->currentRun = run;
 
-    if(!run->valid || run->packedLen == 0)
+    if (run == NULL || run->length == 0) {
+      cerr << "invalid run" << endl;
       return NULL;
+    }
 
-    if (run->fill) {
-      plotter->intensity = run->nextIntensity();
-      plotter->move(run->loc.x + run->packedLen, run->loc.y);
+    Point start;
+    Point end;
+
+    if(run->reverse) {
+      start = end = run->loc;
+      start.x = run->loc.x + ((run->lineLen - 1) * 8) - (run->linePos * 8);
+      end.x = start.x - (run->length * 8);
     } else {
-      for (int i = 0; i < run->packedLen; ++i) {
-        plotter->intensity = run->nextIntensity();
-        plotter->move(run->loc.x - i, run->loc.y);
+      start = end = run->loc;
+      start.x = start.x + (run->linePos * 8);
+      end.x = start.x + (run->length * 8);
+    }
+
+    string dirstring = run->reverse ? " <- " : " -> ";
+    //cerr << "\t" << start << dirstring << end << endl;
+
+    this->plotter->penUp();
+    this->plotter->move(start);
+   //if (!run->reverse)
+    this->plotter->penDown();
+
+    if(run->fill) {
+      plotter->setIntensity(run->nextIntensity());
+      plotter->move(end);
+    } else {
+      int8_t dir = run->reverse ? -8 : 8;
+
+      for (int i = 0; i < run->length; ++i) {
+        plotter->setIntensity(run->nextIntensity());
+        plotter->move(start.x + (i * dir), start.y);
       }
     }
 
-    return run;
+    run->linePos+=run->length;
+    if(run->linePos < run->lineLen)
+      return true;
+    else
+      return false;
   }
 };
-#endif /* RLEDECODER_H_ */
+#endif /* RASTER_H_ */

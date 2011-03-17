@@ -53,9 +53,12 @@ public:
 	void setRGB(T* sampleOff) {
 	  float i = rf * *sampleOff + gf * *(sampleOff + 1) + bf * *(sampleOff + 2);
 
-    //  just fix black instead of proper rounding to save expensivess cpu time.
-	  if(i > 254.0f)
+    //  just fix white instead of proper rounding
+	  if(i > 254.97f)
 	    i = 255;
+	  else if(i > 254.0f)
+	    i = 254;
+
 	  this->i = i;
   }
 

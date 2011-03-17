@@ -17,10 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <boost/format.hpp>
+#include <math.h>
 #include "PclEncoder.h"
-#include "boost/format.hpp"
+
 using boost::format;
 
+bool alreadyFound;
 PclEncoder::PclEncoder(LaserConfig* lconf) : lconf(lconf) {
 }
 
@@ -45,7 +48,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
       / POINTS_PER_INCH);
   // Raster compression
-  int compressionLevel = 7;
+  int compressionLevel = 2;
 
   out << format(R_COMPRESSION) % compressionLevel;
   // Raster direction (1 = up)
@@ -61,6 +64,21 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << "\26" << "\4"; // some end of file markers
 }
 
+void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
+  float cumm = 0;
+
+  for (int x = fromX; x < toX; x++){
+    img->dither(x, y, p);
+    cumm += p.i;
+  }
+  cumm = cumm / (toX - fromX);
+
+  if(cumm < 255 && cumm > 254)
+    cumm = 254;
+
+  p.i = cumm;
+}
+
 void PclEncoder::encodeTile(Image* tile, ostream& out) {
   int height;
   int width;
@@ -68,13 +86,13 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
   repeat = this->lconf->raster_repeat;
   while (repeat--) {
-    width = tile->width();
+    width = tile->width() / 8;
     height = tile->height();
 
     char buf[width];
     Pixel<uint8_t> p;
 
-    float power_scale = lconf->raster_power / (float) 255;
+    float power_scale = 1;//100 / (float) 255;
 
     // raster (basic)
     int y;
@@ -82,10 +100,15 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
 
     for (y = height - 1; y >= 0; y--) {
       int l;
+      int next;
 
       // read scanline from left to right
+      alreadyFound = false;
       for (int x = 0; x < width; x++) {
-        tile->readPixel(x, y, p);
+        next = x * 8;
+//        tile->readPixel(next, y, p);
+        tile->dither(next,y,p);
+//        averageXSequence(tile, next, next + 8, y, p);
         buf[x] = p.pclValue(power_scale);
       }
 
@@ -103,8 +126,9 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         }
         r++;
 
+        //flip y
         out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
-        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + l);
+        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + (l * 8));
 
         if (dir) {
           //reverse scan line
@@ -148,8 +172,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
           out << pack[i];
         }
 
-        while (r & 7) {
-          r++;
+        while (n & 7) {
+          n++;
           out << "\x80";
         }
       }

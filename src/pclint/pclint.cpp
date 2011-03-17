@@ -23,6 +23,7 @@
 #include <iostream>
 #include "CImg.h"
 #include "Interpreter.h"
+#include "2D.h"
 
 using std::string;
 using std::cerr;
@@ -38,19 +39,23 @@ void printUsage() {
 int main(int argc, char *argv[]) {
   bool findBoundingBox = false;
   bool interactive = false;
+
   char* ifilename = NULL;
   char* ofilename = NULL;
-
+  BoundingBox* crop = NULL;
   int c;
   opterr = 0;
 
-  while ((c = getopt(argc, argv, "bi")) != -1)
+  while ((c = getopt(argc, argv, "bic:")) != -1)
     switch (c) {
     case 'b':
       findBoundingBox = true;
       break;
-    case 'c':
+    case 'i':
       interactive = true;
+      break;
+    case 'c':
+      crop = BoundingBox::createFromGeometryString(optarg);
       break;
     case ':':
       printUsage();
@@ -68,23 +73,19 @@ int main(int argc, char *argv[]) {
   }
   if (++optind < argc) {
     ofilename = argv[optind];
-  } else {
-    ofilename = "/dev/stdout";
   }
 
-  Interpreter intr(ifilename);
-  if(true) {
+  Interpreter intr(ifilename, crop);
+  if(interactive) {
     Debugger::create(intr.plotter);
-    Debugger::instance->setInteractive(true);
+    Debugger::getInstance()->setInteractive(true);
   }
 
-  if(findBoundingBox) {
-    //cout << "bounding box: " << intr.findBoundingBox() << endl;
-  } else {
-    intr.renderRaster();
-//    intr.dumpCanvas(ofilename);
-  }
+  intr.render();
+  if (ofilename != NULL)
+    intr.plotter->getCanvas()->save(ofilename);
 
+  cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
   return 0;
 }
 

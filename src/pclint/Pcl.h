@@ -30,7 +30,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
-
+#include "2D.h"
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -52,8 +52,8 @@ public:
   char keysep; // separate the instr signature from value/data so it may be interpreted as a string and used as key
   int32_t value;
   uint8_t * data;
-  uint8_t pos;
-  uint8_t limit;
+  uint16_t pos;
+  uint16_t limit;
   off64_t file_off;
 
   bool hasValue;
@@ -103,17 +103,24 @@ private:
   const uint8_t backlogSize;
   list<PclInstr*> backlog;
   static Trace* instance;
+  Point penPos;
+  Point relPos;
 
-  Trace(): backlogSize(10) {}
+  Trace(): backlogSize(10), penPos(0,0), relPos(0,0) {}
 public:
   static Trace* singleton();
 
-  void log(PclInstr* instr) {
-    cerr << *instr << endl;
+  void logInstr(PclInstr* instr) {
+    cerr << penPos << relPos << "\t" << *instr << endl;
     if(backlog.size() >= backlogSize)
       backlog.erase(backlog.begin());
 
     backlog.push_back(instr);
+  }
+
+  void logPlotterStat(Point &penPos, Point &relPos) {
+    this->penPos = penPos;
+    this->relPos = relPos;
   }
 
   list<PclInstr*>::iterator backlogIterator() {

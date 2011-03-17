@@ -32,41 +32,45 @@
 
 using std::string;
 using std::stringstream;
-using std::cin;
-using std::cerr;
-using std::endl;
+
 class Interpreter {
+private:
+  dim width;
+  dim height;
+
 public:
   PclPlotter* plotter;
   PclPlot plot;
 
-  Interpreter(const char* filename): plotter(NULL), plot(filename){
+  Interpreter(const char* filename,BoundingBox* crop=NULL): width(0), height(0), plotter(NULL), plot(filename){
     if(!this->plot.good()) {
       this->plot.invalidate("corrupt pcl header");
     }
-    dim width = 0;
-    dim height = 0;
+    Point startPos(0,0);
 
-    if(plot.require(PCL_WIDTH) && plot.require(PCL_HEIGHT)) {
-      width = plot.setting(PCL_WIDTH);
-      height = plot.setting(PCL_HEIGHT);
+    if(this->plot.require(PCL_WIDTH) && this->plot.require(PCL_HEIGHT)) {
+      this->width = this->plot.setting(PCL_WIDTH);
+      this->height = this->plot.setting(PCL_HEIGHT);
     } else
       this->plot.invalidate("can't find plot dimensions");
 
-    plotter = new PclPlotter(width,height);
+    if(this->plot.require(PCL_X) && this->plot.require(PCL_Y)) {
+      startPos.x = this->plot.setting(PCL_X);
+      startPos.y = this->plot.setting(PCL_Y);
+    } else
+      this->plot.invalidate("can't find start position");
+
+    this->plotter = new PclPlotter(this->width, this->height, crop);
   };
 
-  void renderRaster() {
+  void render() {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
     Run *run = new Run();
     RasterPlotter raster(this->plotter);
-
+    Point origin;
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-        if(raster.currentRun != NULL)
-          this->plotter->doFlip(raster.currentRun->loc);
-        else
-          this->plotter->doFlip();
+        continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
         continue;
       } else if (plot.currentInstr->matches(PCL_RASTER_END)){
@@ -77,24 +81,21 @@ public:
           && (pixlenInstr = nextInstr(PCL_PIXEL_LEN))
           && (dataInstr = nextInstr(PCL_RLE_DATA))
           ) {
-        this->plotter->penDown();
-
         run->init(yInstr, xInstr, pixlenInstr, dataInstr);
-        while (raster.decode(run) != NULL && !run->isFinished());
 
-        this->plotter->penUp();
-        Debugger::instance->animate();
+        while(raster.decode(run))
+          run->nextRun();
+
+        Debugger::getInstance()->animate();
       }
     } while (this->plot.good());
 
     cerr << "Plot finished." << endl;
-    Debugger::instance->setInteractive(true);
-    Debugger::instance->announce(NULL);
   }
 
   PclInstr* nextInstr(const char* expected=NULL) {
     PclInstr* instr = plot.readInstr(expected);
-    Debugger::instance->announce(instr);
+    Debugger::getInstance()->announce(instr);
     return instr;
   }
 };
