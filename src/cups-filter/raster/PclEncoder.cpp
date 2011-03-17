@@ -68,7 +68,7 @@ void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<u
   float cumm = 0;
 
   for (int x = fromX; x < toX; x++){
-    img->dither(x, y, p);
+    img->readPixel(x, y, p);
     cumm += p.i;
   }
   cumm = cumm / (toX - fromX);
@@ -106,9 +106,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
       alreadyFound = false;
       for (int x = 0; x < width; x++) {
         next = x * 8;
-//        tile->readPixel(next, y, p);
-        tile->dither(next,y,p);
-//        averageXSequence(tile, next, next + 8, y, p);
+       // tile->readPixel(next, y, p);
+        tile->ditherJJN(next,y,p);
         buf[x] = p.pclValue(power_scale);
       }
 
