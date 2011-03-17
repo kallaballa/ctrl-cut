@@ -31,6 +31,13 @@
 
 using namespace boost::interprocess;
 
+static const float bayer_matrix[4][4] = {
+    {1,9 ,3,11},
+    {13,5,15,7},
+    {4,12,2,10},
+    {16,8,14,6}
+};
+
 template<class T>
 class MMapMatrix {
 public:
@@ -94,91 +101,547 @@ public:
 		return this->y;
 	}
 
-	void readPixel(const int x, const int y, Pixel<T>& pix) const {
+	void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
 	  T* sample = (static_cast<T*> (addr)) + ((y * w + x) * 3);
 	  pix.setRGB(sample);
 	}
 
-  void writePixel(int x, int y, const Pixel<T>& pix) {
+  void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
     T* sample = (static_cast<T*> (addr)) + ((y * w + x) * 3);
     *sample = pix.i;
     *(sample + 1) = pix.i;
     *(sample + 2) = pix.i;
   }
 
-  void averageXSequence(const int fromX, const int toX, const int y, Pixel<uint8_t>& p){
+  //FIXME use T!
+  void averageXSequence(const uint32_t fromX, const uint32_t toX, const uint32_t y, Pixel<uint8_t>& p){
     float cumm = 0;
 
-    for (int x = fromX; x < toX; x++){
+    for (uint32_t x = fromX; x < toX; x++){
       this->readPixel(x, y, p);
       cumm += p.i;
     }
-    cumm = cumm / (toX - fromX);
-
-/*    if(cumm < 255 && cumm > 254)
-      cumm = 254;*/
-
-    p.i = cumm;
+    p.i = cumm / (toX - fromX);
   }
 
-  void writeXSequence(int fromX, int toX, int y, const Pixel<uint8_t>& p){
-    for (int x = fromX; x < toX; x++){
+  //FIXME use T!
+  void writeXSequence(uint32_t fromX, uint32_t toX, uint32_t y, const Pixel<uint8_t>& p){
+    for (uint32_t x = fromX; x < toX; x++){
       this->writePixel(x, y, p);
     }
   }
 
-  void dither(const int x, const int y, Pixel<T>& newpixel) {
-    Pixel<T> oldpix;
-
-    averageXSequence(x, x + 8, y, oldpix);
-    newpixel.i = (((uint8_t)(16.0f * (oldpix.i /255.0f)))/16.0f) * 255;
-    uint8_t quant_error = oldpix.i - newpixel.i;
-
-    /*if(newpixel.i == 255 && oldpix.i < 255)
-      newpixel.i = 254;*/
-
-    writeXSequence(x, x + 8, y, newpixel);
-
-    if(x < (w - 16)) {
-      averageXSequence(x + 8, x + 16, y, oldpix);
-      oldpix.i = add(oldpix.i , (7 * quant_error) / 16);
-      writeXSequence(x + 8, x + 16, y, oldpix);
-
-      if(y < (h - 1)) {
-        averageXSequence(x + 8, x + 16, y + 1,oldpix);
-        oldpix.i = add(oldpix.i, (1 * quant_error) / 16);
-        writeXSequence(x + 8, x + 16, y + 1, oldpix);
-      }
-    }
-
-    if(y < (h - 1)) {
-      averageXSequence(x, x + 8, y + 1,oldpix);
-      oldpix.i = add(oldpix.i, (5 * quant_error) / 16);
-      writeXSequence(x, x + 8, y + 1, oldpix);
-
-      if(x > 7) {
-        averageXSequence(x - 8, x, y + 1,oldpix);
-        oldpix.i = add(oldpix.i, (3 * quant_error) / 16);
-        writeXSequence(x - 8, x, y + 1, oldpix);
-      }
+  void carryOver(const uint32_t fromX, const uint32_t toX, const uint32_t atY, const int8_t carryover, Pixel<uint8_t>& p) {
+    if (toX < w && fromX < w && atY < h && atY < h) {
+      averageXSequence(fromX, toX, atY, p);
+      p.i = add(p.i, carryover);
+      writeXSequence(fromX, toX, atY, p);
     }
   }
 
+  void ditherNull(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 16) {
+    averageXSequence(x, x + xrange, y, newpixel);
+    writeXSequence(x, x + xrange, y, newpixel);
+  }
+
+  //FIXME use T!
+  void ditherBayer(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 32) {
+    Pixel<T> oldpix;
+
+    averageXSequence(x, x + xrange, y, oldpix);
+    oldpix.i = add(oldpix.i,bayer_matrix[(x/8) % 4][y % 4]);
+    newpixel.i = reduce(oldpix.i, colors);
+    writeXSequence(x, x + xrange, y, newpixel);
+  }
+
+  void ditherFloydSteinberg(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 32) {
+    Pixel<T> oldpix;
+    uint32_t fromX = x;
+    uint32_t toX = x + xrange;
+    uint32_t atY = y;
+
+    averageXSequence(fromX, toX, atY, oldpix);
+    newpixel.i = reduce(oldpix.i, colors);
+    writeXSequence(fromX, toX, atY, newpixel);
+    const float quant_error = oldpix.i - newpixel.i;
+
+    if(quant_error != 0) {
+      int8_t seven = (7 * quant_error) / 16;
+      int8_t five = (5 * quant_error)  / 16;
+      int8_t three = (3 * quant_error) / 16;
+      int8_t one = (1 * quant_error)   / 16;
+
+      fromX = x +  xrange;
+      toX = fromX + xrange;
+
+      carryOver(fromX, toX, atY, seven, oldpix);
+
+      fromX = x -  xrange;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, three, oldpix);
+
+      fromX = x;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, five, oldpix);
+
+      fromX = x + xrange;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, one, oldpix);
+    }
+  }
+
+
+  void ditherJJN(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 32) {
+    Pixel<T> oldpix;
+    uint32_t fromX = x;
+    uint32_t toX = x + xrange;
+    uint32_t atY = y;
+
+    averageXSequence(fromX, toX, atY, oldpix);
+    newpixel.i = reduce(oldpix.i, colors);
+    writeXSequence(fromX, toX, atY, newpixel);
+    const float quant_error = oldpix.i - newpixel.i;
+
+    if(quant_error > 0) {
+      int8_t one = (1 * quant_error) / 48;
+      int8_t three = (3 * quant_error) / 48;
+      int8_t five = (5 * quant_error) / 48;
+      int8_t seven = (7 * quant_error) / 48;
+
+      fromX = x + xrange;
+      toX = fromX + xrange;
+
+      carryOver(fromX, toX, atY, seven, oldpix);
+
+      fromX = x + (xrange * 2);
+      toX = fromX + xrange;
+
+      carryOver(fromX, toX, atY, five, oldpix);
+
+      fromX = x - (xrange * 2);
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, three, oldpix);
+
+      fromX = x -  xrange;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, five, oldpix);
+
+      fromX = x;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, seven, oldpix);
+
+      fromX = x + xrange;
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, five, oldpix);
+
+      fromX = x + (xrange * 2);
+      toX = fromX + xrange;
+      atY = y - 1;
+
+      carryOver(fromX, toX, atY, three, oldpix);
+
+      fromX = x - (xrange * 2);
+      toX = fromX + xrange;
+      atY = y - 2;
+
+      carryOver(fromX, toX, atY, one, oldpix);
+
+      fromX = x -  xrange;
+      toX = fromX + xrange;
+      atY = y - 2;
+
+      carryOver(fromX, toX, atY, three, oldpix);
+
+      fromX = x;
+      toX = fromX + xrange;
+      atY = y - 2;
+
+      carryOver(fromX, toX, atY, five, oldpix);
+
+      fromX = x + xrange;
+      toX = fromX + xrange;
+      atY = y - 2;
+
+      carryOver(fromX, toX, atY, three, oldpix);
+
+      fromX = x + (xrange * 2);
+      toX = fromX + xrange;
+      atY = y - 2;
+
+      carryOver(fromX, toX, atY, one, oldpix);
+    }
+  }
+
+  void ditherStucki(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 16) {
+     Pixel<T> oldpix;
+     uint32_t fromX = x;
+     uint32_t toX = x + xrange;
+     uint32_t atY = y;
+
+     averageXSequence(fromX, toX, atY, oldpix);
+     newpixel.i = reduce(oldpix.i, colors);
+     writeXSequence(fromX, toX, atY, newpixel);
+     const float quant_error = oldpix.i - newpixel.i;
+
+     if(quant_error > 0) {
+       int8_t eight = (8 * quant_error) / 42;
+       int8_t four = (4 * quant_error) / 42;
+       int8_t two = (2 * quant_error) / 42;
+       int8_t one = (1 * quant_error) / 42;
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+
+       carryOver(fromX, toX, atY, eight, oldpix);
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x - (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, eight, oldpix);
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x - (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, one, oldpix);
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, one, oldpix);
+     }
+   }
+
+  void ditherBurke(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 16) {
+     Pixel<T> oldpix;
+     uint32_t fromX = x;
+     uint32_t toX = x + xrange;
+     uint32_t atY = y;
+
+     averageXSequence(x, toX, y, oldpix);
+     newpixel.i = (((uint8_t) (((float)colors) * (oldpix.i / 255.0f))) / ((float)colors)) * 255;
+     writeXSequence(x, toX, y, newpixel);
+     const float quant_error = oldpix.i - newpixel.i;
+
+     if(quant_error > 0) {
+
+
+       int8_t eight = (8 * quant_error) / 32;
+       int8_t four = eight >> 1;
+       int8_t two = four >> 1;
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+
+       if (toX < w) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, eight);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+
+       if (toX < w) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, four);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x - (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (x >= (xrange * 2) && y >= 1) {
+         averageXSequence(fromX, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, two);
+         writeXSequence(fromX, toX, atY, oldpix);
+       }
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (x >= xrange && y >= 1) {
+         averageXSequence(fromX, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, four);
+         writeXSequence(fromX, toX, atY, oldpix);
+       }
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, eight);
+         writeXSequence(x, toX, atY, oldpix);
+       }
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, four);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, two);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+     }
+   }
+
+  void ditherSierra3(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 32) {
+     Pixel<T> oldpix;
+     uint32_t fromX = x;
+     uint32_t toX = x + xrange;
+     uint32_t atY = y;
+
+     averageXSequence(fromX, toX, atY, oldpix);
+     newpixel.i = reduce(oldpix.i, colors);
+     writeXSequence(fromX, toX, atY, newpixel);
+     const float quant_error = oldpix.i - newpixel.i;
+
+     if(quant_error > 0) {
+
+       int8_t five = (5 * quant_error) / 32;
+       int8_t four = (4 * quant_error) / 32;
+       int8_t three = (3 * quant_error) / 32;
+       int8_t two = (2 * quant_error) / 32;
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+
+       carryOver(fromX, toX, atY, five, oldpix);
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+
+       carryOver(fromX, toX, atY, three, oldpix);
+
+       fromX = x - (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, five, oldpix);
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, four, oldpix);
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, three, oldpix);
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 2;
+
+       carryOver(fromX, toX, atY, two, oldpix);
+     }
+   }
+
+  void ditherSierra2(const uint32_t x, const uint32_t y, Pixel<T>& newpixel, const uint32_t xrange = 8, const uint32_t colors = 16) {
+     Pixel<T> oldpix;
+     uint32_t fromX = x;
+     uint32_t toX = x + xrange;
+     uint32_t atY = y;
+
+     averageXSequence(x, toX, y, oldpix);
+     newpixel.i = (((uint8_t) (((float)colors) * (oldpix.i / 255.0f))) / ((float)colors)) * 255;
+     uint8_t quant_error = oldpix.i - newpixel.i;
+     if(quant_error > 0) {
+       writeXSequence(x, toX, y, newpixel);
+
+       uint8_t four = (4 * quant_error) >> 4;
+       uint8_t three = (3 * quant_error) >> 4;
+       uint8_t two = four >> 1;
+       uint8_t one = two >> 1;
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+
+       if (toX < w) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, four);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+
+       if (toX < w) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, three);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x - (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (x >= (xrange * 2) && y >= 1) {
+         averageXSequence(fromX, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, one);
+         writeXSequence(fromX, toX, atY, oldpix);
+       }
+
+       fromX = x -  xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (x >= xrange && y >= 1) {
+         averageXSequence(fromX, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, two);
+         writeXSequence(fromX, toX, atY, oldpix);
+       }
+
+       fromX = x;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x, toX, atY, oldpix);
+         oldpix.i = add(oldpix.i, three);
+         writeXSequence(x, toX, atY, oldpix);
+       }
+
+       fromX = x + xrange;
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, two);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+
+       fromX = x + (xrange * 2);
+       toX = fromX + xrange;
+       atY = y - 1;
+
+       if (toX < w && y >= 1) {
+         averageXSequence(x + xrange, toX + xrange, atY, oldpix);
+         oldpix.i = add(oldpix.i, one);
+         writeXSequence(x + xrange, toX + xrange, atY, oldpix);
+       }
+     }
+   }
+
   T reduce(const T intensity, const T colors) {
-    return colors * (((float)intensity) /255);
+    return round((float)((float)round( colors * (float)(intensity / 255.0f) ) / colors) * 255);
   }
 
   //FIXME how to guarantee T is unsigned?
-  const uint8_t add(const uint8_t intensity, const uint8_t carry) {
+  uint8_t add(const uint8_t intensity, const int8_t carry) {
 	  uint8_t sum = intensity + carry;
 
 	  //overflow?
-	  if(sum < intensity)
+	  if(carry > 0 && sum < intensity)
 	    sum = 255;
-/*
-	  if(intensity < 255 && sum == 255)
-	    sum = 254;
-*/
+
+    if(carry < 0 && sum > intensity)
+      sum = 0;
 
 	  return sum;
 	}
@@ -187,6 +650,7 @@ public:
 		return new MMapMatrix<T> (this->m_file, this->filename, width, height, x, y);
 	}
 };
+
 
 typedef MMapMatrix<uint8_t> Image;
 #endif /* MMAPMATRIX_H_ */
