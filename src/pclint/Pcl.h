@@ -82,6 +82,7 @@ public:
       return (format("%c") % c).str();
   }
 
+  //FIXME friend used on a member function?
   friend ostream& operator <<(ostream &os, PclInstr &instr) {
     format fmtInstr("(%08X) %s%s%s = %d");
     fmtInstr % instr.file_off
@@ -104,23 +105,21 @@ private:
   list<PclInstr*> backlog;
   static Trace* instance;
   Point penPos;
-  Point relPos;
 
-  Trace(): backlogSize(10), penPos(0,0), relPos(0,0) {}
+  Trace(): backlogSize(10), penPos(0,0) {}
 public:
   static Trace* singleton();
 
   void logInstr(PclInstr* instr) {
-    cerr << penPos << relPos << "\t" << *instr << endl;
+    cerr << penPos << "\t" << *instr << endl;
     if(backlog.size() >= backlogSize)
       backlog.erase(backlog.begin());
 
     backlog.push_back(instr);
   }
 
-  void logPlotterStat(Point &penPos, Point &relPos) {
+  void logPlotterStat(Point &penPos) {
     this->penPos = penPos;
-    this->relPos = relPos;
   }
 
   list<PclInstr*>::iterator backlogIterator() {
