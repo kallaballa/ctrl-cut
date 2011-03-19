@@ -54,7 +54,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
 {
   const char *v;
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
-    this->focus = strcmp(v, "false");
+    this->focus = strcmp(v, "false") != 0;
   }
   if ((v = cupsGetOption("Resolution", numOptions, options))) {
     this->resolution = atoi(v);
@@ -94,11 +94,9 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   }
   if ((v = cupsGetOption("EnableRaster", numOptions, options))) {
     this->enable_raster = strcmp(v, "false");
-    this->enable_raster = true;
   }
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
     this->enable_vector = strcmp(v, "false");
-    this->enable_vector = false;
   }
   LOG_DEBUG(this->focus);
   LOG_DEBUG(this->resolution);

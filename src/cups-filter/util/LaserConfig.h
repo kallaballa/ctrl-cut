@@ -79,7 +79,7 @@ public:
   std::string basename;
 
   /** Variable to track auto-focus. */
-  int focus;
+  bool focus;
 
   // FIXME: What is width, height actually used for? The object bbox
   // is stored here and used to be incorrectly sent as PCL R_WIDTH,

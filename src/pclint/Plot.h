@@ -170,7 +170,7 @@ private:
   }
 
   void readHeader() {
-    if (!readPattern(magic, 0, 23))
+    if (!readPattern(MAGIC, 0, MAGIC_SIZE))
       invalidate("read magic");
 
     if (fillBuffer() == eof)

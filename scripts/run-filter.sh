@@ -47,12 +47,17 @@ export PRINTER=passthrough
 export USER=root
 
 filename=`basename $file`
+
+commonoptions=`dirname $file`/common.options
+if [ -f $commonoptions ]; then
+  read < $commonoptions commonoptions
+fi
+
 optionsfile=`dirname $file`/${filename%.*}.options
 if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
-echo "$CC_BINARY $XML 32 kintel `basename $file` 1 "$CC_FILTER_OPTIONS $options" $file" >&2
 # Don't run this with try since it produces stdout which is passed to our caller
-$CC_BINARY $XML 32 kintel `basename $file` 1 "$CC_FILTER_OPTIONS $options" $file
+$CC_BINARY $XML 32 kintel $filename 1 "$commonoptions $options $CC_FILTER_OPTIONS" $file
 exit $?
