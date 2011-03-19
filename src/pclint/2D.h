@@ -53,15 +53,27 @@ public:
     }
     return *this;
   }
-  bool operator==(Point &p) {
+
+  bool operator==(const Point &p) const {
     if(this == &p) {
       return true;
     } else
-      return (this->x == p.x && this->y == y);
+      return (this->x == p.x && this->y == p.y);
   }
 
-  bool operator!=(Point &p) {
-    return !this->operator==(p);
+  bool operator!=(const Point &p) const {
+    return !(this->operator==(p));
+  }
+
+  bool operator==(Point &p) const {
+    if(this == &p) {
+      return true;
+    } else
+      return (this->x == p.x && this->y == p.y);
+  }
+
+  bool operator!=(Point &p) const {
+    return !(this->operator==(p));
   }
 
   friend ostream& operator <<(ostream &os, Point &p) {
@@ -98,15 +110,15 @@ public:
       }
   }
 
-  coord min(coord c1, coord c2) {
+  coord min(const coord c1, const coord c2) const {
     return (c1<=c2?c1:c2);
   }
 
-  coord max(coord c1, coord c2) {
+  coord max(const coord c1, const coord c2) const {
     return (c1>=c2?c1:c2);
   }
 
-  Point& shape(Point &p) {
+  Point& shape(Point &p) const {
     if(!inside(p)) {
       p.x = max(p.x, ul.x);
       p.x = min(p.x, lr.x);
@@ -116,12 +128,12 @@ public:
     return p;
   }
 
-  bool inside(Point &p) {
-    return (p.x < lr.x && p.x > ul.x && p.y < lr.y
-            && p.y > ul.y);
+  bool inside(const Point &p) const {
+    return (p.x <= lr.x && p.x >= ul.x && p.y <= lr.y
+            && p.y >= ul.y);
   }
 
-  bool isValid() {
+  bool isValid() const {
     return this->ul.x < this->lr.x &&
            this->ul.y < this->lr.y &&
            this->ul.x < numeric_limits<coord>::max() &&
