@@ -37,20 +37,15 @@ void printUsage() {
 }
 
 int main(int argc, char *argv[]) {
-  bool findBoundingBox = false;
   bool interactive = false;
-
   char* ifilename = NULL;
   char* ofilename = NULL;
   BoundingBox* crop = NULL;
   int c;
   opterr = 0;
 
-  while ((c = getopt(argc, argv, "bic:")) != -1)
+  while ((c = getopt(argc, argv, "ic:")) != -1)
     switch (c) {
-    case 'b':
-      findBoundingBox = true;
-      break;
     case 'i':
       interactive = true;
       break;
@@ -88,4 +83,3 @@ int main(int argc, char *argv[]) {
   cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
   return 0;
 }
-
