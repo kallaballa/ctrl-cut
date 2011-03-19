@@ -95,12 +95,32 @@ public:
   }
 
   virtual void draw(const Point& from, const Point& to) {
-    Point drawFrom = from;
-    Point drawTo = to;
+    if(from.y != to.y) {
+      cerr << "non horizontal draw operation?" << endl;
+      return;
+    }
+
+    if(from == to) {
+      cerr << "zero length drawing operation?" << endl;
+      return;
+    }
+
+    Point drawFrom;
+    Point drawTo;
+
+    //assume all drawing operations are horizontal and always work from left to right
+    if(from.x < to.x) {
+      drawFrom = from;
+      drawTo = to;
+    } else {
+      drawFrom = to;
+      drawTo = from;
+    }
 
     coord clip_offX = 0;
     coord clip_offY = 0;
 
+    //apply clipping and update bounding box
     if (this->clip) {
       drawTo = this->clip->shape(drawTo);
       clip_offX = clip->ul.x;
@@ -113,6 +133,9 @@ public:
     drawFrom.y -= clip_offY;
     drawTo.x -= clip_offX;
     drawTo.y -= clip_offY;
+
+    //x coordinates point to the left of a pixel. therefore don't draw the last coordinate
+    drawTo.x--;
 
     cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
 
