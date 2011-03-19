@@ -60,7 +60,7 @@ public:
       uint8_t rl = dataInstr->next();
       if(rl > 128) {
         this->fill = true;
-        this->length  = 257 - rl;
+        this->length  = 256 - rl;
       } else if(rl < 128) {
         this->fill = false;
         this->length  = rl + 1;
@@ -95,7 +95,6 @@ public:
     this->currentRun = run;
 
     if (run == NULL || run->length == 0) {
-      cerr << "invalid run" << endl;
       return NULL;
     }
 
@@ -104,8 +103,8 @@ public:
 
     if(run->reverse) {
       start = end = run->loc;
-      start.x = run->loc.x + ((run->lineLen - run->linePos -1) * 8);
-      end.x = start.x - ((run->length - run->linePos) * 8);
+      start.x = run->loc.x + ((run->lineLen - 1 - run->linePos) * 8);;
+      end.x = start.x - (run->length * 8);
     } else {
       start = end = run->loc;
       start.x = start.x + (run->linePos * 8);
@@ -127,11 +126,11 @@ public:
       plotter->move(end);
     } else {
       int8_t dir = run->reverse ? -8 : 8;
-
-      for (dim i = 0; i < run->length; ++i) {
+      dim x = start.x;
+      do {
         plotter->setIntensity(run->nextIntensity());
-        plotter->move(start.x + (i * dir), start.y);
-      }
+        plotter->move(x+=dir, start.y);
+      } while(abs(end.x - x) > 0);
     }
 
     run->linePos+=run->length;
