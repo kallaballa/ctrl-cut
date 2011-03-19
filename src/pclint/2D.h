@@ -54,6 +54,14 @@ public:
     return *this;
   }
 
+  Point& operator=(const Point &p) {
+    if(this != &p) {
+      this->x = p.x;
+      this->y = p.y;
+    }
+    return *this;
+  }
+
   bool operator==(const Point &p) const {
     if(this == &p) {
       return true;
