@@ -33,9 +33,8 @@ private:
 
 public:
   Point loc;
-
-  uint8_t length;
-  coord lineLen;
+  dim length;
+  dim lineLen;
   coord linePos;
 
   bool fill;
@@ -105,8 +104,8 @@ public:
 
     if(run->reverse) {
       start = end = run->loc;
-      start.x = run->loc.x + ((run->lineLen - 1) * 8) - (run->linePos * 8);
-      end.x = start.x - (run->length * 8);
+      start.x = run->loc.x + ((run->lineLen - run->linePos -1) * 8);
+      end.x = start.x - ((run->length - run->linePos) * 8);
     } else {
       start = end = run->loc;
       start.x = start.x + (run->linePos * 8);
@@ -114,11 +113,13 @@ public:
     }
 
     string dirstring = run->reverse ? " <- " : " -> ";
-    //cerr << "\t" << start << dirstring << end << endl;
+    if(run->reverse)
+      cerr << "\t" << end << " <- " << start << endl;
+    else
+      cerr << "\t" << start << " -> " << end << endl;
 
     this->plotter->penUp();
     this->plotter->move(start);
-   //if (!run->reverse)
     this->plotter->penDown();
 
     if(run->fill) {
@@ -127,7 +128,7 @@ public:
     } else {
       int8_t dir = run->reverse ? -8 : 8;
 
-      for (int i = 0; i < run->length; ++i) {
+      for (dim i = 0; i < run->length; ++i) {
         plotter->setIntensity(run->nextIntensity());
         plotter->move(start.x + (i * dir), start.y);
       }
