@@ -49,18 +49,15 @@ class PclPlotter {
 private:
   BoundingBox *bbox;
   BoundingBox *clip;
-  bool flip;
   bool down;
-  coord flipX;
   CImg<uint8_t> *img;
   uint8_t intensity[1];
-  Point relPos;
 
 public:
   Point penPos;
 
   PclPlotter(dim width, dim height, BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), flip(false), down(false), relPos(0, 0), penPos(0, 0) {
+    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
     if (clip != NULL) {
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
@@ -71,8 +68,7 @@ public:
   ;
 
   PclPlotter(BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), flip(false), down(false),
-        relPos(0, 0), penPos(0, 0) {
+    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
     this->img = NULL;
   }
   ;
@@ -98,35 +94,39 @@ public:
     return this->intensity[0];
   }
 
-  virtual void draw(Point& from, Point& to) {
+  virtual void draw(const Point& from, const Point& to) {
+    Point drawFrom = from;
+    Point drawTo = to;
+
     coord clip_offX = 0;
     coord clip_offY = 0;
 
     if (this->clip) {
-      to = this->clip->shape(to);
+      drawTo = this->clip->shape(drawTo);
       clip_offX = clip->ul.x;
       clip_offY = clip->ul.y;
     }
-    this->bbox->update(from);
-    this->bbox->update(to);
+    this->bbox->update(drawFrom);
+    this->bbox->update(drawTo);
 
+    drawFrom.x -= clip_offX;
+    drawFrom.y -= clip_offY;
+    drawTo.x -= clip_offX;
+    drawTo.y -= clip_offY;
 
-    img->draw_line(from.x - clip_offX, from.y - clip_offY,
-        to.x - clip_offX, to.y - clip_offY, this->intensity);
+    cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
+
+    img->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
   }
 
-  void move(Point& to) {
-    Point newPenPos;
-    newPenPos.y = (this->penPos.y) - (this->relPos.y - to.y);
-    newPenPos.x = (this->penPos.x) - (this->relPos.x - to.x);
-
-    if (relPos != to) {
+  void move(Point& to1) {
+    Point to = to1;
+    if (penPos != to) {
       if (down) {
-        draw(penPos, newPenPos);
+        draw(penPos, to);
       }
-      this->relPos = to;
-      this->penPos = newPenPos;
-      Trace::singleton()->logPlotterStat(penPos, relPos);
+      this->penPos = to;
+      Trace::singleton()->logPlotterStat(penPos);
     }
   }
 
