@@ -30,7 +30,7 @@ class Raster
 {
 public:
   Image* sourceImage;
-	static Raster* load(const string &filename);
+  static Raster* load(const string &filename);
 
   list<Image*> tiles;
   list<DownSample*> grids;

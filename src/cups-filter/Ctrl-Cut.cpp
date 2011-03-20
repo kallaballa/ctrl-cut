@@ -229,6 +229,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     PostscriptParser *psparser = new PostscriptParser(lconf);
+    psparser->setRasterDriver("ppmraw");
+    //    psparser->setRasterDriver("display");
     if (!psparser->parse(input_file)) {
       LOG_FATAL("Error processing postscript");
       return 1;
@@ -239,7 +241,18 @@ int main(int argc, char *argv[]) {
   }
 
   if (lconf.enable_raster) {
-    Raster *raster = Raster::load(parser->getBitmapFile().c_str());
+    Raster *raster = NULL;
+    if (parser->hasBitmapData()) {
+      raster = new Raster(new Image(parser->getBitmapData(), 
+                                    parser->getBitmapWidth(), parser->getBitmapHeight(), 0, 0));
+    }
+    else if (parser->getBitmapFile().size() > 0) {
+      raster = Raster::load(parser->getBitmapFile().c_str());
+    }
+    else {
+      LOG_FATAL("No bitmap available from FileParser");
+      return 1;
+    }
     raster->addTile(raster->sourceImage);
     job.addRaster(raster);
   }
@@ -261,6 +274,7 @@ int main(int argc, char *argv[]) {
   drv.process(&job);
 
   delete cut;
+  delete parser;
 
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;

@@ -16,7 +16,13 @@ public:
 
   //  bool parse(const string &filename) = 0;
   virtual std::istream &getVectorData() = 0;
+
+  // Bitmap methods
+  virtual bool hasBitmapData() = 0;
   virtual const std::string &getBitmapFile() = 0;
+  virtual void *getBitmapData() = 0;
+  virtual int getBitmapWidth() = 0;
+  virtual int getBitmapHeight() = 0;
 
 protected:
   LaserConfig &conf;
@@ -25,25 +31,45 @@ protected:
 class PostscriptParser : public FileParser
 {
 public:
-  PostscriptParser(LaserConfig &conf) : FileParser(conf) {}
+  PostscriptParser(LaserConfig &conf);
   ~PostscriptParser();
 
+  void setRasterDriver(const char *drivername) {this->rasterdriver = drivername;}
   bool parse(cups_file_t *ps_file);
   // enable API
   // enable raster
   // enable vector
   // use driver: ppmraw, display
   std::istream &getVectorData();
-  const std::string &getBitmapFile() {return filename_bitmap;}
 
+  virtual bool hasBitmapData() {return (this->bitmapdata != NULL);}
+  const std::string &getBitmapFile() {return filename_bitmap;}
+  void *allocBitmap(unsigned long size);
+  void *getBitmapData();
+  void setBitmapSize(int width, int height);
+  int getBitmapWidth() {return this->bitmapwidth;}
+  int getBitmapHeight() {return this->bitmapheight;}
+
+  void printStatistics();
+
+  // FIXME: Singleton for now since ghostscript callbacks don't provide a userdata pointer.
+  // Fix this with a lookup table or smth.
+  static PostscriptParser *instance() { return PostscriptParser::inst; }
+  static PostscriptParser *inst;
 private:
   bool createEps(cups_file_t *input_file, const std::string &filename_eps);
 
+  std::string rasterdriver;
   std::string filename_eps;
   std::string filename_bitmap;
 #ifndef USE_GHOSTSCRIPT_API
   std::string filename_vector;
   std::ifstream vectorfile;
+#else
+  void *bitmapdata;
+  unsigned long bitmapsize;
+  int bitmapwidth;
+  int bitmapheight;
 #endif
 };
 
