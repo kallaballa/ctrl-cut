@@ -26,6 +26,7 @@ build_ghostscript()
   version=$1
   echo "Building Ghostscript" $version "..."
   cd $BASEDIR/src
+  rm -rf ghostscript-*
   curl -O http://ghostscript.com/releases/ghostscript-$version.tar.gz
   tar xzf ghostscript-$version.tar.gz
   cd ghostscript-$version
@@ -33,9 +34,9 @@ build_ghostscript()
   sed -e "s|__PREFIX__|${prefix}|" -i "" base/unix-dll.mak
   ./configure --prefix=$DEPLOYDIR --enable-compile-inits --disable-cups --disable-gtk --without-x --disable-fontconfig --with-drivers=PBM "CFLAGS=-mmacosx-version-min=10.5 -arch x86_64 -arch i386" LDFLAGS="-mmacosx-version-min=10.5 -arch x86_64 -arch i386"
   make -j4 soinstall
-  install_name_tool -id libgs.9.00.dylib $DEPLOYDIR/lib/libgs.9.00.dylib
+  install_name_tool -id libgs.$version.dylib $DEPLOYDIR/lib/libgs.$version.dylib
 }
 
 echo "Using basedir:" $BASEDIR
 mkdir -p $SRCDIR $DEPLOYDIR
-build_ghostscript 9.00
+build_ghostscript 9.01
