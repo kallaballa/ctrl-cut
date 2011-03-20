@@ -44,12 +44,16 @@ public:
 
   virtual bool hasBitmapData() {return (this->bitmapdata != NULL);}
   const std::string &getBitmapFile() {return filename_bitmap;}
+
   void *allocBitmap(unsigned long size);
+  void copyPage();
+
   void *getBitmapData();
-  void setBitmapSize(int width, int height);
+  void setBitmapSize(int width, int height, int bytes_per_pixel);
   int getBitmapWidth() {return this->bitmapwidth;}
   int getBitmapHeight() {return this->bitmapheight;}
 
+  void setGhostScriptBuffer(void *pimage) {this->gsbuffer = pimage;}
   void printStatistics();
 
   // FIXME: Singleton for now since ghostscript callbacks don't provide a userdata pointer.
@@ -66,10 +70,12 @@ private:
   std::string filename_vector;
   std::ifstream vectorfile;
 #else
+  void *gsbuffer;
   void *bitmapdata;
   unsigned long bitmapsize;
   int bitmapwidth;
   int bitmapheight;
+  int bytesperpixel;
 #endif
 };
 

@@ -229,8 +229,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     PostscriptParser *psparser = new PostscriptParser(lconf);
-    psparser->setRasterDriver("ppmraw");
-    //    psparser->setRasterDriver("display");
+    //    psparser->setRasterDriver("ppmraw");
+        psparser->setRasterDriver("display");
     if (!psparser->parse(input_file)) {
       LOG_FATAL("Error processing postscript");
       return 1;

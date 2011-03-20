@@ -82,7 +82,16 @@ static int display_size(void *handle, void *device, int width, int height,
 {
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
   fprintf(stderr, "    pimage: %p\n", pimage);
-  PostscriptParser::instance()->setBitmapSize(width, height);
+
+  int color = fmt & DISPLAY_COLORS_MASK;
+  int depth = fmt & DISPLAY_DEPTH_MASK;
+  assert(color == DISPLAY_COLORS_RGB);
+  assert(depth == DISPLAY_DEPTH_8);
+  // FIXME: Take note of raster (=rowstride)
+
+  PostscriptParser::instance()->setBitmapSize(width, height, 3);
+  PostscriptParser::instance()->setGhostScriptBuffer(pimage);
+
   return 0;
 }
    
@@ -93,15 +102,21 @@ static int display_sync(void *handle, void *device)
   return 0;
 }
 
+/*!
+  Called by ghostscript when a page has finished rendering.
+  NB! The memory buffer will be cleared to background color by ghostscript after
+  this function has returned.
+*/
 static int display_page(void *handle, void *device, int copies, int flush)
 {
   LOG_DEBUG("display_page()");
 
-  //  PostscriptParser::instance()->printStatistics();
+  PostscriptParser::instance()->copyPage();
 
   return 0;
 }
 
+#if 0
 static int display_update(void *handle, void *device, 
                           int x, int y, int w, int h)
 {
@@ -120,6 +135,7 @@ static int display_memfree(void *handle, void *device, void *mem)
 {
   return 0;
 }
+#endif
 
 static int display_separation(void *handle, void *device,
                        int comp_num, const char *name,
@@ -143,8 +159,8 @@ display_callback display_callbacks = {
     display_sync,
     display_page,
     NULL, // display_update,
-    display_memalloc,
-    display_memfree,
+    NULL, // display_memalloc,
+    NULL, // display_memfree,
     display_separation
 };
 
@@ -324,27 +340,16 @@ std::istream &PostscriptParser::getVectorData()
 #endif  
 }
 
-void *PostscriptParser::allocBitmap(unsigned long size)
-{
-  LOG_DEBUG_MSG("allocBitmap()", size);
-  if (this->bitmapdata && this->bitmapsize < size) {
-    free(this->bitmapdata);
-  }
-  this->bitmapdata = malloc(size);
-  assert(this->bitmapdata);
-  this->bitmapsize = size;
-  return this->bitmapdata;
-}
-
 void *PostscriptParser::getBitmapData()
 {
   return this->bitmapdata;
 }
 
-void PostscriptParser::setBitmapSize(int width, int height)
+void PostscriptParser::setBitmapSize(int width, int height, int bytes_per_pixel)
 {
   this->bitmapwidth = width;
   this->bitmapheight = height;
+  this->bytesperpixel = bytes_per_pixel;
 }
 
 
@@ -365,3 +370,10 @@ void PostscriptParser::printStatistics()
   LOG_DEBUG(b);
 }
 
+void PostscriptParser::copyPage()
+{
+  size_t size = this->bitmapwidth * this->bitmapheight * this->bytesperpixel;
+  this->bitmapdata = malloc(size);
+  assert(this->bitmapdata);
+  memcpy(this->bitmapdata, this->gsbuffer, size);
+}
