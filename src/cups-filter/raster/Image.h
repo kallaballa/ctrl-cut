@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef ABSTRACTIMAGE_H_
-#define ABSTRACTIMAGE_H_
+#ifndef IMAGE_H_
+#define IMAGE_H_
 
 #include <fstream>
 #include <string>
@@ -35,49 +35,46 @@ static const float bayer_matrix[4][4] = {
 };
 
 template<class T>
-class AbstractImage {
+class Image {
 public:
   void * addr;
   size_t bytes_per_pixel;
-  size_t components;
-  size_t x;
-  size_t y;
+  size_t comp;
   size_t w;
   size_t h;
 
-  AbstractImage(uint16_t width, uint16_t height, uint16_t x, uint16_t y) :
-    components(3), x(x), y(y), w(width), h(height)
+  Image(uint32_t width, uint32_t height, uint8_t components = 3) :
+    comp(components), w(width), h(height)
+  {
+    this->addr = NULL;
+    this->bytes_per_pixel = sizeof(T) * components;
+    LOG_DEBUG(this->bytes_per_pixel);
+  }
+
+  Image(void *pixelbuffer, uint32_t width, uint32_t height, uint8_t components = 3) :
+    addr(pixelbuffer), comp(components), w(width), h(height)
   {
     this->bytes_per_pixel = sizeof(T) * components;
     LOG_DEBUG(this->bytes_per_pixel);
   }
 
-  AbstractImage(void *pixelbuffer, uint16_t width, uint16_t height,
-                uint16_t x, uint16_t y) :
-    addr(pixelbuffer), components(3), w(width), h(height), x(x), y(y)
-  {
-    this->bytes_per_pixel = sizeof(T) * components;
-    LOG_DEBUG(this->bytes_per_pixel);
-  }
-
-  virtual ~AbstractImage() {}
+  virtual ~Image() {}
   
   size_t width() const { return this->w; }
   
   size_t height() const { return this->h; }
-  
-  size_t offsetX() const { return this->x; }
-  
-  size_t offsetY() const { return this->y; }
+
+  uint8_t components() const { return this->comp; }
   
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
-    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->components);
-    pix.setRGB(sample);
+    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->comp);
+    if (this->comp == 1) pix.setGray(*sample);
+    else pix.setRGB(sample);
   }
 
   virtual void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
-    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->components);
-    for (int i=0;i<components;i++) {
+    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->comp);
+    for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
     }
   }
@@ -616,5 +613,5 @@ public:
   }
 };
 
-typedef AbstractImage<uint8_t> Image;
-#endif /* ABSTRACTIMAGE_H_ */
+typedef Image<uint8_t> CCImage;
+#endif /* IMAGE_H_ */

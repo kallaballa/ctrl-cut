@@ -229,8 +229,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     PostscriptParser *psparser = new PostscriptParser(lconf);
-    //    psparser->setRasterDriver("ppmraw");
-        psparser->setRasterDriver("display");
+    //    psparser->setRenderToFile(true);
+    psparser->setComponents(1);
     if (!psparser->parse(input_file)) {
       LOG_FATAL("Error processing postscript");
       return 1;
@@ -243,8 +243,7 @@ int main(int argc, char *argv[]) {
   if (lconf.enable_raster) {
     Raster *raster = NULL;
     if (parser->hasBitmapData()) {
-      raster = new Raster(new Image(parser->getBitmapData(), 
-                                    parser->getBitmapWidth(), parser->getBitmapHeight(), 0, 0));
+      raster = new Raster(parser->getImage());
     }
     else if (parser->getBitmapFile().size() > 0) {
       raster = Raster::load(parser->getBitmapFile().c_str());

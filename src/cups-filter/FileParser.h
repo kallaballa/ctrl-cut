@@ -4,9 +4,12 @@
 #include <string>
 #include <cups/cups.h>
 #include <cups/file.h>
-#include "util/LaserConfig.h"
 #include <string>
 #include <fstream>
+#include <vector>
+
+#include "util/LaserConfig.h"
+#include "raster/Image.h"
 
 class FileParser
 {
@@ -19,10 +22,8 @@ public:
 
   // Bitmap methods
   virtual bool hasBitmapData() = 0;
+  virtual CCImage *getImage() = 0;
   virtual const std::string &getBitmapFile() = 0;
-  virtual void *getBitmapData() = 0;
-  virtual int getBitmapWidth() = 0;
-  virtual int getBitmapHeight() = 0;
 
 protected:
   LaserConfig &conf;
@@ -34,24 +35,20 @@ public:
   PostscriptParser(LaserConfig &conf);
   ~PostscriptParser();
 
-  void setRasterDriver(const char *drivername) {this->rasterdriver = drivername;}
+  void setRenderToFile(bool enable) {this->rendertofile = enable;}
+  void setComponents(uint8_t components) {this->components = components;}
+  uint8_t getComponents() const {return this->components;}
+
   bool parse(cups_file_t *ps_file);
-  // enable API
-  // enable raster
-  // enable vector
-  // use driver: ppmraw, display
   std::istream &getVectorData();
 
-  virtual bool hasBitmapData() {return (this->bitmapdata != NULL);}
+  virtual bool hasBitmapData() {return (this->image != NULL);}
   const std::string &getBitmapFile() {return filename_bitmap;}
 
-  void *allocBitmap(unsigned long size);
   void copyPage();
 
-  void *getBitmapData();
-  void setBitmapSize(int width, int height, int bytes_per_pixel);
-  int getBitmapWidth() {return this->bitmapwidth;}
-  int getBitmapHeight() {return this->bitmapheight;}
+  void createImage(uint32_t width, uint32_t height, void *pimage);
+  CCImage *getImage() {return this->image;}
 
   void setGhostScriptBuffer(void *pimage) {this->gsbuffer = pimage;}
   void printStatistics();
@@ -63,19 +60,27 @@ public:
 private:
   bool createEps(cups_file_t *input_file, const std::string &filename_eps);
 
-  std::string rasterdriver;
   std::string filename_eps;
   std::string filename_bitmap;
 #ifndef USE_GHOSTSCRIPT_API
+  bool execute_ghostscript_cmd(const std::vector<std::string> &argstrings)
+
   std::string filename_vector;
   std::ifstream vectorfile;
 #else
+  bool execute_ghostscript(const std::vector<std::string> &argstrings);
+
+  uint8_t components;
+  bool rendertofile;
   void *gsbuffer;
   void *bitmapdata;
   unsigned long bitmapsize;
   int bitmapwidth;
   int bitmapheight;
-  int bytesperpixel;
+
+  CCImage *gsimage;
+  CCImage *image;
+
 #endif
 };
 

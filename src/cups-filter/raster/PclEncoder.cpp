@@ -56,7 +56,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   // start at current position
   out << R_START_AT_POS;
 
-  list<Image*>::iterator it;
+  list<CCImage*>::iterator it;
   for (it = raster->tiles.begin(); it != raster->tiles.end(); it++) {
     encodeTile(*it, out);
   }
@@ -64,7 +64,7 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   out << "\26" << "\4"; // some end of file markers
 }
 
-void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
+void PclEncoder::averageXSequence(CCImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
   float cumm = 0;
 
   for (int x = fromX; x < toX; x++){
@@ -79,7 +79,7 @@ void PclEncoder::averageXSequence(Image *img, int fromX, int toX, int y, Pixel<u
   p.i = cumm;
 }
 
-void PclEncoder::encodeTile(Image* tile, ostream& out) {
+void PclEncoder::encodeTile(CCImage* tile, ostream& out) {
   int height;
   int width;
   int repeat;
@@ -106,8 +106,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
       alreadyFound = false;
       for (int x = 0; x < width; x++) {
         next = x * 8;
-        //tile->averageXSequence(next, next +8, y, p);
-        tile->ditherBayer(next,y,p);
+        tile->averageXSequence(next, next +8, y, p);
+        //tile->ditherBayer(next,y,p);
         buf[x] = p.pclValue(power_scale);
       }
 
@@ -125,8 +125,11 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         }
         r++;
 
-        out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
-        out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + (l * 8));
+        // FIXME: Implement offsetting properly. kintel 20110321
+        // out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
+        // out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + (l * 8));
+        out << format(PCL_POS_Y) % (lconf->basey + y);
+        out << format(PCL_POS_X) % (lconf->basex + (l * 8));
 
         if (dir) {
           //reverse scan line

@@ -29,18 +29,18 @@ using namespace std;
 class Raster
 {
 public:
-  Image* sourceImage;
+  CCImage* sourceImage;
   static Raster* load(const string &filename);
 
-  list<Image*> tiles;
+  list<CCImage*> tiles;
   list<DownSample*> grids;
 
-  Raster(Image* sourceImage) {
+  Raster(CCImage* sourceImage) {
     this->sourceImage = sourceImage;
   }
 
   virtual ~Raster() {}
-  void addTile(Image* tile);
+  void addTile(CCImage* tile);
 };
 
 #endif

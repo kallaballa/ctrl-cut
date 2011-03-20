@@ -52,50 +52,65 @@ gsdll_stdout(void *, const char *str, int len)
  * otherwise.
  */
 #ifdef USE_GHOSTSCRIPT_API
-static int display_open(void *handle, void *device)
+static int display_open(void *, void *)
 {
   LOG_DEBUG("display_open()");
   return 0;
 }
 
-static int display_preclose(void *handle, void *device)
+static int display_preclose(void *, void *)
 {
   LOG_DEBUG("display_preclose()");
   return 0;
 }
 
-static int display_close(void *handle, void *device)
+static int display_close(void *, void *)
 {
   LOG_DEBUG("display_close()");
   return 0;
 }
 
-static int display_presize(void *handle, void *device, int width, int height, 
-                           int raster, unsigned int fmt)
+static int display_presize(void *, void *, int width, int height, 
+                           int /*raster*/, unsigned int /*fmt*/)
 {
   LOG_DEBUG(str(format("display_presize(%d,%d)") % width % height));
   return 0;
 }
    
-static int display_size(void *handle, void *device, int width, int height, 
-                        int raster, unsigned int fmt, unsigned char *pimage)
+static int display_size(void *, void *, int width, int height, 
+                        int /*raster*/, unsigned int fmt, unsigned char *pimage)
 {
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
   fprintf(stderr, "    pimage: %p\n", pimage);
 
   int color = fmt & DISPLAY_COLORS_MASK;
   int depth = fmt & DISPLAY_DEPTH_MASK;
-  assert(color == DISPLAY_COLORS_RGB);
   assert(depth == DISPLAY_DEPTH_8);
   // FIXME: Take note of raster (=rowstride)
 
-  PostscriptParser::instance()->setBitmapSize(width, height, 3);
-  PostscriptParser::instance()->setGhostScriptBuffer(pimage);
+  int components = 0;
+  switch (color) {
+  case DISPLAY_COLORS_GRAY:
+    components = 1;
+    break;
+  case DISPLAY_COLORS_RGB:
+    components = 3;
+    break;
+  default:
+    assert(false && "Unsupported color value");
+    break;
+  }    
+
+  if (PostscriptParser::instance()->getComponents() != components) {
+    assert(false && "Error: Ghostscript didn't accept of component value");
+  }
+
+  PostscriptParser::instance()->createImage(width, height, pimage);
 
   return 0;
 }
    
-static int display_sync(void *handle, void *device)
+static int display_sync(void *, void *)
 {
   LOG_DEBUG("display_sync()");
 
@@ -107,7 +122,7 @@ static int display_sync(void *handle, void *device)
   NB! The memory buffer will be cleared to background color by ghostscript after
   this function has returned.
 */
-static int display_page(void *handle, void *device, int copies, int flush)
+static int display_page(void *, void *, int /*copies*/, int /*flush*/)
 {
   LOG_DEBUG("display_page()");
 
@@ -126,9 +141,7 @@ static int display_update(void *handle, void *device,
 
 static void *display_memalloc(void *handle, void *device, unsigned long size)
 {
-  void *buffer = PostscriptParser::instance()->allocBitmap(size);
-  fprintf(stderr, "display_memalloc: %p\n", buffer);
-  return buffer;
+  return 0;
 }
 
 static int display_memfree(void *handle, void *device, void *mem)
@@ -137,10 +150,10 @@ static int display_memfree(void *handle, void *device, void *mem)
 }
 #endif
 
-static int display_separation(void *handle, void *device,
-                       int comp_num, const char *name,
-                       unsigned short c, unsigned short m,
-                       unsigned short y, unsigned short k)
+static int display_separation(void *, void *,
+                              int /*comp_num*/, const char */*name*/,
+                              unsigned short /*c*/, unsigned short /*m*/,
+                              unsigned short /*y*/, unsigned short /*k*/)
 {
   LOG_DEBUG("display_separation()");
   return 0;
@@ -164,31 +177,8 @@ display_callback display_callbacks = {
     display_separation
 };
 
-bool execute_ghostscript(const char *filename_eps, const char *filename_bitmap,
-                         const char *rasterdriver, int resolution, int height,
-                         int width) {
-  std::vector<std::string> argstrings;
-  argstrings.push_back("gs");
-  argstrings.push_back("-q");
-  argstrings.push_back("-dBATCH");
-  argstrings.push_back("-dDEBUG");
-  argstrings.push_back("-dNOPAUSE");
-  argstrings.push_back(str(format("-r%d") % resolution));
-  argstrings.push_back(str(format("-g%dx%d")
-                                  % ((width * resolution) / POINTS_PER_INCH)
-                                  % ((height * resolution) / POINTS_PER_INCH)));
-  argstrings.push_back(str(format("-sDEVICE=%s") % rasterdriver));
-  if (!strcmp(rasterdriver, "display")) {
-    argstrings.push_back(str(format("-dDisplayFormat=%d") % 
-                             (DISPLAY_COLORS_RGB | DISPLAY_ALPHA_NONE | DISPLAY_DEPTH_8 | 
-                              DISPLAY_BIGENDIAN | DISPLAY_TOPFIRST)));
-    
-  }
-  else {
-    argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
-  }
-  argstrings.push_back(filename_eps);
-
+bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argstrings)
+{
   int gsargc = argstrings.size();
   const char *gsargv[gsargc];
   for (int i=0;i<gsargc;i++) {
@@ -201,7 +191,7 @@ bool execute_ghostscript(const char *filename_eps, const char *filename_bitmap,
     return false;
   }
   gsapi_set_stdio(minst, NULL, gsdll_stdout, NULL);
-  if (!strcmp(rasterdriver, "display")) {
+  if (!this->rendertofile) {
     code = gsapi_set_display_callback(minst, &display_callbacks);
   }
   code = gsapi_init_with_args(minst, gsargc, (char **)gsargv);
@@ -221,20 +211,19 @@ bool execute_ghostscript(const char *filename_eps, const char *filename_bitmap,
 #endif
 
 #ifndef USE_GHOSTSCRIPT_API
-bool execute_ghostscript_cmd(const char *filename_eps, const char *filename_bitmap,
-                             const char *filename_vector, const char *rasterdriver, int resolution,
-                             int height, int width) {
-  char buf[8192];
-  sprintf(
-      buf,
-      "%s -q -dBATCH -dNOPAUSE -r%d -g%dx%d -sDEVICE=%s -sOutputFile=%s %s > %s",
-      GS_EXECUTABLE, resolution, (width * resolution) / POINTS_PER_INCH,
-      (height * resolution) / POINTS_PER_INCH, rasterdriver, filename_bitmap,
-      filename_eps, filename_vector);
+bool PostscriptParser::execute_ghostscript_cmd(const std::vector<std::string> &argstrings)
+{
+  string cmdstr;
+  for (int i=0;i<argstrings.size();i++) {
+    cmdstr += argstrings[i] + " ";
+  }
 
-  LOG_DEBUG(buf);
+  cmdstr += "> ";
+  cmdstr += this->filename_vector;
 
-  if (system(buf)) {
+  LOG_DEBUG(cmdstr);
+
+  if (system(cmdstr.c_str())) {
     return false;
   }
 
@@ -243,7 +232,7 @@ bool execute_ghostscript_cmd(const char *filename_eps, const char *filename_bitm
 #endif
 
 PostscriptParser::PostscriptParser(LaserConfig &conf) 
-  : FileParser(conf), rasterdriver("ppmraw"), bitmapdata(NULL)
+  : FileParser(conf), bitmapdata(NULL), rendertofile(false), components(3), gsimage(NULL), image(NULL)
 {
   PostscriptParser::inst = this;
 }
@@ -274,31 +263,66 @@ bool PostscriptParser::parse(cups_file_t *input_file)
 
   if (!createEps(input_file, this->filename_eps)) return false;
 
-#ifdef USE_GHOSTSCRIPT_API
-  if (this->rasterdriver != "display") {
-    this->filename_bitmap = this->conf.tempdir + "/" + this->conf.basename + ".ppm";
+  std::vector<std::string> argstrings;
+  argstrings.push_back("gs");
+  argstrings.push_back("-q");
+  argstrings.push_back("-dBATCH");
+  argstrings.push_back("-dNOPAUSE");
+
+  argstrings.push_back(str(format("-r%d") % this->conf.resolution));
+  argstrings.push_back(str(format("-g%dx%d")
+                           % ((this->conf.width * this->conf.resolution) / POINTS_PER_INCH)
+                           % ((this->conf.height * this->conf.resolution) / POINTS_PER_INCH)));
+
+  if (!this->conf.enable_raster) {
+    argstrings.push_back("-sDEVICE=nullpage");
+  }
+  else if (this->rendertofile) {
+    this->filename_bitmap = this->conf.tempdir + "/" + this->conf.basename;
+    if (this->components == 1) {
+      argstrings.push_back("-sDEVICE=pgmraw");
+      this->filename_bitmap += ".pgm";
+    }
+    else if (this->components == 3) {
+      argstrings.push_back("-sDEVICE=ppmraw");
+      this->filename_bitmap += ".ppm";
+    }
+    else {
+      assert(false && "Illegal value for components");
+    }
+    argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
+
     LOG_DEBUG_MSG("Running ghostscript. Raster output", this->filename_bitmap);
   }
-  if (!execute_ghostscript(this->filename_eps.c_str(), this->filename_bitmap.c_str(), 
-                           this->conf.enable_raster ? this->rasterdriver.c_str() : "nullpage",
-                           this->conf.resolution, this->conf.height, this->conf.width)) {
+  else {
+    argstrings.push_back("-sDEVICE=display");
+    int formatflags = 
+      DISPLAY_ALPHA_NONE | DISPLAY_DEPTH_8 | DISPLAY_BIGENDIAN | DISPLAY_TOPFIRST;
+    if (this->components == 1) formatflags |= DISPLAY_COLORS_GRAY;
+    else if (this->components == 3) formatflags |= DISPLAY_COLORS_RGB;
+    else {
+      assert(false && "Illegal value for components");
+    }
+    argstrings.push_back(str(format("-dDisplayFormat=%d") % formatflags));
+    LOG_DEBUG("Running ghostscript...");
+  }
+
+  argstrings.push_back(filename_eps);
+
+#ifdef USE_GHOSTSCRIPT_API
+  if (!execute_ghostscript(argstrings)) {
     LOG_FATAL_STR("ghostscript failed");
     return false;
   }
 #else
-  this->filename_bitmap = this->conf.tempdir + "/" + this->conf.basename + ".ppm";
-  LOG_DEBUG_MSG("Running ghostscript. Raster output", this->filename_bitmap);
   this->filename_vector = this->conf.tempdir + "/" + this->conf.basename + ".vector";
   LOG_DEBUG_MSG("                     Vector output", this->filename_vector);
-  if (!execute_ghostscript_cmd(this->filename_eps.c_str(), this->filename_bitmap.c_str(),
-                               this->filename_vector.c_str(),
-                               this->conf.enable_raster ? this->rasterdriver.c_str() : "nullpage",
-                               this->conf.resolution, this->conf.height, this->conf.width)) {
+  if (!execute_ghostscript_cmd(argstrings)) {
     LOG_FATAL_STR("ghostscript failed");
     return false;
   }
 #endif
-
+  
   return true;
 }
 
@@ -340,19 +364,6 @@ std::istream &PostscriptParser::getVectorData()
 #endif  
 }
 
-void *PostscriptParser::getBitmapData()
-{
-  return this->bitmapdata;
-}
-
-void PostscriptParser::setBitmapSize(int width, int height, int bytes_per_pixel)
-{
-  this->bitmapwidth = width;
-  this->bitmapheight = height;
-  this->bytesperpixel = bytes_per_pixel;
-}
-
-
 void PostscriptParser::printStatistics()
 {
   unsigned int r=0,g=0,b=0;
@@ -372,8 +383,29 @@ void PostscriptParser::printStatistics()
 
 void PostscriptParser::copyPage()
 {
-  size_t size = this->bitmapwidth * this->bitmapheight * this->bytesperpixel;
-  this->bitmapdata = malloc(size);
+  size_t size = this->bitmapwidth * this->bitmapheight * this->components;
+  // size_t i;
+  // for (i=0;i<size;i++) {
+  //   if (((uint8_t *)this->gsbuffer)[i] != 0xff) break;
+  // }
+  // int startrow = i / (this->bitmapwidth * this->components);
+  // for (i=size-1;i>=0;i--) {
+  //   if (((uint8_t *)this->gsbuffer)[i] != 0xff) break;
+  // }
+  // int endrow = i / (this->bitmapwidth * this->components);
+
+  // LOG_DEBUG(startrow);
+  // LOG_DEBUG(endrow);
+
+  this->image->addr = malloc(size);
   assert(this->bitmapdata);
-  memcpy(this->bitmapdata, this->gsbuffer, size);
+  memcpy(this->image->addr, this->gsbuffer, size);
+}
+
+void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage)
+{
+  delete this->gsimage;
+  this->gsimage = new CCImage(pimage, width, height, this->components);
+  delete this->image;
+  this->image = new CCImage(width, height, this->components);
 }
