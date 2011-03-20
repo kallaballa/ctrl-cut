@@ -60,7 +60,7 @@ SOURCES += \
 
 HEADERS  += \
           raster/DownSample.h \
-          raster/AbstractImage.h \
+          raster/Image.h \
           raster/MMapMatrix.h \
           raster/PclEncoder.h \
           raster/PPMFile.h \
