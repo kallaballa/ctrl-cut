@@ -60,7 +60,7 @@ public:
       uint8_t rl = dataInstr->next();
       if(rl > 128) {
         this->fill = true;
-        this->length  = 256 - rl;
+        this->length  = 257 - rl;
       } else if(rl < 128) {
         this->fill = false;
         this->length  = rl + 1;
