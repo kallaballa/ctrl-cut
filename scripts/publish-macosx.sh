@@ -1,8 +1,7 @@
 #!/bin/sh
 
-VERSION=0.1
-#VERSION=`date "+%Y.%m.%d"`
-#VERSION=2011.02
+#VERSION=0.1
+VERSION=`date "+%Y.%m.%d"`
 
 # This is the same location as DEPLOYDIR in macosx-build-dependencies.sh
 export MACOSX_DEPLOY_DIR=$PWD/../libraries/install
@@ -37,14 +36,15 @@ fi
 
 echo "Building package"
 # Point the executable to the installed location of the libraries
-install_name_tool -change libgs.9.00.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.00.dylib $FILTER_EXE
+# FIXME: Extract version number automatically
+install_name_tool -change libgs.9.01.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.01.dylib $FILTER_EXE
 
 # Copy files to folder structure
 rm -rf root
 mkdir -p root/Ctrl-Cut/Icons
 cp images/EpilogLegend36EXT.icns root/Ctrl-Cut/Icons
 mkdir -p root/Ctrl-Cut/lib
-cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.00.dylib root/Ctrl-Cut/lib
+cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.01.dylib root/Ctrl-Cut/lib
 mkdir -p root/ppd
 cp etc/ppd/Epilog/Legend36EXT.ppd "root/ppd/Epilog Legend 36EXT"
 gzip "root/ppd/Epilog Legend 36EXT"
