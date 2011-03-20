@@ -1,4 +1,4 @@
-/*
+/*0
  * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
@@ -106,8 +106,8 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
       alreadyFound = false;
       for (int x = 0; x < width; x++) {
         next = x * 8;
-       // tile->readPixel(next, y, p);
-        tile->ditherJJN(next,y,p);
+        //tile->averageXSequence(next, next +8, y, p);
+        tile->ditherBayer(next,y,p);
         buf[x] = p.pclValue(power_scale);
       }
 
@@ -125,7 +125,6 @@ void PclEncoder::encodeTile(Image* tile, ostream& out) {
         }
         r++;
 
-        //flip y
         out << format(PCL_POS_Y) % (tile->offsetY() + lconf->basey + y);
         out << format(PCL_POS_X) % (tile->offsetX() + lconf->basex + (l * 8));
 
