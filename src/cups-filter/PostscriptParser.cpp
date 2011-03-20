@@ -232,7 +232,7 @@ bool PostscriptParser::execute_ghostscript_cmd(const std::vector<std::string> &a
 #endif
 
 PostscriptParser::PostscriptParser(LaserConfig &conf) 
-  : FileParser(conf), bitmapdata(NULL), rendertofile(false), components(3), gsimage(NULL), image(NULL)
+  : FileParser(conf), rendertofile(false), components(3), gsimage(NULL), image(NULL)
 {
   PostscriptParser::inst = this;
 }
@@ -250,9 +250,8 @@ PostscriptParser::~PostscriptParser()
       }
     }
   }
-#ifdef USE_GHOSTSCRIPT_API
-  if (this->bitmapdata) free(this->bitmapdata);
-#endif
+  delete gsimage;
+  delete image;
 
   PostscriptParser::inst = NULL;
 }
@@ -364,6 +363,7 @@ std::istream &PostscriptParser::getVectorData()
 #endif  
 }
 
+#if 0
 void PostscriptParser::printStatistics()
 {
   unsigned int r=0,g=0,b=0;
@@ -380,10 +380,11 @@ void PostscriptParser::printStatistics()
   LOG_DEBUG(g);
   LOG_DEBUG(b);
 }
+#endif
 
 void PostscriptParser::copyPage()
 {
-  size_t size = this->bitmapwidth * this->bitmapheight * this->components;
+  size_t size = this->image->width() * this->image->height() * this->image->components();
   // size_t i;
   // for (i=0;i<size;i++) {
   //   if (((uint8_t *)this->gsbuffer)[i] != 0xff) break;
@@ -398,8 +399,8 @@ void PostscriptParser::copyPage()
   // LOG_DEBUG(endrow);
 
   this->image->addr = malloc(size);
-  assert(this->bitmapdata);
-  memcpy(this->image->addr, this->gsbuffer, size);
+  assert(this->image->addr);
+  memcpy(this->image->addr, this->gsimage->addr, size);
 }
 
 void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage)

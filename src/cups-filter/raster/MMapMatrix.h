@@ -54,7 +54,7 @@ public:
     Image<T>(width, height, components), offsetx(offsetx), offsety(offsety), 
     filename(filename), m_file(m_file) {
     this->m_region = mapped_region(*this->m_file, read_write, 
-                                   offsetx * offsety * this->bytes_per_pixel, 
+offsetx * offsety * this->bytes_per_pixel, 
                                    width * height * this->bytes_per_pixel);
     this->addr = m_region.get_address();
     this->size = m_region.get_size();
@@ -64,9 +64,10 @@ public:
   
   size_t offsetY() const { return this->offsety; }
   
-  MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
-    return new MMapMatrix<T> (this->m_file, this->filename, width, height, x, y);
-  }
+  // FIXME: The tile method looks broken. Fix it later. kintel 20110321
+  // MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
+  //   return new MMapMatrix<T> (this->m_file, this->filename, width, height, x, y);
+  // }
 };
 
 

@@ -611,6 +611,7 @@ public:
     
     return sum;
   }
+
 };
 
 typedef Image<uint8_t> CCImage;

@@ -50,7 +50,6 @@ public:
   void createImage(uint32_t width, uint32_t height, void *pimage);
   CCImage *getImage() {return this->image;}
 
-  void setGhostScriptBuffer(void *pimage) {this->gsbuffer = pimage;}
   void printStatistics();
 
   // FIXME: Singleton for now since ghostscript callbacks don't provide a userdata pointer.
@@ -70,13 +69,8 @@ private:
 #else
   bool execute_ghostscript(const std::vector<std::string> &argstrings);
 
-  uint8_t components;
   bool rendertofile;
-  void *gsbuffer;
-  void *bitmapdata;
-  unsigned long bitmapsize;
-  int bitmapwidth;
-  int bitmapheight;
+  uint8_t components;
 
   CCImage *gsimage;
   CCImage *image;
