@@ -21,6 +21,7 @@
 
 LaserConfig::LaserConfig()
 {
+  this->tempdir = TMP_DIRECTORY;
   this->focus = AUTO_FOCUS;
   this->height = BED_HEIGHT;
   this->width = BED_WIDTH;
