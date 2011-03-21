@@ -67,7 +67,7 @@ CCImage *loadppm(string filename)
 
   fgetpos(pf, &pos);
 
-  return new MappedImage(filename, w, h, components, 0, 0, data_offset);
+  return new MappedImage(filename, w, h, components, data_offset);
 }
 
 #endif /* PPMFILE_H_ */

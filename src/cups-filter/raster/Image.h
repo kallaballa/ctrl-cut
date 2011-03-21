@@ -23,9 +23,9 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <stdint.h>
 #include "util/Logger.h"
 #include "util/2D.h"
-#include "stdint.h"
 
 static const float bayer_matrix[4][4] = {
   {1,9 ,3,11},
@@ -38,42 +38,69 @@ template<class T>
 class Image {
 public:
   void * addr;
-  size_t bytes_per_pixel;
-  size_t comp;
-  size_t w;
-  size_t h;
+  uint8_t bytes_per_pixel;
+  uint8_t comp;
+  uint32_t w;
+  uint32_t h;
+  uint32_t xpos;
+  uint32_t ypos;
+  uint32_t rowstride;
 
-  Image(uint32_t width, uint32_t height, uint8_t components = 3) :
-    comp(components), w(width), h(height)
-  {
+  Image(uint32_t width, uint32_t height, uint8_t components = 3, 
+        uint32_t xpos = 0, uint32_t ypos = 0) :
+    comp(components), w(width), h(height), xpos(xpos), ypos(ypos) {
     this->addr = NULL;
     this->bytes_per_pixel = sizeof(T) * components;
-    LOG_DEBUG(this->bytes_per_pixel);
+    this->rowstride = this->w * this->bytes_per_pixel;
+    LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
-  Image(void *pixelbuffer, uint32_t width, uint32_t height, uint8_t components = 3) :
-    addr(pixelbuffer), comp(components), w(width), h(height)
-  {
+  Image(void *pixelbuffer, uint32_t width, uint32_t height, uint8_t components = 3, 
+        uint32_t xpos = 0, uint32_t ypos = 0) :
+    addr(pixelbuffer), comp(components), w(width), h(height), 
+    xpos(xpos), ypos(ypos) {
     this->bytes_per_pixel = sizeof(T) * components;
-    LOG_DEBUG(this->bytes_per_pixel);
+    this->rowstride = this->w * this->bytes_per_pixel;
+    LOG_DEBUG((int)this->bytes_per_pixel);
+  }
+
+  /*!
+    Create sub tile using the same pixel buffer as the parent image
+  */
+  Image(Image *parent, uint32_t width, uint32_t height, uint32_t offsetx, uint32_t offsety) :
+    w(width), h(height), xpos(offsetx), ypos(offsety) {
+    this->components = parent->components();
+    this->bytes_per_pixel = sizeof(T) * components;
+    this->rowstride = parent->rowstride;
+    this->addr = parent->addr + offsety * this->rowstride + offsetx * this->bytes_per_pixel;
   }
 
   virtual ~Image() {}
   
-  size_t width() const { return this->w; }
+  uint32_t width() const { return this->w; }
   
-  size_t height() const { return this->h; }
+  uint32_t height() const { return this->h; }
 
   uint8_t components() const { return this->comp; }
   
+  size_t xPos() const { return this->xpos; }
+  
+  size_t yPos() const { return this->ypos; }
+
+  void translate(uint32_t x, uint32_t y) {
+    this->xpos += x;
+    this->ypos += y;
+  }
+  
+
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
-    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->comp);
+    T* sample = (static_cast<T*> (addr)) + ((y * this->rowstride + x) * this->comp);
     if (this->comp == 1) pix.setGray(*sample);
     else pix.setRGB(sample);
   }
 
   virtual void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
-    T* sample = (static_cast<T*> (addr)) + ((y * w + x) * this->comp);
+    T* sample = (static_cast<T*> (addr)) + ((y * this->rowstride + x) * this->comp);
     for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
     }

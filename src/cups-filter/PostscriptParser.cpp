@@ -384,23 +384,32 @@ void PostscriptParser::printStatistics()
 
 void PostscriptParser::copyPage()
 {
-  size_t size = this->image->width() * this->image->height() * this->image->components();
-  // size_t i;
-  // for (i=0;i<size;i++) {
-  //   if (((uint8_t *)this->gsbuffer)[i] != 0xff) break;
-  // }
-  // int startrow = i / (this->bitmapwidth * this->components);
-  // for (i=size-1;i>=0;i--) {
-  //   if (((uint8_t *)this->gsbuffer)[i] != 0xff) break;
-  // }
-  // int endrow = i / (this->bitmapwidth * this->components);
+  uint32_t rowstride = this->image->width() * this->image->bytes_per_pixel;
+  size_t size = this->image->height() * rowstride;
 
-  // LOG_DEBUG(startrow);
-  // LOG_DEBUG(endrow);
+  // Quick and dirty scan for empty pixels to reduce size of initial malloc
+  int i;
+  for (i=0;i<size;i++) {
+    if (((uint8_t *)this->gsimage->addr)[i] != 0xff) break;
+  }
+  int startrow = i / rowstride;
+  for (i=size-1;i>=0;i--) {
+    if (((uint8_t *)this->gsimage->addr)[i] != 0xff) break;
+  }
+  int endrow = i / rowstride;
+
+  LOG_DEBUG(startrow);
+  LOG_DEBUG(endrow);
+
+  uint32_t newheight = endrow - startrow + 1;
+  size = newheight * rowstride;
+  uint32_t offset = startrow * rowstride;
 
   this->image->addr = malloc(size);
   assert(this->image->addr);
-  memcpy(this->image->addr, this->gsimage->addr, size);
+  memcpy(this->image->addr, ((uint8_t *)this->gsimage->addr) + offset, size);
+  this->image->h = newheight;
+  this->image->translate(0, startrow);
 }
 
 void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage)

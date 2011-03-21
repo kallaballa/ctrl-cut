@@ -29,45 +29,29 @@ using namespace boost::interprocess;
 template<class T>
 class MMapMatrix : public Image<T> {
 public:
-  size_t offsetx;
-  size_t offsety;
   string filename;
   file_mapping* m_file;
   mapped_region m_region;
   std::size_t size;
 
-  MMapMatrix(string filename, uint32_t width, uint32_t height, uint8_t components = 3,
-             uint32_t offsetx = 0, uint32_t offsety = 0, uint64_t region_off = 0) :
-    Image<T>(width, height, components), offsetx(offsetx), offsety(offsety), filename(filename) {
+  MMapMatrix(string filename, uint32_t width, uint32_t height, uint8_t components = 3, uint64_t region_off = 0) :
+    Image<T>(width, height, components), filename(filename) {
     LOG_DEBUG(region_off);
     this->m_file = new file_mapping(filename.c_str(), read_write);
     this->m_region = mapped_region(*this->m_file, read_write, 
-                                   region_off + (offsetx * offsety * this->bytes_per_pixel), 
-                                   width * height * this->bytes_per_pixel);
+                                   region_off, width * height * this->bytes_per_pixel);
     this->addr = m_region.get_address();
     this->size = m_region.get_size();
     LOG_DEBUG(this->size);
   }
 
-  MMapMatrix(file_mapping* m_file, uint32_t width, uint32_t height, uint8_t components = 3,
-             uint32_t offsetx = 0, uint32_t offsety = 0) :
-    Image<T>(width, height, components), offsetx(offsetx), offsety(offsety), 
-    filename(filename), m_file(m_file) {
+  MMapMatrix(file_mapping* m_file, uint32_t width, uint32_t height, uint8_t components = 3) :
+    Image<T>(width, height, components), filename(filename), m_file(m_file) {
     this->m_region = mapped_region(*this->m_file, read_write, 
-offsetx * offsety * this->bytes_per_pixel, 
-                                   width * height * this->bytes_per_pixel);
+                                   0, width * height * this->bytes_per_pixel);
     this->addr = m_region.get_address();
     this->size = m_region.get_size();
   }
-
-  size_t offsetX() const { return this->offsetx; }
-  
-  size_t offsetY() const { return this->offsety; }
-  
-  // FIXME: The tile method looks broken. Fix it later. kintel 20110321
-  // MMapMatrix<T>* tile(offset_t x, offset_t y, size_t width, size_t height) {
-  //   return new MMapMatrix<T> (this->m_file, this->filename, width, height, x, y);
-  // }
 };
 
 
