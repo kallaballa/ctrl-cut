@@ -13,6 +13,7 @@ SOURCES += \
           Driver.cpp \
           Ctrl-Cut.cpp \
           LaserJob.cpp \
+          PostscriptParser.cpp \
           util/Eps.cpp \
           util/LaserConfig.cpp \
           vector/Cut.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
           Driver.h \
           Ctrl-Cut.h \
           LaserJob.h \
+          FileParser.h \
           util/Eps.h \
           util/LaserConfig.h \
           util/PJL.h \
@@ -58,6 +60,7 @@ SOURCES += \
 
 HEADERS  += \
           raster/DownSample.h \
+          raster/Image.h \
           raster/MMapMatrix.h \
           raster/PclEncoder.h \
           raster/PPMFile.h \

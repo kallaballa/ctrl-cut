@@ -29,43 +29,45 @@
 
 using namespace std;
 
-Image* loadppm(string filename) {
+CCImage *loadppm(string filename)
+{
   LOG_DEBUG_MSG("loading", filename);
 
   char buf[PPMREADBUFLEN], *t;
-	unsigned int w, h, d;
-	int r;
-	int data_offset = 0;
-	FILE* pf = fopen(filename.c_str(), "r");
+  unsigned int w, h, d;
+  int r;
+  int data_offset = 0;
+  FILE* pf = fopen(filename.c_str(), "r");
 
-	if (pf == NULL)
-		return NULL;
-	t = fgets(buf, PPMREADBUFLEN, pf);
-	if ((t == NULL) || (strncmp(buf, "P6\n", 3) != 0))
-		return NULL;
-	data_offset += 4;
+  if (pf == NULL) return NULL;
+  t = fgets(buf, PPMREADBUFLEN, pf);
+  if (t == NULL) return NULL;
 
-	do { /* Px formats can have # comments after first line */
-		t = fgets(buf, PPMREADBUFLEN, pf);
-		if (t == NULL)
-			return NULL;
-		data_offset += strlen(buf);
-	} while (strncmp(buf, "#", 1) == 0);
-	r = sscanf(buf, "%u %u", &w, &h);
+  uint8_t components;
+  if (!strncmp(buf, "P6\n", 3)) components = 3;
+  else if (!strncmp(buf, "P5\n", 3)) components = 1;
+  else return NULL;
 
-	if (r < 2)
-		return NULL;
-	// The program fails if the first byte of the image is equal to 32. because
-	// the fscanf eats the space and the image is read with some bit less
-	r = fscanf(pf, "%u\n", &d);
-	data_offset += 3;
-	if ((r < 1) || (d != 255))
-		return NULL;
-	fpos_t pos;
+  data_offset += 4;
 
-	fgetpos(pf, &pos);
+  do { /* Px formats can have # comments after first line */
+    t = fgets(buf, PPMREADBUFLEN, pf);
+    if (t == NULL) return NULL;
+    data_offset += strlen(buf);
+  } while (strncmp(buf, "#", 1) == 0);
+  r = sscanf(buf, "%u %u", &w, &h);
 
-	return new Image(filename, w, h, 0, 0, data_offset);
+  if (r < 2) return NULL;
+  // The program fails if the first byte of the image is equal to 32. because
+  // the fscanf eats the space and the image is read with some bit less
+  r = fscanf(pf, "%u\n", &d);
+  data_offset += 3;
+  if ((r < 1) || (d != 255)) return NULL;
+  fpos_t pos;
+
+  fgetpos(pf, &pos);
+
+  return new MappedImage(filename, w, h, components, data_offset);
 }
 
 #endif /* PPMFILE_H_ */

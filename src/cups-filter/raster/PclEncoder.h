@@ -33,9 +33,9 @@ class PclEncoder {
 public:
 	LaserConfig* lconf;
 
-	void averageXSequence(Image *img, int fromX, int toX, int y, Pixel<uint8_t>& p);
+	void averageXSequence(CCImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p);
 	void encode(Raster* raster, ostream &out);
-	void encodeTile(Image* tile, ostream& out);
+	void encodeTile(CCImage* tile, ostream& out);
 
 	PclEncoder(LaserConfig* lconf);
 	virtual ~PclEncoder();

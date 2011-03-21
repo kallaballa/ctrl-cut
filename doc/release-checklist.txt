@@ -4,7 +4,7 @@ o FIXME: Run all tests etc.
 Release checklist:
 o FIXME: Update version numbers
   ./scripts/public-macosx.sh
-  ./etc/ppd/EpilogLegend36EXT.ppd (FileVersion if the PPD was updated)
+  ./etc/ppd/Epilog/Legend36EXT.ppd (FileVersion if the PPD was updated)
   ./packaging/ctrl-cut.spec (Version and Release)
   ./packaging/Ctrl-Cut.pmdoc (increase all Package Version number - just increase, not sync with Ctrl-Cut version)
 o FIXME: Update release notes

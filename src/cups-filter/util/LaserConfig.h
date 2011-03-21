@@ -6,6 +6,9 @@
 #include <string.h>
 #include "util/Logger.h"
 
+/** Temporary directory to store files. */
+#define TMP_DIRECTORY "tmp"
+
 /** Default on whether or not auto-focus is enabled. */
 #define AUTO_FOCUS (1)
 
@@ -74,6 +77,8 @@ public:
   void setCupsOptions(struct cups_option_s *options, int numOptions);
   void rangeCheck();
 
+  /** Where to store temporary files */
+  std::string tempdir;
   /** Folder where input file lives, /tmp if stdin */
   std::string datadir;
   std::string basename;

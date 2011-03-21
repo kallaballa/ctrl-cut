@@ -45,28 +45,30 @@ public:
   static const float gf = 0.5870f;
   static const float bf = 0.1140f;
 
-	Pixel(){}
+  Pixel(){}
 
-	/**
+  /**
    * calculate intensity, invert it (black -> 255, white -> 0) and apply raster power scale
    */
-	void setRGB(T* sampleOff) {
-	  float i = rf * *sampleOff + gf * *(sampleOff + 1) + bf * *(sampleOff + 2);
+  void setRGB(T* sampleOff) {
+    float i = rf * *sampleOff + gf * *(sampleOff + 1) + bf * *(sampleOff + 2);
 
     //  just fix white instead of proper rounding
-	  if(i > 254.97f)
-	    i = 255;
-	  else if(i > 254.0f)
-	    i = 254;
+    if(i > 254.97f)
+      i = 255;
+    else if(i > 254.0f)
+      i = 254;
 
-	  this->i = i;
+    this->i = i;
   }
 
-	uint8_t pclValue(float power_scale){
-	  return (uint8_t) (255 - this->i) * power_scale;
+  void setGray(const T &val) {
+    this->i = val;
   }
 
-private:
+  uint8_t pclValue(float power_scale){
+    return (uint8_t) (255 - this->i) * power_scale;
+  }
 };
 
 class Rectangle {
