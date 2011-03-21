@@ -51,17 +51,32 @@ void Reduce::filter(Cut *cut)
       // Detach vertices since we're rebuilding the polylines
       (*pit)->detach();
 
-      // Span an edge to the current vertex for testing
-      Edge consider((*startit)->start(), (*pit)->end());
       float largest = 0;
       Polyline::iterator largestit;
-      
-      // Check distance from every intermediate vertex
-      for (Polyline::iterator pit2 = startit; pit2 != pit; pit2++) {
-        float d = consider.distance((**pit2)[1]);
-        if (d > largest) {
-          largest = d;
-          largestit = pit2;
+      if ((*startit)->start() != (*pit)->end()) {
+        // Span an edge to the current vertex for testing
+        Edge consider((*startit)->start(), (*pit)->end());
+        
+        // Check distance from every intermediate vertex
+        for (Polyline::iterator pit2 = startit; pit2 != pit; pit2++) {
+          float d = consider.distance((**pit2)[1]);
+          if (d > largest) {
+            largest = d;
+            largestit = pit2;
+          }
+        }
+      }
+      else { 
+        // If we span a closed polygon (start == end), we still check whether we should collapse
+        // it to a line. FIXME: This might not be desirable in the end.
+
+        // Check distance from every intermediate vertex to this vertex
+        for (Polyline::iterator pit2 = startit; pit2 != pit; pit2++) {
+          float d = (*startit)->start()->distance((*pit2)->end());
+          if (d > largest) {
+            largest = d;
+            largestit = pit2;
+          }
         }
       }
 
