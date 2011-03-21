@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include <iostream>
+#include <math.h>
 
 class Vertex
 {
@@ -35,6 +36,11 @@ public:
   }
   bool equals(const Vertex *other) const {
     return *this == *other;
+  }
+
+  float distance(const Vertex *other) const {
+    return sqrt((v[0] - other->v[0]) * (v[0] - other->v[0]) +
+                (v[1] - other->v[1]) * (v[1] - other->v[1]));
   }
 
   void attach(Edge *ls);
