@@ -44,14 +44,14 @@ public:
   uint32_t h;
   uint32_t xpos;
   uint32_t ypos;
-  uint32_t rowstride;
+  uint32_t rowstride; // in pixels
 
   Image(uint32_t width, uint32_t height, uint8_t components = 3, 
         uint32_t xpos = 0, uint32_t ypos = 0) :
     comp(components), w(width), h(height), xpos(xpos), ypos(ypos) {
     this->addr = NULL;
     this->bytes_per_pixel = sizeof(T) * components;
-    this->rowstride = this->w * this->bytes_per_pixel;
+    this->rowstride = this->w;
     LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
@@ -60,7 +60,7 @@ public:
     addr(pixelbuffer), comp(components), w(width), h(height), 
     xpos(xpos), ypos(ypos) {
     this->bytes_per_pixel = sizeof(T) * components;
-    this->rowstride = this->w * this->bytes_per_pixel;
+    this->rowstride = this->w;
     LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
@@ -72,7 +72,7 @@ public:
     this->components = parent->components();
     this->bytes_per_pixel = sizeof(T) * components;
     this->rowstride = parent->rowstride;
-    this->addr = parent->addr + offsety * this->rowstride + offsetx * this->bytes_per_pixel;
+    this->addr = (static_cast<T*>(parent->addr)) + (offsety * this->rowstride + offsetx) * this->comp;
   }
 
   virtual ~Image() {}
