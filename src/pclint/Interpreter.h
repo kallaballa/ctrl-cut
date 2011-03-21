@@ -29,6 +29,7 @@
 #include "Raster.h"
 #include "Plot.h"
 #include "CLI.h"
+#include "PclIntConfig.h"
 
 using std::string;
 using std::stringstream;
@@ -40,27 +41,27 @@ private:
 
 public:
   PclPlotter* plotter;
-  PclPlot plot;
+  PclPlot* plot;
 
-  Interpreter(const char* filename,BoundingBox* crop=NULL): width(0), height(0), plotter(NULL), plot(filename){
-    if(!this->plot.good()) {
-      this->plot.invalidate("corrupt pcl header");
+  Interpreter(PclPlot* plot): width(0), height(0), plotter(NULL), plot(plot){
+    if(!this->plot->good()) {
+      this->plot->invalidate("corrupt pcl header");
     }
     Point startPos(0,0);
 
-    if(this->plot.require(PCL_WIDTH) && this->plot.require(PCL_HEIGHT)) {
-      this->width = this->plot.setting(PCL_WIDTH);
-      this->height = this->plot.setting(PCL_HEIGHT);
+    if(this->plot->require(PCL_WIDTH) && this->plot->require(PCL_HEIGHT)) {
+      this->width = this->plot->setting(PCL_WIDTH);
+      this->height = this->plot->setting(PCL_HEIGHT);
     } else
-      this->plot.invalidate("can't find plot dimensions");
+      this->plot->invalidate("can't find plot dimensions");
 
-    if(this->plot.require(PCL_X) && this->plot.require(PCL_Y)) {
-      startPos.x = this->plot.setting(PCL_X);
-      startPos.y = this->plot.setting(PCL_Y);
+    if(this->plot->require(PCL_X) && this->plot->require(PCL_Y)) {
+      startPos.x = this->plot->setting(PCL_X);
+      startPos.y = this->plot->setting(PCL_Y);
     } else
-      this->plot.invalidate("can't find start position");
+      this->plot->invalidate("can't find start position");
 
-    this->plotter = new PclPlotter(this->width, this->height, crop);
+    this->plotter = new PclPlotter(this->width, this->height, PclIntConfig::singleton()->clip);
   };
 
   void render() {
@@ -71,12 +72,12 @@ public:
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
         continue;
-      } else if (plot.currentInstr->matches(PCL_RASTER_START)) {
+      } else if (plot->currentInstr->matches(PCL_RASTER_START)) {
         continue;
-      } else if (plot.currentInstr->matches(PCL_RASTER_END)){
+      } else if (plot->currentInstr->matches(PCL_RASTER_END)){
         continue;
       } else if (
-          (yInstr = plot.currentInstr)->matches(PCL_Y,true)
+          (yInstr = plot->currentInstr)->matches(PCL_Y,true)
           && (xInstr = nextInstr(PCL_X))
           && (pixlenInstr = nextInstr(PCL_PIXEL_LEN))
           && (dataInstr = nextInstr(PCL_RLE_DATA))
@@ -88,13 +89,13 @@ public:
 
         Debugger::getInstance()->animate();
       }
-    } while (this->plot.good());
+    } while (this->plot->good());
 
     cerr << "Plot finished." << endl;
   }
 
   PclInstr* nextInstr(const char* expected=NULL) {
-    PclInstr* instr = plot.readInstr(expected);
+    PclInstr* instr = plot->readInstr(expected);
     Debugger::getInstance()->announce(instr);
     return instr;
   }

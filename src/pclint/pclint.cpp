@@ -24,6 +24,7 @@
 #include "CImg.h"
 #include "Interpreter.h"
 #include "2D.h"
+#include "PclIntConfig.h"
 
 using std::string;
 using std::cerr;
@@ -32,63 +33,21 @@ using std::endl;
 
 using namespace cimg_library;
 
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-
-void printUsage()
-{
-  fprintf(stderr, "pclint %s\n", TOSTRING(CTRLCUT_VERSION));
-  fprintf(stderr,
-      "Usage: pclint [options] <PCL file> [<output file>]\n\n");
-
-  fprintf(stderr, "Options:\n");
-  fprintf(stderr, "  -i        Enter interactive mode\n");
-  fprintf(stderr, "  -c <bbox> Crop to given bounding box\n");
-  exit(1);
-}
-
 int main(int argc, char *argv[]) {
-  bool interactive = false;
-  char* ifilename = NULL;
-  char* ofilename = NULL;
-  BoundingBox* crop = NULL;
-  int c;
-  opterr = 0;
+  PclIntConfig* config = PclIntConfig::singleton();
+  config->parseCommandLine(argc,argv);
 
-  while ((c = getopt(argc, argv, "ic:")) != -1)
-    switch (c) {
-    case 'i':
-      interactive = true;
-      break;
-    case 'c':
-      crop = BoundingBox::createFromGeometryString(optarg);
-      break;
-    case ':':
-      printUsage();
-      break;
-    case '?':
-      printUsage();
-      break;
-    }
+  PclPlot* plot = new PclPlot(config->ifilename);
 
-  if (optind < argc) {
-    ifilename = argv[optind];
-  } else {
-    printUsage();
-  }
-  if (++optind < argc) {
-    ofilename = argv[optind];
-  }
-
-  Interpreter intr(ifilename, crop);
-  if(interactive) {
+  Interpreter intr(plot);
+  if(config->interactive) {
     Debugger::create(intr.plotter);
     Debugger::getInstance()->setInteractive(true);
   }
 
   intr.render();
-  if (ofilename != NULL)
-    intr.plotter->getCanvas()->save(ofilename);
+  if (config->ofilename != NULL)
+    intr.plotter->getCanvas()->save(config->ofilename);
 
   cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
   return 0;

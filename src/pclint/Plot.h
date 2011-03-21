@@ -33,6 +33,7 @@
 #include <boost/format.hpp>
 #include "CImg.h"
 #include "2D.h"
+#include "PclIntConfig.h"
 
 using std::ios;
 using std::cin;
@@ -158,7 +159,12 @@ public:
   }
 
   virtual CImg<uint8_t>* getCanvas() {
-    return img;
+    if (PclIntConfig::singleton()->autocrop) {
+      return &(img->crop(this->bbox->ul.x, this->bbox->ul.y, this->bbox->lr.x, this->bbox->lr.y, false));
+    }
+    else {
+      return img;
+    }
   }
 };
 
