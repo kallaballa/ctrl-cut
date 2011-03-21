@@ -32,8 +32,19 @@ using std::endl;
 
 using namespace cimg_library;
 
-void printUsage() {
-  cerr << "usage" << endl;
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+void printUsage()
+{
+  fprintf(stderr, "pclint %s\n", TOSTRING(CTRLCUT_VERSION));
+  fprintf(stderr,
+      "Usage: pclint [options] <PCL file> [<output file>]\n\n");
+
+  fprintf(stderr, "Options:\n");
+  fprintf(stderr, "  -i        Enter interactive mode\n");
+  fprintf(stderr, "  -c <bbox> Crop to given bounding box\n");
+  exit(1);
 }
 
 int main(int argc, char *argv[]) {
@@ -64,7 +75,6 @@ int main(int argc, char *argv[]) {
     ifilename = argv[optind];
   } else {
     printUsage();
-    exit(1);
   }
   if (++optind < argc) {
     ofilename = argv[optind];
