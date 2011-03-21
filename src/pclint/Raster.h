@@ -103,7 +103,7 @@ public:
 
     if(run->reverse) {
       start = end = run->loc;
-      start.x = run->loc.x + ((run->lineLen - 1 - run->linePos) * 8);;
+      start.x = run->loc.x + (run->lineLen - run->linePos) * 8;
       end.x = start.x - (run->length * 8);
     } else {
       start = end = run->loc;
