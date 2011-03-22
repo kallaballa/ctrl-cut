@@ -81,7 +81,7 @@ static int display_size(void *, void *, int width, int height,
                         int /*raster*/, unsigned int fmt, unsigned char *pimage)
 {
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
-  fprintf(stderr, "    pimage: %p\n", pimage);
+  //  fprintf(stderr, "    pimage: %p\n", pimage);
 
   int color = fmt & DISPLAY_COLORS_MASK;
   int depth = fmt & DISPLAY_DEPTH_MASK;
