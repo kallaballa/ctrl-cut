@@ -1,6 +1,9 @@
 PCL commands:                                                           GUI
 -------------
 
+^[ = 0x1b
+
+
 Epilog-specific:
 &y#A (#=1)            Autofocus                                       Autofocus
 &y#C (#=0,1)          unknown
@@ -50,7 +53,23 @@ Unknown:
 WA [???]         (e.g. WA1)
 
 Misc structural notes:
-----------------------
 
 Empty cut section: %1BIN;YP050;ZS050;XR2500;%0B%1BPUE
 Vector disabled:                                   %1BPUE
+
+Raster format:
+--------------
+
+^[      End of command
+*p#X    # = Leftmost X position
+*p#Y    # = Y position
+*b#A    # = Number of unpacked pixels (1 PCL pixel = 8 real pixels)
+        If this is negative, pixels are unpacked right-to-left
+*b#W    # = Number of encoded bytes
+
+
+Encoded data format:
+
+val > 128: fill (257-val) bytes
+val < 128: copy (val+1) bytes
+val == 128: nop (pad)
