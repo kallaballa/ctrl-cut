@@ -21,7 +21,7 @@ colorcnt::~colorcnt() {
   // TODO Auto-generated destructor stub
 }
 
-int main(int argc, char *argv[]) {
+int mainssss(int argc, char *argv[]) {
   if(argc < 2 || argc > 4) {
     cerr << "Usage: colorcnt <image> <width> <height>" << endl;
     return 1;
