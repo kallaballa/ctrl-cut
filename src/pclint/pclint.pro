@@ -3,7 +3,8 @@ CONFIG -= qt
 
 CONFIG += boost_thread
 CONFIG += X11
-CONFIG += ImageMagick
+#CONFIG += ImageMagick
+CONFIG += libpng
 
 include(common.pri)
 
