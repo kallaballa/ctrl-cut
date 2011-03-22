@@ -127,6 +127,12 @@ public:
       clip_offX = clip->ul.x;
       clip_offY = clip->ul.y;
     }
+
+    // x coordinates point to the left of a pixel. therefore don't draw the last coordinate
+    // This is done before the bbox calculation to avoid an off-by-one error as the bbox
+    // is specified in pixels, inclusive the end pixels.
+    drawTo.x--;
+
     this->bbox->update(drawFrom);
     this->bbox->update(drawTo);
 
@@ -134,9 +140,6 @@ public:
     drawFrom.y -= clip_offY;
     drawTo.x -= clip_offX;
     drawTo.y -= clip_offY;
-
-    //x coordinates point to the left of a pixel. therefore don't draw the last coordinate
-    drawTo.x--;
 
     cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
 
