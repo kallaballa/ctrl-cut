@@ -63,7 +63,7 @@ Raster format:
 ^[      End of command
 *p#X    # = Leftmost X position
 *p#Y    # = Y position
-*b#A    # = Number of unpacked pixels (1 PCL pixel = 8 real pixels)
+*b#A    # = Number of unpacked bytes (1 byye = 8 pixels)
         If this is negative, pixels are unpacked right-to-left
 *b#W    # = Number of encoded bytes
 
