@@ -40,7 +40,7 @@ using namespace cimg_library;
 
 class Debugger {
 private:
-  PclPlotter* plotter;
+  BitmapPlotter* plotter;
   boost::mutex ia_mutex;
   volatile bool interactive;
   CImgDisplay* canvas_disp;
@@ -127,10 +127,10 @@ private:
 
 
 public:
-  static void create(PclPlotter* plotter);
+  static void create(BitmapPlotter* plotter);
   static Debugger* getInstance();
 
-  Debugger(PclPlotter* plotter) :
+  Debugger(BitmapPlotter* plotter) :
     plotter(plotter), interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
   }
 
@@ -218,7 +218,7 @@ Debugger* Debugger::getInstance() {
     instance = new Nullbugger();
   return instance;
 }
-void Debugger::create(PclPlotter* plotter) {
+void Debugger::create(BitmapPlotter* plotter) {
   if(instance == NULL)
     instance = new Debugger(plotter);
 }

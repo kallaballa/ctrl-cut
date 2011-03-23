@@ -40,7 +40,7 @@ private:
   dim height;
 
 public:
-  PclPlotter* plotter;
+  BitmapPlotter* plotter;
   PclPlot* plot;
 
   Interpreter(PclPlot* plot): width(0), height(0), plotter(NULL), plot(plot){
@@ -61,13 +61,13 @@ public:
     } else
       this->plot->invalidate("can't find start position");
 
-    this->plotter = new PclPlotter(this->width, this->height, PclIntConfig::singleton()->clip);
+    this->plotter = new BitmapPlotter(this->width/8, this->height, PclIntConfig::singleton()->clip);
   };
 
   void render() {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
     Run *run = new Run();
-    RasterPlotter raster(this->plotter);
+    RasterDecoder raster(this->plotter);
     Point origin;
     do {
       if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {

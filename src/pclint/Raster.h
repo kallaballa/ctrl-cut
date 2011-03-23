@@ -32,9 +32,9 @@ private:
   PclInstr* dataInstr;
 
 public:
-  Point loc;
+  Point loc; // X position given in bytes
   dim length;
-  dim lineLen;
+  dim lineLen; // Pixel length in bytes
   coord linePos;
 
   bool fill;
@@ -44,7 +44,7 @@ public:
 
   Run* init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
     this->loc.y = yInstr->value;
-    this->loc.x = xInstr->value;
+    this->loc.x = xInstr->value / 8;
     this->lineLen = abs(pixelLen->value);
     this->linePos = 0;
     this->dataInstr = dataInstr;
@@ -71,23 +71,24 @@ public:
     }
   }
 
-  uint8_t nextIntensity() {
-      if (!this->dataInstr->hasNext()) {
-        Trace::singleton()->printBacklog(cerr, "short read: intensity");
-        exit(2);
-      } else
+  uint8_t nextDataByte() {
+    if (!this->dataInstr->hasNext()) {
+      Trace::singleton()->printBacklog(cerr, "short read: intensity");
+      exit(2);
+    } else {
       return 255 - this->dataInstr->next();
+    }
   }
 };
 
-class RasterPlotter {
+class RasterDecoder {
 private:
-  PclPlotter* plotter;
+  BitmapPlotter *plotter;
 
 public:
-  Run* currentRun;
+  Run *currentRun;
 
-  RasterPlotter(PclPlotter* plotter) :
+  RasterDecoder(BitmapPlotter *plotter) :
     plotter(plotter), currentRun(NULL) {
   }
 
@@ -98,46 +99,40 @@ public:
       return NULL;
     }
 
-    Point start;
-    Point end;
+    Point start = run->loc;
 
-    if(run->reverse) {
-      start = end = run->loc;
-      start.x = run->loc.x + (run->lineLen - run->linePos) * 8;
-      end.x = start.x - (run->length * 8);
+    if (run->reverse) {
+      start.x += run->lineLen - run->linePos - 1;
     } else {
-      start = end = run->loc;
-      start.x = start.x + (run->linePos * 8);
-      end.x = start.x + (run->length * 8);
+      start.x += run->linePos;
     }
 
-    string dirstring = run->reverse ? " <- " : " -> ";
-    if(run->reverse)
-      cerr << "\t" << end << " <- " << start << endl;
-    else
-      cerr << "\t" << start << " -> " << end << endl;
+    // string dirstring = run->reverse ? " <- " : " -> ";
+    // if (run->reverse)
+    //   cerr << "\t" << end << " <- " << start << endl;
+    // else
+    //   cerr << "\t" << start << " -> " << end << endl;
 
-    this->plotter->penUp();
     this->plotter->move(start);
-    this->plotter->penDown();
 
-    if(run->fill) {
-      plotter->setIntensity(run->nextIntensity());
-      plotter->move(end);
+    int8_t dir = run->reverse ? -1 : 1;
+    if (run->fill) {
+      uint8_t bitmap = run->nextDataByte();
+      plotter->fill(bitmap, run->length * dir);
     } else {
-      int8_t dir = run->reverse ? -8 : 8;
-      dim x = start.x;
-      do {
-        plotter->setIntensity(run->nextIntensity());
-        plotter->move(x+=dir, start.y);
-      } while(abs(end.x - x) > 0);
+      for (int i=0;i<run->length;i++) {
+        plotter->move(start.x + i*dir, start.y);
+        plotter->writeBitmap(run->nextDataByte());
+      }
     }
 
-    run->linePos+=run->length;
-    if(run->linePos < run->lineLen)
+    run->linePos += run->length;
+    if (run->linePos < run->lineLen) {
       return true;
-    else
+    }
+    else {
       return false;
+    }
   }
 };
 #endif /* RASTER_H_ */

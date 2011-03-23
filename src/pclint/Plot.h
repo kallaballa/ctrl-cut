@@ -46,114 +46,61 @@ using boost::format;
 
 using namespace cimg_library;
 
-class PclPlotter {
+class BitmapPlotter {
 private:
   BoundingBox *bbox;
   BoundingBox *clip;
-  bool down;
-  CImg<uint8_t> *img;
-  uint8_t intensity[1];
+  uint32_t width;
+  uint32_t height;
+  uint8_t *imgbuffer;
 
 public:
   Point penPos;
 
-  PclPlotter(dim width, dim height, BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
+  // width/height is given in bytes
+  BitmapPlotter(uint32_t width, uint32_t height, BoundingBox *clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), width(width), height(height), penPos(0, 0) {
     if (clip != NULL) {
-      width = clip->min(width, clip->lr.x - clip->ul.x);
-      height = clip->min(height, clip->lr.y - clip->ul.y);
+      this->width = clip->min(width, clip->lr.x - clip->ul.x);
+      this->height = clip->min(height, clip->lr.y - clip->ul.y);
     }
 
-    this->img = new CImg<uint8_t> (width, height, 1, 1, 255);
-  }
-  ;
-
-  PclPlotter(BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
-    this->img = NULL;
-  }
-  ;
-
-  void penUp() {
-    down = false;
+    this->imgbuffer = new uint8_t[this->width * this->height];
   }
 
-  void penDown() {
-    down = true;
+  BitmapPlotter(BoundingBox* clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), penPos(0, 0) {
+    this->imgbuffer = NULL;
   }
 
   void move(coord x, coord y) {
-    Point m(x, y);
-    move(m);
+    Point p(x, y);
+    move(p);
   }
 
-  void setIntensity(uint8_t intensity) {
-    this->intensity[0] = intensity;
+  void move(Point &to) {
+    this->penPos = to;
+    // Trace::singleton()->logPlotterStat(penPos);
+  }
+  
+  void writeBitmap(uint8_t bitmap) {
+    this->fill(bitmap, 1);
   }
 
-  uint8_t getIntensity() {
-    return this->intensity[0];
-  }
-
-  virtual void draw(const Point& from, const Point& to) {
-    if(from.y != to.y) {
-      cerr << "non horizontal draw operation?" << endl;
-      return;
-    }
-
-    if(from == to) {
-      cerr << "zero length drawing operation?" << endl;
-      return;
-    }
-
-    Point drawFrom;
-    Point drawTo;
-
-    //assume all drawing operations are horizontal and always work from left to right
-    if(from.x < to.x) {
-      drawFrom = from;
-      drawTo = to;
-    } else {
-      drawFrom = to;
-      drawTo = from;
-    }
-
-    coord clip_offX = 0;
-    coord clip_offY = 0;
-
-    //apply clipping and update bounding box
+  void fill(uint8_t bitmap, int len) {
+    int dir = (len < 0) ? -1 : 1;
+    Point pos = this->penPos;
     if (this->clip) {
-      drawTo = this->clip->shape(drawTo);
-      clip_offX = clip->ul.x;
-      clip_offY = clip->ul.y;
+      if (this->penPos.y < this->clip->ul.y || this->penPos.y > this->clip->lr.y) return;
+      pos.x -= this->clip->ul.x;
+      pos.y -= this->clip->ul.y;
     }
-
-    // x coordinates point to the left of a pixel. therefore don't draw the last coordinate
-    // This is done before the bbox calculation to avoid an off-by-one error as the bbox
-    // is specified in pixels, inclusive the end pixels.
-    drawTo.x--;
-
-    this->bbox->update(drawFrom);
-    this->bbox->update(drawTo);
-
-    drawFrom.x -= clip_offX;
-    drawFrom.y -= clip_offY;
-    drawTo.x -= clip_offX;
-    drawTo.y -= clip_offY;
-
-    cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
-
-    img->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
-  }
-
-  void move(Point& to1) {
-    Point to = to1;
-    if (penPos != to) {
-      if (down) {
-        draw(penPos, to);
+    for (int i=0;i<abs(len);i++) {
+      if (this->clip) {
+        if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
-      this->penPos = to;
-      Trace::singleton()->logPlotterStat(penPos);
+      this->imgbuffer[(pos.y) * this->width + pos.x + i*dir] = bitmap;
+      this->bbox->update(this->penPos.x + i*dir, this->penPos.y);
     }
   }
 
@@ -162,12 +109,29 @@ public:
   }
 
   virtual CImg<uint8_t>* getCanvas() {
+
+    Point start(0,0);
+    Point size(this->width*8, this->height);
     if (PclIntConfig::singleton()->autocrop) {
-      return &(img->crop(this->bbox->ul.x, this->bbox->ul.y, this->bbox->lr.x, this->bbox->lr.y, false));
+      start.x = this->bbox->ul.x;
+      start.y = this->bbox->ul.y;
+
+      size.x = (this->bbox->lr.x - this->bbox->ul.x + 1)*8;
+      size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
     }
-    else {
-      return img;
+    
+    CImg<uint8_t> *image = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
+    for (uint32_t y=0;y<size.y;y++) {
+      for (uint32_t x=0;x<size.x;x++) {
+        uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
+        for (int b=0;b<8;b++) {
+          uint8_t val = (bitmap & (0x80 >> b)) ? 0 : 255;
+          image->draw_point(x*8 + b, y, &val);
+        }
+      }
     }
+    
+    return image;
   }
 };
 
@@ -262,7 +226,7 @@ public:
 
   void invalidate(string msg) {
     this->valid = false;
-    Trace::singleton()->printBacklog(cerr, msg);
+    //    Trace::singleton()->printBacklog(cerr, msg);
   }
 
   bool good() {
@@ -314,7 +278,7 @@ public:
       instr->hasValue = true;
     }
 
-    Trace::singleton()->logInstr(instr);
+    //    Trace::singleton()->logInstr(instr);
 
     // copy data part of rle instructions
     if (instr->matches(PCL_RLE_DATA)) {

@@ -46,8 +46,9 @@ int main(int argc, char *argv[]) {
   }
 
   intr.render();
-  if (config->ofilename != NULL)
+  if (config->ofilename != NULL) {
     intr.plotter->getCanvas()->save(config->ofilename);
+  }
 
   cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
   return 0;
