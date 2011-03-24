@@ -54,6 +54,13 @@ public:
 
   RasterDithering raster_dithering;
 
+  enum RasterDirection {
+    DIRECTION_TOPDOWN,
+    DIRECTION_BOTTOMUP
+  };
+
+  RasterDirection raster_direction;
+
   /** Variable to track the mode for rasterization. One of color 'c', or
    * grey-scale 'g', mono 'm', or none 'n'
    */

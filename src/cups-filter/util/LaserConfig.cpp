@@ -22,6 +22,8 @@
 
 #define RASTER_DITHERING_DEFAULT LaserConfig::DITHER_DEFAULT
 
+#define RASTER_DIRECTION_DEFAULT LaserConfig::DIRECTION_TOPDOWN
+
 /** Default mode for processing raster engraving (varying power depending upon
  * image characteristics).
  * Possible values are:
@@ -75,6 +77,7 @@ LaserConfig::LaserConfig()
   this->width = BED_WIDTH;
   this->resolution = RESOLUTION_DEFAULT;
   this->raster_dithering = RASTER_DITHERING_DEFAULT;
+  this->raster_direction = RASTER_DIRECTION_DEFAULT;
   this->raster_mode = RASTER_MODE_DEFAULT;
   this->raster_speed = RASTER_SPEED_DEFAULT;
   this->raster_power = RASTER_POWER_DEFAULT;
@@ -120,6 +123,13 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     else if (!strcmp(v, "Darken")) this->raster_dithering = DITHER_DARKEN;
     else {
       LOG_WARN_MSG("Illegal value for RasterDithering", v);
+    }
+  }
+  if ((v = cupsGetOption("RasterDirection", numOptions, options))) {
+    if (!strcmp(v, "TopDown")) this->raster_direction = DIRECTION_TOPDOWN;
+    else if (!strcmp(v, "BottomUp")) this->raster_direction = DIRECTION_BOTTOMUP;
+    else {
+      LOG_WARN_MSG("Illegal value for RasterDirection", v);
     }
   }
   if ((v = cupsGetOption("RasterMode", numOptions, options))) {

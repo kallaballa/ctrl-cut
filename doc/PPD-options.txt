@@ -3,6 +3,7 @@ Resolution=75/150/300/600/1200
 RasterSpeed=[0-1000]
 RasterPower=[0-100]
 RasterDithering=Default/Darken
+RasterDirection=TopDown/BottomUp
 RasterMode
 RasterRepeat
 VectorSpeed=[0-100]

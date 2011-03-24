@@ -94,7 +94,10 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out) {
     int y;
     bool dir = false;
 
-    for (y = height - 1; y >= 0; y--) {
+    for (int i=0;i<height;i++) {
+      if (this->lconf->raster_direction == LaserConfig::DIRECTION_BOTTOMUP) y = height - i - 1;
+      else y = i;
+
       uint8_t *scanline = (uint8_t *)tile->data() + y*tile->rowstride(); // Pointer to a scanline
 
       int l;
