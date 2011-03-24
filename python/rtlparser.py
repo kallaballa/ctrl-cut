@@ -37,7 +37,8 @@ class RTLParser:
 
         # Look for start of HP-GL/2 section
         pos = buffer.find("\x1b%1BIN;")
-        if pos > 0: pos += 7
+        if pos < 0: return 
+        else: pos += 7
 
         hpglend = buffer.find('\x1b%0B', pos)
         if hpglend == -1:
