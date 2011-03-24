@@ -41,7 +41,7 @@ class RTLParser:
 
         hpglend = buffer.find('\x1b%0B', pos)
         if hpglend == -1:
-            print "Error: End of HP/GL-2 section no found"
+            print "Error: End of HP/GL-2 section not found"
             exit(1)
 
         prevpos = pos;
