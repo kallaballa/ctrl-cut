@@ -274,7 +274,7 @@ int main(int argc, char *argv[]) {
     else {
       cut = Cut::load(parser->getVectorData());
     }
-    job.addCut(cut);
+    if (cut) job.addCut(cut);
   }
 
   Driver drv;
