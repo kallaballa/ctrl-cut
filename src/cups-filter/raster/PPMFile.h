@@ -29,7 +29,7 @@
 
 using namespace std;
 
-CCImage *loadppm(string filename)
+GrayscaleImage *loadppm(string filename)
 {
   LOG_DEBUG_MSG("loading", filename);
 

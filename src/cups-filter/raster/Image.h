@@ -34,33 +34,79 @@ static const float bayer_matrix[4][4] = {
   {16,8,14,6}
 };
 
-template<class T>
-class Image {
+class AbstractImage {
 public:
-  void * addr;
-  uint8_t bytes_per_pixel;
-  uint8_t comp;
+  AbstractImage(uint32_t width, uint32_t height, void *addr = NULL) : 
+    w(width), h(height), addr(addr), xpos(0), ypos(0) {
+  }
+  virtual ~AbstractImage() {}
+
+  uint32_t width() const { return this->w; }
+  uint32_t height() const { return this->h; }
+  uint32_t xPos() const { return this->xpos; }
+  uint32_t yPos() const { return this->ypos; }
+
+  void setRowstride(uint32_t stride) { this->row_stride = stride; }
+  uint32_t rowstride() const { return this->row_stride; }
+
+
+  void translate(uint32_t x, uint32_t y) {
+    this->xpos += x;
+    this->ypos += y;
+  }
+  
+  void setData(void *addr) { this->addr = addr; }
+  void *data() { return this->addr; }
+
+protected:
   uint32_t w;
   uint32_t h;
+  void * addr;
+
   uint32_t xpos;
   uint32_t ypos;
-  uint32_t rowstride; // in pixels
+  uint32_t row_stride;
 
-  Image(uint32_t width, uint32_t height, uint8_t components = 3, 
-        uint32_t xpos = 0, uint32_t ypos = 0) :
-    comp(components), w(width), h(height), xpos(xpos), ypos(ypos) {
-    this->addr = NULL;
-    this->bytes_per_pixel = sizeof(T) * components;
-    this->rowstride = this->w;
-    LOG_DEBUG((int)this->bytes_per_pixel);
+};
+
+#include <iostream>
+class BitmapImage : public AbstractImage {
+public:
+  BitmapImage(uint32_t width, uint32_t height, uint8_t *buf = NULL) : AbstractImage(width, height, buf) {
+    this->row_stride = width / 8; // Natural rowstride
   }
 
-  Image(void *pixelbuffer, uint32_t width, uint32_t height, uint8_t components = 3, 
-        uint32_t xpos = 0, uint32_t ypos = 0) :
-    addr(pixelbuffer), comp(components), w(width), h(height), 
-    xpos(xpos), ypos(ypos) {
+  bool saveAsPBM(const std::string &filename) {
+    // Note: In the PBM format, 1 is black, 0 is white
+    // What we get from ghostscript is opposite
+    std::ofstream out(filename.c_str());
+    out << "P4\n" << width() << " " << height() << "\n";
+    uint8_t *invertedline = new uint8_t[width()/8];
+    uint8_t *scanlineptr = (uint8_t *)addr;
+    for (int j=0;j<height();j++) {
+      for (int i=0;i<width()/8;i++) {
+        invertedline[i] = ~(scanlineptr[i]);
+      }
+      out.write((const char *)invertedline, width()/8);
+      scanlineptr += this->row_stride;
+    }
+    delete invertedline;
+    return true;
+  }
+private:
+};
+
+
+template<class T>
+class Image : public AbstractImage {
+public:
+  uint8_t bytes_per_pixel;
+  uint8_t comp;
+
+  Image(uint32_t width, uint32_t height, uint8_t components = 3, void *pixelbuffer = NULL) :
+    AbstractImage(width, height, pixelbuffer), comp(components) {
+    this->row_stride = width;
     this->bytes_per_pixel = sizeof(T) * components;
-    this->rowstride = this->w;
     LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
@@ -68,39 +114,26 @@ public:
     Create sub tile using the same pixel buffer as the parent image
   */
   Image(Image *parent, uint32_t width, uint32_t height, uint32_t offsetx, uint32_t offsety) :
-    w(width), h(height), xpos(offsetx), ypos(offsety) {
-    this->components = parent->components();
+    AbstractImage(width, height) {
+    translate(offsetx, offsety);
+    this->row_stride = parent->row_stride;
+    this->comp = parent->components();
     this->bytes_per_pixel = sizeof(T) * components;
-    this->rowstride = parent->rowstride;
-    this->addr = (static_cast<T*>(parent->addr)) + (offsety * this->rowstride + offsetx) * this->comp;
+    this->addr = (static_cast<T*>(parent->addr)) + (offsety * this->row_stride + offsetx) * this->comp;
   }
 
   virtual ~Image() {}
   
-  uint32_t width() const { return this->w; }
-  
-  uint32_t height() const { return this->h; }
-
   uint8_t components() const { return this->comp; }
   
-  size_t xPos() const { return this->xpos; }
-  
-  size_t yPos() const { return this->ypos; }
-
-  void translate(uint32_t x, uint32_t y) {
-    this->xpos += x;
-    this->ypos += y;
-  }
-  
-
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
-    T* sample = (static_cast<T*> (addr)) + ((y * this->rowstride + x) * this->comp);
+    T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
     if (this->comp == 1) pix.setGray(*sample);
     else pix.setRGB(sample);
   }
 
   virtual void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
-    T* sample = (static_cast<T*> (addr)) + ((y * this->rowstride + x) * this->comp);
+    T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
     for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
     }
@@ -641,5 +674,6 @@ public:
 
 };
 
-typedef Image<uint8_t> CCImage;
+typedef Image<uint8_t> GrayscaleImage;
+
 #endif /* IMAGE_H_ */

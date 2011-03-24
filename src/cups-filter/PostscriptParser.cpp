@@ -76,36 +76,23 @@ static int display_presize(void *, void *, int width, int height,
   LOG_DEBUG(str(format("display_presize(%d,%d)") % width % height));
   return 0;
 }
-   
+
+/*
+  Called by ghostscript when a page is resized. width, height is in pixels, rowstride is in bytes.
+  fmt is the same bitmask sent as the -dDisplayFormat parameter.
+*/   
 static int display_size(void *, void *, int width, int height, 
-                        int /*raster*/, unsigned int fmt, unsigned char *pimage)
+                        int rowstride, unsigned int fmt, unsigned char *pimage)
 {
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
   //  fprintf(stderr, "    pimage: %p\n", pimage);
 
   int color = fmt & DISPLAY_COLORS_MASK;
   int depth = fmt & DISPLAY_DEPTH_MASK;
-  assert(depth == DISPLAY_DEPTH_8);
-  // FIXME: Take note of raster (=rowstride)
 
-  int components = 0;
-  switch (color) {
-  case DISPLAY_COLORS_GRAY:
-    components = 1;
-    break;
-  case DISPLAY_COLORS_RGB:
-    components = 3;
-    break;
-  default:
-    assert(false && "Unsupported color value");
-    break;
-  }    
+  // FIXME: Verify format
 
-  if (PostscriptParser::instance()->getComponents() != components) {
-    assert(false && "Error: Ghostscript didn't accept of component value");
-  }
-
-  PostscriptParser::instance()->createImage(width, height, pimage);
+  PostscriptParser::instance()->createImage(width, height, pimage, rowstride);
 
   return 0;
 }
@@ -232,7 +219,7 @@ bool PostscriptParser::execute_ghostscript_cmd(const std::vector<std::string> &a
 #endif
 
 PostscriptParser::PostscriptParser(LaserConfig &conf) 
-  : FileParser(conf), rendertofile(false), components(3), gsimage(NULL), image(NULL)
+  : FileParser(conf), rendertofile(false), rasterformat(BITMAP), gsimage(NULL), image(NULL)
 {
   PostscriptParser::inst = this;
 }
@@ -278,16 +265,20 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   }
   else if (this->rendertofile) {
     this->filename_bitmap = this->conf.tempdir + "/" + this->conf.basename;
-    if (this->components == 1) {
+    switch (this->rasterformat) {
+    case BITMAP: 
+      argstrings.push_back("-sDEVICE=pbmraw");
+      this->filename_bitmap += ".pbm";
+      break;
+    case GRAYSCALE:
       argstrings.push_back("-sDEVICE=pgmraw");
       this->filename_bitmap += ".pgm";
-    }
-    else if (this->components == 3) {
+      break;
+    case RGB:
       argstrings.push_back("-sDEVICE=ppmraw");
       this->filename_bitmap += ".ppm";
-    }
-    else {
-      assert(false && "Illegal value for components");
+    default:
+      assert(false && "Illegal value for displayformat");
     }
     argstrings.push_back(str(format("-sOutputFile=%s") % filename_bitmap));
 
@@ -295,12 +286,19 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   }
   else {
     argstrings.push_back("-sDEVICE=display");
-    int formatflags = 
-      DISPLAY_ALPHA_NONE | DISPLAY_DEPTH_8 | DISPLAY_BIGENDIAN | DISPLAY_TOPFIRST;
-    if (this->components == 1) formatflags |= DISPLAY_COLORS_GRAY;
-    else if (this->components == 3) formatflags |= DISPLAY_COLORS_RGB;
-    else {
-      assert(false && "Illegal value for components");
+    int formatflags = DISPLAY_ALPHA_NONE | DISPLAY_BIGENDIAN | DISPLAY_TOPFIRST;
+    switch (this->rasterformat) {
+    case BITMAP:
+      formatflags |= DISPLAY_DEPTH_1 | DISPLAY_COLORS_GRAY;
+      break;
+    case GRAYSCALE:
+      formatflags |= DISPLAY_DEPTH_8 | DISPLAY_COLORS_GRAY;
+      break;
+    case RGB:
+      formatflags |= DISPLAY_DEPTH_8 | DISPLAY_COLORS_RGB;
+      break;
+    default:
+      assert(false && "Illegal raster format");
     }
     argstrings.push_back(str(format("-dDisplayFormat=%d") % formatflags));
     LOG_DEBUG("Running ghostscript...");
@@ -384,6 +382,7 @@ void PostscriptParser::printStatistics()
 
 void PostscriptParser::copyPage()
 {
+#if 0
   uint32_t rowstride = this->image->width() * this->image->bytes_per_pixel;
   size_t size = this->image->height() * rowstride;
 
@@ -410,12 +409,37 @@ void PostscriptParser::copyPage()
   memcpy(this->image->addr, ((uint8_t *)this->gsimage->addr) + offset, size);
   this->image->h = newheight;
   this->image->translate(0, startrow);
+#else
+  size_t size = this->gsimage->rowstride() * this->image->height();
+  void *dataptr = malloc(size);
+  assert(dataptr);
+  memcpy(dataptr, this->gsimage->data(), size);
+  this->image->setData(dataptr);
+  this->image->setRowstride(this->gsimage->rowstride());
+  
+  BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
+  if (bitmap) bitmap->saveAsPBM("out.pbm");
+#endif
 }
 
-void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage)
+/*
+  Set rowstride to != 0 to use a different rowstride than the natural one.
+*/
+void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride)
 {
   delete this->gsimage;
-  this->gsimage = new CCImage(pimage, width, height, this->components);
   delete this->image;
-  this->image = new CCImage(width, height, this->components);
+  if (this->rasterformat == BITMAP) {
+    this->gsimage = new BitmapImage(width, height, (uint8_t *)pimage);
+    if (rowstride != 0) this->gsimage->setRowstride(rowstride);
+    this->image = new BitmapImage(width, height);
+  }
+  else if (this->rasterformat == GRAYSCALE) {
+    this->gsimage = new GrayscaleImage(width, height, 1, (uint8_t *)pimage);
+    if (rowstride != 0) this->gsimage->setRowstride(rowstride);
+    this->image = new GrayscaleImage(width, height, 1);
+  }
+  else {
+    LOG_FATAL_MSG("Raster format not implemented", this->rasterformat);
+  }
 }
