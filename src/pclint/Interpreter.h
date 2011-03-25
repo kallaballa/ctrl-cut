@@ -46,6 +46,7 @@ private:
   }
 
 public:
+  VectorPlotter* vectorPlotter;
   BitmapPlotter* plotter;
   RtlPlot* plot;
 
@@ -66,6 +67,7 @@ public:
       this->plot->invalidate("can't find start position");
 */
     this->plotter = new BitmapPlotter(21600/8, 14400, PclIntConfig::singleton()->clip);
+    this->vectorPlotter = new VectorPlotter(21600,14400, PclIntConfig::singleton()->clip);
   };
 
   void renderPclPlot(PclPlot *pclPlot) {

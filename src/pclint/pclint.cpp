@@ -43,19 +43,19 @@ int main(int argc, char *argv[]) {
 
   Interpreter intr(plot);
   if(config->interactive) {
-    Debugger::create(intr.plotter);
+    Debugger::create(intr.bitmapPlotter);
     Debugger::getInstance()->setInteractive(true);
   }
 
   intr.render();
   if (config->ofilename != NULL) {
-    CImg<uint8_t>* img = intr.plotter->getCanvas();
+    CImg<uint8_t>* img = intr.bitmapPlotter->getCanvas();
     if(img != NULL)
       img->save(config->ofilename);
     else
       cerr << "won't save an empty image" << endl;
   }
 
-  cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;
+  cerr << "bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
   return 0;
 }

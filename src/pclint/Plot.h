@@ -47,6 +47,131 @@ using boost::format;
 
 using namespace cimg_library;
 
+class VectorPlotter {
+private:
+  BoundingBox *bbox;
+  BoundingBox *clip;
+  bool down;
+  CImg<uint8_t> *img;
+  uint8_t intensity[1];
+
+public:
+  Point penPos;
+
+  VectorPlotter(dim width, dim height, BoundingBox* clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
+    if (clip != NULL) {
+      width = clip->min(width, clip->lr.x - clip->ul.x);
+      height = clip->min(height, clip->lr.y - clip->ul.y);
+    }
+
+    this->img = new CImg<uint8_t> (width, height, 1, 1, 255);
+  }
+  ;
+
+  VectorPlotter(BoundingBox* clip = NULL) :
+    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
+    this->img = NULL;
+  }
+  ;
+
+  void penUp() {
+    down = false;
+  }
+
+  void penDown() {
+    down = true;
+  }
+
+  void move(coord x, coord y) {
+    Point m(x, y);
+    move(m);
+  }
+
+  void setIntensity(uint8_t intensity) {
+    this->intensity[0] = intensity;
+  }
+
+  uint8_t getIntensity() {
+    return this->intensity[0];
+  }
+
+  virtual void draw(const Point& from, const Point& to) {
+    if(from.y != to.y) {
+      cerr << "non horizontal draw operation?" << endl;
+      return;
+    }
+
+    if(from == to) {
+      cerr << "zero length drawing operation?" << endl;
+      return;
+    }
+
+    Point drawFrom;
+    Point drawTo;
+
+    //assume all drawing operations are horizontal and always work from left to right
+    if(from.x < to.x) {
+      drawFrom = from;
+      drawTo = to;
+    } else {
+      drawFrom = to;
+      drawTo = from;
+    }
+
+    coord clip_offX = 0;
+    coord clip_offY = 0;
+
+    //apply clipping and update bounding box
+    if (this->clip) {
+      drawTo = this->clip->shape(drawTo);
+      clip_offX = clip->ul.x;
+      clip_offY = clip->ul.y;
+    }
+
+    // x coordinates point to the left of a pixel. therefore don't draw the last coordinate
+    // This is done before the bbox calculation to avoid an off-by-one error as the bbox
+    // is specified in pixels, inclusive the end pixels.
+    drawTo.x--;
+
+    this->bbox->update(drawFrom);
+    this->bbox->update(drawTo);
+
+    drawFrom.x -= clip_offX;
+    drawFrom.y -= clip_offY;
+    drawTo.x -= clip_offX;
+    drawTo.y -= clip_offY;
+
+    cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
+
+    img->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
+  }
+
+  void move(Point& to1) {
+    Point to = to1;
+    if (penPos != to) {
+      if (down) {
+        draw(penPos, to);
+      }
+      this->penPos = to;
+      Trace::singleton()->logPlotterStat(penPos);
+    }
+  }
+
+  virtual BoundingBox* getBoundingBox() {
+    return bbox;
+  }
+
+  virtual CImg<uint8_t>* getCanvas() {
+    if (PclIntConfig::singleton()->autocrop) {
+      return &(img->crop(this->bbox->ul.x, this->bbox->ul.y, this->bbox->lr.x, this->bbox->lr.y, false));
+    }
+    else {
+      return img;
+    }
+  }
+};
+
 class BitmapPlotter {
 private:
   BoundingBox *bbox;
@@ -247,7 +372,6 @@ public:
   }
 };
 
-
 class PclPlot {
 private:
   ifstream* inputfile;
@@ -423,8 +547,6 @@ enum RtlContext {
   PCL_CONTEXT, HPGL_CONTEXT, NONE
 };
 
-PclPlot *watchPclPlot;
-
 class RtlPlot {
 private:
   ifstream* inputfile;
@@ -491,7 +613,6 @@ public:
 
     //try to initialize a new context and probe it
     currentPclPlot = new PclPlot(inputfile);
-    watchPclPlot = currentPclPlot;
     if(checkPclContext())
       return PCL_CONTEXT;
 
