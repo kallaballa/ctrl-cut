@@ -38,20 +38,13 @@
  */
 #define SCREEN_DEFAULT (8)
 
-/** FIXME */
-#define VECTOR_FREQUENCY_DEFAULT (1053)
+#define VECTOR_FREQUENCY_DEFAULT (5000)
 
 /** Default power level for vector cutting. */
 #define VECTOR_POWER_DEFAULT (80)
 
 /** Default speed level for vector cutting. */
 #define VECTOR_SPEED_DEFAULT (33)
-
-/**
- * Default on whether or not the result is supposed to be flipped along the X
- * axis.
- */
-#define DEFAULT_FLIP (0)
 
 /** Default on whether or not auto-focus is enabled. */
 #define DEFAULT_AUTO_FOCUS (1)
@@ -72,14 +65,13 @@ LaserConfig::LaserConfig()
   this->vector_power = VECTOR_POWER_DEFAULT;
   this->vector_freq = VECTOR_FREQUENCY_DEFAULT;
   this->vector_reduce = 0.0f;
-  this->vector_optimize = 0;
+  this->vector_optimize = OPTIMIZE_INNER_OUTER;
   this->x_center = 0;
   this->x_repeat = 1;
   this->y_center = 0;
   this->y_repeat = 1;
   this->basex = 0;
   this->basey = 0;
-  this->flip = DEFAULT_FLIP;
   this->enable_vector = true;
   this->enable_raster = false;
   calculate_base_position();
@@ -130,10 +122,12 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     this->vector_reduce = atof(v);
   }
   if ((v = cupsGetOption("VectorOptimize", numOptions, options))) {
-    this->vector_optimize = atoi(v);
-  }
-  if ((v = cupsGetOption("FlipX", numOptions, options))) {
-    this->flip = strcmp(v, "false");
+    if (!strcmp(v, "SIMPLE")) this->vector_optimize = OPTIMIZE_SIMPLE;
+    else if (!strcmp(v, "Inner-Outer")) this->vector_optimize = OPTIMIZE_INNER_OUTER;
+    else if (!strcmp(v, "Flat")) this->vector_optimize = OPTIMIZE_FLAT;
+    else {
+      LOG_WARN_MSG("Illegal value for VectorOptimize", v);
+    }
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
     cc_loglevel = strcmp(v, "false") ? CC_DEBUG : (LogLevel)DEBUG;
@@ -154,7 +148,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   LOG_DEBUG(this->vector_power);
   LOG_DEBUG(this->vector_freq);
   LOG_DEBUG(this->vector_optimize);
-  LOG_DEBUG(this->flip);
   LOG_DEBUG(this->enable_raster);
   LOG_DEBUG(this->enable_vector);
 }

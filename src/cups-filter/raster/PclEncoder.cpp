@@ -36,8 +36,9 @@ void PclEncoder::encode(Raster *raster, ostream &out)
 
   // Raster Orientation
   out << format(R_ORIENTATION) % 0;
+
   // Raster power
-  out << format(R_POWER) % 100;
+  out << format(R_POWER) % lconf->raster_power;
 
   // Raster speed
   out << format(R_SPEED) % lconf->raster_speed;

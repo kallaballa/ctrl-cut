@@ -83,7 +83,12 @@ public:
   float vector_reduce;
 
   /** Which optimization to perform (Default: Inner-Outer) */
-  int vector_optimize;
+  enum VectorOptimize {
+    OPTIMIZE_SIMPLE,
+    OPTIMIZE_INNER_OUTER,
+    OPTIMIZE_FLAT
+  };
+  VectorOptimize vector_optimize;
 
   /** X re-center (0 = not). */
   int x_center;
@@ -102,9 +107,6 @@ public:
 
   /** The relative y position inside the laser bed to start operating from **/
   int basey;
-
-  /** Variable to track whether or not the X axis should be flipped. */
-  bool flip;
 
   // Are we running performing raster passes
   bool enable_raster;

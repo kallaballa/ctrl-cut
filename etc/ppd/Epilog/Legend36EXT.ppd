@@ -127,7 +127,7 @@ restore
 
 *%******** EnableRaster ********
 *OpenUI *EnableRaster/EnableRaster: Boolean
-*DefaultEnableRaster: True
+*DefaultEnableRaster: False
 *OrderDependency: 140 AnySetup *EnableRaster
 *EnableRaster True: " "
 *EnableRaster False: " "
@@ -149,17 +149,9 @@ restore
 *AutoFocus False: " "
 *CloseUI: *AutoFocus
 
-*%******** FlipX ********
-*OpenUI *FlipX/FlipX: Boolean
-*DefaultFlipX: False
-*OrderDependency: 140 AnySetup *FlipX
-*FlipX True: " "
-*FlipX False: " "
-*CloseUI: *FlipX
-
 *%******** Debug ********
 *OpenUI *Debug/Debug: Boolean
-*DefaultDebug: True
+*DefaultDebug: False
 *OrderDependency: 140 AnySetup *Debug
 *Debug True: " "
 *Debug False: " "
@@ -193,7 +185,7 @@ restore
 
 *%******** RasterPower ********
 *OpenUI *RasterPower/RasterPower: PickOne
-*DefaultRasterPower: 10
+*DefaultRasterPower: 20
 *OrderDependency: 140 AnySetup *RasterPower
 *RasterPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /RasterPower 1>> >>
@@ -1036,7 +1028,7 @@ restore
 
 *%******** VectorPower ********
 *OpenUI *VectorPower/VectorPower: PickOne
-*DefaultVectorPower: 10
+*DefaultVectorPower: 80
 *OrderDependency: 140 AnySetup *VectorPower
 *VectorPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorPower 1>> >>
@@ -1442,7 +1434,7 @@ restore
 
 *%******** VectorSpeed ********
 *OpenUI *VectorSpeed/VectorSpeed: PickOne
-*DefaultVectorSpeed: 100
+*DefaultVectorSpeed: 33
 *OrderDependency: 140 AnySetup *VectorSpeed
 *VectorSpeed 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 1>> >>
