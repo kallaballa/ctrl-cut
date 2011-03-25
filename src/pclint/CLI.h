@@ -134,7 +134,7 @@ public:
     plotter(plotter), interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
   }
 
-  void loop() {
+  virtual void loop() {
     string line;
 
     while (cin) {
@@ -151,12 +151,12 @@ public:
     }
   }
 
-  bool isInteractive() {
+  virtual bool isInteractive() {
     boost::mutex::scoped_lock ia_lock(ia_mutex);
     return interactive;
   }
 
-  void setInteractive(bool i) {
+  virtual void setInteractive(bool i) {
     boost::mutex::scoped_lock ia_lock(ia_mutex);
     //FIXME inclomplete sync: old loop still might be reading from cin
     if (!this->interactive && i && this->cli_thrd == NULL)
@@ -165,29 +165,29 @@ public:
     this->interactive = i;
   }
 
-  void announce(PclInstr* instr) {
+  virtual void announce(PclInstr* instr) {
     checkStepBarrier();
     checkBreakpoints(instr);
     checkSignatures(instr);
   }
 
-  void animate() {
+  virtual void animate() {
     if (anim)
       this->updateCanvas();
   }
 
-  void dumpCanvas(const char* filename) {
+  virtual void dumpCanvas(const char* filename) {
     plotter->getCanvas()->save(filename);
   }
 
-  void updateCanvas() {
+  virtual void updateCanvas() {
     if (canvas_disp) {
       canvas_disp->display(*plotter->getCanvas());
       canvas_disp->paint();
     }
   }
 
-  void displayCanvas() {
+  virtual void displayCanvas() {
     if (!canvas_disp) {
       canvas_disp = new CImgDisplay(*plotter->getCanvas(), "Plot");
     }
