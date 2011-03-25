@@ -3,7 +3,6 @@
 #include <set>
 #include <string>
 #include "CImg.h"
-#include "testimage.h"
 
 using namespace cimg_library;
 
