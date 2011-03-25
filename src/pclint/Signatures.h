@@ -29,7 +29,8 @@
 #define PCL_HEIGHT "*rT"
 #define PCL_RLE_DATA "*bW"
 #define PCL_PIXEL_LEN "*bA"
-#define PCL_END_OF_SETTINGS "*rA"
-#define PCL_END_OF_INSTRUCTION 0x1b
+#define PCL_START_OF_PASS "%0B"
+#define PCL_END_OF_PASS "%1B"
+#define PCL_START_OF_INSTRUCTION 0x1b
 
 #endif /* SIGNATURES_H_ */

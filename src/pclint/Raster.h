@@ -54,7 +54,7 @@ public:
 
   Run* nextRun() {
     if(dataInstr->limit < 2) {
-      Trace::singleton()->printBacklog(cerr, "short read: run length");
+      Trace::singleton()->printBacklog(cerr, "PCL RUN", "short read: run length");
       exit(2);
     } else {
       uint8_t rl = dataInstr->next();
@@ -73,7 +73,7 @@ public:
 
   uint8_t nextDataByte() {
     if (!this->dataInstr->hasNext()) {
-      Trace::singleton()->printBacklog(cerr, "short read: intensity");
+      Trace::singleton()->printBacklog(cerr, "PCL RUN", "short read: intensity");
       exit(2);
     } else {
       return 255 - this->dataInstr->next();
@@ -120,7 +120,7 @@ public:
       uint8_t bitmap = run->nextDataByte();
       plotter->fill(bitmap, run->length * dir);
     } else {
-      for (int i=0;i<run->length;i++) {
+      for (dim i=0;i<run->length;i++) {
         plotter->move(start.x + i*dir, start.y);
         plotter->writeBitmap(run->nextDataByte());
       }

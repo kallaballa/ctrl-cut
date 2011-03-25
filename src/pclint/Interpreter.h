@@ -39,16 +39,20 @@ private:
   dim width;
   dim height;
 
+  PclInstr* nextPclInstr(PclPlot* pclPlot, const char* expected = NULL) {
+    PclInstr* instr = pclPlot->readInstr(expected);
+    Debugger::getInstance()->announce(instr);
+    return instr;
+  }
+
 public:
   BitmapPlotter* plotter;
-  PclPlot* plot;
+  RtlPlot* plot;
 
-  Interpreter(PclPlot* plot): width(0), height(0), plotter(NULL), plot(plot){
-    if(!this->plot->good()) {
-      this->plot->invalidate("corrupt pcl header");
-    }
+  Interpreter(RtlPlot* plot): width(0), height(0), plotter(NULL), plot(plot){
+    //FIXME determine the primary plot parameters
+/*
     Point startPos(0,0);
-
     if(this->plot->require(PCL_WIDTH) && this->plot->require(PCL_HEIGHT)) {
       this->width = this->plot->setting(PCL_WIDTH);
       this->height = this->plot->setting(PCL_HEIGHT);
@@ -60,44 +64,51 @@ public:
       startPos.y = this->plot->setting(PCL_Y);
     } else
       this->plot->invalidate("can't find start position");
-
-    this->plotter = new BitmapPlotter(this->width/8, this->height, PclIntConfig::singleton()->clip);
+*/
+    this->plotter = new BitmapPlotter(21600/8, 14400, PclIntConfig::singleton()->clip);
   };
 
-  void render() {
-    PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL, *yflipInstr = NULL;
+  void renderPclPlot(PclPlot *pclPlot) {
+    PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL;
     Run *run = new Run();
     RasterDecoder raster(this->plotter);
     Point origin;
-    do {
-      if ((yflipInstr = nextInstr()) && yflipInstr->matches(PCL_FLIPY)) {
-        continue;
-      } else if (plot->currentInstr->matches(PCL_RASTER_START)) {
-        continue;
-      } else if (plot->currentInstr->matches(PCL_RASTER_END)){
-        continue;
-      } else if (
-          (yInstr = plot->currentInstr)->matches(PCL_Y,true)
-          && (xInstr = nextInstr(PCL_X))
-          && (pixlenInstr = nextInstr(PCL_PIXEL_LEN))
-          && (dataInstr = nextInstr(PCL_RLE_DATA))
-          ) {
-        run->init(yInstr, xInstr, pixlenInstr, dataInstr);
 
-        while(raster.decode(run))
-          run->nextRun();
+    while (pclPlot->good()) {
+        if (
+            (yInstr = nextPclInstr(pclPlot,PCL_Y))
+            && (xInstr = nextPclInstr(pclPlot,PCL_X))
+            && (pixlenInstr = nextPclInstr(pclPlot,PCL_PIXEL_LEN))
+            && (dataInstr = nextPclInstr(pclPlot,PCL_RLE_DATA))) {
+          run->init(yInstr, xInstr, pixlenInstr, dataInstr);
 
-        Debugger::getInstance()->animate();
+          while (raster.decode(run))
+            run->nextRun();
+
+          Debugger::getInstance()->animate();
       }
-    } while (this->plot->good());
-
-    cerr << "Plot finished." << endl;
+    }
   }
 
-  PclInstr* nextInstr(const char* expected=NULL) {
-    PclInstr* instr = plot->readInstr(expected);
-    Debugger::getInstance()->announce(instr);
-    return instr;
+  void renderHpglPlot(HPGLPlot *hpglPlot) {
+    HPGLInstr* hpglInstr;
+
+    while(hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
+      cerr << *hpglInstr << endl;
+    }
+  }
+
+  void render() {
+    while(this->plot->isValid()) {
+      RtlContext activeContext = this->plot->getActiveContext();
+
+      if(activeContext == PCL_CONTEXT)
+        renderPclPlot(this->plot->requestPclPlot());
+      else if(activeContext == HPGL_CONTEXT)
+        renderHpglPlot(this->plot->requestHPGLPlot());
+      else
+        break; //no context
+    }
   }
 };
 
