@@ -157,10 +157,10 @@ int main(int argc, char *argv[]) {
 
   LaserJob job(&lconf, arg_user, arg_jobid, arg_title);
 
-  // Strings designating filenames.
   string filename_vector;
+  string filename_pbm;
 
-  enum { FORMAT_POSTSCRIPT, FORMAT_VECTOR } inputformat = FORMAT_POSTSCRIPT;
+  enum { FORMAT_POSTSCRIPT, FORMAT_VECTOR, FORMAT_PBM } inputformat = FORMAT_POSTSCRIPT;
 
   cups_file_t *input_file;
   bool input_is_stdin = false;
@@ -179,6 +179,10 @@ int main(int argc, char *argv[]) {
     if (suffix == "vector") {
       inputformat = FORMAT_VECTOR;
       filename_vector = arg_filename;
+    }
+    else if (suffix == "pbm") {
+      inputformat = FORMAT_PBM;
+      filename_pbm = arg_filename;
     }
     else {
       // Try to open the print file...
@@ -251,18 +255,25 @@ int main(int argc, char *argv[]) {
 
   if (lconf.enable_raster) {
     Raster *raster = NULL;
-    if (parser->hasBitmapData()) {
-      raster = new Raster(parser->getImage());
+    if (inputformat == FORMAT_PBM) {
+      raster = Raster::load(filename_pbm);
     }
-    else if (parser->getBitmapFile().size() > 0) {
-      raster = Raster::load(parser->getBitmapFile().c_str());
+    else if (parser) {
+      if (parser->hasBitmapData()) {
+        raster = new Raster(parser->getImage());
+      }
+      else if (parser->getBitmapFile().size() > 0) {
+        raster = Raster::load(parser->getBitmapFile());
+      }
+      else {
+        LOG_FATAL("No bitmap available from FileParser");
+        return 1;
+      }
     }
-    else {
-      LOG_FATAL("No bitmap available from FileParser");
-      return 1;
+    if (raster) {
+      raster->addTile(raster->sourceImage);
+      job.addRaster(raster);
     }
-    raster->addTile(raster->sourceImage);
-    job.addRaster(raster);
   }
 
 
@@ -271,7 +282,7 @@ int main(int argc, char *argv[]) {
     if (inputformat == FORMAT_VECTOR) {
       cut = Cut::load(filename_vector);
     }
-    else {
+    else if (parser) {
       cut = Cut::load(parser->getVectorData());
     }
     if (cut) job.addCut(cut);

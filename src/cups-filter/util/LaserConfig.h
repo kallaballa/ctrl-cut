@@ -55,8 +55,8 @@ public:
   RasterDithering raster_dithering;
 
   enum RasterDirection {
-    DIRECTION_TOPDOWN,
-    DIRECTION_BOTTOMUP
+    DIRECTION_TOPDOWN = 0,
+    DIRECTION_BOTTOMUP = 1
   };
 
   RasterDirection raster_direction;

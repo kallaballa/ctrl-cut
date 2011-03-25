@@ -26,5 +26,19 @@ void Raster::addTile(AbstractImage* tile) {
 }
 
 Raster* Raster::load(const string &filename) {
-  return new Raster(loadppm(filename));
+  string suffix = filename.substr(filename.rfind(".") + 1);
+  AbstractImage *img = NULL;
+  if (suffix == "ppm" || suffix == "pgm") {
+    img = loadppm(filename);
+  }
+  else {
+    img = loadpbm(filename);
+  }
+  if (img) {
+    img->translate(392, 516);
+    return new Raster(img);
+  }
+  else {
+    return NULL;
+  }
 }
