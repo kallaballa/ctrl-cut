@@ -86,11 +86,14 @@ PJL_STRING(R_WIDTH, "\e*r%dS");
 /* Raster compression */
 PJL_STRING(R_COMPRESSION, "\e*b%dM");
 
-/* Raster direction (1 = up) */
-PJL_STRING(R_DIRECTION_UP, "\e&y1O");
+/* Raster direction (0 = down, 1 = up) */
+PJL_STRING(R_DIRECTION, "\e&y%dO");
 
-/* Start raster operation at current position */
-PJL_STRING(R_START_AT_POS, "\e*r1A");
+/* Start raster job */
+PJL_STRING(R_START, "\e*r1A");
+
+/* End raster job */
+PJL_STRING(R_END, "\e*rC");
 
 /* The number of unpacked bytes in the raster row */
 PJL_STRING(R_ROW_UNPACKED_BYTES, "\e*b%dA");
@@ -98,8 +101,6 @@ PJL_STRING(R_ROW_UNPACKED_BYTES, "\e*b%dA");
 /* The number of packed bytes in the raster row */
 PJL_STRING(R_ROW_PACKED_BYTES, "\e*b%dW");
 
-/* Guessed: resets raster job */
-PJL_STRING(R_RESET, "\e*rC");
 
 
 /**

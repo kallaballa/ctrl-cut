@@ -78,7 +78,7 @@ public:
 
   bool saveAsPBM(const std::string &filename) {
     // Note: In the PBM format, 1 is black, 0 is white
-    // What we get from ghostscript is opposite
+    // What we get from ghostscript, and use internally, is opposite
     std::ofstream out(filename.c_str());
     out << "P4\n" << width() << " " << height() << "\n";
     uint8_t *invertedline = new uint8_t[width()/8];

@@ -11,7 +11,7 @@ Epilog-specific:
 &y#P (#=power)        Raster power
 &z#S (#=speed)        Raster speed
 &z#A (#=1,2)          Start raster operation at current position
-&y#O (#=0,1)          Raster direction                                Engrave Direction
+&y#O (#=0,1)          Raster direction (0=top-down, 1=bottom-up)      Engrave Direction
 
 PCL standard:
 *p0X                  Position cursor absolute on the X-axis
@@ -26,10 +26,8 @@ PCL standard:
 *b2M                  Raster compression
 E                     Reset printer (used at end of HPGL section)
 %#B (#=0,1)           Enter or leave HP-GL/2 (1 = enter, 0 = leave)
+*r1A                  Start Raster Graphics (only 1 as parameter encountered)
 *rC                   End Raster Graphics
-
-Unknown:
-*r#A
 
 HPGL commands:
 --------------

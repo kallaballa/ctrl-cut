@@ -31,7 +31,7 @@ using namespace std;
 
 GrayscaleImage *loadppm(string filename)
 {
-  LOG_DEBUG_MSG("loading", filename);
+  LOG_DEBUG_MSG("loading PPM..", filename);
 
   char buf[PPMREADBUFLEN], *t;
   unsigned int w, h, d;
@@ -68,6 +68,50 @@ GrayscaleImage *loadppm(string filename)
   fgetpos(pf, &pos);
 
   return new MappedImage(filename, w, h, components, data_offset);
+}
+
+BitmapImage *loadpbm(string filename)
+{
+  LOG_DEBUG_MSG("loading PBM..", filename);
+
+  char buf[PPMREADBUFLEN], *t;
+  unsigned int w, h, d;
+  int r;
+  int data_offset = 0;
+  FILE* pf = fopen(filename.c_str(), "r");
+
+  if (pf == NULL) return NULL;
+  t = fgets(buf, PPMREADBUFLEN, pf);
+  if (t == NULL) return NULL;
+
+  if (strncmp(buf, "P4\n", 3)) return NULL;
+
+  data_offset += 4;
+
+  do { /* Px formats can have # comments after first line */
+    t = fgets(buf, PPMREADBUFLEN, pf);
+    if (t == NULL) return NULL;
+    data_offset += strlen(buf);
+  } while (strncmp(buf, "#", 1) == 0);
+  r = sscanf(buf, "%u %u", &w, &h);
+
+  if (r < 2) return NULL;
+  fpos_t pos;
+  fgetpos(pf, &pos);
+
+  BitmapImage *bitmap = NULL;
+  size_t bufsize = w*h/8;
+  uint8_t *imgbuf = new uint8_t[bufsize];
+  size_t items = fread(imgbuf, bufsize, 1, pf);
+  if (items == 1) {
+    bitmap = new BitmapImage(w, h);
+    for (uint32_t i=0;i<bufsize;i++) imgbuf[i] = ~imgbuf[i];
+    bitmap->setData(imgbuf);
+  }
+  else {
+    delete[] imgbuf;
+  }
+  return bitmap;
 }
 
 #endif /* PPMFILE_H_ */
