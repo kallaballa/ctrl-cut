@@ -17,15 +17,67 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "LaserConfig.h"
+#include "Logger.h"
 #include <cups/cups.h>
+
+#define RASTER_DITHERING_DEFAULT LaserConfig::DITHER_DEFAULT
+
+#define RASTER_DIRECTION_DEFAULT LaserConfig::DIRECTION_TOPDOWN
+
+/** Default mode for processing raster engraving (varying power depending upon
+ * image characteristics).
+ * Possible values are:
+ * 'c' = color determines power level
+ * 'g' = grey-scale levels determine power level
+ * 'm' = mono mode
+ * 'n' = no rasterization
+ */
+#define RASTER_MODE_DEFAULT 'g'
+
+/** Default power level for raster engraving */
+#define RASTER_POWER_DEFAULT (20)
+
+/** Whether or not the raster printing is to be repeated. */
+#define RASTER_REPEAT (1)
+
+/** Default speed for raster engraving */
+#define RASTER_SPEED_DEFAULT (100)
+
+/** Default resolution in DPI */
+#define RESOLUTION_DEFAULT (600)
+
+/** Pixel size of screen (0 is threshold).
+ * FIXME - add more details
+ */
+#define SCREEN_DEFAULT (8)
+
+/** FIXME */
+#define VECTOR_FREQUENCY_DEFAULT (1053)
+
+/** Default power level for vector cutting. */
+#define VECTOR_POWER_DEFAULT (80)
+
+/** Default speed level for vector cutting. */
+#define VECTOR_SPEED_DEFAULT (33)
+
+/**
+ * Default on whether or not the result is supposed to be flipped along the X
+ * axis.
+ */
+#define DEFAULT_FLIP (0)
+
+/** Default on whether or not auto-focus is enabled. */
+#define DEFAULT_AUTO_FOCUS (1)
 
 LaserConfig::LaserConfig()
 {
   this->tempdir = TMP_DIRECTORY;
-  this->focus = AUTO_FOCUS;
+  this->focus = DEFAULT_AUTO_FOCUS;
   this->height = BED_HEIGHT;
   this->width = BED_WIDTH;
   this->resolution = RESOLUTION_DEFAULT;
+  this->raster_dithering = RASTER_DITHERING_DEFAULT;
+  this->raster_direction = RASTER_DIRECTION_DEFAULT;
   this->raster_mode = RASTER_MODE_DEFAULT;
   this->raster_speed = RASTER_SPEED_DEFAULT;
   this->raster_power = RASTER_POWER_DEFAULT;
@@ -42,7 +94,7 @@ LaserConfig::LaserConfig()
   this->y_repeat = 1;
   this->basex = 0;
   this->basey = 0;
-  this->flip = FLIP;
+  this->flip = DEFAULT_FLIP;
   this->enable_vector = true;
   this->enable_raster = false;
   calculate_base_position();
@@ -65,6 +117,20 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   }
   if ((v = cupsGetOption("RasterPower", numOptions, options))) {
     this->raster_power = atoi(v);
+  }
+  if ((v = cupsGetOption("RasterDithering", numOptions, options))) {
+    if (!strcmp(v, "Default")) this->raster_dithering = DITHER_DEFAULT;
+    else if (!strcmp(v, "Darken")) this->raster_dithering = DITHER_DARKEN;
+    else {
+      LOG_WARN_MSG("Illegal value for RasterDithering", v);
+    }
+  }
+  if ((v = cupsGetOption("RasterDirection", numOptions, options))) {
+    if (!strcmp(v, "TopDown")) this->raster_direction = DIRECTION_TOPDOWN;
+    else if (!strcmp(v, "BottomUp")) this->raster_direction = DIRECTION_BOTTOMUP;
+    else {
+      LOG_WARN_MSG("Illegal value for RasterDirection", v);
+    }
   }
   if ((v = cupsGetOption("RasterMode", numOptions, options))) {
     this->raster_mode = tolower(*v);

@@ -92,11 +92,11 @@ PJL_STRING(R_DIRECTION_UP, "\e&y1O");
 /* Start raster operation at current position */
 PJL_STRING(R_START_AT_POS, "\e*r1A");
 
-/* The intensity (relative amount of the defined R_POWER) used for the current raster row */
-PJL_STRING(R_ROW_PIXELS, "\e*b%dA");
+/* The number of unpacked bytes in the raster row */
+PJL_STRING(R_ROW_UNPACKED_BYTES, "\e*b%dA");
 
-/* The number of bytes in the raster row */
-PJL_STRING(R_ROW_BYTES, "\e*b%dW");
+/* The number of packed bytes in the raster row */
+PJL_STRING(R_ROW_PACKED_BYTES, "\e*b%dW");
 
 /* Guessed: resets raster job */
 PJL_STRING(R_RESET, "\e*rC");

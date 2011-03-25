@@ -81,10 +81,10 @@ void HPGLEncoder::encode(Cut *cut, ostream &out) {
         out << format(V_POWER) % epower << SEP;
       }
 
-      int startX = this->lconf->basex + edge[0][0] + HPGLX;
-      int startY = this->lconf->basey + edge[0][1] + HPGLY;
-      int endX = this->lconf->basex + edge[1][0] + HPGLX;
-      int endY = this->lconf->basey + edge[1][1] + HPGLY;
+      int startX = this->lconf->basex + edge[0][0];
+      int startY = this->lconf->basey + edge[0][1];
+      int endX = this->lconf->basex + edge[1][0];
+      int endY = this->lconf->basey + edge[1][1];
 
       //     if (beginX < 0) {
       //       beginX = startX;

@@ -76,7 +76,7 @@ public:
       Trace::singleton()->printBacklog(cerr, "PCL RUN", "short read: intensity");
       exit(2);
     } else {
-      return 255 - this->dataInstr->next();
+      return this->dataInstr->next();
     }
   }
 };

@@ -22,7 +22,7 @@ public:
 
   // Bitmap methods
   virtual bool hasBitmapData() = 0;
-  virtual CCImage *getImage() = 0;
+  virtual AbstractImage *getImage() = 0;
   virtual const std::string &getBitmapFile() = 0;
 
 protected:
@@ -34,6 +34,14 @@ class PostscriptParser : public FileParser
 public:
   PostscriptParser(LaserConfig &conf);
   ~PostscriptParser();
+
+  enum RasterFormat {
+    BITMAP,              // 1 bit per pixel
+    GRAYSCALE,           // 8 bits per pixel
+    RGB                  // 24 bits per pixel
+  };
+
+  void setRasterFormat(RasterFormat format) {this->rasterformat = format;}
 
   void setRenderToFile(bool enable) {this->rendertofile = enable;}
   void setComponents(uint8_t components) {this->components = components;}
@@ -47,8 +55,8 @@ public:
 
   void copyPage();
 
-  void createImage(uint32_t width, uint32_t height, void *pimage);
-  CCImage *getImage() {return this->image;}
+  void createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride = 0);
+  AbstractImage *getImage() {return this->image;}
 
   void printStatistics();
 
@@ -70,10 +78,11 @@ private:
   bool execute_ghostscript(const std::vector<std::string> &argstrings);
 
   bool rendertofile;
+  RasterFormat rasterformat;
   uint8_t components;
 
-  CCImage *gsimage;
-  CCImage *image;
+  AbstractImage *gsimage;
+  AbstractImage *image;
 
 #endif
 };

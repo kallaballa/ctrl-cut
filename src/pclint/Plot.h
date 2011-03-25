@@ -59,6 +59,7 @@ public:
   Point penPos;
 
   // width/height is given in bytes
+  // 
   BitmapPlotter(uint32_t width, uint32_t height, BoundingBox *clip = NULL) :
     bbox(new BoundingBox()), clip(clip), width(width), height(height), penPos(0, 0) {
     if (clip != NULL) {
@@ -67,6 +68,7 @@ public:
     }
 
     this->imgbuffer = new uint8_t[this->width * this->height];
+    memset(this->imgbuffer, 0x00, this->width * this->height);
   }
 
   BitmapPlotter(BoundingBox* clip = NULL) :
@@ -100,7 +102,7 @@ public:
       if (this->clip) {
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
-      this->imgbuffer[(pos.y) * this->width + pos.x + i*dir] = bitmap;
+      this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
       this->bbox->update(this->penPos.x + i*dir, this->penPos.y);
     }
   }
@@ -114,16 +116,16 @@ public:
       return NULL;
 
     Point start(0,0);
-    Point size(this->width*8, this->height);
+    Point size(this->width, this->height);
     if (PclIntConfig::singleton()->autocrop) {
       start.x = this->bbox->ul.x;
       start.y = this->bbox->ul.y;
 
-      size.x = (this->bbox->lr.x - this->bbox->ul.x + 1)*8;
+      size.x = this->bbox->lr.x - this->bbox->ul.x + 1;
       size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
     }
     
-    CImg<uint8_t> *image = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
+    CImg<uint8_t> *image = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<size.x;x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];

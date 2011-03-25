@@ -98,6 +98,10 @@ Cut *Cut::load(istream &input)
     }
   }
 
+  if (cut->size() == 0) {
+    delete cut;
+    cut = NULL;
+  }
   return cut;
 }
 

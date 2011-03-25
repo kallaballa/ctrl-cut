@@ -1,4 +1,4 @@
-/*0
+/*
  * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
@@ -23,7 +23,6 @@
 
 using boost::format;
 
-bool alreadyFound;
 PclEncoder::PclEncoder(LaserConfig* lconf) : lconf(lconf) {
 }
 
@@ -56,15 +55,20 @@ void PclEncoder::encode(Raster* raster, ostream& out) {
   // start at current position
   out << R_START_AT_POS;
 
-  list<CCImage*>::iterator it;
+  list<AbstractImage*>::iterator it;
   for (it = raster->tiles.begin(); it != raster->tiles.end(); it++) {
-    encodeTile(*it, out);
+    BitmapImage *bitmap = dynamic_cast<BitmapImage*>(*it);
+    if (!bitmap) {
+      LOG_FATAL_STR("Only bitmaps supported at the moment");
+    }
+    assert(bitmap);
+    if (bitmap) encodeBitmapTile(bitmap, out);
   }
   out << "\e*rC"; // end raster
   out << "\26" << "\4"; // some end of file markers
 }
 
-void PclEncoder::averageXSequence(CCImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
+void PclEncoder::averageXSequence(GrayscaleImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
   float cumm = 0;
 
   for (int x = fromX; x < toX; x++){
@@ -79,50 +83,36 @@ void PclEncoder::averageXSequence(CCImage *img, int fromX, int toX, int y, Pixel
   p.i = cumm;
 }
 
-void PclEncoder::encodeTile(CCImage* tile, ostream& out) {
-  int height;
-  int width;
-  int repeat;
+void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out) {
 
-  repeat = this->lconf->raster_repeat;
+  int repeat = this->lconf->raster_repeat;
   while (repeat--) {
-    width = tile->width() / 8;
-    height = tile->height();
-
-    char buf[width];
-    Pixel<uint8_t> p;
-
-    float power_scale = 1;//100 / (float) 255;
+    int width = tile->width() / 8; // width in bytes
+    int height = tile->height();
 
     // raster (basic)
     int y;
-    char dir = 0;
+    bool dir = false;
 
-    for (y = height - 1; y >= 0; y--) {
+    for (int i=0;i<height;i++) {
+      if (this->lconf->raster_direction == LaserConfig::DIRECTION_BOTTOMUP) y = height - i - 1;
+      else y = i;
+
+      uint8_t *scanline = (uint8_t *)tile->data() + y*tile->rowstride(); // Pointer to a scanline
+
       int l;
-      int next;
-
-      // read scanline from left to right
-      alreadyFound = false;
-      for (int x = 0; x < width; x++) {
-        next = x * 8;
-        //tile->averageXSequence(next, next +8, y, p);
-        tile->ditherBayer(next,y,p);
-        buf[x] = p.pclValue(power_scale);
-      }
 
       // find left/right of data (dir==0 ? left : right)
-      for (l = 0; l < width && !buf[l]; l++) {
-      }
+      for (l = 0; l < width && (scanline[l] == 0xff); l++) { }
 
       if (l < width) {
         // a line to print
         int r;
         int n;
-        char pack[sizeof(buf) * 5 / 4 + 1];
+        int packsize = width * 5 / 4 + 1;
+        char pack[packsize];
         // find left/right of data (dir==0 ? right : left )
-        for (r = width - 1; r > l && !buf[r]; r--) {
-        }
+        for (r = width - 1; r > l && (scanline[r] == 0xff); r--) { }
         r++;
 
         out << format(PCL_POS_Y) % (tile->yPos() + lconf->basey + y);
@@ -130,41 +120,39 @@ void PclEncoder::encodeTile(CCImage* tile, ostream& out) {
 
         if (dir) {
           //reverse scan line
-          out << format(R_ROW_PIXELS) % (-(r - l));
+          out << format(R_ROW_UNPACKED_BYTES) % (-(r - l));
           for (n = 0; n < (r - l) / 2; n++) {
-            char t = buf[l + n];
-            buf[l + n] = buf[r - n - 1];
-            buf[r - n - 1] = t;
+            uint8_t t = scanline[l + n];
+            scanline[l + n] = scanline[r - n - 1];
+            scanline[r - n - 1] = t;
           }
         } else {
-          out << format(R_ROW_PIXELS) % (r - l);
+          out << format(R_ROW_UNPACKED_BYTES) % (r - l);
         }
-        dir = 1 - dir;
+        dir = !dir;
         // pack
         n = 0;
         while (l < r) {
           int p;
           // find run length
-          for (p = l; p < r && p < l + 128 && buf[p] == buf[l]; p++) {
-            ;
-          }
+          for (p = l; p < r && p < l + 128 && scanline[p] == scanline[l]; p++) { }
           if (p - l >= 2) {
             // run length
             pack[n++] = 257 - (p - l);
-            pack[n++] = buf[l];
+            pack[n++] = ~(scanline[l]);
             l = p;
           } else {
-            for (p = l; p < r && p < l + 127 && (p + 1 == r || buf[p] != buf[p
-                + 1]); p++) {}
-
+            for (p = l; p < r && p < l + 127 && (p + 1 == r || scanline[p] != scanline[p + 1]); p++) { }
+            // copy
             pack[n++] = p - l - 1;
             while (l < p) {
-              pack[n++] = buf[l++];
+              pack[n++] = ~(scanline[l++]);
             }
           }
         }
+        assert(n<=packsize);
 
-        out << format(R_ROW_BYTES) % ((n + 7) / 8 * 8);
+        out << format(R_ROW_PACKED_BYTES) % ((n + 7) / 8 * 8); // Always write a multiple of 8 bytes
 
         for (int i = 0; i < n; i++) {
           out << pack[i];

@@ -21,7 +21,7 @@
 
 int tile_cnt = 0;
 
-void Raster::addTile(CCImage* tile) {
+void Raster::addTile(AbstractImage* tile) {
   this->tiles.push_back(tile);
 }
 

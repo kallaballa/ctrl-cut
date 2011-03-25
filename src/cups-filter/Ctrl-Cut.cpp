@@ -230,7 +230,16 @@ int main(int argc, char *argv[]) {
 
     PostscriptParser *psparser = new PostscriptParser(lconf);
     //    psparser->setRenderToFile(true);
-    psparser->setComponents(1);
+    switch (lconf.raster_dithering) {
+    case LaserConfig::DITHER_DEFAULT:
+      psparser->setRasterFormat(PostscriptParser::BITMAP);
+      break;
+    case LaserConfig::DITHER_DARKEN:
+      psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
+      break;
+    default:
+      assert(false);
+    }
     if (!psparser->parse(input_file)) {
       LOG_FATAL("Error processing postscript");
       return 1;
@@ -265,7 +274,7 @@ int main(int argc, char *argv[]) {
     else {
       cut = Cut::load(parser->getVectorData());
     }
-    job.addCut(cut);
+    if (cut) job.addCut(cut);
   }
 
   Driver drv;
