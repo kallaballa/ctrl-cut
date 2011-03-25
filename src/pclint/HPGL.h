@@ -29,13 +29,13 @@ using std::endl;
 #define UNSET std::numeric_limits<int32_t>::max()
 #define HPGL_END_OF_INSTRUCTION ';'
 
-class HPGLInstr {
+class HpglInstr {
 public:
   string operation;
   int32_t parameters[2];
   off64_t file_off;
 
-  HPGLInstr(off64_t file_off) : file_off(file_off) {
+  HpglInstr(off64_t file_off) : file_off(file_off) {
     parameters[0] = UNSET;
     parameters[1] = UNSET;
   }
@@ -49,7 +49,7 @@ public:
   }
 
   //FIXME friend used on a member function?
-  friend ostream& operator <<(ostream &os, HPGLInstr &instr) {
+  friend ostream& operator <<(ostream &os, HpglInstr &instr) {
     os << (format("(%08X) %s") % instr.file_off % instr.operation);
 
     if(instr.parameters[0] != (int32_t)UNSET) {
