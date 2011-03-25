@@ -48,14 +48,21 @@ int main(int argc, char *argv[]) {
   }
 
   intr.render();
-  if (config->ofilename != NULL) {
-    CImg<uint8_t>* img = intr.bitmapPlotter->getCanvas();
-    if(img != NULL)
-      img->save(config->ofilename);
+  if (config->vectorFilename != NULL) {
+    CImg<uint8_t>* img = intr.vectorPlotter->getCanvas();
+    if(img != NULL && intr.vectorPlotter->getBoundingBox()->isValid())
+      img->save(config->vectorFilename);
     else
-      cerr << "won't save an empty image" << endl;
+      cerr << "won't save an empty vector pass image" << endl;
+
+    img = intr.bitmapPlotter->getCanvas();
+    if(img != NULL && intr.bitmapPlotter->getBoundingBox()->isValid())
+      img->save(config->rasterFilename);
+    else
+      cerr << "won't save an empty raster pass image" << endl;
   }
 
-  cerr << "bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
+  cerr << "vector bounding box: " << *intr.vectorPlotter->getBoundingBox() << endl;
+  cerr << "raster bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
   return 0;
 }
