@@ -27,14 +27,15 @@
 
 class PclIntConfig {
 private:
-  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), ofilename(NULL){};
+  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL) {};
   static PclIntConfig* instance;
 public:
   bool interactive;
   bool autocrop;
   BoundingBox *clip;
   char* ifilename;
-  char* ofilename;
+  char* rasterFilename;
+  char* vectorFilename;
 
   static PclIntConfig* singleton();
 
@@ -42,7 +43,7 @@ public:
     int c;
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "iac:")) != -1)
+    while ((c = getopt(argc, argv, "iac:r:v:")) != -1)
       switch (c) {
       case 'i':
         this->interactive = true;
@@ -52,6 +53,12 @@ public:
         break;
       case 'c':
         this->clip = BoundingBox::createFromGeometryString(optarg);
+        break;
+      case 'r':
+        this->rasterFilename = optarg;
+        break;
+      case 'v':
+        this->vectorFilename = optarg;
         break;
       case ':':
         printUsage();
@@ -65,10 +72,6 @@ public:
       this->ifilename = argv[optind];
     } else {
       printUsage();
-    }
-
-    if (++optind < argc) {
-      this->ofilename = argv[optind];
     }
   }
 
