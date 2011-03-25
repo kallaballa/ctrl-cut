@@ -47,10 +47,10 @@ private:
 
 public:
   VectorPlotter* vectorPlotter;
-  BitmapPlotter* plotter;
-  RtlPlot* plot;
+  BitmapPlotter* bitmapPlotter;
+  RtlPlot* rtlplot;
 
-  Interpreter(RtlPlot* plot): width(0), height(0), plotter(NULL), plot(plot){
+  Interpreter(RtlPlot* plot): width(0), height(0), bitmapPlotter(NULL), rtlplot(plot){
     //FIXME determine the primary plot parameters
 /*
     Point startPos(0,0);
@@ -66,14 +66,14 @@ public:
     } else
       this->plot->invalidate("can't find start position");
 */
-    this->plotter = new BitmapPlotter(21600/8, 14400, PclIntConfig::singleton()->clip);
+    this->bitmapPlotter = new BitmapPlotter(21600/8, 14400, PclIntConfig::singleton()->clip);
     this->vectorPlotter = new VectorPlotter(21600,14400, PclIntConfig::singleton()->clip);
   };
 
   void renderPclPlot(PclPlot *pclPlot) {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL;
     Run *run = new Run();
-    RasterDecoder raster(this->plotter);
+    RasterDecoder raster(this->bitmapPlotter);
     Point origin;
 
     while (pclPlot->good()) {
@@ -92,22 +92,31 @@ public:
     }
   }
 
-  void renderHpglPlot(HPGLPlot *hpglPlot) {
-    HPGLInstr* hpglInstr;
+  void renderHpglPlot(HpglPlot *hpglPlot) {
+    HpglInstr* hpglInstr;
 
     while(hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
       cerr << *hpglInstr << endl;
+      if(hpglInstr->matches("PU") || hpglInstr->matches("LTPU")) {
+        vectorPlotter->penUp();
+        vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      } else if(hpglInstr->matches("PD")) {
+        vectorPlotter->penDown();
+        vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      } else if(hpglInstr->matches("CONT")) {
+        vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      }
     }
   }
 
   void render() {
-    while(this->plot->isValid()) {
-      RtlContext activeContext = this->plot->getActiveContext();
+    while(this->rtlplot->isValid()) {
+      RtlContext activeContext = this->rtlplot->getActiveContext();
 
       if(activeContext == PCL_CONTEXT)
-        renderPclPlot(this->plot->requestPclPlot());
+        renderPclPlot(this->rtlplot->requestPclPlot());
       else if(activeContext == HPGL_CONTEXT)
-        renderHpglPlot(this->plot->requestHPGLPlot());
+        renderHpglPlot(this->rtlplot->requestHPGLPlot());
       else
         break; //no context
     }
