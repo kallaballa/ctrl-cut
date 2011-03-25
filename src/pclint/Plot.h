@@ -67,13 +67,11 @@ public:
 
     this->img = new CImg<uint8_t> (width, height, 1, 1, 255);
   }
-  ;
 
   VectorPlotter(BoundingBox* clip = NULL) :
     bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
     this->img = NULL;
   }
-  ;
 
   void penUp() {
     down = false;
@@ -97,27 +95,13 @@ public:
   }
 
   virtual void draw(const Point& from, const Point& to) {
-    if(from.y != to.y) {
-      cerr << "non horizontal draw operation?" << endl;
-      return;
-    }
-
     if(from == to) {
       cerr << "zero length drawing operation?" << endl;
       return;
     }
 
-    Point drawFrom;
-    Point drawTo;
-
-    //assume all drawing operations are horizontal and always work from left to right
-    if(from.x < to.x) {
-      drawFrom = from;
-      drawTo = to;
-    } else {
-      drawFrom = to;
-      drawTo = from;
-    }
+    Point drawFrom = from;
+    Point drawTo = to;
 
     coord clip_offX = 0;
     coord clip_offY = 0;
@@ -125,6 +109,7 @@ public:
     //apply clipping and update bounding box
     if (this->clip) {
       drawTo = this->clip->shape(drawTo);
+      drawFrom = this->clip->shape(drawFrom);
       clip_offX = clip->ul.x;
       clip_offY = clip->ul.y;
     }
@@ -132,7 +117,7 @@ public:
     // x coordinates point to the left of a pixel. therefore don't draw the last coordinate
     // This is done before the bbox calculation to avoid an off-by-one error as the bbox
     // is specified in pixels, inclusive the end pixels.
-    drawTo.x--;
+    //drawTo.x--;
 
     this->bbox->update(drawFrom);
     this->bbox->update(drawTo);
@@ -251,6 +236,7 @@ public:
     }
     
     CImg<uint8_t> *image = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
+    image->fill(255);
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<size.x;x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
@@ -265,22 +251,22 @@ public:
   }
 };
 
-class HPGLPlot {
+class HpglPlot {
 private:
   ifstream* inputfile;
   bool valid;
 
 public:
-  HPGLInstr* currentInstr;
+  HpglInstr* currentInstr;
 
-  HPGLPlot(ifstream *infile) :
+  HpglPlot(ifstream *infile) :
     inputfile(infile), valid(false), currentInstr(NULL) {
-    HPGLInstr* instr = readInstr();
+    HpglInstr* instr = readInstr();
     if(instr != NULL && instr->matches("IN", true))
       valid = true;
   }
 
-  virtual ~HPGLPlot() {
+  virtual ~HpglPlot() {
   }
 
   /*void printSettings(ostream& os) {
@@ -321,21 +307,25 @@ public:
     return this->valid && this->inputfile->good();
   }
 
-  HPGLInstr* readInstr() {
-    HPGLInstr* instr = this->currentInstr = new HPGLInstr(this->inputfile->tellg());
+  HpglInstr* readInstr() {
+    HpglInstr* instr = this->currentInstr = new HpglInstr(this->inputfile->tellg());
 
     stringstream ss;
     char c;
     while(isalpha(c = this->inputfile->get()))
       ss << c;
 
-    if(c == PCL_START_OF_INSTRUCTION) {
-      this->invalidate("HPGL ended");
-      return NULL;
-    }
+    if (ss.str().length() == 0 && isdigit(c)) {
+      instr->operation = "CONT";
+    } else {
+      if (c == PCL_START_OF_INSTRUCTION) {
+        this->invalidate("HPGL ended");
+        return NULL;
+      }
 
-    instr->operation = ss.str();
-    ss.str( "" );
+      instr->operation = ss.str();
+      ss.str("");
+    }
 
     if(c == HPGL_END_OF_INSTRUCTION)
       return instr;
@@ -359,9 +349,11 @@ public:
       instr->parameters[1] = static_cast<int32_t> (strtoll(ss.str().c_str(),
           NULL, 10));
 
-      if (c != HPGL_END_OF_INSTRUCTION) {
+      if (c != HPGL_END_OF_INSTRUCTION && c != ',') {
         invalidate("end of instruction expected");
         return NULL;
+      } else {
+        return instr;
       }
     } else {
       this->inputfile->unget();
@@ -457,7 +449,7 @@ public:
 
   void invalidate(string msg) {
     this->valid = false;
-    Trace::singleton()->printBacklog(cerr, "HPGL", msg);
+    Trace::singleton()->printBacklog(cerr, "PCL", msg);
   }
 
   bool good() const {
@@ -552,7 +544,7 @@ private:
   ifstream* inputfile;
   string title;
   PclPlot *currentPclPlot;
-  HPGLPlot *currentHPGLPlot;
+  HpglPlot *currentHpglPlot;
   bool valid;
 
   void readRTLIntro() {
@@ -575,7 +567,7 @@ private:
   }
 
   bool checkHPGLContext() {
-    if (currentHPGLPlot != NULL && currentHPGLPlot->isValid()) {
+    if (currentHpglPlot != NULL && currentHpglPlot->isValid()) {
       return true;
     } else {
       return false;
@@ -592,7 +584,7 @@ private:
 public:
 
   RtlPlot(ifstream *infile) :
-    inputfile(infile), currentPclPlot(NULL), currentHPGLPlot(NULL), valid(true) {
+    inputfile(infile), currentPclPlot(NULL), currentHpglPlot(NULL), valid(true) {
     readRTLIntro();
   }
 
@@ -616,7 +608,7 @@ public:
     if(checkPclContext())
       return PCL_CONTEXT;
 
-    currentHPGLPlot = new HPGLPlot(inputfile);
+    currentHpglPlot = new HpglPlot(inputfile);
     if(checkHPGLContext())
       return HPGL_CONTEXT;
 
@@ -628,8 +620,8 @@ public:
     return currentPclPlot;
   }
 
-  HPGLPlot* requestHPGLPlot() {
-    return currentHPGLPlot;
+  HpglPlot* requestHPGLPlot() {
+    return currentHpglPlot;
   }
 };
 #endif /* PLOTTER_H_ */
