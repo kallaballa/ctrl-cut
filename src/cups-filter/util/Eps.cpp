@@ -124,7 +124,7 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         // FIXME: Commented out as it triggers a bug when printing from Inkscape. kintel 20110317
         // fprintf(eps_file, "0 %d neg translate\n", lconf->height - upper_right_y);
 
-        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
+        //        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
 
         // FIXME: Commented out for now as I don't know what this was supposed to do.
 #if 0
@@ -154,7 +154,7 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         // int height = upper_right_y - lower_left_y;
 
         // FIXME: Commented out as it triggers a bug when printing from Inkscape. kintel 20110317
-        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
+        //        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
       }
     }
     else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
@@ -182,27 +182,6 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
               "} bind def\n"); // end define stroke
       // Redefine showpage to first print "X"
       fprintf(eps_file, "/showpage { (X)= showpage } bind def\n");
-
-      // FIXME: Go through and verify this code
-      if (lconf->raster_mode != 'c' && lconf->raster_mode != 'g') {
-        if (lconf->screen == 0) {
-          fprintf(eps_file, "{0.5 ge{1}{0}ifelse}settransfer\n");
-        } else {
-          int s = lconf->screen;
-          if (s < 0) {
-            s = 0 - s;
-          }
-          if (lconf->resolution >= 600) {
-            // adjust for overprint
-            fprintf(eps_file,
-                    "{dup 0 ne{%d %d div add}if}settransfer\n",
-                    lconf->resolution / 600, s);
-          }
-          fprintf(eps_file, "%d 30{%s}setscreen\n", lconf->resolution
-                  / s, (lconf->screen > 0) ? "pop abs 1 exch sub"
-                  : "180 mul cos exch 180 mul cos add 2 div");
-        }
-      }
     }
   }
   while ((l = cupsFileRead(ps_file, (char *) buf, sizeof(buf))) > 0) {

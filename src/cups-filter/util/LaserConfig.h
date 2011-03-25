@@ -61,19 +61,11 @@ public:
 
   RasterDirection raster_direction;
 
-  /** Variable to track the mode for rasterization. One of color 'c', or
-   * grey-scale 'g', mono 'm', or none 'n'
-   */
-  char raster_mode;
-
   /** Variable to track the raster speed. */
   int raster_speed;
 
   /** Variable to track the raster power. */
   int raster_power;
-
-  /** Variable to track whether or not a rasterization should be repeated. */
-  int raster_repeat;
 
   /** FIXME -- pixel size of screen, 0= threshold */
   int screen;
@@ -91,7 +83,12 @@ public:
   float vector_reduce;
 
   /** Which optimization to perform (Default: Inner-Outer) */
-  int vector_optimize;
+  enum VectorOptimize {
+    OPTIMIZE_SIMPLE,
+    OPTIMIZE_INNER_OUTER,
+    OPTIMIZE_FLAT
+  };
+  VectorOptimize vector_optimize;
 
   /** X re-center (0 = not). */
   int x_center;
@@ -110,9 +107,6 @@ public:
 
   /** The relative y position inside the laser bed to start operating from **/
   int basey;
-
-  /** Variable to track whether or not the X axis should be flipped. */
-  bool flip;
 
   // Are we running performing raster passes
   bool enable_raster;

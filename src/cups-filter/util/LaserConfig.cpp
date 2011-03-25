@@ -24,21 +24,8 @@
 
 #define RASTER_DIRECTION_DEFAULT LaserConfig::DIRECTION_TOPDOWN
 
-/** Default mode for processing raster engraving (varying power depending upon
- * image characteristics).
- * Possible values are:
- * 'c' = color determines power level
- * 'g' = grey-scale levels determine power level
- * 'm' = mono mode
- * 'n' = no rasterization
- */
-#define RASTER_MODE_DEFAULT 'g'
-
 /** Default power level for raster engraving */
 #define RASTER_POWER_DEFAULT (20)
-
-/** Whether or not the raster printing is to be repeated. */
-#define RASTER_REPEAT (1)
 
 /** Default speed for raster engraving */
 #define RASTER_SPEED_DEFAULT (100)
@@ -51,20 +38,13 @@
  */
 #define SCREEN_DEFAULT (8)
 
-/** FIXME */
-#define VECTOR_FREQUENCY_DEFAULT (1053)
+#define VECTOR_FREQUENCY_DEFAULT (5000)
 
 /** Default power level for vector cutting. */
 #define VECTOR_POWER_DEFAULT (80)
 
 /** Default speed level for vector cutting. */
 #define VECTOR_SPEED_DEFAULT (33)
-
-/**
- * Default on whether or not the result is supposed to be flipped along the X
- * axis.
- */
-#define DEFAULT_FLIP (0)
 
 /** Default on whether or not auto-focus is enabled. */
 #define DEFAULT_AUTO_FOCUS (1)
@@ -78,23 +58,20 @@ LaserConfig::LaserConfig()
   this->resolution = RESOLUTION_DEFAULT;
   this->raster_dithering = RASTER_DITHERING_DEFAULT;
   this->raster_direction = RASTER_DIRECTION_DEFAULT;
-  this->raster_mode = RASTER_MODE_DEFAULT;
   this->raster_speed = RASTER_SPEED_DEFAULT;
   this->raster_power = RASTER_POWER_DEFAULT;
-  this->raster_repeat = RASTER_REPEAT;
   this->screen = SCREEN_DEFAULT;
   this->vector_speed = VECTOR_SPEED_DEFAULT;
   this->vector_power = VECTOR_POWER_DEFAULT;
   this->vector_freq = VECTOR_FREQUENCY_DEFAULT;
   this->vector_reduce = 0.0f;
-  this->vector_optimize = 0;
+  this->vector_optimize = OPTIMIZE_INNER_OUTER;
   this->x_center = 0;
   this->x_repeat = 1;
   this->y_center = 0;
   this->y_repeat = 1;
   this->basex = 0;
   this->basey = 0;
-  this->flip = DEFAULT_FLIP;
   this->enable_vector = true;
   this->enable_raster = false;
   calculate_base_position();
@@ -132,12 +109,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
       LOG_WARN_MSG("Illegal value for RasterDirection", v);
     }
   }
-  if ((v = cupsGetOption("RasterMode", numOptions, options))) {
-    this->raster_mode = tolower(*v);
-  }
-  if ((v = cupsGetOption("RasterRepeat", numOptions, options))) {
-    this->raster_repeat = atoi(v);
-  }
   if ((v = cupsGetOption("VectorSpeed", numOptions, options))) {
     this->vector_speed = atoi(v);
   }
@@ -151,10 +122,12 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     this->vector_reduce = atof(v);
   }
   if ((v = cupsGetOption("VectorOptimize", numOptions, options))) {
-    this->vector_optimize = atoi(v);
-  }
-  if ((v = cupsGetOption("FlipX", numOptions, options))) {
-    this->flip = strcmp(v, "false");
+    if (!strcmp(v, "SIMPLE")) this->vector_optimize = OPTIMIZE_SIMPLE;
+    else if (!strcmp(v, "Inner-Outer")) this->vector_optimize = OPTIMIZE_INNER_OUTER;
+    else if (!strcmp(v, "Flat")) this->vector_optimize = OPTIMIZE_FLAT;
+    else {
+      LOG_WARN_MSG("Illegal value for VectorOptimize", v);
+    }
   }
   if ((v = cupsGetOption("Debug", numOptions, options))) {
     cc_loglevel = strcmp(v, "false") ? CC_DEBUG : (LogLevel)DEBUG;
@@ -169,13 +142,12 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   LOG_DEBUG(this->resolution);
   LOG_DEBUG(this->raster_speed);
   LOG_DEBUG(this->raster_power);
-  LOG_DEBUG(this->raster_mode);
-  LOG_DEBUG(this->raster_repeat);
+  LOG_DEBUG(this->raster_dithering);
+  LOG_DEBUG(this->raster_direction);
   LOG_DEBUG(this->vector_speed);
   LOG_DEBUG(this->vector_power);
   LOG_DEBUG(this->vector_freq);
   LOG_DEBUG(this->vector_optimize);
-  LOG_DEBUG(this->flip);
   LOG_DEBUG(this->enable_raster);
   LOG_DEBUG(this->enable_vector);
 }
@@ -189,9 +161,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
  */
 void LaserConfig::rangeCheck()
 {
-  // restrict raster mode to greyscale for the time beeing
-  this->raster_mode = 'g';
-
   if (this->raster_power > 100) {
     this->raster_power = 100;
   }

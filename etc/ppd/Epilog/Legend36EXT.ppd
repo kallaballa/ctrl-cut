@@ -127,7 +127,7 @@ restore
 
 *%******** EnableRaster ********
 *OpenUI *EnableRaster/EnableRaster: Boolean
-*DefaultEnableRaster: True
+*DefaultEnableRaster: False
 *OrderDependency: 140 AnySetup *EnableRaster
 *EnableRaster True: " "
 *EnableRaster False: " "
@@ -149,17 +149,9 @@ restore
 *AutoFocus False: " "
 *CloseUI: *AutoFocus
 
-*%******** FlipX ********
-*OpenUI *FlipX/FlipX: Boolean
-*DefaultFlipX: False
-*OrderDependency: 140 AnySetup *FlipX
-*FlipX True: " "
-*FlipX False: " "
-*CloseUI: *FlipX
-
 *%******** Debug ********
 *OpenUI *Debug/Debug: Boolean
-*DefaultDebug: True
+*DefaultDebug: False
 *OrderDependency: 140 AnySetup *Debug
 *Debug True: " "
 *Debug False: " "
@@ -169,39 +161,31 @@ restore
 
 *OpenGroup: Raster
 
-*%******** RasterMode ********
-*OpenUI *RasterMode/RasterMode: PickOne
-*DefaultRasterMode: GreyScale
-*OrderDependency: 140 AnySetup *RasterMode
-*RasterMode Mono/Mono: "
-	<</DeviceRenderingInfo <</Type 29 /RasterMode 1>> >>
+*%******** RasterDithering ********
+*OpenUI *RasterDithering/RasterDithering: PickOne
+*DefaultRasterDithering: Default
+*OrderDependency: 140 AnySetup *RasterDithering
+*RasterDithering Default/Default: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 1>> >>
 	setpagedevice"
 *End
-*RasterMode GreyScale/GreyScale: "
-	<</DeviceRenderingInfo <</Type 29 /RasterMode 2>> >>
+*RasterDithering Darken/Darken: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 2>> >>
 	setpagedevice"
 *End
-*RasterMode Color/Color: "
-	<</DeviceRenderingInfo <</Type 29 /RasterMode 3>> >>
-	setpagedevice"
-*End
-*RasterMode None/None: "
-	<</DeviceRenderingInfo <</Type 29 /RasterMode 4>> >>
-	setpagedevice"
-*End
-*?RasterMode: "
+*?RasterDithering: "
 	save
-	[/Mono /GreyScale /Color /None]
-	currentpagedevice /DeviceRenderingInfo get /RasterMode get dup 0 gt
-	{dup 5 lt {get}{pop pop (GreyScale)}ifelse} {pop pop (GreyScale)} ifelse = flush
+	[/Default /Darken]
+	currentpagedevice /DeviceRenderingInfo get /RasterDithering get dup 0 gt
+	{dup 3 lt {get}{pop pop (Default)}ifelse} {pop pop (Default)} ifelse = flush
 	restore
 "
 *End
-*CloseUI: *RasterMode
+*CloseUI: *RasterDithering
 
 *%******** RasterPower ********
 *OpenUI *RasterPower/RasterPower: PickOne
-*DefaultRasterPower: 10
+*DefaultRasterPower: 20
 *OrderDependency: 140 AnySetup *RasterPower
 *RasterPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /RasterPower 1>> >>
@@ -1011,96 +995,6 @@ restore
 *End
 *CloseUI: *RasterSpeed
 
-*%******** RasterRepeat ********
-*OpenUI *RasterRepeat/RasterRepeat: PickOne
-*DefaultRasterRepeat: 0
-*OrderDependency: 100 DocumentSetup *RasterRepeat
-*RasterRepeat 0/0: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 0>> >>
-	setpagedevice"
-*End
-*RasterRepeat 1/1: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 1>> >>
-	setpagedevice"
-*End
-*RasterRepeat 2/2: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 2>> >>
-	setpagedevice"
-*End
-*RasterRepeat 3/3: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 3>> >>
-	setpagedevice"
-*End
-*RasterRepeat 4/4: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 4>> >>
-	setpagedevice"
-*End
-*RasterRepeat 5/5: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 5>> >>
-	setpagedevice"
-*End
-*RasterRepeat 6/6: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 6>> >>
-	setpagedevice"
-*End
-*RasterRepeat 7/7: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 7>> >>
-	setpagedevice"
-*End
-*RasterRepeat 8/8: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 8>> >>
-	setpagedevice"
-*End
-*RasterRepeat 9/9: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 9>> >>
-	setpagedevice"
-*End
-*RasterRepeat 10/10: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 10>> >>
-	setpagedevice"
-*End
-*RasterRepeat 11/11: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 11>> >>
-	setpagedevice"
-*End
-*RasterRepeat 12/12: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 12>> >>
-	setpagedevice"
-*End
-*RasterRepeat 13/13: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 13>> >>
-	setpagedevice"
-*End
-*RasterRepeat 14/14: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 14>> >>
-	setpagedevice"
-*End
-*RasterRepeat 15/15: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 15>> >>
-	setpagedevice"
-*End
-*RasterRepeat 16/16: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 16>> >>
-	setpagedevice"
-*End
-*RasterRepeat 17/17: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 17>> >>
-	setpagedevice"
-*End
-*RasterRepeat 18/18: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 18>> >>
-	setpagedevice"
-*End
-*RasterRepeat 19/19: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 19>> >>
-	setpagedevice"
-*End
-*RasterRepeat 20/20: "
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 20>> >>
-	setpagedevice"
-*End
-*CloseUI: *RasterRepeat
-
 *CloseGroup: Raster
 
 *OpenGroup: Vector
@@ -1134,7 +1028,7 @@ restore
 
 *%******** VectorPower ********
 *OpenUI *VectorPower/VectorPower: PickOne
-*DefaultVectorPower: 10
+*DefaultVectorPower: 80
 *OrderDependency: 140 AnySetup *VectorPower
 *VectorPower 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorPower 1>> >>
@@ -1540,7 +1434,7 @@ restore
 
 *%******** VectorSpeed ********
 *OpenUI *VectorSpeed/VectorSpeed: PickOne
-*DefaultVectorSpeed: 100
+*DefaultVectorSpeed: 33
 *OrderDependency: 140 AnySetup *VectorSpeed
 *VectorSpeed 1/1%: "
 	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 1>> >>
