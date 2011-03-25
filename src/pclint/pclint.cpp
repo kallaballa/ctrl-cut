@@ -21,11 +21,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include "CImg.h"
 #include "Interpreter.h"
 #include "2D.h"
 #include "PclIntConfig.h"
 
+using std::ifstream;
 using std::string;
 using std::cerr;
 using std::cout;
@@ -36,8 +38,8 @@ using namespace cimg_library;
 int main(int argc, char *argv[]) {
   PclIntConfig* config = PclIntConfig::singleton();
   config->parseCommandLine(argc,argv);
-
-  PclPlot* plot = new PclPlot(config->ifilename);
+  ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
+  RtlPlot* plot = new RtlPlot(infile);
 
   Interpreter intr(plot);
   if(config->interactive) {
@@ -47,7 +49,11 @@ int main(int argc, char *argv[]) {
 
   intr.render();
   if (config->ofilename != NULL) {
-    intr.plotter->getCanvas()->save(config->ofilename);
+    CImg<uint8_t>* img = intr.plotter->getCanvas();
+    if(img != NULL)
+      img->save(config->ofilename);
+    else
+      cerr << "won't save an empty image" << endl;
   }
 
   cerr << "bounding box: " << *intr.plotter->getBoundingBox() << endl;

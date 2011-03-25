@@ -34,13 +34,14 @@
 #include "CImg.h"
 #include "2D.h"
 #include "PclIntConfig.h"
+#include "HPGL.h"
 
 using std::ios;
 using std::cin;
 using std::cerr;
 using std::endl;
 using std::string;
-using std::fstream;
+using std::ifstream;
 using std::numeric_limits;
 using boost::format;
 
@@ -111,6 +112,8 @@ public:
   }
 
   virtual CImg<uint8_t>* getCanvas() {
+    if(!this->bbox->isValid())
+      return NULL;
 
     Point start(0,0);
     Point size(this->width, this->height);
@@ -137,9 +140,117 @@ public:
   }
 };
 
+class HPGLPlot {
+private:
+  ifstream* inputfile;
+  bool valid;
+
+public:
+  HPGLInstr* currentInstr;
+
+  HPGLPlot(ifstream *infile) :
+    inputfile(infile), valid(false), currentInstr(NULL) {
+    HPGLInstr* instr = readInstr();
+    if(instr != NULL && instr->matches("IN", true))
+      valid = true;
+  }
+
+  virtual ~HPGLPlot() {
+  }
+
+  /*void printSettings(ostream& os) {
+    std::map<string, HPGLInstr*>::iterator it;
+    os << "=== settings: " << endl;
+    for (it = settings.begin(); it != settings.end(); it++) {
+      os << "\t" << *((*it).second) << endl;
+    }
+  }
+
+  bool require(string signature) {
+    if (isSet(signature))
+      return true;
+    else
+      invalidate("missing setting: " + signature);
+
+    return false;
+  }
+
+  bool isSet(string signature) {
+    return this->settings.find(signature) != settings.end();
+  }
+
+  uint32_t setting(string signature) {
+    return this->settings[signature]->value;
+  }*/
+
+  void invalidate(string msg) {
+    this->valid = false;
+    Trace::singleton()->printBacklog(cerr, "HPGL", msg);
+  }
+
+  bool isValid() {
+    return valid;
+  }
+
+  bool good() {
+    return this->valid && this->inputfile->good();
+  }
+
+  HPGLInstr* readInstr() {
+    HPGLInstr* instr = this->currentInstr = new HPGLInstr(this->inputfile->tellg());
+
+    stringstream ss;
+    char c;
+    while(isalpha(c = this->inputfile->get()))
+      ss << c;
+
+    if(c == PCL_START_OF_INSTRUCTION) {
+      this->invalidate("HPGL ended");
+      return NULL;
+    }
+
+    instr->operation = ss.str();
+    ss.str( "" );
+
+    if(c == HPGL_END_OF_INSTRUCTION)
+      return instr;
+    else
+      this->inputfile->unget();
+
+    while(isdigit(c = this->inputfile->get()))
+      ss << c;
+
+    instr->parameters[0] = static_cast<int32_t> (strtoll(ss.str().c_str(),
+        NULL, 10));
+
+    if (c == HPGL_END_OF_INSTRUCTION)
+      return instr;
+
+    if (c == ',') {
+      ss.str("");
+      while (isdigit(c = this->inputfile->get()))
+        ss << c;
+
+      instr->parameters[1] = static_cast<int32_t> (strtoll(ss.str().c_str(),
+          NULL, 10));
+
+      if (c != HPGL_END_OF_INSTRUCTION) {
+        invalidate("end of instruction expected");
+        return NULL;
+      }
+    } else {
+      this->inputfile->unget();
+    }
+
+    invalidate("end of instruction expected");
+    return NULL;
+  }
+};
+
+
 class PclPlot {
 private:
-  fstream inputfile;
+  ifstream* inputfile;
   string title;
   const uint16_t bufSize;
   char* buffer;
@@ -148,41 +259,32 @@ private:
 
   std::map<string, PclInstr*> settings;
 
-  bool readPattern(const char * pattern, const int off, const int len) {
-    return this->inputfile.read(buffer, len) ? memcmp((pattern + off), buffer,
-        len) == 0 : false;
-  }
 
   off64_t fillBuffer() {
-    off64_t off = this->inputfile.tellg();
+    off64_t off = this->inputfile->tellg();
+    char c;
 
-    for (int i = 0; i < (bufSize - 1) && this->inputfile.good(); i++) {
-      buffer[i] = this->inputfile.get();
-      if (buffer[i] == PCL_END_OF_INSTRUCTION) {
-        buffer[i] = '\0';
-        return off;
+    if ((c = this->inputfile->get()) == PCL_START_OF_INSTRUCTION) {
+      c = this->inputfile->get();
+      if (c == '&' || c == '%' || c == '*') {
+        buffer[0] = c;
+        for (int i = 1; i < (bufSize - 1) && this->inputfile->good(); i++) {
+          buffer[i] = c = this->inputfile->get();
+          if (!(isalnum(buffer[i]) || buffer[i] == '-')) {
+            buffer[i] = '\0';
+            this->inputfile->unget();
+            return off;
+          }
+        }
       }
     }
-
+    this->inputfile->unget();
     return eof;
-  }
-
-  void readHeader() {
-    if (!readPattern(MAGIC, 0, MAGIC_SIZE))
-      invalidate("read magic");
-
-    if (fillBuffer() == eof)
-      invalidate("read title");
-    else
-      this->title = string(this->buffer);
-
-    if (fillBuffer() == eof)
-      invalidate("skip pcl intro");
   }
 
   void readSettings() {
     PclInstr* instr;
-    while ((instr = readInstr()) && !instr->matches(PCL_END_OF_SETTINGS)) {
+    while ((instr = readInstr()) && !instr->matches(PCL_RASTER_START)) {
       settings[(char*) instr] = instr;
     }
     printSettings(cerr);
@@ -191,14 +293,17 @@ private:
 public:
   PclInstr* currentInstr;
 
-  PclPlot(const char* filename) :
-    inputfile(filename, ios::in | ios::binary), bufSize(1024), buffer(
-        new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true) {
-    readHeader();
+  PclPlot(ifstream *infile) :
+    inputfile(infile), bufSize(1024), buffer(
+        new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true), currentInstr(NULL) {
     readSettings();
   }
 
   virtual ~PclPlot() {
+  }
+
+  bool isValid() {
+    return valid;
   }
 
   void printSettings(ostream& os) {
@@ -228,27 +333,20 @@ public:
 
   void invalidate(string msg) {
     this->valid = false;
-    //    Trace::singleton()->printBacklog(cerr, msg);
+    Trace::singleton()->printBacklog(cerr, "HPGL", msg);
   }
 
-  bool good() {
-    return this->valid && this->inputfile.good();
+  bool good() const {
+    return this->valid && this->inputfile->good();
   }
 
-  int32_t* readValue() {
+  int32_t* readValue(uint8_t& bufferOff) {
     stringstream ss;
     char digit;
-    for (int i = 0; this->inputfile.good() && (isdigit(digit
-        = this->inputfile.get()) || digit == '-'); i++) {
+
+    for (; bufferOff < (bufSize - 1) && (isdigit(digit = buffer[bufferOff]) || digit == '-'); ++bufferOff) {
       ss << digit;
     }
-
-    if (!this->inputfile.good()) {
-      invalidate("broken pipe");
-      return NULL;
-    }
-
-    this->inputfile.unget();
 
     string strval = ss.str();
 
@@ -261,46 +359,51 @@ public:
   }
 
   PclInstr* readInstr(const char * expected = NULL) {
-    if (!this->inputfile.good()) {
-      invalidate("broken pipe");
+    if(!this->isValid())
+      return NULL;
+
+    off64_t fileoff = fillBuffer();
+
+    if(fileoff == eof) {
+      invalidate("end of pcl");
       return NULL;
     }
 
-    off64_t fileoff = this->inputfile.tellg();
-
+    uint8_t bufferOff = 0;
     PclInstr* instr = new PclInstr(fileoff);
     this->currentInstr = instr;
-    instr->type = this->inputfile.get();
-    instr->prefix = this->inputfile.get();
-    int32_t * pval = readValue();
-    instr->suffix = this->inputfile.get();
+    instr->type = buffer[bufferOff++];
+    instr->prefix = buffer[bufferOff++];
+    int32_t * pval = readValue(bufferOff);
+    instr->suffix = buffer[bufferOff++];
 
     if (pval != NULL) {
       instr->value=*pval;
       instr->hasValue = true;
     }
 
-    //    Trace::singleton()->logInstr(instr);
+    Trace::singleton()->logInstr(instr);
 
-    // copy data part of rle instructions
-    if (instr->matches(PCL_RLE_DATA)) {
+    if (instr->matches(PCL_END_OF_PASS)) {
+      char c;
+      for(; bufferOff < bufSize && (c = buffer[bufferOff]) != '\0'; ++bufferOff)
+        this->inputfile->unget();
+
+      invalidate("end of pass");
+      return NULL;
+    } else if (instr->matches(PCL_RLE_DATA)) {
+      // copy data part of rle instructions
       instr->data = new uint8_t[instr->value];
       instr->limit = instr->value;
       instr->hasData = true;
 
-      for (int i = 0; i < instr->limit && this->inputfile.good(); i++)
-        instr->data[i] = this->inputfile.get();
+      for (int i = 0; i < instr->limit && this->inputfile->good(); i++)
+        instr->data[i] = this->inputfile->get();
 
-      if (!this->inputfile.good()) {
+      if (!this->inputfile->good()) {
         invalidate("broken pipe");
         return NULL;
       }
-    }
-
-    char e;
-    if((e = this->inputfile.get()) != PCL_END_OF_INSTRUCTION) {
-      invalidate((format("corrupt instruction terminator at (%08X)") % this->inputfile.tellg()).str());
-      return NULL;
     }
 
     if (expected && !instr->matches(expected, true))
@@ -309,11 +412,103 @@ public:
       return instr;
 
     //FIXME invalidate?
-    if (expected) {
+    if (expected)
       cerr << "failed to read: " << expected << std::endl;
-    }
+
     return NULL;
   }
 };
 
+enum RtlContext {
+  PCL_CONTEXT, HPGL_CONTEXT, NONE
+};
+
+PclPlot *watchPclPlot;
+
+class RtlPlot {
+private:
+  ifstream* inputfile;
+  string title;
+  PclPlot *currentPclPlot;
+  HPGLPlot *currentHPGLPlot;
+  bool valid;
+
+  void readRTLIntro() {
+    char* buffer = new char[MAGIC_SIZE];
+    this->inputfile->read(buffer, MAGIC_SIZE);
+
+    if (memcmp(MAGIC, buffer, MAGIC_SIZE) != 0) {
+      invalidate("magic doesn't match");
+    } else {
+      getline(*this->inputfile, this->title);
+      // discard enter pcl
+      string enterpcl;
+      getline(*this->inputfile, enterpcl);
+    }
+  }
+
+  void invalidate(string msg) {
+    this->valid = false;
+    Trace::singleton()->printBacklog(cerr, "RTL", msg);
+  }
+
+  bool checkHPGLContext() {
+    if (currentHPGLPlot != NULL && currentHPGLPlot->isValid()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool checkPclContext() {
+    if (currentPclPlot != NULL && currentPclPlot->isValid()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+public:
+
+  RtlPlot(ifstream *infile) :
+    inputfile(infile), currentPclPlot(NULL), currentHPGLPlot(NULL), valid(true) {
+    readRTLIntro();
+  }
+
+  virtual ~RtlPlot() {
+  }
+
+  bool isValid() {
+    return valid;
+  }
+
+  RtlContext getActiveContext() {
+    //check for existing valid context plotters
+    if(checkPclContext())
+        return PCL_CONTEXT;
+
+    if(checkHPGLContext())
+        return HPGL_CONTEXT;
+
+    //try to initialize a new context and probe it
+    currentPclPlot = new PclPlot(inputfile);
+    watchPclPlot = currentPclPlot;
+    if(checkPclContext())
+      return PCL_CONTEXT;
+
+    currentHPGLPlot = new HPGLPlot(inputfile);
+    if(checkHPGLContext())
+      return HPGL_CONTEXT;
+
+    invalidate("end of rtl");
+    return NONE;
+  }
+
+  PclPlot* requestPclPlot() {
+    return currentPclPlot;
+  }
+
+  HPGLPlot* requestHPGLPlot() {
+    return currentHPGLPlot;
+  }
+};
 #endif /* PLOTTER_H_ */

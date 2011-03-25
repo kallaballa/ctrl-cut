@@ -134,8 +134,8 @@ public:
     return backlog.end();
   }
 
-  void printBacklog(ostream &os, string msg) {
-    os << "=== trace: " << msg << ": " << endl;
+  void printBacklog(ostream &os, string caller, string msg) {
+    os << "=== " << caller << " trace: " << msg << ": " << endl;
     if(backlog.empty()){
       os << "(backlog N/A)" << endl;
     }else{
