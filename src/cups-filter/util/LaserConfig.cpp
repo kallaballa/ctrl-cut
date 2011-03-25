@@ -24,21 +24,8 @@
 
 #define RASTER_DIRECTION_DEFAULT LaserConfig::DIRECTION_TOPDOWN
 
-/** Default mode for processing raster engraving (varying power depending upon
- * image characteristics).
- * Possible values are:
- * 'c' = color determines power level
- * 'g' = grey-scale levels determine power level
- * 'm' = mono mode
- * 'n' = no rasterization
- */
-#define RASTER_MODE_DEFAULT 'g'
-
 /** Default power level for raster engraving */
 #define RASTER_POWER_DEFAULT (20)
-
-/** Whether or not the raster printing is to be repeated. */
-#define RASTER_REPEAT (1)
 
 /** Default speed for raster engraving */
 #define RASTER_SPEED_DEFAULT (100)
@@ -78,10 +65,8 @@ LaserConfig::LaserConfig()
   this->resolution = RESOLUTION_DEFAULT;
   this->raster_dithering = RASTER_DITHERING_DEFAULT;
   this->raster_direction = RASTER_DIRECTION_DEFAULT;
-  this->raster_mode = RASTER_MODE_DEFAULT;
   this->raster_speed = RASTER_SPEED_DEFAULT;
   this->raster_power = RASTER_POWER_DEFAULT;
-  this->raster_repeat = RASTER_REPEAT;
   this->screen = SCREEN_DEFAULT;
   this->vector_speed = VECTOR_SPEED_DEFAULT;
   this->vector_power = VECTOR_POWER_DEFAULT;
@@ -132,12 +117,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
       LOG_WARN_MSG("Illegal value for RasterDirection", v);
     }
   }
-  if ((v = cupsGetOption("RasterMode", numOptions, options))) {
-    this->raster_mode = tolower(*v);
-  }
-  if ((v = cupsGetOption("RasterRepeat", numOptions, options))) {
-    this->raster_repeat = atoi(v);
-  }
   if ((v = cupsGetOption("VectorSpeed", numOptions, options))) {
     this->vector_speed = atoi(v);
   }
@@ -169,8 +148,8 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   LOG_DEBUG(this->resolution);
   LOG_DEBUG(this->raster_speed);
   LOG_DEBUG(this->raster_power);
-  LOG_DEBUG(this->raster_mode);
-  LOG_DEBUG(this->raster_repeat);
+  LOG_DEBUG(this->raster_dithering);
+  LOG_DEBUG(this->raster_direction);
   LOG_DEBUG(this->vector_speed);
   LOG_DEBUG(this->vector_power);
   LOG_DEBUG(this->vector_freq);
@@ -189,9 +168,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
  */
 void LaserConfig::rangeCheck()
 {
-  // restrict raster mode to greyscale for the time beeing
-  this->raster_mode = 'g';
-
   if (this->raster_power > 100) {
     this->raster_power = 100;
   }

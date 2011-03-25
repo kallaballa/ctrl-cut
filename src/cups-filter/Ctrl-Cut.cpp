@@ -260,6 +260,7 @@ int main(int argc, char *argv[]) {
     }
     else if (parser) {
       if (parser->hasBitmapData()) {
+        LOG_DEBUG_STR("Processing bitmap data from memory");
         raster = new Raster(parser->getImage());
       }
       else if (parser->getBitmapFile().size() > 0) {

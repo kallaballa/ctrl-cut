@@ -79,10 +79,10 @@ void LaserJob::serializeTo(ostream &out) {
    */
 
   if (this->lconf->enable_raster && this->rasters.size() > 0) {
-    for (list<Raster*>::iterator it = this->rasters.begin(); it
-        != this->rasters.end(); it++) {
+    for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
       Raster *raster = *it;
       if (raster) {
+        LOG_DEBUG_STR("Encoding raster...");
         PclEncoder r(this->lconf);
         r.encode(raster, out);
       }

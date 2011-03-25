@@ -61,19 +61,11 @@ public:
 
   RasterDirection raster_direction;
 
-  /** Variable to track the mode for rasterization. One of color 'c', or
-   * grey-scale 'g', mono 'm', or none 'n'
-   */
-  char raster_mode;
-
   /** Variable to track the raster speed. */
   int raster_speed;
 
   /** Variable to track the raster power. */
   int raster_power;
-
-  /** Variable to track whether or not a rasterization should be repeated. */
-  int raster_repeat;
 
   /** FIXME -- pixel size of screen, 0= threshold */
   int screen;

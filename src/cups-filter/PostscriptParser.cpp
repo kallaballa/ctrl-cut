@@ -170,6 +170,7 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
   const char *gsargv[gsargc];
   for (int i=0;i<gsargc;i++) {
     gsargv[i] = argstrings[i].c_str();
+    LOG_DEBUG(gsargv[i]);
   }
   void *minst;
   int code = gsapi_new_instance(&minst, NULL);
@@ -417,8 +418,8 @@ void PostscriptParser::copyPage()
   this->image->setData(dataptr);
   this->image->setRowstride(this->gsimage->rowstride());
   
-  BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
-  if (bitmap) bitmap->saveAsPBM("out.pbm");
+  // BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
+  // if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
 #endif
 }
 
