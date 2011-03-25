@@ -1,6 +1,6 @@
 AutoFocus / noAutoFocus
 Resolution=75/150/300/600/1200
-RasterSpeed=[0-1000]
+RasterSpeed=[0-100]
 RasterPower=[0-100]
 RasterMode
 RasterRepeat
