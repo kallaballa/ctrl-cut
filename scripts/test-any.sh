@@ -61,7 +61,7 @@ runtest()
     errorstr=""
     src/pclint/pclint -a $outfile -b $outfile.pbm 2>> $testcase.log
     #    scripts/prn-to-pbm.sh $outfile 2>> $testcase.log
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0 -o ! -f $outfile.pbm ]; then
       errorstr="Err"
       rawtopbmfailed=1
     fi
@@ -73,7 +73,7 @@ runtest()
 
     pad "no" 5
     src/pclint/pclint -a $prnfile -b $prnfile.pbm 2>> $testcase.log
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0  -o ! -f $prnfile.pbm ]; then
       errorstr="Err"
     fi
     if [ -z $errorstr ]; then
