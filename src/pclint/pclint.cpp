@@ -27,6 +27,7 @@
 #include "2D.h"
 #include "PclIntConfig.h"
 
+using std::ofstream;
 using std::ifstream;
 using std::string;
 using std::cerr;
@@ -48,21 +49,67 @@ int main(int argc, char *argv[]) {
   }
 
   intr.render();
-  if (config->vectorFilename != NULL) {
-    CImg<uint8_t>* img = intr.vectorPlotter->getCanvas();
-    if(img != NULL && intr.vectorPlotter->getBoundingBox()->isValid())
-      img->save(config->vectorFilename);
-    else
-      cerr << "won't save an empty vector pass image" << endl;
+  if (config->vectorFilename || config->rasterFilename || config->blendFilename) {
+    CImg<uint8_t>* blendImage = NULL;
+    BoundingBox blendBBox;
+    if (config->blendFilename) {
+      if (!config->autocrop) {
+        blendBBox.ul.x = 0;
+        blendBBox.ul.y = 0;
+        blendBBox.lr.x = 21600;
+        blendBBox.lr.y = 14400;
+      } else {
+        if (intr.vectorPlotter->getBoundingBox()->isValid())
+          blendBBox += *(intr.vectorPlotter->getBoundingBox());
 
-    img = intr.bitmapPlotter->getCanvas();
-    if(img != NULL && intr.bitmapPlotter->getBoundingBox()->isValid())
-      img->save(config->rasterFilename);
-    else
-      cerr << "won't save an empty raster pass image" << endl;
+        if (intr.bitmapPlotter->getBoundingBox()->isValid())
+          blendBBox += *(intr.bitmapPlotter->getBoundingBox());
+      }
+
+      if(blendBBox.isValid())
+        blendImage = new CImg<uint8_t>(blendBBox.lr.x - blendBBox.ul.x + 1, blendBBox.lr.y - blendBBox.ul.y + 1, 1, 4, 255);
+    }
+
+    if (config->vectorFilename != NULL) {
+      if (intr.vectorPlotter->getBoundingBox()->isValid()) {
+        CImg<uint8_t>* vectorImage = intr.vectorPlotter->getCanvas();
+        if (config->blendFilename)
+          blendImage->draw_image(*vectorImage);
+
+        vectorImage->save(config->vectorFilename);
+      } else {
+        cerr << "WARNING: Vector image is empty." << endl;
+        ofstream blendout(config->blendFilename);
+        blendout << "";
+      }
+    }
+
+    if (config->rasterFilename != NULL) {
+      if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
+        CImg<uint8_t>* bitmapImage = intr.bitmapPlotter->getCanvas();
+        if(config->blendFilename)
+          blendImage->draw_image(*bitmapImage);
+
+        bitmapImage->save(config->rasterFilename);
+      } else {
+        cerr << "WARNING: Bitmap image is empty." << endl;
+        ofstream blendout(config->blendFilename);
+        blendout << "";
+      }
+    }
+
+    if (config->blendFilename) {
+      if (blendBBox.isValid()) {
+        blendImage->save(config->blendFilename);
+      } else {
+        cerr << "WARNING: Blend image is empty." << endl;
+        ofstream blendout(config->blendFilename);
+        blendout << "";
+      }
+    }
   }
 
-  cerr << "vector bounding box: " << *intr.vectorPlotter->getBoundingBox() << endl;
-  cerr << "raster bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
+  cerr << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox() << endl;
+  cerr << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
   return 0;
 }

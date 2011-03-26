@@ -52,8 +52,8 @@ private:
   BoundingBox *bbox;
   BoundingBox *clip;
   bool down;
-  CImg<uint8_t> *img;
-  uint8_t intensity[1];
+  CImg<uint8_t> *imgBuffer;
+  uint8_t intensity[4];
 
 public:
   Point penPos;
@@ -64,13 +64,14 @@ public:
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
     }
+    intensity = { 255, 0, 0, 128 };
 
-    this->img = new CImg<uint8_t> (width, height, 1, 1, 255);
+    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 4, 255);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
     bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
-    this->img = NULL;
+    this->imgBuffer = NULL;
   }
 
   void penUp() {
@@ -129,7 +130,7 @@ public:
 
     cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
 
-    img->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
+    imgBuffer->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
   }
 
   void move(Point& to1) {
@@ -147,13 +148,21 @@ public:
     return bbox;
   }
 
-  virtual CImg<uint8_t>* getCanvas() {
+  virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
+    CImg<uint8_t>* canvas;
     if (PclIntConfig::singleton()->autocrop) {
-      return &(img->crop(this->bbox->ul.x, this->bbox->ul.y, this->bbox->lr.x, this->bbox->lr.y, false));
+      canvas = &(imgBuffer->crop(this->bbox->ul.x, this->bbox->ul.y,
+          this->bbox->lr.x, this->bbox->lr.y, false));
+    } else {
+      canvas = imgBuffer;
     }
-    else {
-      return img;
+
+    if(img != NULL) {
+      img->draw_image(*canvas);
+      canvas = img;
     }
+
+    return canvas;
   }
 };
 
@@ -234,20 +243,22 @@ public:
       size.x = this->bbox->lr.x - this->bbox->ul.x + 1;
       size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
     }
-    
-    CImg<uint8_t> *image = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
-    image->fill(255);
+
+    CImg<uint8_t>* canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
+
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<size.x;x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
         for (int b=0;b<8;b++) {
           uint8_t val = (bitmap & (0x80 >> b)) ? 0 : 255;
-          image->draw_point(x*8 + b, y, &val);
+          if(val == 0) {
+            canvas->draw_point(x*8 + b, y, &val);
+          }
         }
       }
     }
     
-    return image;
+    return canvas;
   }
 };
 
