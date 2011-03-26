@@ -53,7 +53,7 @@ private:
   BoundingBox *clip;
   bool down;
   CImg<uint8_t> *imgBuffer;
-  uint8_t intensity[3];
+  uint8_t intensity[4];
 
 public:
   Point penPos;
@@ -67,8 +67,9 @@ public:
     intensity[0] = 255;
     intensity[1] = 0;
     intensity[2] = 0;
+    intensity[3] = 128;
 
-    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 3, 255);
+    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 4, 255);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :

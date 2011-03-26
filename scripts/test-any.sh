@@ -59,8 +59,8 @@ runtest()
   else
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    src/pclint/pclint -a -b $outfile.pbm $outfile 2>> $testcase.log
-    if [ $? -ne 0 -o ! -f $outfile.pbm ]; then
+    src/pclint/pclint -a -b $outfile.png $outfile 2>> $testcase.log
+    if [ $? -ne 0 -o ! -f $outfile.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
     fi
@@ -71,12 +71,12 @@ runtest()
     fi
 
     pad "no" 5
-    src/pclint/pclint -a -b $prnfile.pbm $prnfile 2>> $testcase.log
-    if [ $? -ne 0  -o ! -f $prnfile.pbm ]; then
+    src/pclint/pclint -a -b $prnfile.png $prnfile 2>> $testcase.log
+    if [ $? -ne 0  -o ! -f $prnfile.png ]; then
       errorstr="Err"
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.pbm $outfile.pbm`
+      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.png $outfile.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
       else
