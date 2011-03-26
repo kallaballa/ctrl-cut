@@ -49,26 +49,22 @@ int main(int argc, char *argv[]) {
   }
 
   intr.render();
-  if (config->vectorFilename || config->rasterFilename || config->combinedFilename) {
+
+  BoundingBox combinedBBox;
+
+  if (intr.vectorPlotter->getBoundingBox()->isValid())
+    combinedBBox += *(intr.vectorPlotter->getBoundingBox());
+
+  if (intr.bitmapPlotter->getBoundingBox()->isValid())
+    combinedBBox += *(intr.bitmapPlotter->getBoundingBox());
+
+  if (config->vectorFilename || config->rasterFilename
+      || config->combinedFilename) {
     CImg<uint8_t>* combinedImage = NULL;
-    BoundingBox combinedBBox;
-    if (config->combinedFilename) {
-      if (!config->autocrop) {
-        combinedBBox.ul.x = 0;
-        combinedBBox.ul.y = 0;
-        combinedBBox.lr.x = 21600;
-        combinedBBox.lr.y = 14400;
-      } else {
-        if (intr.vectorPlotter->getBoundingBox()->isValid())
-          combinedBBox += *(intr.vectorPlotter->getBoundingBox());
 
-        if (intr.bitmapPlotter->getBoundingBox()->isValid())
-          combinedBBox += *(intr.bitmapPlotter->getBoundingBox());
-      }
-
-      if(combinedBBox.isValid())
-        combinedImage = new CImg<uint8_t>(combinedBBox.lr.x - combinedBBox.ul.x + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 4, 255);
-    }
+    if (combinedBBox.isValid())
+      combinedImage = new CImg<uint8_t> (combinedBBox.lr.x - combinedBBox.ul.x
+          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 4, 255);
 
     if (config->vectorFilename != NULL) {
       if (intr.vectorPlotter->getBoundingBox()->isValid()) {
@@ -111,5 +107,6 @@ int main(int argc, char *argv[]) {
 
   cerr << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox() << endl;
   cerr << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
+  cerr << "Combined bounding box: " << combinedBBox << endl;
   return 0;
 }
