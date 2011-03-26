@@ -94,20 +94,27 @@ public:
   void renderHpglPlot(HpglPlot *hpglPlot) {
     HpglInstr* hpglInstr;
 
-    while(hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
-      if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG)
+    while (hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
+      if (PclIntConfig::singleton()->debugLevel >= LVL_DEBUG) {
         cerr << *hpglInstr << endl;
-      if(hpglInstr->matches(HPGL_PENUP) || hpglInstr->matches(HPGL_LTPENUP)) {
+      }
+      if (hpglInstr->matches(HPGL_PENUP) || hpglInstr->matches(HPGL_LTPENUP)) {
         vectorPlotter->penUp();
-        if(hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && hpglInstr->parameters[1] != (int32_t)HPGL_UNSET)
+        if (hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && 
+           hpglInstr->parameters[1] != (int32_t)HPGL_UNSET) {
           vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
-      } else if(hpglInstr->matches(HPGL_PENDOWN)) {
+        }
+      } else if (hpglInstr->matches(HPGL_PENDOWN)) {
         vectorPlotter->penDown();
-        if(hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && hpglInstr->parameters[1] != (int32_t)HPGL_UNSET)
+        if (hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && 
+            hpglInstr->parameters[1] != (int32_t)HPGL_UNSET) {
           vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
-      } else if(hpglInstr->matches(HPGL_MOVE)) {
-        if(hpglInstr->parameters[0] == (int32_t)HPGL_UNSET || hpglInstr->parameters[1] == (int32_t)HPGL_UNSET)
+        }
+      } else if (hpglInstr->matches(HPGL_MOVE)) {
+        if (hpglInstr->parameters[0] == (int32_t)HPGL_UNSET || 
+            hpglInstr->parameters[1] == (int32_t)HPGL_UNSET) {
           Trace::singleton()->warn("MOVE without parameters");
+        }
         vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
       } else {
         stringstream ss;
@@ -118,15 +125,18 @@ public:
   }
 
   void render() {
-    while(this->rtlplot->isValid()) {
+    while (this->rtlplot->isValid()) {
       RtlContext activeContext = this->rtlplot->getActiveContext();
 
-      if(activeContext == PCL_CONTEXT)
+      if (activeContext == PCL_CONTEXT) {
         renderPclPlot(this->rtlplot->requestPclPlot());
-      else if(activeContext == HPGL_CONTEXT)
+      }
+      else if (activeContext == HPGL_CONTEXT) {
         renderHpglPlot(this->rtlplot->requestHPGLPlot());
-      else
+      }
+      else {
         break; //no context
+      }
     }
   }
 };

@@ -320,11 +320,11 @@ public:
     Trace::singleton()->printBacklog(cerr, "HPGL", msg);
   }
 
-  bool isValid() {
+  bool isValid() const {
     return valid;
   }
 
-  bool good() {
+  bool good() const {
     return this->valid && this->inputfile->good();
   }
 
@@ -584,7 +584,7 @@ private:
     Trace::singleton()->printBacklog(cerr, "RTL", msg);
   }
 
-  bool checkHPGLContext() {
+  bool checkHPGLContext() const {
     if (currentHpglPlot != NULL && currentHpglPlot->isValid()) {
       return true;
     } else {
@@ -592,7 +592,7 @@ private:
     }
   }
 
-  bool checkPclContext() {
+  bool checkPclContext() const {
     if (currentPclPlot != NULL && currentPclPlot->isValid()) {
       return true;
     } else {
@@ -615,20 +615,16 @@ public:
 
   RtlContext getActiveContext() {
     //check for existing valid context plotters
-    if(checkPclContext())
-        return PCL_CONTEXT;
+    if (checkPclContext()) return PCL_CONTEXT;
 
-    if(checkHPGLContext())
-        return HPGL_CONTEXT;
+    if (checkHPGLContext()) return HPGL_CONTEXT;
 
     //try to initialize a new context and probe it
     currentPclPlot = new PclPlot(inputfile);
-    if(checkPclContext())
-      return PCL_CONTEXT;
+    if (checkPclContext()) return PCL_CONTEXT;
 
     currentHpglPlot = new HpglPlot(inputfile);
-    if(checkHPGLContext())
-      return HPGL_CONTEXT;
+    if(checkHPGLContext()) return HPGL_CONTEXT;
 
     invalidate("end of rtl");
     return NONE;
