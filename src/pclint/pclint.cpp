@@ -53,11 +53,11 @@ int main(int argc, char *argv[]) {
 
   BoundingBox combinedBBox;
 
-  if (intr.vectorPlotter->getBoundingBox()->isValid())
-    combinedBBox += *(intr.vectorPlotter->getBoundingBox());
+  if (intr.vectorPlotter->getBoundingBox().isValid())
+    combinedBBox += intr.vectorPlotter->getBoundingBox();
 
-  if (intr.bitmapPlotter->getBoundingBox()->isValid())
-    combinedBBox += *(intr.bitmapPlotter->getBoundingBox());
+  if (intr.bitmapPlotter->getBoundingBox().isValid())
+    combinedBBox += intr.bitmapPlotter->getBoundingBox();
 
   if (config->vectorFilename || config->rasterFilename
       || config->combinedFilename) {
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
       combinedImage->fill(255,255,255,255);
     }
 
-    if (intr.vectorPlotter->getBoundingBox()->isValid()) {
+    if (intr.vectorPlotter->getBoundingBox().isValid()) {
       CImg<uint8_t>* vectorImage;
 
       if (combinedImage && !config->vectorFilename)
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
       combinedout << "";
     }
 
-    if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
+    if(intr.bitmapPlotter->getBoundingBox().isValid()) {
       CImg<uint8_t>* bitmapImage;
 
       if (combinedImage && !config->rasterFilename) {
@@ -123,11 +123,11 @@ int main(int argc, char *argv[]) {
 
   stringstream ss;
 
-  ss << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox();
+  ss << "Vector bounding box: " << intr.vectorPlotter->getBoundingBox();
   trace->info(ss.str());
   ss.str("");
 
-  ss << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox();
+  ss << "Raster bounding box: " << intr.bitmapPlotter->getBoundingBox();
   trace->info(ss.str());
   ss.str("");
 

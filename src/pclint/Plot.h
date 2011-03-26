@@ -149,8 +149,8 @@ public:
     }
   }
 
-  virtual BoundingBox* getBoundingBox() {
-    return bbox;
+  virtual BoundingBox getBoundingBox() {
+    return *bbox;
   }
 
   virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
@@ -183,7 +183,6 @@ public:
   Point penPos;
 
   // width/height is given in bytes
-  // 
   BitmapPlotter(uint32_t width, uint32_t height, BoundingBox *clip = NULL) :
     bbox(new BoundingBox()), clip(clip), width(width), height(height), penPos(0, 0) {
     if (clip != NULL) {
@@ -231,7 +230,11 @@ public:
     }
   }
 
-  virtual BoundingBox* getBoundingBox() {
+  // Returns a boundingbox given in pixels
+  virtual BoundingBox getBoundingBox() {
+    BoundingBox bbox = *this->bbox;
+    bbox.ul.x = bbox.ul.x * 8;
+    bbox.lr.x = (bbox.lr.x + 1) * 8 - 1;
     return bbox;
   }
 
