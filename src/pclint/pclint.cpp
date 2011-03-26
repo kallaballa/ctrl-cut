@@ -70,9 +70,16 @@ int main(int argc, char *argv[]) {
     }
 
     if (intr.vectorPlotter->getBoundingBox()->isValid()) {
-      CImg<uint8_t>* vectorImage = intr.vectorPlotter->getCanvas();
-      if (config->combinedFilename)
+      CImg<uint8_t>* vectorImage;
+
+      if (combinedImage && !config->vectorFilename)
+        vectorImage = intr.vectorPlotter->getCanvas(combinedImage);
+      else if (config->combinedFilename) {
+        vectorImage = intr.vectorPlotter->getCanvas();
         combinedImage->draw_image(*vectorImage);
+      } else {
+        vectorImage = intr.vectorPlotter->getCanvas();
+      }
 
       if (config->vectorFilename != NULL)
         vectorImage->save(config->vectorFilename);
@@ -82,12 +89,17 @@ int main(int argc, char *argv[]) {
       combinedout << "";
     }
 
-
-
     if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
-      CImg<uint8_t>* bitmapImage = intr.bitmapPlotter->getCanvas();
-      if(config->combinedFilename)
+      CImg<uint8_t>* bitmapImage;
+
+      if (combinedImage && !config->rasterFilename) {
+        bitmapImage = intr.bitmapPlotter->getCanvas(combinedImage);
+      } else if(config->combinedFilename) {
+        bitmapImage = intr.bitmapPlotter->getCanvas();
         combinedImage->draw_image(*bitmapImage);
+      } else {
+        bitmapImage = intr.bitmapPlotter->getCanvas();
+      }
 
       if (config->rasterFilename != NULL)
         bitmapImage->save(config->rasterFilename);

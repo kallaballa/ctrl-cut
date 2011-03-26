@@ -235,7 +235,7 @@ public:
     return bbox;
   }
 
-  virtual CImg<uint8_t>* getCanvas() {
+  virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
     if(!this->bbox->isValid())
       return NULL;
 
@@ -249,16 +249,21 @@ public:
       size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
     }
 
-    CImg<uint8_t>* canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
+
+    CImg<uint8_t>* canvas;
+
+    if(img != NULL)
+      canvas = img;
+    else
+      canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
 
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<size.x;x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
         for (int b=0;b<8;b++) {
           uint8_t val = (bitmap & (0x80 >> b)) ? 0 : 255;
-          if(val == 0) {
+          if(val == 0)
             canvas->draw_point(x*8 + b, y, &val);
-          }
         }
       }
     }
