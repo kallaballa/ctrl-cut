@@ -27,7 +27,7 @@
 
 class PclIntConfig {
 private:
-  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), blendFilename(NULL) {};
+  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), combinedFilename(NULL) {};
   static PclIntConfig* instance;
 public:
   bool interactive;
@@ -36,7 +36,7 @@ public:
   char* ifilename;
   char* rasterFilename;
   char* vectorFilename;
-  char* blendFilename;
+  char* combinedFilename;
 
   static PclIntConfig* singleton();
 
@@ -44,7 +44,7 @@ public:
     int c;
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "iac:r:v:b:")) != -1)
+    while ((c = getopt(argc, argv, "iac:r:v:c:")) != -1)
       switch (c) {
       case 'i':
         this->interactive = true;
@@ -62,7 +62,7 @@ public:
         this->vectorFilename = optarg;
         break;
       case 'b':
-        this->blendFilename = optarg;
+        this->combinedFilename = optarg;
         break;
       case ':':
         printUsage();
