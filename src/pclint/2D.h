@@ -142,15 +142,30 @@ public:
   }
 
   bool isValid() const {
-    return this->ul.x < this->lr.x &&
-           this->ul.y < this->lr.y &&
+    return this->ul.x <= this->lr.x &&
+           this->ul.y <= this->lr.y &&
            this->ul.x < numeric_limits<coord>::max() &&
            this->ul.y < numeric_limits<coord>::max();
   }
 
-  friend ostream& operator <<(ostream &os, BoundingBox &bbox) {
+  friend ostream& operator <<(ostream &os, BoundingBox& bbox) {
     os << "<" << bbox.ul << "," << bbox.lr << ">";
     return os;
+  }
+
+  BoundingBox& operator+(BoundingBox& bbox) {
+    BoundingBox* enclosing = new BoundingBox();
+    enclosing->update(bbox.ul);
+    enclosing->update(bbox.lr);
+    enclosing->update(this->ul);
+    enclosing->update(this->lr);
+    return *enclosing;
+  }
+
+  BoundingBox& operator+=(BoundingBox& bbox) {
+    this->update(bbox.ul);
+    this->update(bbox.lr);
+    return *this;
   }
 
   static BoundingBox* createFromGeometryString(string geom) {
