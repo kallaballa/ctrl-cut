@@ -64,7 +64,10 @@ public:
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
     }
-    intensity = { 255, 0, 0, 128 };
+    intensity[0] = 255;
+    intensity[1] = 0;
+    intensity[2] = 0;
+    intensity[3] = 128;
 
     this->imgBuffer = new CImg<uint8_t> (width, height, 1, 4, 255);
   }
