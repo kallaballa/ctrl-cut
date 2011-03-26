@@ -37,6 +37,7 @@ using std::endl;
 using namespace cimg_library;
 
 int main(int argc, char *argv[]) {
+  Trace* trace = Trace::singleton();
   PclIntConfig* config = PclIntConfig::singleton();
   config->parseCommandLine(argc,argv);
   ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
@@ -74,7 +75,7 @@ int main(int argc, char *argv[]) {
 
         vectorImage->save(config->vectorFilename);
       } else {
-        cerr << "WARNING: Vector image is empty." << endl;
+        trace->warn("WARNING: Vector image is empty.");
         ofstream combinedout(config->combinedFilename);
         combinedout << "";
       }
@@ -88,7 +89,7 @@ int main(int argc, char *argv[]) {
 
         bitmapImage->save(config->rasterFilename);
       } else {
-        cerr << "WARNING: Bitmap image is empty." << endl;
+        trace->warn("WARNING: Bitmap image is empty.");
         ofstream combinedout(config->combinedFilename);
         combinedout << "";
       }
@@ -98,15 +99,25 @@ int main(int argc, char *argv[]) {
       if (combinedBBox.isValid()) {
         combinedImage->save(config->combinedFilename);
       } else {
-        cerr << "WARNING: Blend image is empty." << endl;
+        trace->warn("WARNING: Blend image is empty.");
         ofstream combinedout(config->combinedFilename);
         combinedout << "";
       }
     }
   }
 
-  cerr << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox() << endl;
-  cerr << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox() << endl;
-  cerr << "Combined bounding box: " << combinedBBox << endl;
+  stringstream ss;
+
+  ss << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox();
+  trace->info(ss.str());
+  ss.str("");
+
+  ss << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox();
+  trace->info(ss.str());
+  ss.str("");
+
+  ss << "Combined bounding box: " << combinedBBox;
+  trace->info(ss.str());
+
   return 0;
 }

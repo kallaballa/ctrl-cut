@@ -96,7 +96,8 @@ public:
     HpglInstr* hpglInstr;
 
     while(hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
-      cerr << *hpglInstr << endl;
+      if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG)
+        cerr << *hpglInstr << endl;
       if(hpglInstr->matches("PU") || hpglInstr->matches("LTPU")) {
         vectorPlotter->penUp();
         vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);

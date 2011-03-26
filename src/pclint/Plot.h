@@ -100,7 +100,7 @@ public:
 
   virtual void draw(const Point& from, const Point& to) {
     if(from == to) {
-      cerr << "zero length drawing operation?" << endl;
+      Trace::singleton()->warn("zero length drawing operation?");
       return;
     }
 
@@ -131,7 +131,9 @@ public:
     drawTo.x -= clip_offX;
     drawTo.y -= clip_offY;
 
-    cerr << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0] << endl;
+    stringstream ss;
+    ss << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0];
+    Trace::singleton()->debug(ss.str());
 
     imgBuffer->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
   }
@@ -437,6 +439,9 @@ public:
   }
 
   void printSettings(ostream& os) {
+    if(PclIntConfig::singleton()->debugLevel < LVL_INFO)
+      return;
+
     std::map<string, PclInstr*>::iterator it;
     os << "=== settings: " << endl;
     for (it = settings.begin(); it != settings.end(); it++) {
@@ -540,12 +545,6 @@ public:
       return NULL;
     else
       return instr;
-
-    //FIXME invalidate?
-    if (expected)
-      cerr << "failed to read: " << expected << std::endl;
-
-    return NULL;
   }
 };
 

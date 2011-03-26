@@ -31,6 +31,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
 #include "2D.h"
+#include "PclIntConfig.h"
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -115,7 +116,9 @@ public:
   static Trace* singleton();
 
   void logInstr(PclInstr* instr) {
-    cerr << penPos << "\t" << *instr << endl;
+    if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG)
+      cerr << penPos << "\t" << *instr << endl;
+
     if(backlog.size() >= backlogSize)
       backlog.erase(backlog.begin());
 
@@ -134,7 +137,25 @@ public:
     return backlog.end();
   }
 
+  void info(string msg) {
+    if(PclIntConfig::singleton()->debugLevel >= LVL_INFO)
+      cerr << msg << endl;
+  }
+
+  void warn(string msg) {
+    if(PclIntConfig::singleton()->debugLevel >= LVL_WARN)
+      cerr << "WARNING: " << msg << endl;
+  }
+
+  void debug(string msg) {
+    if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG)
+      cerr << "DEBUG: " << msg << endl;
+  }
+
   void printBacklog(ostream &os, string caller, string msg) {
+    if(PclIntConfig::singleton()->debugLevel < LVL_DEBUG)
+      return;
+
     os << "=== " << caller << " trace: " << msg << ": " << endl;
     if(backlog.empty()){
       os << "(backlog N/A)" << endl;
