@@ -59,7 +59,8 @@ runtest()
   else
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    scripts/prn-to-pbm.sh $outfile 2>> $testcase.log
+    src/pclint/pclint -a $outfile -b $outfile.pbm 2>> $testcase.log
+    #    scripts/prn-to-pbm.sh $outfile 2>> $testcase.log
     if [ $? -ne 0 ]; then
       errorstr="Err"
       rawtopbmfailed=1
@@ -71,7 +72,7 @@ runtest()
     fi
 
     pad "no" 5
-    scripts/prn-to-pbm.sh $prnfile 2>> $testcase.log
+    src/pclint/pclint -a $prnfile -b $prnfile.pbm 2>> $testcase.log
     if [ $? -ne 0 ]; then
       errorstr="Err"
     fi
