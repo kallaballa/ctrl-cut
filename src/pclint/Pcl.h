@@ -26,7 +26,6 @@
 #include <list>
 #include <iostream>
 #include <boost/format.hpp>
-#include "Signatures.h"
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
@@ -47,6 +46,19 @@ typedef off_t off64_t;
 
 #define MAGIC_SIZE 23
 const char *MAGIC = "\x1b%-12345X@PJL JOB NAME=";
+
+#define PCL_RASTER_START "*rA"
+#define PCL_RASTER_END "*rC"
+#define PCL_FLIPY "&yO"
+#define PCL_X "*pX"
+#define PCL_Y "*pY"
+#define PCL_WIDTH "*rS"
+#define PCL_HEIGHT "*rT"
+#define PCL_RLE_DATA "*bW"
+#define PCL_PIXEL_LEN "*bA"
+#define PCL_START_OF_PASS "%0B"
+#define PCL_END_OF_PASS "%1B"
+#define PCL_START_OF_INSTRUCTION 0x1b
 
 class PclInstr {
 public:
