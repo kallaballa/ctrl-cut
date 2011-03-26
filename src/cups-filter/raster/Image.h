@@ -20,12 +20,14 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
+#include "AbstractImage.h"
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <stdint.h>
 #include "util/Logger.h"
 #include "util/2D.h"
+#include <iostream>
 
 static const float bayer_matrix[4][4] = {
   {1,9 ,3,11},
@@ -34,42 +36,6 @@ static const float bayer_matrix[4][4] = {
   {16,8,14,6}
 };
 
-class AbstractImage {
-public:
-  AbstractImage(uint32_t width, uint32_t height, void *addr = NULL) : 
-    w(width), h(height), addr(addr), xpos(0), ypos(0) {
-  }
-  virtual ~AbstractImage() {}
-
-  uint32_t width() const { return this->w; }
-  uint32_t height() const { return this->h; }
-  uint32_t xPos() const { return this->xpos; }
-  uint32_t yPos() const { return this->ypos; }
-
-  void setRowstride(uint32_t stride) { this->row_stride = stride; }
-  uint32_t rowstride() const { return this->row_stride; }
-
-
-  void translate(uint32_t x, uint32_t y) {
-    this->xpos += x;
-    this->ypos += y;
-  }
-  
-  void setData(void *addr) { this->addr = addr; }
-  void *data() { return this->addr; }
-
-protected:
-  uint32_t w;
-  uint32_t h;
-  void * addr;
-
-  uint32_t xpos;
-  uint32_t ypos;
-  uint32_t row_stride;
-
-};
-
-#include <iostream>
 class BitmapImage : public AbstractImage {
 public:
   BitmapImage(uint32_t width, uint32_t height, uint8_t *buf = NULL) : AbstractImage(width, height, buf) {
