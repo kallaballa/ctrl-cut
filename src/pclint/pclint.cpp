@@ -65,41 +65,43 @@ int main(int argc, char *argv[]) {
 
     if (combinedBBox.isValid())
       combinedImage = new CImg<uint8_t> (combinedBBox.lr.x - combinedBBox.ul.x
-          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 4, 255);
+          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 3, 255);
 
-    if (config->vectorFilename != NULL) {
-      if (intr.vectorPlotter->getBoundingBox()->isValid()) {
-        CImg<uint8_t>* vectorImage = intr.vectorPlotter->getCanvas();
-        if (config->combinedFilename)
-          combinedImage->draw_image(*vectorImage);
 
+    if (intr.vectorPlotter->getBoundingBox()->isValid()) {
+      CImg<uint8_t>* vectorImage = intr.vectorPlotter->getCanvas();
+      if (config->combinedFilename)
+        combinedImage->draw_image(*vectorImage);
+
+      if (config->vectorFilename != NULL)
         vectorImage->save(config->vectorFilename);
-      } else {
-        trace->warn("WARNING: Vector image is empty.");
-        ofstream combinedout(config->combinedFilename);
-        combinedout << "";
-      }
+    } else {
+      trace->warn("Vector image is empty.");
+      ofstream combinedout(config->combinedFilename);
+      combinedout << "";
     }
 
-    if (config->rasterFilename != NULL) {
-      if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
-        CImg<uint8_t>* bitmapImage = intr.bitmapPlotter->getCanvas();
-        if(config->combinedFilename)
-          combinedImage->draw_image(*bitmapImage);
 
+
+    if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
+      CImg<uint8_t>* bitmapImage = intr.bitmapPlotter->getCanvas();
+      if(config->combinedFilename)
+        combinedImage->draw_image(*bitmapImage);
+
+      if (config->rasterFilename != NULL)
         bitmapImage->save(config->rasterFilename);
-      } else {
-        trace->warn("WARNING: Bitmap image is empty.");
-        ofstream combinedout(config->combinedFilename);
-        combinedout << "";
-      }
+    } else {
+      trace->warn("Bitmap image is empty.");
+      ofstream combinedout(config->combinedFilename);
+      combinedout << "";
     }
+
 
     if (config->combinedFilename) {
       if (combinedBBox.isValid()) {
         combinedImage->save(config->combinedFilename);
       } else {
-        trace->warn("WARNING: Blend image is empty.");
+        trace->warn("Blend image is empty.");
         ofstream combinedout(config->combinedFilename);
         combinedout << "";
       }
