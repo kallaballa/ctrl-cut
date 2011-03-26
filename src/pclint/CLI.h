@@ -203,10 +203,10 @@ public:
   }
 
   void loop() {}
-  void setInteractive(bool i) {}
-  void announce(PclInstr* instr) {}
+  void setInteractive(bool) {}
+  void announce(PclInstr*) {}
   void animate() {}
-  void dumpCanvas(const char* filename) {}
+  void dumpCanvas(const char*) {}
   void updateCanvas() {}
   void displayCanvas() {}
 };
