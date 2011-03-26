@@ -49,62 +49,62 @@ int main(int argc, char *argv[]) {
   }
 
   intr.render();
-  if (config->vectorFilename || config->rasterFilename || config->blendFilename) {
-    CImg<uint8_t>* blendImage = NULL;
-    BoundingBox blendBBox;
-    if (config->blendFilename) {
+  if (config->vectorFilename || config->rasterFilename || config->combinedFilename) {
+    CImg<uint8_t>* combinedImage = NULL;
+    BoundingBox combinedBBox;
+    if (config->combinedFilename) {
       if (!config->autocrop) {
-        blendBBox.ul.x = 0;
-        blendBBox.ul.y = 0;
-        blendBBox.lr.x = 21600;
-        blendBBox.lr.y = 14400;
+        combinedBBox.ul.x = 0;
+        combinedBBox.ul.y = 0;
+        combinedBBox.lr.x = 21600;
+        combinedBBox.lr.y = 14400;
       } else {
         if (intr.vectorPlotter->getBoundingBox()->isValid())
-          blendBBox += *(intr.vectorPlotter->getBoundingBox());
+          combinedBBox += *(intr.vectorPlotter->getBoundingBox());
 
         if (intr.bitmapPlotter->getBoundingBox()->isValid())
-          blendBBox += *(intr.bitmapPlotter->getBoundingBox());
+          combinedBBox += *(intr.bitmapPlotter->getBoundingBox());
       }
 
-      if(blendBBox.isValid())
-        blendImage = new CImg<uint8_t>(blendBBox.lr.x - blendBBox.ul.x + 1, blendBBox.lr.y - blendBBox.ul.y + 1, 1, 4, 255);
+      if(combinedBBox.isValid())
+        combinedImage = new CImg<uint8_t>(combinedBBox.lr.x - combinedBBox.ul.x + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 4, 255);
     }
 
     if (config->vectorFilename != NULL) {
       if (intr.vectorPlotter->getBoundingBox()->isValid()) {
         CImg<uint8_t>* vectorImage = intr.vectorPlotter->getCanvas();
-        if (config->blendFilename)
-          blendImage->draw_image(*vectorImage);
+        if (config->combinedFilename)
+          combinedImage->draw_image(*vectorImage);
 
         vectorImage->save(config->vectorFilename);
       } else {
         cerr << "WARNING: Vector image is empty." << endl;
-        ofstream blendout(config->blendFilename);
-        blendout << "";
+        ofstream combinedout(config->combinedFilename);
+        combinedout << "";
       }
     }
 
     if (config->rasterFilename != NULL) {
       if(intr.bitmapPlotter->getBoundingBox()->isValid()) {
         CImg<uint8_t>* bitmapImage = intr.bitmapPlotter->getCanvas();
-        if(config->blendFilename)
-          blendImage->draw_image(*bitmapImage);
+        if(config->combinedFilename)
+          combinedImage->draw_image(*bitmapImage);
 
         bitmapImage->save(config->rasterFilename);
       } else {
         cerr << "WARNING: Bitmap image is empty." << endl;
-        ofstream blendout(config->blendFilename);
-        blendout << "";
+        ofstream combinedout(config->combinedFilename);
+        combinedout << "";
       }
     }
 
-    if (config->blendFilename) {
-      if (blendBBox.isValid()) {
-        blendImage->save(config->blendFilename);
+    if (config->combinedFilename) {
+      if (combinedBBox.isValid()) {
+        combinedImage->save(config->combinedFilename);
       } else {
         cerr << "WARNING: Blend image is empty." << endl;
-        ofstream blendout(config->blendFilename);
-        blendout << "";
+        ofstream combinedout(config->combinedFilename);
+        combinedout << "";
       }
     }
   }
