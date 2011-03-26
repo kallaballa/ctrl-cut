@@ -26,7 +26,12 @@
 using std::ostream;
 using std::endl;
 
-#define UNSET std::numeric_limits<int32_t>::max()
+#define HPGL_UNSET std::numeric_limits<int32_t>::max()
+#define HPGL_INIT "IN"
+#define HPGL_LTPENUP "LTPU"
+#define HPGL_PENUP "PU"
+#define HPGL_PENDOWN "PD"
+#define HPGL_MOVE "MOVE"
 #define HPGL_END_OF_INSTRUCTION ';'
 
 class HpglInstr {
@@ -36,8 +41,8 @@ public:
   off64_t file_off;
 
   HpglInstr(off64_t file_off) : file_off(file_off) {
-    parameters[0] = UNSET;
-    parameters[1] = UNSET;
+    parameters[0] = HPGL_UNSET;
+    parameters[1] = HPGL_UNSET;
   }
 
   bool matches(const string& signature, bool report=false) {
@@ -52,9 +57,9 @@ public:
   friend ostream& operator <<(ostream &os, HpglInstr &instr) {
     os << (format("(%08X) %s") % instr.file_off % instr.operation);
 
-    if(instr.parameters[0] != (int32_t)UNSET) {
+    if(instr.parameters[0] != (int32_t)HPGL_UNSET) {
       os << " = " << instr.parameters[0];
-      if(instr.parameters[1] != (int32_t)UNSET) {
+      if(instr.parameters[1] != (int32_t)HPGL_UNSET) {
         os << "," << instr.parameters[1];
       }
     }

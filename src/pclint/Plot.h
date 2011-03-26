@@ -283,7 +283,7 @@ public:
   HpglPlot(ifstream *infile) :
     inputfile(infile), valid(false), currentInstr(NULL) {
     HpglInstr* instr = readInstr();
-    if(instr != NULL && instr->matches("IN", true))
+    if(instr != NULL && instr->matches(HPGL_INIT, true))
       valid = true;
   }
 
@@ -337,7 +337,7 @@ public:
       ss << c;
 
     if (ss.str().length() == 0 && isdigit(c)) {
-      instr->operation = "CONT";
+      instr->operation = HPGL_MOVE;
     } else {
       if (c == PCL_START_OF_INSTRUCTION) {
         this->invalidate("HPGL ended");

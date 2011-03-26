@@ -25,7 +25,6 @@
 #include <iostream>
 #include <sstream>
 #include "Pcl.h"
-#include "Signatures.h"
 #include "Raster.h"
 #include "Plot.h"
 #include "CLI.h"
@@ -98,14 +97,22 @@ public:
     while(hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
       if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG)
         cerr << *hpglInstr << endl;
-      if(hpglInstr->matches("PU") || hpglInstr->matches("LTPU")) {
+      if(hpglInstr->matches(HPGL_PENUP) || hpglInstr->matches(HPGL_LTPENUP)) {
         vectorPlotter->penUp();
-        vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
-      } else if(hpglInstr->matches("PD")) {
+        if(hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && hpglInstr->parameters[1] != (int32_t)HPGL_UNSET)
+          vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      } else if(hpglInstr->matches(HPGL_PENDOWN)) {
         vectorPlotter->penDown();
+        if(hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && hpglInstr->parameters[1] != (int32_t)HPGL_UNSET)
+          vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      } else if(hpglInstr->matches(HPGL_MOVE)) {
+        if(hpglInstr->parameters[0] == (int32_t)HPGL_UNSET || hpglInstr->parameters[1] == (int32_t)HPGL_UNSET)
+          Trace::singleton()->warn("MOVE without parameters");
         vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
-      } else if(hpglInstr->matches("CONT")) {
-        vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+      } else {
+        stringstream ss;
+        ss << "Unkown HPGL instruction: " << *hpglInstr;
+        Trace::singleton()->warn(ss.str());
       }
     }
   }
