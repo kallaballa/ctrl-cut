@@ -45,6 +45,9 @@ public:
 
   Run* init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
     this->loc.y = yInstr->value;
+    if(xInstr->value % 8 > 0)
+      Trace::singleton()->warn("x is not a multiple of 8!");
+
     this->loc.x = xInstr->value / 8;
     this->lineLen = abs(pixelLen->value);
     this->linePos = 0;
