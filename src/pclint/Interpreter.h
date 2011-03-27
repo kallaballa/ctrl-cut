@@ -29,6 +29,7 @@
 #include "Plot.h"
 #include "CLI.h"
 #include "PclIntConfig.h"
+#include "Plotter.h"
 
 using std::string;
 using std::stringstream;
