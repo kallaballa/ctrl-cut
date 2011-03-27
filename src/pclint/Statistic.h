@@ -158,13 +158,14 @@ public:
       break;
     }
 
-    os << slotName << "\t| work length: " << getWorkLength(slot,unit) << endl;
-    os << slotName << "\t| move length: " << getMoveLength(slot,unit) << endl;
-    os << slotName << "\t| total length: " << getTotalLength(slot,unit) << endl;
-    os << slotName << "\t| penUp count: " << getPenUpCount(slot) << endl;
-    os << slotName << "\t| penDown count: " << getPenDownCount(slot) << endl;
-    os << slotName << "\t| segment count: " << getSegmentCount(slot) << endl;
-    os << slotName << "\t| bounding box: " << getBoundingBox(slot) << endl;
+    os << slotName << "\t| work length=" << getWorkLength(slot,unit) << endl;
+    os << slotName << "\t| move length=" << getMoveLength(slot,unit) << endl;
+    os << slotName << "\t| total length=" << getTotalLength(slot,unit) << endl;
+    os << slotName << "\t| penUp count=" << getPenUpCount(slot) << endl;
+    os << slotName << "\t| penDown count=" << getPenDownCount(slot) << endl;
+    os << slotName << "\t| segment count=" << getSegmentCount(slot) << endl;
+    BoundingBox& bbox = getBoundingBox(slot);
+    os << slotName << "\t| bounding box=" << bbox.ul.x << " " << bbox.ul.y << " " << bbox.lr.x << " " << bbox.lr.y << endl;
   }
 };
 
