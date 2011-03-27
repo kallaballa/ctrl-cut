@@ -26,6 +26,7 @@
 #include "Pcl.h"
 #include "2D.h"
 #include "Plot.h"
+#include "Plotter.h"
 
 class Run {
 private:
