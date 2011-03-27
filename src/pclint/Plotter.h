@@ -206,8 +206,10 @@ public:
   void fill(uint8_t bitmap, int len) {
     int dir = (len < 0) ? -1 : 1;
     Point pos = this->penPos;
-    Point to = this->penPos;
-    to.x += (len * 8);
+    Point from = pos;
+    from.x *= 8;
+    Point to = from;
+    to.x += abs(len);
 
     Statistic::singleton()->announcePenDown(SLOT_RASTER);
     Statistic::singleton()->announceWork(penPos, to, SLOT_RASTER);
@@ -249,16 +251,20 @@ public:
 
     if(img != NULL)
       canvas = img;
-    else
-      canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 1, 255);
+    else {
+      canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 4, 255);
+    }
+
+    uint8_t on[4] = {0, 255, 0, 255};
+    uint8_t off[4] = {255, 255, 255, 0};
+    uint8_t* color;
 
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<size.x;x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
         for (int b=0;b<8;b++) {
-          uint8_t val = (bitmap & (0x80 >> b)) ? 0 : 255;
-          if(val == 0)
-            canvas->draw_point(x*8 + b, y, &val);
+          color = (bitmap & (0x80 >> b)) ? on : off;
+          canvas->draw_point(x*8 + b, y, color);
         }
       }
     }
