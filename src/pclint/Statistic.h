@@ -169,7 +169,6 @@ public:
   }
 };
 
-
 Statistic* Statistic::instance = NULL;
 Statistic* Statistic::singleton() {
   if (instance == NULL)
