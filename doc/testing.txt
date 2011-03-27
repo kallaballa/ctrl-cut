@@ -43,6 +43,24 @@ o The test will be automatically run by test-any.
 o Manually inspect test-data/inkscape/<testcase>.raw.pdf and test-data/inkscape/<testcase>.raw.svg
 o If these look OK, cp <testcase>.raw <testcase>.prn and commit in the prn file.
 
+Gimp:
+-----
+
+o File->Page Setup:
+  - Format for: EpilogCapture
+  - Paper size: LaserBed (36x24 in.)
+  - Orientation: Portrait
+o File->Print:
+  - General->Printer: EpilogCapture
+  - Image Settings:
+    o X & Y resolution: 600 pixels/in (or adjust this to change physical engraved size)
+    o Position: Left=0, Right=0
+    o Center: None
+o copy /tmp/epilogcapture.ps to test-data/Gimp/<testcase>.ps
+
+o Manually inspect test-data/Gimp/<testcase>.raw.pbm
+o If these look OK, cp <testcase>.raw <testcase>.prn and commit in the prn file.
+    
 Corel Draw:
 -----------
 

@@ -14,7 +14,6 @@ Installer:
 Filter:
 -------
 o Write a svg frontend
-o Writer raster test framework
 o Use stdint everywhere
 o Find out how to control the auto focus touch off point precisely
 

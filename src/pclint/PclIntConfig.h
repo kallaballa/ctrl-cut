@@ -36,10 +36,10 @@ public:
   bool interactive;
   bool autocrop;
   BoundingBox *clip;
-  char* ifilename;
-  char* rasterFilename;
-  char* vectorFilename;
-  char* combinedFilename;
+  char *ifilename;
+  char *rasterFilename;
+  char *vectorFilename;
+  char *combinedFilename;
   DEBUG_LEVEL debugLevel;
 
   static PclIntConfig* singleton();
@@ -47,50 +47,59 @@ public:
   void parseCommandLine(int argc, char *argv[]) {
     int c;
     opterr = 0;
-
-    while ((c = getopt(argc, argv, "iac:r:v:b:d:")) != -1)
-      switch (c) {
-      case 'i':
-        this->interactive = true;
-        break;
-      case 'a':
-        this->autocrop = true;
-        break;
-      case 'c':
-        this->clip = BoundingBox::createFromGeometryString(optarg);
-        break;
-      case 'r':
-        this->rasterFilename = optarg;
-        break;
-      case 'v':
-        this->vectorFilename = optarg;
-        break;
-      case 'b':
-        this->combinedFilename = optarg;
-        break;
-      case 'd':
-        if(strcmp("quiet", optarg) == 0)
-          debugLevel = LVL_QUIET;
-        else if(strcmp("info", optarg) == 0)
-          debugLevel = LVL_INFO;
-        else if(strcmp("warn", optarg) == 0)
-          debugLevel = LVL_WARN;
-        else if(strcmp("debug", optarg) == 0)
-          debugLevel = LVL_DEBUG;
-        else
+    while (optind < argc) {
+      while ((c = getopt(argc, argv, "iac:r:v:b:d:")) != -1) {
+        switch (c) {
+        case 'i':
+          this->interactive = true;
+          break;
+        case 'a':
+          this->autocrop = true;
+          break;
+        case 'c':
+          this->clip = BoundingBox::createFromGeometryString(optarg);
+          break;
+        case 'r':
+          this->rasterFilename = optarg;
+          break;
+        case 'v':
+          this->vectorFilename = optarg;
+          break;
+        case 'b':
+          this->combinedFilename = optarg;
+          break;
+        case 'd':
+          if(strcmp("quiet", optarg) == 0)
+            debugLevel = LVL_QUIET;
+          else if(strcmp("info", optarg) == 0)
+            debugLevel = LVL_INFO;
+          else if(strcmp("warn", optarg) == 0)
+            debugLevel = LVL_WARN;
+          else if(strcmp("debug", optarg) == 0)
+            debugLevel = LVL_DEBUG;
+          else
+            printUsage();
+          break;
+        case ':':
           printUsage();
-        break;
-      case ':':
-        printUsage();
-        break;
-      case '?':
-        printUsage();
-        break;
+          break;
+        case '?':
+          printUsage();
+          break;
+        }
       }
+      if (optind < argc) {
+        if (!this->ifilename) {
+          this->ifilename = argv[optind++];
+        }
+        else {
+          printUsage();
+        }
+      }
+    }
 
-    if (optind < argc) {
-      this->ifilename = argv[optind];
-    } else {
+    // Required parameters
+    if (!this->ifilename) {
       printUsage();
     }
   }

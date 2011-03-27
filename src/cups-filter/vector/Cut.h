@@ -23,6 +23,12 @@
 #include <vector>
 #include "Mesh.h"
 
+/*!
+  Cut describes a vector path to be cut.
+
+  Initially, a cut object consists of a Mesh; a loose collection of
+  line segments (aka. Edge objects). Later it will consist of a number of polylines.
+*/
 class Cut
 {
 public:

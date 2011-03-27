@@ -46,45 +46,26 @@ public:
   Point(coord x, coord y): x(x), y(y) {}
   Point(): x(0), y(0) {}
 
-  Point& operator=(Point &p) {
-    if(this != &p) {
+  Point &operator=(const Point &p) {
+    if (this != &p) {
       this->x = p.x;
       this->y = p.y;
     }
     return *this;
   }
-
-  Point& operator=(const Point &p) {
-    if(this != &p) {
-      this->x = p.x;
-      this->y = p.y;
-    }
-    return *this;
-  }
-
   bool operator==(const Point &p) const {
-    if(this == &p) {
+    if (this == &p) {
       return true;
-    } else
+    } else {
       return (this->x == p.x && this->y == p.y);
+    }
   }
 
   bool operator!=(const Point &p) const {
     return !(this->operator==(p));
   }
 
-  bool operator==(Point &p) const {
-    if(this == &p) {
-      return true;
-    } else
-      return (this->x == p.x && this->y == p.y);
-  }
-
-  bool operator!=(Point &p) const {
-    return !(this->operator==(p));
-  }
-
-  friend ostream& operator <<(ostream &os, Point &p) {
+  friend ostream& operator <<(ostream &os, const Point &p) {
     os << "<" << p.x << "," << p.y << ">";
     return os;
   }
@@ -104,7 +85,7 @@ public:
     this->lr.y=0;
   }
 
-  void update(Point& p) {
+  void update(const Point& p) {
     update(p.x, p.y);
   }
 
@@ -148,21 +129,19 @@ public:
            this->ul.y < numeric_limits<coord>::max();
   }
 
-  friend ostream& operator <<(ostream &os, BoundingBox& bbox) {
+  friend ostream& operator <<(ostream &os, const BoundingBox &bbox) {
     os << "<" << bbox.ul << "," << bbox.lr << ">";
     return os;
   }
 
-  BoundingBox& operator+(BoundingBox& bbox) {
-    BoundingBox* enclosing = new BoundingBox();
-    enclosing->update(bbox.ul);
-    enclosing->update(bbox.lr);
-    enclosing->update(this->ul);
-    enclosing->update(this->lr);
-    return *enclosing;
+  BoundingBox operator+(const BoundingBox &bbox) const {
+    BoundingBox enclosing = bbox;
+    enclosing.update(this->ul);
+    enclosing.update(this->lr);
+    return enclosing;
   }
 
-  BoundingBox& operator+=(BoundingBox& bbox) {
+  BoundingBox& operator+=(const BoundingBox &bbox) {
     this->update(bbox.ul);
     this->update(bbox.lr);
     return *this;

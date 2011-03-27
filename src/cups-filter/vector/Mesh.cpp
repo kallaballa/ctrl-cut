@@ -104,6 +104,7 @@ std::ostream &operator<<(std::ostream &os, const Mesh &mesh) {
     Vertex* vec = (Vertex*) (*it).second;
     os << *vec;
   }
+
   os << "</vertices>" << std::endl;
   os << "</mesh>" << std::endl;
 
