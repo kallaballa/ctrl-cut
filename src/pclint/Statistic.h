@@ -56,32 +56,28 @@ public:
 
   virtual ~Statistic() {};
 
-  double distance(Point& from, Point& to) {
+  double distance(const Point& from, const Point& to) const {
     return hypot(abs(from.x - to.x), abs(from.y - to.y));
   }
 
-  Slot getSlot(STAT_SLOT slot){
-    return slots[slot];
-  }
-
-  void announceWork(Point& from, Point& to, STAT_SLOT slot) {
+  void announceWork(const Point& from, const Point& to, const STAT_SLOT slot) {
     slots[slot].workLen += distance(from, to);
     slots[slot].segmentCnt++;
   }
 
-  void announceMove(Point& from, Point& to, STAT_SLOT slot) {
+  void announceMove(const Point& from, const Point& to, const STAT_SLOT slot) {
     slots[slot].moveLen += distance(from, to);
   }
 
-  void announcePenDown(STAT_SLOT slot) {
+  void announcePenDown(const STAT_SLOT slot) {
     slots[slot].penDownCnt++;
   }
 
-  void announcePenUp(STAT_SLOT slot) {
+  void announcePenUp(const STAT_SLOT slot) {
     slots[slot].penUpCnt++;
   }
 
-  double convert(double ppt, STAT_UNIT unit) {
+  double convert(const double ppt, const STAT_UNIT unit) const {
     if(unit == UNIT_PPT)
       return ppt;
     else if(unit == UNIT_MM)
@@ -92,31 +88,31 @@ public:
     return -1; // missed a unit?
   }
 
-  double getWorkLength(STAT_SLOT slot, STAT_UNIT unit=UNIT_MM) {
+  double getWorkLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     return convert(slots[slot].workLen, unit);
   }
 
-  double getMoveLength(STAT_SLOT slot, STAT_UNIT unit=UNIT_MM) {
+  double getMoveLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     return convert(slots[slot].moveLen, unit);
   }
 
-  double getTotalLength(STAT_SLOT slot, STAT_UNIT unit=UNIT_MM) {
+  double getTotalLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     return convert(slots[slot].workLen + slots[slot].moveLen, unit);
   }
 
-  uint32_t getPenUpCount(STAT_SLOT slot) {
+  uint32_t getPenUpCount(const STAT_SLOT slot) const {
     return slots[slot].penUpCnt;
   }
 
-  uint32_t getPenDownCount(STAT_SLOT slot) {
+  uint32_t getPenDownCount(const STAT_SLOT slot) const {
     return slots[slot].penUpCnt;
   }
 
-  uint32_t getSegmentCount(STAT_SLOT slot) {
+  uint32_t getSegmentCount(const STAT_SLOT slot) const {
     return slots[slot].penUpCnt;
   }
 
-  void printSlot(ostream& os, STAT_SLOT slot, STAT_UNIT unit=UNIT_MM) {
+  void printSlot(ostream& os, const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     string slotName;
     switch(slot) {
     case SLOT_RASTER:
