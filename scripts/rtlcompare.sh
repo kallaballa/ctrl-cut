@@ -10,25 +10,62 @@ function filter(){
 }
 
 function value(){
-    filter "$1" "$2" | cut -d":" -f2
+    val=`filter "$1" "$2" | cut -d'=' -f2`
+    #apply scale
+    calc "$val"
 }
 
 function calc() {
-    echo "scale=2; $1" | bc
+    if [ -z "$2" ]; then
+        scale=2
+    else
+        scale=$2
+    fi
+    # divide by 1 to make sure scale is applied
+    echo "scale=$scale; $1/1" | bc
 }
 
 function abs() {
-    if "$1" ; then
-        calc "0 - $1"  
+    if [ -z "`echo $1 | grep '-'`" ] ; then
+        calc "0 - $1" $2 
+    else
+        calc "$1" $2 #make sure scale is applied
     fi           
 }
 
 function diff() {
     d=`calc "$1 - $2"`
-    if [ `abs "$d"` -eq 0 ]; then
+    if [ `abs "$d"` ==  "0" ]; then
         echo 0;
     else
-        echo 1;
+        echo "$1->$2";
+    fi
+}
+
+function diffBBox() {
+    BBOX1=$1
+    BBOX2=$2
+    set -- $BBOX1
+    ulx1=$1
+    uly1=$2
+    lrx1=$3
+    lry1=$4
+
+    set -- $BBOX2
+    ulx2=$1
+    uly2=$2
+    lrx2=$3
+    lry2=$4
+
+    dulx=`calc "$ulx1 - $ulx2"`
+    duly=`calc "$uly1 - $uly2"`
+    dlrx=`calc "$lrx1 - $lrx2"`
+    dlry=`calc "$lry1 - $lry2"`
+
+    if [ `abs $dulx 0` -gt 1 -o `abs $duly 0` -gt 1 -o `abs $dlrx 0` -gt 1 -o `abs $dlry 0` -gt 1 ]; then
+        echo 1
+    else 
+        echo 0
     fi
 }
 
@@ -41,39 +78,30 @@ RRES2=`filter "$RES2" "RASTER"`
 VRES1=`filter "$RES1" "VECTOR"`
 VRES2=`filter "$RES2" "VECTOR"`
 
-echo -e "RRES1:\n$RRES1"
-echo -e "RRES2:\n$RRES2"
-echo -e "VRES1:\n$VRES1"
-echo -e "VRES2:\n$VRES2"
-
-PCNT1=`value "$VRES1" "penDown"
-echo "################ PCNT1: $PCNT1"
-PCNT2=`value "$VRES2" "penDown"
+PCNT1=`value "$VRES1" "penDown"`
+PCNT2=`value "$VRES2" "penDown"`
 
 PDIFF=`diff $PCNT1 $PCNT2`
 
-TOTCNT1=`value "$VRES1" "total"`
-TOTCNT2=`value "$VRES2" "total"`
+WORKLEN1=`value "$VRES1" "work"`
+WORKLEN2=`value "$VRES2" "work"`
 
-TOTDIFF=`diff $TOTCNT1 $TOTCNT2`
+WORKDIFF=`diff $WORKLEN1 $WORKLEN2`
 
-MCNT1=`value "$VRES1" "move"
-MCNT2=`value "$VRES2" "move"
+MOVELEN1=`value "$VRES1" "move"`
+MOVELEN2=`value "$VRES2" "move"`
 
-MDIFF=`diff $MCNT1 $MCNT2`
+MOVEDIFF=`diff $MOVELEN1 $MOVELEN2`
 
-SEGCNT1=`value "$VRES1" "segment"
-SEGCNT2=`value "$VRES2" "segment"
+SEGCNT1=`value "$VRES1" "segment"`
+SEGCNT2=`value "$VRES2" "segment"`
 
 SEGDIFF=`diff $SEGCNT1 $SEGCNT2`
 
-BBOXCNT1=`value "$VRES1" "bounding"
-BBOXCNT2=`value "$VRES2" "bounding"
+BBOX1=`filter "$VRES1" "bounding" | cut -d"=" -f2`
+BBOX2=`filter "$VRES2" "bounding" | cut -d"=" -f2`
 
-BBOXDIFF=1
-if [ "$BBOXCNT1" == "$BBOXCNT2" ]; then 
-    BBOXDIFF=0
-fi
+BBOXDIFF=`diffBBox "$BBOX1" "$BBOX2"`
 
-echo "$PDIFF $TOTDIFF $MDIFF $SEGDIFF $BBOXDIFF"
+echo "$PDIFF $WORKDIFF $MOVEDIFF $SEGDIFF $BBOXDIFF"
 
