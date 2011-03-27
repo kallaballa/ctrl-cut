@@ -26,6 +26,7 @@
 #include "Interpreter.h"
 #include "2D.h"
 #include "PclIntConfig.h"
+#include "Plotter.h"
 
 using std::ofstream;
 using std::ifstream;
@@ -121,18 +122,9 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  stringstream ss;
-
-  ss << "Vector bounding box: " << *intr.vectorPlotter->getBoundingBox();
-  trace->info(ss.str());
-  ss.str("");
-
-  ss << "Raster bounding box: " << *intr.bitmapPlotter->getBoundingBox();
-  trace->info(ss.str());
-  ss.str("");
-
-  ss << "Combined bounding box: " << combinedBBox;
-  trace->info(ss.str());
-
+  if(PclIntConfig::singleton()->debugLevel >= LVL_INFO) {
+    Statistic::singleton()->printSlot(cerr, SLOT_VECTOR);
+    Statistic::singleton()->printSlot(cerr, SLOT_RASTER);
+  }
   return 0;
 }

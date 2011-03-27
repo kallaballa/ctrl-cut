@@ -86,9 +86,9 @@ public:
 
   bool matches(const string& signature, bool report=false) {
     bool m = memcmp(this, signature.c_str(), 3) == 0;
-    if(!m && report)
+    if(!m && report && PclIntConfig::singleton()->debugLevel >= LVL_WARN) {
       cerr << "expected: " << signature << " found: " << (char*)this << endl;
-
+    }
     return m;
   }
 
