@@ -69,8 +69,8 @@ function diffBBox() {
     fi
 }
 
-RES1=`$CC_PCLINT -a -b "$F1.png" "$F1" | grep "|"`
-RES2=`$CC_PCLINT -a -b "$F2.png" "$F2" | grep "|"`
+RES1=`$CC_PCLINT -dwarn -a -b "$F1.png" "$F1" | grep "|"`
+RES2=`$CC_PCLINT -dwarn -a -b "$F2.png" "$F2" | grep "|"`
 
 RRES1=`filter "$RES1" "RASTER"`
 RRES2=`filter "$RES2" "RASTER"`
