@@ -89,8 +89,8 @@ o Vector Settings:
   - Vector freq = 1053
   - Vector Sorting on
 o Raster Settings:
-  - Raster speed = 50
-  - Raster power = 50
+  - Raster speed = 100
+  - Raster power = 20
   - Engrave Direction = Top-Down
   - Image Dithering = Standard
 o NB! If any of the settings are changed, this must be encoded into a
