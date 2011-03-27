@@ -110,7 +110,6 @@ int main(int argc, char *argv[]) {
       combinedout << "";
     }
 
-
     if (config->combinedFilename) {
       if (combinedBBox.isValid()) {
         combinedImage->save(config->combinedFilename);
