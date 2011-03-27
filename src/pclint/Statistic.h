@@ -40,7 +40,7 @@ public:
 
 class Statistic {
 private:
-  Slot *slots;
+  const Slot *slots;
   const double in_factor;
   const double mm_factor;
   static Statistic* instance;
