@@ -72,36 +72,62 @@ function diffBBox() {
 RES1=`$CC_PCLINT -dwarn -a -b "$F1.png" "$F1" | grep "|"`
 RES2=`$CC_PCLINT -dwarn -a -b "$F2.png" "$F2" | grep "|"`
 
-RRES1=`filter "$RES1" "RASTER"`
-RRES2=`filter "$RES2" "RASTER"`
+R_RES1=`filter "$RES1" "RASTER"`
+R_RES2=`filter "$RES2" "RASTER"`
 
-VRES1=`filter "$RES1" "VECTOR"`
-VRES2=`filter "$RES2" "VECTOR"`
+V_RES1=`filter "$RES1" "VECTOR"`
+V_RES2=`filter "$RES2" "VECTOR"`
 
-PCNT1=`value "$VRES1" "penDown"`
-PCNT2=`value "$VRES2" "penDown"`
+V_PDCNT1=`value "$V_RES1" "penDown"`
+V_PDCNT2=`value "$V_RES2" "penDown"`
 
-PDIFF=`diff $PCNT1 $PCNT2`
+V_PDDIFF=`diff $V_PDCNT1 $V_PDCNT2`
 
-WORKLEN1=`value "$VRES1" "work"`
-WORKLEN2=`value "$VRES2" "work"`
+V_WORKLEN1=`value "$V_RES1" "work"`
+V_WORKLEN2=`value "$V_RES2" "work"`
 
-WORKDIFF=`diff $WORKLEN1 $WORKLEN2`
+V_WORKDIFF=`diff $V_WORKLEN1 $V_WORKLEN2`
 
-MOVELEN1=`value "$VRES1" "move"`
-MOVELEN2=`value "$VRES2" "move"`
+V_MOVELEN1=`value "$V_RES1" "move"`
+V_MOVELEN2=`value "$V_RES2" "move"`
 
-MOVEDIFF=`diff $MOVELEN1 $MOVELEN2`
+V_MOVEDIFF=`diff $V_MOVELEN1 $V_MOVELEN2`
 
-SEGCNT1=`value "$VRES1" "segment"`
-SEGCNT2=`value "$VRES2" "segment"`
+V_SEGCNT1=`value "$V_RES1" "segment"`
+V_SEGCNT2=`value "$V_RES2" "segment"`
 
-SEGDIFF=`diff $SEGCNT1 $SEGCNT2`
+V_SEGDIFF=`diff $V_SEGCNT1 $V_SEGCNT2`
 
-BBOX1=`filter "$VRES1" "bounding" | cut -d"=" -f2`
-BBOX2=`filter "$VRES2" "bounding" | cut -d"=" -f2`
+V_BBOX1=`filter "$V_RES1" "bounding" | cut -d"=" -f2`
+V_BBOX2=`filter "$V_RES2" "bounding" | cut -d"=" -f2`
 
-BBOXDIFF=`diffBBox "$BBOX1" "$BBOX2"`
+V_BBOXDIFF=`diffBBox "$V_BBOX1" "$V_BBOX2"`
 
-echo "$PDIFF $WORKDIFF $MOVEDIFF $SEGDIFF $BBOXDIFF"
+R_PDCNT1=`value "$R_RES1" "penDown"`
+R_PDCNT2=`value "$R_RES2" "penDown"`
+
+R_PDDIFF=`diff $R_PDCNT1 $R_PDCNT2`
+
+R_WORKLEN1=`value "$R_RES1" "work"`
+R_WORKLEN2=`value "$R_RES2" "work"`
+
+R_WORKDIFF=`diff $R_WORKLEN1 $R_WORKLEN2`
+
+R_MOVELEN1=`value "$R_RES1" "move"`
+R_MOVELEN2=`value "$R_RES2" "move"`
+
+R_MOVEDIFF=`diff $R_MOVELEN1 $R_MOVELEN2`
+
+R_SEGCNT1=`value "$R_RES1" "segment"`
+R_SEGCNT2=`value "$R_RES2" "segment"`
+
+R_SEGDIFF=`diff $R_SEGCNT1 $R_SEGCNT2`
+
+R_BBOX1=`filter "$R_RES1" "bounding" | cut -d"=" -f2`
+R_BBOX2=`filter "$R_RES2" "bounding" | cut -d"=" -f2`
+
+R_BBOXDIFF=`diffBBox "$R_BBOX1" "$R_BBOX2"`
+
+
+echo "$V_PDDIFF $V_WORKDIFF $V_MOVEDIFF $V_SEGDIFF $V_BBOXDIFF $R_PDDIFF $R_WORKDIFF $R_MOVEDIFF $R_SEGDIFF $R_BBOXDIFF"
 
