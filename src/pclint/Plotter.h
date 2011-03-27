@@ -46,7 +46,7 @@ private:
   BoundingBox *clip;
   bool down;
   CImg<uint8_t> *imgBuffer;
-  uint8_t intensity[4];
+  uint8_t intensity[2];
 public:
   Point penPos;
 
@@ -58,10 +58,8 @@ public:
     }
     intensity[0] = 255;
     intensity[1] = 0;
-    intensity[2] = 0;
-    intensity[3] = 128;
 
-    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 4, 255);
+    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 2, 255);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
@@ -243,8 +241,8 @@ public:
       start.x = bbox.ul.x;
       start.y = bbox.ul.y;
 
-      size.x = bbox.lr.x - bbox.ul.x + 1;
-      size.y = bbox.lr.y - bbox.ul.y + 1;
+      size.x = bbox.lr.x - bbox.ul.x;
+      size.y = bbox.lr.y - bbox.ul.y;
     }
 
     CImg<uint8_t>* canvas;
@@ -252,19 +250,16 @@ public:
     if(img != NULL)
       canvas = img;
     else {
-      canvas = new CImg<uint8_t>(size.x*8, size.y, 1, 4, 255);
+      canvas = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
     }
 
-    uint8_t on[4] = {0, 255, 0, 255};
-    uint8_t off[4] = {255, 255, 255, 0};
-    uint8_t* color;
-
+    uint8_t on = 0;
     for (uint32_t y=0;y<size.y;y++) {
-      for (uint32_t x=0;x<size.x;x++) {
+      for (uint32_t x=0;x<(size.x/8);x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
         for (int b=0;b<8;b++) {
-          color = (bitmap & (0x80 >> b)) ? on : off;
-          canvas->draw_point(x*8 + b, y, color);
+          if((bitmap & (0x80 >> b)))
+            canvas->draw_point(x*8 + b, y, &on);
         }
       }
     }
