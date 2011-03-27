@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if(PclIntConfig::singleton()->debugLevel >= LVL_INFO) {
+  if(config->debugLevel >= LVL_INFO) {
     Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
     Statistic::singleton()->printSlot(cout, SLOT_RASTER);
   }
