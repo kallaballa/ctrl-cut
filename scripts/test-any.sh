@@ -59,7 +59,7 @@ runtest()
   else
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    src/pclint/pclint -a -b $outfile.png $outfile 2>> $testcase.log
+    rtlcompare=`scripts/rtlcompare.sh $outfile $prnfile 2>> $testcase.log`
     if [ $? -ne 0 -o ! -f $outfile.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
@@ -71,7 +71,6 @@ runtest()
     fi
 
     pad "no" 5
-    src/pclint/pclint -a -b $prnfile.png $prnfile 2>> $testcase.log
     if [ $? -ne 0  -o ! -f $prnfile.png ]; then
       errorstr="Err"
     fi
@@ -88,8 +87,6 @@ runtest()
     pad "$pixelstr" 7
 
     # Compare bboxes, number of polylines and total cut length
-    rtlcompare=`python/rtlinfo.py $prnfile $outfile`
-
     bbox_diff=`echo $rtlcompare | awk '{print $5}'`
     if [ $bbox_diff != "0" ]; then
         bboxstr="Err"
