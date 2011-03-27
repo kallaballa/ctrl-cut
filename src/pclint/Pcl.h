@@ -151,7 +151,7 @@ public:
 
   void info(string msg) {
     if(PclIntConfig::singleton()->debugLevel >= LVL_INFO)
-      cerr << msg << endl;
+      cout << msg << endl;
   }
 
   void warn(string msg) {
