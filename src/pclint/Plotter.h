@@ -254,7 +254,6 @@ public:
       size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
     }
 
-
     CImg<uint8_t>* canvas;
 
     if(img != NULL)
