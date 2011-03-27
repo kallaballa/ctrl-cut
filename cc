@@ -42,6 +42,7 @@ export CC_BINARY="$CC_BASE/src/cups-filter/ctrl-cut"
 export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 export CC_PACKAGING="$CC_BASE/packaging"
 export CC_VERSION="0.1"
+export CC_PCLINT="src/pclint/pclint"
 
 . $CC_FUNCTIONS
 
@@ -59,6 +60,8 @@ verbose "CC_TEST_CODE=$CC_TEST_CODE"
 verbose "CC_PYTHON=$CC_PYTHON"
 verbose "CC_ETC=$CC_ETC"
 verbose "CC_BINARY=$CC_BINARY"
+verbose "CC_VERSION=$CC_VERSION"
+verbose "CC_PCLINT=$CC_PCLINT"
 
 SCRIPTNAME=$1
 shift
