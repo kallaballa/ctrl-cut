@@ -43,7 +43,6 @@ using namespace cimg_library;
 
 class VectorPlotter {
 private:
-  BoundingBox *bbox;
   BoundingBox *clip;
   bool down;
   CImg<uint8_t> *imgBuffer;
@@ -52,7 +51,7 @@ public:
   Point penPos;
 
   VectorPlotter(dim width, dim height, BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
+    clip(clip), down(false), penPos(0, 0) {
     if (clip != NULL) {
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
@@ -66,7 +65,7 @@ public:
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), down(false), penPos(0, 0) {
+    clip(clip), down(false), penPos(0, 0) {
     this->imgBuffer = NULL;
   }
 
@@ -112,14 +111,6 @@ public:
       clip_offY = clip->ul.y;
     }
 
-    // x coordinates point to the left of a pixel. therefore don't draw the last coordinate
-    // This is done before the bbox calculation to avoid an off-by-one error as the bbox
-    // is specified in pixels, inclusive the end pixels.
-    //drawTo.x--;
-
-    this->bbox->update(drawFrom);
-    this->bbox->update(drawTo);
-
     drawFrom.x -= clip_offX;
     drawFrom.y -= clip_offY;
     drawTo.x -= clip_offX;
@@ -146,15 +137,16 @@ public:
     }
   }
 
-  virtual BoundingBox* getBoundingBox() {
-    return bbox;
+  virtual BoundingBox& getBoundingBox() {
+    return Statistic::singleton()->getBoundingBox(SLOT_VECTOR);
   }
 
   virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
     CImg<uint8_t>* canvas;
+
     if (PclIntConfig::singleton()->autocrop) {
-      canvas = &(imgBuffer->crop(this->bbox->ul.x, this->bbox->ul.y,
-          this->bbox->lr.x, this->bbox->lr.y, false));
+      BoundingBox& bbox = getBoundingBox();
+      canvas = &(imgBuffer->crop(bbox.ul.x, bbox.ul.y, bbox.lr.x, bbox.lr.y, false));
     } else {
       canvas = imgBuffer;
     }
@@ -170,7 +162,6 @@ public:
 
 class BitmapPlotter {
 private:
-  BoundingBox *bbox;
   BoundingBox *clip;
   uint32_t width;
   uint32_t height;
@@ -182,7 +173,7 @@ public:
   // width/height is given in bytes
   //
   BitmapPlotter(uint32_t width, uint32_t height, BoundingBox *clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), width(width), height(height), penPos(0, 0) {
+    clip(clip), width(width), height(height), penPos(0, 0) {
     if (clip != NULL) {
       this->width = clip->min(width, clip->lr.x - clip->ul.x);
       this->height = clip->min(height, clip->lr.y - clip->ul.y);
@@ -193,7 +184,7 @@ public:
   }
 
   BitmapPlotter(BoundingBox* clip = NULL) :
-    bbox(new BoundingBox()), clip(clip), penPos(0, 0) {
+    clip(clip), penPos(0, 0) {
     this->imgbuffer = NULL;
   }
 
@@ -231,27 +222,27 @@ public:
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
       this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
-      this->bbox->update(this->penPos.x + i*dir, this->penPos.y);
     }
     Statistic::singleton()->announcePenUp(SLOT_RASTER);
   }
 
-  virtual BoundingBox* getBoundingBox() {
-    return bbox;
+  virtual BoundingBox& getBoundingBox() {
+    return Statistic::singleton()->getBoundingBox(SLOT_RASTER);
   }
 
   virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
-    if(!this->bbox->isValid())
+    BoundingBox bbox = getBoundingBox();
+    if(!bbox.isValid())
       return NULL;
 
     Point start(0,0);
     Point size(this->width, this->height);
     if (PclIntConfig::singleton()->autocrop) {
-      start.x = this->bbox->ul.x;
-      start.y = this->bbox->ul.y;
+      start.x = bbox.ul.x;
+      start.y = bbox.ul.y;
 
-      size.x = this->bbox->lr.x - this->bbox->ul.x + 1;
-      size.y = this->bbox->lr.y - this->bbox->ul.y + 1;
+      size.x = bbox.lr.x - bbox.ul.x + 1;
+      size.y = bbox.lr.y - bbox.ul.y + 1;
     }
 
     CImg<uint8_t>* canvas;
