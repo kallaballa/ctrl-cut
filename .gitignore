@@ -4,3 +4,4 @@ EpilogFilter
 out.*
 tmp.*
 tmp-*
+Makefile

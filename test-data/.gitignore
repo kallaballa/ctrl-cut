@@ -5,3 +5,6 @@
 *.pbm
 *.eps
 *.xml
+corel/*.png
+inkscape/*.png
+qcad/*.png
