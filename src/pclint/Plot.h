@@ -215,7 +215,7 @@ public:
   }
 
   void printSettings(ostream& os) {
-    if(PclIntConfig::singleton()->debugLevel >= LVL_INFO && settings.size() > 0) {
+    if(PclIntConfig::singleton()->debugLevel >= LVL_DEBUG && settings.size() > 0) {
       std::map<string, PclInstr*>::iterator it;
 
       os << "=== settings: " << endl;
