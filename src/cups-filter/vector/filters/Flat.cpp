@@ -44,8 +44,8 @@ void Flat::filter(Cut *cut) {
 
   for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     pl = (*it);
-    BBox* bb = pl->getBoundingBox();
-    Point2D* p = new Point2D(bb->ul_x, bb->ul_y);
+    BBox *bb = pl->getBoundingBox();
+    const Point2D &p = bb->ul;
     bool added = false;
     for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
       grid = *it_g;

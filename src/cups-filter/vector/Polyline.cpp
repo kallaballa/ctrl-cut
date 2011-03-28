@@ -122,9 +122,9 @@ Edge* Polyline::findLeftmostClockwise() {
 ostream& operator <<(ostream &os, Polyline &pl) {
   os << "<polyline id=\"" << pl.id << "\" >" << std::endl;
   BBox* bb = pl.getBoundingBox();
-  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul_x=\""
-      << bb->ul_x << "\" ul_y=\"" << bb->ul_y << "\" lr_x=\"" << bb->lr_x
-      << "\" lr_y=\"" << bb->lr_y << "\" />" << std::endl;
+  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul[0]=\""
+      << bb->ul[0] << "\" ul[1]=\"" << bb->ul[1] << "\" lr[0]=\"" << bb->lr[0]
+      << "\" lr[1]=\"" << bb->lr[1] << "\" />" << std::endl;
   for (Polyline::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
     os << *((Edge*) *it);
   }

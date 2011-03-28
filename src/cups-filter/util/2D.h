@@ -30,15 +30,25 @@
 
 using namespace std;
 
-struct Point2D {
-	Point2D(int x, int y) :
-		x(x), y(y) {
-	}
-	int x, y;
+class Point2D
+{
+public:
+  Point2D(int x, int y) { v[0] = x; v[1] = y; }
+  int &operator[](size_t idx) { return v[idx]; }
+  const int operator[](size_t idx) const { return v[idx]; }
+  bool operator==(const Point2D &other) const {
+    return this->v[0] == other.v[0] && this->v[1] == other.v[1];
+  }
+  float distance(const Point2D &other) const {
+    return sqrt((v[0] - other.v[0]) * (v[0] - other.v[0]) +
+                (v[1] - other.v[1]) * (v[1] - other.v[1]));
+  }
+
+protected:
+  int v[2];
 };
 
-template<class T>
-class Pixel {
+template<class T> class Pixel {
 public:
   T i;
   static const float rf = 0.2989f;
@@ -73,70 +83,66 @@ public:
 
 class Rectangle {
 public:
-	int ul_x, ul_y, lr_x, lr_y, width, height;
+  Point2D ul, lr;
 
-	Rectangle(int ul_x = std::numeric_limits<int>::max(), int ul_y = std::numeric_limits<int>::max(), int lr_x = 0, int lr_y = 0) {
-		this->ul_x = ul_x;
-		this->ul_y = ul_y;
-		this->lr_x = lr_x;
-		this->lr_y = lr_y;
+  //  Rectangle() { makeEmpty(); }
 
-		this->width = lr_x - ul_x;
-		this->height = lr_y - ul_y;
-	}
+  Rectangle(const Point2D &ul, const Point2D &lr) : ul(ul), lr(lr) { }
 
-	bool inside(Point2D* m, int tolerance = 0) {
-		return (m->x < (lr_x + tolerance) && m->x > (ul_x - tolerance) && m->y
-				< (lr_y + tolerance) && m->y > (ul_y - tolerance));
-	}
+  Rectangle(int ul_x = std::numeric_limits<int>::max(), int ul_y = std::numeric_limits<int>::max(), int lr_x = 0, int lr_y = 0) : ul(ul_x, ul_y), lr(lr_x, lr_y) { }
+
+  bool inside(const Point2D &m, int tolerance = 0) {
+    return (m[0] < (lr[0] + tolerance) && m[0] > (ul[0] - tolerance) &&
+            m[1] < (lr[1] + tolerance) && m[1] > (ul[1] - tolerance));
+  }
 };
 
 class BBox: public Rectangle {
- public:
-  bool inside(uint16_t x, uint16_t y, uint16_t tol_x = 0, uint16_t tol_y = 0) {
-    return (x < (lr_x + tol_x) && x > (ul_x - tol_x) && y < (lr_y + tol_y)
-            && y > (ul_y - tol_y));
+public:
+  bool inside(const Point2D &p, uint16_t tol_x = 0, uint16_t tol_y = 0) {
+    return (p[0] < (lr[0] + tol_x) && p[0] > (ul[0] - tol_x) &&
+            p[1] < (lr[1] + tol_y) && p[1] > (ul[1] - tol_y));
   }
-
+  
   bool isValid() {
-    return this->ul_x < this->lr_x &&
-           this->ul_y < this->lr_y &&
-           this->ul_x < numeric_limits<int>::max() &&
-           this->ul_y < numeric_limits<int>::max() &&
-           this->lr_x >= 0 &&
-           this->lr_y >= 0;
+    return this->ul[0] < this->lr[0] &&
+      this->ul[1] < this->lr[1] &&
+      this->ul[0] < numeric_limits<int>::max() &&
+      this->ul[1] < numeric_limits<int>::max() &&
+      this->lr[0] >= 0 &&
+      this->lr[1] >= 0;
   }
 
   void invalidate() {
-    this->ul_x = std::numeric_limits<int>::max();
-    this->ul_y = std::numeric_limits<int>::max();
-    this->lr_x = -1;
-    this->lr_y = -1;
+    this->ul[0] = std::numeric_limits<int>::max();
+    this->ul[1] = std::numeric_limits<int>::max();
+    this->lr[0] = -1;
+    this->lr[1] = -1;
   }
 
   void adjustTo(int x, int y) {
-    this->ul_x = min(x, ul_x);
-    this->ul_y = min(y, ul_y);
-    this->lr_x = max(x, lr_x);
-    this->lr_y = max(y, lr_y);
+    this->ul[0] = min(x, ul[0]);
+    this->ul[1] = min(y, ul[1]);
+    this->lr[0] = max(x, lr[0]);
+    this->lr[1] = max(y, lr[1]);
   }
 
-  void adjustTo(Point2D* m) {
-    this->ul_x = min(m->x, ul_x);
-    this->ul_y = min(m->y, ul_y);
-    this->lr_x = max(m->x, lr_x);
-    this->lr_y = max(m->y, lr_y);
+  void adjustTo(const Point2D &m) {
+    this->ul[0] = min(m[0], ul[0]);
+    this->ul[1] = min(m[1], ul[1]);
+    this->lr[0] = max(m[0], lr[0]);
+    this->lr[1] = max(m[1], lr[1]);
   }
 
   void adjustTo(Rectangle* r) {
-    this->ul_x = min(r->ul_x, ul_x);
-    this->ul_y = min(r->ul_y, ul_y);
-    this->lr_x = max(r->lr_x, lr_x);
-    this->lr_y = max(r->lr_y, lr_y);
+    this->ul[0] = min(r->ul[0], ul[0]);
+    this->ul[1] = min(r->ul[1], ul[1]);
+    this->lr[0] = max(r->lr[0], lr[0]);
+    this->lr[1] = max(r->lr[1], lr[1]);
   }
 
   int distanceToOrigin(){
-    return sqrt(this->ul_x * this->ul_x + this->ul_y * this->ul_y);
+    return sqrt(this->ul[0] * this->ul[0] + this->ul[1] * this->ul[1]);
   }
 
 };

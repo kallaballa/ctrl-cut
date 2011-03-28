@@ -49,8 +49,8 @@ public:
     out << "P4\n" << width() << " " << height() << "\n";
     uint8_t *invertedline = new uint8_t[width()/8];
     uint8_t *scanlineptr = (uint8_t *)addr;
-    for (int j=0;j<height();j++) {
-      for (int i=0;i<width()/8;i++) {
+    for (uint32_t j=0;j<height();j++) {
+      for (uint32_t i=0;i<width()/8;i++) {
         invertedline[i] = ~(scanlineptr[i]);
       }
       out.write((const char *)invertedline, width()/8);

@@ -26,10 +26,10 @@
 
 int Vertex::cnt = 0;
 
-Vertex::Vertex(int x, int y) {
+Vertex::Vertex(int x, int y) : Point2D(x,y)
+{
   this->id = cnt++;
-  setX(x, false);
-  setY(y);
+  updateKey();
 }
 
 void Vertex::updateKey() {
@@ -50,18 +50,6 @@ void Vertex::attach(Edge* ls) {
 
 void Vertex::detach(Edge* ls) {
   this->edges.erase(ls);
-}
-
-void Vertex::setX(int x, bool update) {
-  this->v[0] = x;
-  if (update)
-    updateKey();
-}
-
-void Vertex::setY(int y, bool update) {
-  this->v[1] = y;
-  if (update)
-    updateKey();
 }
 
 const std::string &Vertex::getKey() const {

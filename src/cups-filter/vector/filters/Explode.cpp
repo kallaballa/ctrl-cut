@@ -45,14 +45,14 @@ void Explode::filter(Cut *cut)
         // FIXME: We should inherit speed and frequency too
 
         // if pick doesnt tip intersect remove it and split it in two
-        if (!(*pick)[0].equals(intersec) && !(*pick)[1].equals(intersec)) {
+        if (!((*pick)[0] == *intersec) && !((*pick)[1] == *intersec)) {
           it_i = mesh.eliminate(it_i);
           mesh.create(pick->start(), intersec, pick->power);
           mesh.create(pick->end(), intersec, pick->power);
         }
 
         // if candidate doesnt tip intersect remove it and split it in two
-        if (!(*candidate)[0].equals(intersec) && !(*candidate)[1].equals(intersec)) {
+        if (!((*candidate)[0] == *intersec) && !((*candidate)[1] == *intersec)) {
           it_j = mesh.eliminate(it_j);
           mesh.create(candidate->start(), intersec, candidate->power);
           mesh.create(candidate->end(), intersec, candidate->power);

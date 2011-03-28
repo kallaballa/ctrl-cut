@@ -39,12 +39,12 @@ class DownSample {
 
  public:
   DownSample(BBox* bbox, uint16_t res_x, uint16_t res_y,
-     uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
-    DownSample(Point2D* m_ul, uint16_t res_x, uint16_t res_y,
-  		uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
+             uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
+  DownSample(const Point2D &m_ul, uint16_t res_x, uint16_t res_y,
+             uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance);
   virtual ~DownSample(){}
   bool sample(BBox* bbox);
-  bool sample(Point2D* m);
+  bool sample(const Point2D &m);
   BBox getBoundingBox();
   void resize(uint16_t width, uint16_t height);
   list<PixelBox*> getPixels();
