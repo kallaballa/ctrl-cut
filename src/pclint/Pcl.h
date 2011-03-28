@@ -100,7 +100,7 @@ public:
   }
 
   //FIXME friend used on a member function?
-  friend ostream& operator <<(ostream &os, PclInstr &instr) {
+  friend ostream& operator <<(ostream &os, const PclInstr &instr) {
     format fmtInstr("(%08X) %s%s%s = %d");
     fmtInstr % instr.file_off
         % PclInstr::pretty(instr.type)
