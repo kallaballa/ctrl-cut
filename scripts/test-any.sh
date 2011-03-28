@@ -16,7 +16,11 @@ shopt -s nullglob
 
 pad()
 {
-  echo -n $1
+  if [ $# -ge 3 ]; then
+      $3 $1
+  else
+    echo -n $1
+  fi
   s=$(printf "%$(($2-${#1}))s"); echo -n "${s// /.}"
 }
 
@@ -57,9 +61,12 @@ runtest()
   if [ $binary_ok == 1 ]; then
     echo -n OK
   else
+    pad "no" 5
+
+    color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh $outfile $prnfile 2>> $testcase.log`
+    rtlcompare=`scripts/rtlcompare.sh $prnfile $outfile 2>> $testcase.log`
     if [ $? -ne 0 -o ! -f $outfile.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
@@ -70,7 +77,6 @@ runtest()
       return
     fi
 
-    pad "no" 5
     if [ $? -ne 0  -o ! -f $prnfile.png ]; then
       errorstr="Err"
     fi
@@ -78,57 +84,68 @@ runtest()
       errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.png $outfile.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
+        color=green
       else
         pixelstr=`echo $errorstr | awk '{ print $3 }'`
       fi
     else 
       pixelstr=$errorstr
     fi
-    pad "$pixelstr" 7
+    pad "$pixelstr" 7 $color
 
     # Compare bboxes, number of polylines and total cut length
+    color=red
     bbox_diff=`echo $rtlcompare | awk '{print $5}'`
     if [ $bbox_diff != "0" ]; then
         bboxstr="Err"
     else
         bboxstr="OK"
+        color=green
     fi    
-    pad $bboxstr 6
+    pad $bboxstr 6 $color
 
+    color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
     if [ $polyline_diff != "0" ]; then
         plstr=$polyline_diff
     else
         plstr="OK"
+        color=green
     fi
-    pad $plstr 14
+    pad $plstr 14 $color
 
+    color=red
     length_diff=`echo $rtlcompare | awk '{print $2}'`
     if [ $length_diff != "0" ]; then
         lenstr="$length_diff"
     else
         lenstr="OK"
+        color=green
     fi
-    pad $lenstr 10
+    pad $lenstr 10 $color
 
+    color=red
     move_diff=`echo $rtlcompare | awk '{print $3}'`
     if [ $move_diff != "0" ]; then
         lenstr="$move_diff"
     else
         lenstr="OK"
+        color=green
     fi
-    pad $lenstr 10
+    pad $lenstr 10 $color
   fi
 
   if [ x$XML != "x" ]; then
+    color=red
     $CC_SCRIPTS/xml-test-filter.sh $srcdir/$testcase-*.xml >> $testcase.log
     xmlstatus="$?"
     if [ $xmlstatus != "0" ]; then
         xmlstr="Err"
     else
         xmlstr="OK"
+        color=green
     fi
-    echo -n $xmlstr
+    pad $xmlstr 2 $color
   fi
 
   echo
