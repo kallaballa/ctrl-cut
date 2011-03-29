@@ -420,6 +420,10 @@ void PostscriptParser::copyPage()
   
   // BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
   // if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
+  // else {
+  //   GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
+  //   if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
+  // }
 #endif
 }
 
