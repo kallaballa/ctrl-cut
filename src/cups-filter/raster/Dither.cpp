@@ -129,8 +129,7 @@ BitmapImage& Dither::dither() {
       *(data++) = bitmap;
     }
   }
-  this->img.saveAsPGM("dither.pgm");
-  result.saveAsPBM("dither.pbm");
+
   return result;
 }
 

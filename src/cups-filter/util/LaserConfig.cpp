@@ -146,7 +146,6 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
     this->enable_vector = strcmp(v, "false");
   }
-  this->enable_raster = true;
   LOG_DEBUG(this->focus);
   LOG_DEBUG(this->resolution);
   LOG_DEBUG(this->raster_speed);
