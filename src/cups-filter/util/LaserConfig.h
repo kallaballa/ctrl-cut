@@ -49,7 +49,10 @@ public:
 
   enum RasterDithering {
     DITHER_DEFAULT,
-    DITHER_DARKEN
+    DITHER_DARKEN,
+    DITHER_THRESHOLD,
+    DITHER_BAYER,
+    DITHER_FLOYD_STEINBERG
   };
 
   RasterDithering raster_dithering;

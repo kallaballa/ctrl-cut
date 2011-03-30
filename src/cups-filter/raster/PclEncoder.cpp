@@ -19,6 +19,7 @@
 
 #include <boost/format.hpp>
 #include <math.h>
+#include "Dither.h"
 #include "PclEncoder.h"
 
 using boost::format;
@@ -62,27 +63,17 @@ void PclEncoder::encode(Raster *raster, ostream &out)
     LOG_DEBUG_STR("Encoding tile..");
     BitmapImage *bitmap = dynamic_cast<BitmapImage*>(*it);
     if (!bitmap) {
-      LOG_FATAL_STR("Only bitmaps supported at the moment");
+      GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(*it);
+      if(gsimage) {
+        Dither& dither = Dither::create(*gsimage, lconf->raster_dithering);
+        bitmap = &dither.dither();
+      }
     }
+
     assert(bitmap);
     if (bitmap) encodeBitmapTile(bitmap, out);
   }
   out << R_END; // end raster
-}
-
-void PclEncoder::averageXSequence(GrayscaleImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p){
-  float cumm = 0;
-
-  for (int x = fromX; x < toX; x++){
-    img->readPixel(x, y, p);
-    cumm += p.i;
-  }
-  cumm = cumm / (toX - fromX);
-
-  if(cumm < 255 && cumm > 254)
-    cumm = 254;
-
-  p.i = cumm;
 }
 
 void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out)

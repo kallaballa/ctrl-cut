@@ -98,6 +98,9 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   if ((v = cupsGetOption("RasterDithering", numOptions, options))) {
     if (!strcmp(v, "Default")) this->raster_dithering = DITHER_DEFAULT;
     else if (!strcmp(v, "Darken")) this->raster_dithering = DITHER_DARKEN;
+    else if (!strcmp(v, "Threshold")) this->raster_dithering = DITHER_THRESHOLD;
+    else if (!strcmp(v, "Bayer")) this->raster_dithering = DITHER_BAYER;
+    else if (!strcmp(v, "FloydSteinberg")) this->raster_dithering = DITHER_FLOYD_STEINBERG;
     else {
       LOG_WARN_MSG("Illegal value for RasterDithering", v);
     }
@@ -138,6 +141,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
     this->enable_vector = strcmp(v, "false");
   }
+  this->enable_raster = true;
   LOG_DEBUG(this->focus);
   LOG_DEBUG(this->resolution);
   LOG_DEBUG(this->raster_speed);
