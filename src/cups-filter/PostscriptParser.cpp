@@ -433,6 +433,7 @@ void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage
   if (this->rasterformat == BITMAP) {
     this->gsimage = new BitmapImage(width, height, (uint8_t *)pimage);
     if (rowstride != 0) this->gsimage->setRowstride(rowstride);
+    //FIXME allocate at construction?
     this->image = new BitmapImage(width, height);
   }
   else if (this->rasterformat == GRAYSCALE) {
