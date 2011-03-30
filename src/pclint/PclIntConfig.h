@@ -30,7 +30,7 @@ enum DEBUG_LEVEL {
 };
 class PclIntConfig {
 private:
-  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), combinedFilename(NULL), debugLevel(LVL_INFO) {};
+  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), combinedFilename(NULL), debugLevel(LVL_WARN) {};
   static PclIntConfig* instance;
 public:
   bool interactive;

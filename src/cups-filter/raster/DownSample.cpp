@@ -21,8 +21,8 @@
 
 using namespace std;
 
-DownSample::DownSample(Point2D* p_ul, uint16_t res_x, uint16_t res_y,
-    uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance) {
+DownSample::DownSample(const Point2D &p_ul, uint16_t res_x, uint16_t res_y,
+                       uint16_t pixel_width, uint16_t pixel_height, uint16_t tolerance) {
   this->res_x = res_x;
   this->res_y = res_y;
 
@@ -30,10 +30,9 @@ DownSample::DownSample(Point2D* p_ul, uint16_t res_x, uint16_t res_y,
   this->pixel_height = pixel_height;
   this->tolerance = tolerance;
 
-  this->boundingBox.ul_x = p_ul->x;
-  this->boundingBox.ul_y = p_ul->y;
-  this->boundingBox.lr_x = p_ul->x + pixel_width;
-  this->boundingBox.lr_y = p_ul->y + pixel_height;
+  this->boundingBox.ul = p_ul;
+  this->boundingBox.lr[0] = p_ul[0] + pixel_width;
+  this->boundingBox.lr[1] = p_ul[1] + pixel_height;
 
   this->image = NULL;
 }
@@ -47,21 +46,19 @@ DownSample::DownSample(BBox* bbox, uint16_t res_x, uint16_t res_y,
   this->pixel_height = pixel_height;
   this->tolerance = tolerance;
 
-  this->boundingBox.ul_x = bbox->ul_x;
-  this->boundingBox.ul_y = bbox->ul_y;
-  this->boundingBox.lr_x = bbox->ul_x + pixel_width;
-  this->boundingBox.lr_y = bbox->ul_y + pixel_height;
+  this->boundingBox.ul = bbox->ul;
+  this->boundingBox.lr[0] = bbox->ul[0] + pixel_width;
+  this->boundingBox.lr[1] = bbox->ul[1] + pixel_height;
   this->image = NULL;
 }
 
 
-  bool DownSample::sample(Point2D* p) {
-    if (!boundingBox.inside(p->x, p->y, pixel_width * tolerance, pixel_height
-        * tolerance))
+  bool DownSample::sample(const Point2D &p) {
+    if (!boundingBox.inside(p, pixel_width * tolerance, pixel_height * tolerance))
       return false;
     else {
-      uint16_t cx = p->x / pixel_width;
-      uint16_t cy = p->y / pixel_height;
+      uint16_t cx = p[0] / pixel_width;
+      uint16_t cy = p[1] / pixel_height;
 
       //TODO figure appropriate growth rate
       if (image == NULL || cx >= this->res_x || cy >= this->res_y) {

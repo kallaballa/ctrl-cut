@@ -37,18 +37,17 @@ void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequenc
   }
 
   // FIXME: Clip against page size
-  if (start->getX() < 0 || start->getY() < 0 ||
-      end->getX() < 0 || end->getY() < 0) {
+  if ((*start)[0] < 0 || (*start)[1] < 0 || (*end)[0] < 0 || (*end)[1] < 0) {
     
-    if (start->getX() < 0) start->setX(0);
-    if (start->getY() < 0) start->setY(0);
-    if (end->getX() < 0) end->setX(0);
-    if (end->getY() < 0) end->setY(0);
+    if ((*start)[0] < 0) (*start)[0] = 0;
+    if ((*start)[1] < 0) (*start)[1] = 0;
+    if ((*end)[0] < 0) (*end)[0] = 0;
+    if ((*end)[1] < 0) (*end)[1] = 0;
 
     // FIXME: The Windows driver subtracts 1 point from the X
     // coordinate of the end of any line segment which is
     // clipped. Strange, but let's follow suit for now.
-    end->setX(end->getX()-1);
+    (*end)[0] -= 1;
   }
 
   start = mapVertex(start);

@@ -37,5 +37,4 @@ private:
   friend std::ostream &operator<<(std::ostream &os, const Edge &e);
 };
 
-
 #endif

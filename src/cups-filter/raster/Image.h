@@ -42,8 +42,8 @@ public:
     out << "P4\n" << width() << " " << height() << "\n";
     uint8_t *invertedline = new uint8_t[width()/8];
     uint8_t *scanlineptr = (uint8_t *)addr;
-    for (int j=0;j<height();j++) {
-      for (int i=0;i<width()/8;i++) {
+    for (uint32_t j=0;j<height();j++) {
+      for (uint32_t i=0;i<width()/8;i++) {
         invertedline[i] = ~(scanlineptr[i]);
       }
       out.write((const char *)invertedline, width()/8);
@@ -96,6 +96,25 @@ public:
     for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
     }
+  }
+
+  bool saveAsPGM(const std::string &filename) {
+    // Note: In the PBM format, 1 is black, 0 is white
+    // What we get from ghostscript, and use internally, is opposite
+    std::ofstream out(filename.c_str());
+    out << "P5\n" << width() << " " << height() << "\n";
+    out << "255\n";
+    uint8_t *invertedline = new uint8_t[width()];
+    uint8_t *scanlineptr = (uint8_t *)addr;
+    for (uint32_t j=0;j<height();j++) {
+      for (uint32_t i=0;i<width();i++) {
+        invertedline[i] = ~(scanlineptr[i]);
+      }
+      out.write((const char *)invertedline, width());
+      scanlineptr += this->row_stride;
+    }
+    delete invertedline;
+    return true;
   }
 };
 

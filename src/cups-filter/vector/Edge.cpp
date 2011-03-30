@@ -115,8 +115,8 @@ Vertex* Edge::intersects(const Edge &other) const
     int iy = (*this)[0][1] + ua * ((*this)[1][1] - (*this)[0][1]);
     
     Vertex* intersection = new Vertex(ix, iy);
-    if (((*this)[0].equals(intersection) || (*this)[1].equals(intersection)) &&
-        (other[0].equals(intersection) || other[1].equals(intersection))) {
+    if (((*this)[0] == *intersection || (*this)[1] == *intersection) &&
+        (other[0] == *intersection || other[1] == *intersection)) {
       return NULL; //tip intersection
     }
     else {

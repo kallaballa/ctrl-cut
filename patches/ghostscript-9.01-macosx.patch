@@ -1,0 +1,70 @@
+--- base/stdpre.h.orig	2007-09-25 22:31:24.000000000 +0900
++++ base/stdpre.h	2010-03-16 23:06:55.000000000 +0900
+@@ -17,9 +17,6 @@
+ #ifndef stdpre_INCLUDED
+ #  define stdpre_INCLUDED
+ 
+-/* Ghostscript uses transitional LFS functions. */
+-#define _LARGEFILE64_SOURCE 1
+-
+ /*
+  * Here we deal with the vagaries of various C compilers.  We assume that:
+  *      ANSI-standard Unix compilers define __STDC__.
+--- base/unix-dll.mak	2011-01-18 11:22:12.000000000 +0100
++++ base/unix-dll.mak	2011-03-18 01:35:12.000000000 +0100
+@@ -45,25 +45,25 @@
+ GS_SONAME_BASE=lib$(GS)
+ 
+ # GNU/Linux
+-GS_SOEXT=so
+-GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
+-GS_SONAME_MAJOR=$(GS_SONAME).$(GS_VERSION_MAJOR)
+-GS_SONAME_MAJOR_MINOR=$(GS_SONAME).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR)
++#GS_SOEXT=so
++#GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
++#GS_SONAME_MAJOR=$(GS_SONAME).$(GS_VERSION_MAJOR)
++#GS_SONAME_MAJOR_MINOR=$(GS_SONAME).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR)
+ #LDFLAGS_SO=-shared -Wl,-soname=$(GS_SONAME_MAJOR)
+ 
+ # NOTE: the value of LD_SET_DT_SONAME for, for example, Solaris ld, must contain the
+ # trailing space to separation it from the value of the option. For GNU ld and
+ # similar linkers it must containt the trailing "=" 
+-LDFLAGS_SO=-shared -Wl,$(LD_SET_DT_SONAME)$(LDFLAGS_SO_PREFIX)$(GS_SONAME_MAJOR)
++#LDFLAGS_SO=-shared -Wl,$(LD_SET_DT_SONAME)$(LDFLAGS_SO_PREFIX)$(GS_SONAME_MAJOR)
+ 
+ 
+ # MacOS X
+-#GS_SOEXT=dylib
+-#GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
+-#GS_SONAME_MAJOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_SOEXT)
+-#GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR).$(GS_SOEXT)
++GS_SOEXT=dylib
++GS_SONAME=$(GS_SONAME_BASE).$(GS_SOEXT)
++GS_SONAME_MAJOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_SOEXT)
++GS_SONAME_MAJOR_MINOR=$(GS_SONAME_BASE).$(GS_VERSION_MAJOR).$(GS_VERSION_MINOR).$(GS_SOEXT)
+ #LDFLAGS_SO=-dynamiclib -flat_namespace
+-#LDFLAGS_SO=-dynamiclib -install_name $(GS_SONAME_MAJOR_MINOR)
++LDFLAGS_SO=-dynamiclib -install_name ${prefix}/lib/$(GS_SONAME_MAJOR_MINOR)
+ #LDFLAGS_SO=-dynamiclib -install_name $(FRAMEWORK_NAME)
+ 
+ GS_SO=$(BINDIR)/$(GS_SONAME)
+--- base/unixinst.mak.orig	2010-08-01 00:04:24.000000000 +0900
++++ base/unixinst.mak	2010-09-02 02:18:32.000000000 +0900
+@@ -127,13 +127,13 @@
+ 	   C-style.htm Changes.htm Commprod.htm Copying.htm \
+ 	   Current.htm Deprecated.htm \
+ 	   DLL.htm Deprecated.htm Develop.htm Devices.htm Drivers.htm \
+-	   Fonts.htm Helpers.htm Hershey.htm \
++	   Fonts.htm GS9_Color_Management.pdf Helpers.htm Hershey.htm \
+ 	   History1.htm History2.htm History3.htm History4.htm \
+-	   History5.htm History6.htm History7.htm History8.htm \
+-	   Details.htm Details8.htm \
++	   History5.htm History6.htm History7.htm History8.htm History9.htm \
++	   Details.htm Details8.htm Details9.htm \
+ 	   Htmstyle.htm Humor.htm Issues.htm Install.htm Language.htm \
+ 	   Lib.htm Maintain.htm Make.htm New-user.htm \
+-	   News.htm Projects.htm Ps-style.htm Ps2epsi.htm Ps2pdf.htm \
++	   News.htm Projects.htm Ps-style.htm Ps2epsi.htm Ps2pdf.htm Ps2ps2.htm \
+ 	   Psfiles.htm Public.htm Readme.htm Release.htm \
+ 	   Source.htm Testing.htm Unix-lpr.htm \
+ 	   Use.htm Xfonts.htm

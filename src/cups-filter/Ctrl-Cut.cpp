@@ -233,6 +233,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     PostscriptParser *psparser = new PostscriptParser(lconf);
+    // Uncomment this to force ghostscript to render to file using the ppmraw
+    // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
     switch (lconf.raster_dithering) {
     case LaserConfig::DITHER_DEFAULT:

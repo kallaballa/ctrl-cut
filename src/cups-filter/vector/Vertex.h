@@ -5,8 +5,9 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include "util/2D.h"
 
-class Vertex
+class Vertex : public Point2D
 {
 public:
   typedef std::set<class Edge*> EdgeSet;
@@ -21,26 +22,13 @@ public:
   iterator end() { return this->edges.end(); }
   const_iterator end() const  { return this->edges.end(); }
 
-  int getX() const { return this->v[0]; }
-  int getY() const { return this->v[1]; }
-  int &operator[](size_t idx) { return v[idx]; }
-  const int operator[](size_t idx) const { return v[idx]; }
-
   int getID() const { return this->id; }
   const std::string &getKey() const;
 
-  void setX(int x, bool updateKey=true);
-  void setY(int y, bool updateKey=true);
-  bool operator==(const Vertex &other) const {
-    return this->v[0] == other.v[0] && this->v[1] == other.v[1];
-  }
-  bool equals(const Vertex *other) const {
-    return *this == *other;
-  }
-
-  float distance(const Vertex *other) const {
-    return sqrt((v[0] - other->v[0]) * (v[0] - other->v[0]) +
-                (v[1] - other->v[1]) * (v[1] - other->v[1]));
+  void setValue(int x, int y, bool update=true) {
+    this->v[0] = x;
+    this->v[1] = y;
+    if (update) updateKey();
   }
 
   void attach(Edge *ls);
@@ -51,7 +39,6 @@ private:
 
   static int cnt;
   int id;
-  int v[2];
   std::string key;
 
   EdgeSet edges;

@@ -72,7 +72,7 @@ void Reduce::filter(Cut *cut)
 
         // Check distance from every intermediate vertex to this vertex
         for (Polyline::iterator pit2 = startit; pit2 != pit; pit2++) {
-          float d = (*startit)->start()->distance((*pit2)->end());
+          float d = (*startit)->start()->distance(*(*pit2)->end());
           if (d > largest) {
             largest = d;
             largestit = pit2;
