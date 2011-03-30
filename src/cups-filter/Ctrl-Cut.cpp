@@ -238,9 +238,13 @@ int main(int argc, char *argv[]) {
     case LaserConfig::DITHER_DEFAULT:
       psparser->setRasterFormat(PostscriptParser::BITMAP);
       break;
+    case LaserConfig::DITHER_THRESHOLD:
+    case LaserConfig::DITHER_BAYER:
     case LaserConfig::DITHER_DARKEN:
+    case LaserConfig::DITHER_FLOYD_STEINBERG:
       psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
       break;
+
     default:
       assert(false);
     }
