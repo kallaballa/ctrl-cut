@@ -20,6 +20,7 @@
 #ifndef PLOT_H_
 #define PLOT_H_
 
+#include <assert.h>
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -178,9 +179,14 @@ private:
         buffer[0] = c;
         for (int i = 1; i < (bufSize - 1) && this->inputfile->good(); i++) {
           buffer[i] = c = this->inputfile->get();
-          if (!(isalnum(buffer[i]) || buffer[i] == '-')) {
-            buffer[i] = '\0';
-            this->inputfile->unget();
+
+          if (isupper(buffer[i])) {
+
+            if(i + 1 >= bufSize)
+              assert("Instruction exceeded pclplot buffer");
+            else
+              buffer[i + 1] = '\0';
+
             return off;
           }
         }
