@@ -101,6 +101,11 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     else if (!strcmp(v, "Threshold")) this->raster_dithering = DITHER_THRESHOLD;
     else if (!strcmp(v, "Bayer")) this->raster_dithering = DITHER_BAYER;
     else if (!strcmp(v, "FloydSteinberg")) this->raster_dithering = DITHER_FLOYD_STEINBERG;
+    else if (!strcmp(v, "Jarvis")) this->raster_dithering = DITHER_FLOYD_JARVIS;
+    else if (!strcmp(v, "Burke")) this->raster_dithering = DITHER_FLOYD_BURKE;
+    else if (!strcmp(v, "Stucki")) this->raster_dithering = DITHER_FLOYD_STUCKI;
+    else if (!strcmp(v, "Sierra2")) this->raster_dithering = DITHER_FLOYD_SIERRA2;
+    else if (!strcmp(v, "Sierra3")) this->raster_dithering = DITHER_FLOYD_SIERRA3;
     else {
       LOG_WARN_MSG("Illegal value for RasterDithering", v);
     }
