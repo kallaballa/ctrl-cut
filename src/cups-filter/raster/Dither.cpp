@@ -139,7 +139,7 @@ void Dither::reduce(Pixel<uint8_t>& pix, const uint8_t colors) {
 }
 
 //FIXME how to guarantee T is unsigned and carry signed?
-void Dither::add(Pixel<uint8_t>& pix, const int8_t carry) {
+void Dither::add(Pixel<uint8_t>& pix, const int8_t carry) const {
   uint8_t sum = pix.i + carry;
 
   //overflow?
