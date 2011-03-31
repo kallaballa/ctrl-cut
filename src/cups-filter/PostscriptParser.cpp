@@ -383,38 +383,32 @@ void PostscriptParser::printStatistics()
 
 void PostscriptParser::copyPage()
 {
-#if 0
-  uint32_t rowstride = this->image->width() * this->image->bytes_per_pixel;
-  size_t size = this->image->height() * rowstride;
+  size_t size = this->gsimage->rowstride() * this->image->height();
 
   // Quick and dirty scan for empty pixels to reduce size of initial malloc
+  uint8_t *gsaddr = (uint8_t *)this->gsimage->data();
   int i;
   for (i=0;i<size;i++) {
-    if (((uint8_t *)this->gsimage->addr)[i] != 0xff) break;
+    if ((gsaddr)[i] != 0xff) break;
   }
-  int startrow = i / rowstride;
+  int startrow = i / this->gsimage->rowstride();
   for (i=size-1;i>=0;i--) {
-    if (((uint8_t *)this->gsimage->addr)[i] != 0xff) break;
+    if ((gsaddr)[i] != 0xff) break;
   }
-  int endrow = i / rowstride;
+  int endrow = i / this->gsimage->rowstride();
 
   LOG_DEBUG(startrow);
   LOG_DEBUG(endrow);
 
   uint32_t newheight = endrow - startrow + 1;
-  size = newheight * rowstride;
-  uint32_t offset = startrow * rowstride;
+  size = newheight * this->gsimage->rowstride();
+  uint32_t offset = startrow * this->gsimage->rowstride();
 
-  this->image->addr = malloc(size);
-  assert(this->image->addr);
-  memcpy(this->image->addr, ((uint8_t *)this->gsimage->addr) + offset, size);
-  this->image->h = newheight;
-  this->image->translate(0, startrow);
-#else
-  size_t size = this->gsimage->rowstride() * this->image->height();
   void *dataptr = malloc(size);
   assert(dataptr);
-  memcpy(dataptr, this->gsimage->data(), size);
+  memcpy(dataptr, ((uint8_t *)this->gsimage->data()) + offset, size);
+  this->image->setSize(this->image->width(), newheight);
+  this->image->translate(0, startrow);
   this->image->setData(dataptr);
   this->image->setRowstride(this->gsimage->rowstride());
   
@@ -424,7 +418,6 @@ void PostscriptParser::copyPage()
   //   GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
   //   if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
   // }
-#endif
 }
 
 /*
