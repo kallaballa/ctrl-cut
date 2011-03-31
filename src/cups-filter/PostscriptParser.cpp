@@ -407,8 +407,8 @@ void PostscriptParser::copyPage()
   void *dataptr = malloc(size);
   assert(dataptr);
   memcpy(dataptr, ((uint8_t *)this->gsimage->data()) + offset, size);
-  this->image->setSize(this->image->width() - 8, newheight);
-  this->image->translate(1, startrow);
+  this->image->setSize(this->image->width(), newheight);
+  this->image->translate(0, startrow);
   this->image->setData(dataptr);
   this->image->setRowstride(this->gsimage->rowstride());
   
