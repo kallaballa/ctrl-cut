@@ -56,7 +56,17 @@ HEADERS += \
 SOURCES += \
           raster/DownSample.cpp \
           raster/PclEncoder.cpp \
-          raster/Raster.cpp
+          raster/Raster.cpp \
+          raster/Dither.cpp \
+          raster/DitherFloydSteinberg.cpp \
+          raster/DitherSierra3.cpp \
+          raster/DitherBayer.cpp \
+          raster/DitherJarvis.cpp \
+          raster/DitherStucki.cpp \
+          raster/DitherBurke.cpp \
+          raster/DitherSierra2.cpp \
+          raster/DitherThreshold.cpp
+          
 
 HEADERS  += \
           raster/DownSample.h \
@@ -66,4 +76,13 @@ HEADERS  += \
           raster/PclEncoder.h \
           raster/PPMFile.h \
           raster/Raster.h \
-
+          raster/Dither.h \
+          raster/DitherFloydSteinberg.h \
+          raster/DitherSierra3.h \
+          raster/DitherBayer.h \
+          raster/DitherJarvis.h \
+          raster/DitherStucki.h \
+          raster/DitherBurke.h \
+          raster/DitherSierra2.h \
+          raster/DitherThreshold.h
+          
