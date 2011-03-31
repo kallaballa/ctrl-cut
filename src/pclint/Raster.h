@@ -34,12 +34,12 @@ private:
 
 public:
   Point loc; // X position given in bytes
-  dim length;
   dim lineLen; // Pixel length in bytes
   coord linePos;
 
   bool fill;
   bool reverse;
+  dim length;
 
   Run(): length(0), lineLen(0), linePos(0) {}
 

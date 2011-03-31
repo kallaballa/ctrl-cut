@@ -207,7 +207,7 @@ public:
     Point from = pos;
     from.x *= 8;
     Point to = from;
-    to.x += abs(len) * 8 - 1;
+    to.x += len * 8 - 1 * dir;
 
     Statistic::singleton()->announcePenDown(SLOT_RASTER);
     Statistic::singleton()->announceWork(from, to, SLOT_RASTER);
