@@ -68,63 +68,56 @@ void Dither::carryOver(const uint32_t x, const uint32_t y, const int8_t carryove
   }
 }
 
-BitmapImage& Dither::dither() {
+BitmapImage &Dither::dither() {
   Pixel<uint8_t> pix;
-  uint8_t byteAlignOff = this->img.xPos() % 8;
+  uint8_t byteAlignOff = 8 - this->img.xPos() % 8;
   uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
 
-  uint8_t bitmap;
 
-  BitmapImage& result = *(new BitmapImage(img.width(), img.height()));
-  size_t size = img.height() * img.width();
+  uint32_t width = this->img.width() + (byteAlignOff ? 8 : 0);
+  BitmapImage& result = *(new BitmapImage(width, this->img.height()));
+  size_t size = this->img.height() * width / 8;
   void *dataptr = malloc(size);
   assert(dataptr);
   result.setData(dataptr);
 
-  uint8_t* data = (uint8_t*)result.data();
+  uint8_t *data = (uint8_t *)result.data();
 
+  uint8_t bitmap;
   for (unsigned int y = 0; y < this->img.height(); ++y) {
-    if(byteAlignOff) {
+    if (byteAlignOff) {
       bitmap = 0;
       for (unsigned int x = 0; x < byteAlignOff; x++) {
-        this->ditherPixel(x,y, pix);
+        this->ditherPixel(x, y, pix);
 
-        if(pix.i > 0)
-          bitmap |= (0x80 >> (8 - byteAlignOff));
+        if (pix.i > 0) {
+          bitmap |= (0x80 >> (8 - byteAlignOff + x));
+        }
       }
       *(data++) = bitmap;
     }
 
-    for (unsigned int x = byteAlignOff; x < scanlineBreak; x+=8) {
+    for (unsigned int x = 0; x < scanlineBreak - scanlineRem; x+=8) {
       bitmap = 0;
       for (uint8_t b = 0; b < 8; ++b) {
-        this->ditherPixel(x + b ,y, pix);
-        if(pix.i > 0)
+        this->ditherPixel(x + b + byteAlignOff, y, pix);
+        if (pix.i > 0) {
           bitmap |= (0x80 >> b);
+        }
       }
 
       *(data++) = bitmap;
     }
 
     if (scanlineRem) {
-      bitmap = *data;
-
-      for (unsigned int x = scanlineBreak; x < (scanlineBreak + scanlineRem); ++x) {
-        this->ditherPixel(x, y, pix);
-        if (pix.i > 127)
-          bitmap |= (0x80 >> (x - scanlineBreak));
-      }
-      *(data++) = bitmap;
-    }
-
-    if(byteAlignOff) {
       bitmap = 0;
-      for (unsigned int x = 0; x < byteAlignOff; x++) {
-        this->ditherPixel(x,y, pix);
 
-        if(pix.i > 127)
+      for (unsigned int x = 0; x < scanlineRem; ++x) {
+        this->ditherPixel(x + scanlineBreak + byteAlignOff, y, pix);
+        if (pix.i > 0) {
           bitmap |= (0x80 >> x);
+        }
       }
       *(data++) = bitmap;
     }
