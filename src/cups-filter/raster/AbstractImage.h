@@ -29,6 +29,10 @@ public:
   }
   virtual ~AbstractImage() {}
 
+  void setSize(uint32_t width, uint32_t height) {
+    this->w = width;
+    this->h = height;
+  }
   uint32_t width() const { return this->w; }
   uint32_t height() const { return this->h; }
   uint32_t xPos() const { return this->xpos; }
