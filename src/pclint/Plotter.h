@@ -207,10 +207,10 @@ public:
     Point from = pos;
     from.x *= 8;
     Point to = from;
-    to.x += abs(len);
+    to.x += abs(len) * 8 - 1;
 
     Statistic::singleton()->announcePenDown(SLOT_RASTER);
-    Statistic::singleton()->announceWork(penPos, to, SLOT_RASTER);
+    Statistic::singleton()->announceWork(from, to, SLOT_RASTER);
 
     if (this->clip) {
       if (this->penPos.y < this->clip->ul.y || this->penPos.y > this->clip->lr.y) return;
@@ -241,8 +241,8 @@ public:
       start.x = bbox.ul.x;
       start.y = bbox.ul.y;
 
-      size.x = bbox.lr.x - bbox.ul.x;
-      size.y = bbox.lr.y - bbox.ul.y;
+      size.x = bbox.lr.x - bbox.ul.x + 1;
+      size.y = bbox.lr.y - bbox.ul.y + 1;
     }
 
     CImg<uint8_t>* canvas;
