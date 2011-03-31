@@ -386,16 +386,16 @@ void PostscriptParser::copyPage()
   size_t size = this->gsimage->rowstride() * this->image->height();
 
   // Quick and dirty scan for empty pixels to reduce size of initial malloc
-  uint8_t *gsaddr = (uint8_t *)this->gsimage->data();
+  uint64_t *gsaddr = (uint64_t *)this->gsimage->data();
   int i;
-  for (i=0;i<size;i++) {
-    if ((gsaddr)[i] != 0xff) break;
+  for (i=0;i<size/8;i++) {
+    if (gsaddr[i] != 0xffffffffffffffff) break;
   }
-  int startrow = i / this->gsimage->rowstride();
-  for (i=size-1;i>=0;i--) {
-    if ((gsaddr)[i] != 0xff) break;
+  int startrow = i * 8 / this->gsimage->rowstride();
+  for (i=size/8-1;i>=0;i--) {
+    if (gsaddr[i] != 0xffffffffffffffff) break;
   }
-  int endrow = i / this->gsimage->rowstride();
+  int endrow = i * 8 / this->gsimage->rowstride();
 
   LOG_DEBUG(startrow);
   LOG_DEBUG(endrow);
@@ -407,8 +407,8 @@ void PostscriptParser::copyPage()
   void *dataptr = malloc(size);
   assert(dataptr);
   memcpy(dataptr, ((uint8_t *)this->gsimage->data()) + offset, size);
-  this->image->setSize(this->image->width(), newheight);
-  this->image->translate(0, startrow);
+  this->image->setSize(this->image->width() - 8, newheight);
+  this->image->translate(1, startrow);
   this->image->setData(dataptr);
   this->image->setRowstride(this->gsimage->rowstride());
   
