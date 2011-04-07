@@ -38,7 +38,7 @@ public:
 
   BitmapImage& dither();
   void reduce(Pixel<uint8_t>& pix, const uint8_t colors);
-  void add(Pixel<uint8_t>& pix, const int8_t carry);
+  void add(Pixel<uint8_t>& pix, const int8_t carry) const;
   void carryOver(const uint32_t x, const uint32_t y, const int8_t carryover, Pixel<uint8_t>& p);
   static Dither& create(GrayscaleImage& img, LaserConfig::RasterDithering dithering);
 };
