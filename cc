@@ -66,6 +66,8 @@ verbose "CC_PCLINT=$CC_PCLINT"
 SCRIPTNAME=$1
 shift
 
-if [ ! -f $SCRIPTNAME ];then SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME.sh; fi
+if [ ${SCRIPTNAME##*.} != "sh" ]; then SCRIPTNAME=$SCRIPTNAME.sh; fi
+
+if [ ! -f $SCRIPTNAME ];then SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME; fi
 
 [ $SCRIPTNAME ] && "$SCRIPTNAME" "$@" || echo "No script to run"
