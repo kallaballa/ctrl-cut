@@ -256,7 +256,7 @@ public:
     uint8_t on = 0;
     for (uint32_t y=0;y<size.y;y++) {
       for (uint32_t x=0;x<(size.x/8);x++) {
-        uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
+        uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x/8)];
         for (int b=0;b<8;b++) {
           if ((bitmap & (0x80 >> b))) {
             canvas->draw_point(x*8 + b, y, &on);
