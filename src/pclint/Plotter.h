@@ -236,7 +236,7 @@ public:
       return NULL;
 
     Point start(0,0);
-    Point size(this->width, this->height);
+    Point size(this->width * 8, this->height);
     if (PclIntConfig::singleton()->autocrop) {
       start.x = bbox.ul.x;
       start.y = bbox.ul.y;
@@ -258,8 +258,9 @@ public:
       for (uint32_t x=0;x<(size.x/8);x++) {
         uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x)];
         for (int b=0;b<8;b++) {
-          if((bitmap & (0x80 >> b)))
+          if ((bitmap & (0x80 >> b))) {
             canvas->draw_point(x*8 + b, y, &on);
+          }
         }
       }
     }
