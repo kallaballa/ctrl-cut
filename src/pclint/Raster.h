@@ -41,7 +41,7 @@ public:
   bool reverse;
   dim length;
 
-  Run(): length(0), lineLen(0), linePos(0) {}
+  Run(): lineLen(0), linePos(0), length(0) {}
 
   Run* init(PclInstr* yInstr, PclInstr* xInstr, PclInstr* pixelLen,  PclInstr* dataInstr) {
     this->loc.y = yInstr->value;
