@@ -72,6 +72,7 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
   bool bboxfound = false;
   bool landscape = false;
   bool portrait = false;
+  bool startfound = false;
 
   int l;
   while (cupsFileGetLine(ps_file, (char *) buf, sizeof(buf))) {
@@ -157,7 +158,8 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         //        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
       }
     }
-    else if (!strncasecmp((char *) buf, "%!", 2)) { // Start of document
+    else if (!startfound && !strncasecmp((char *) buf, "%!PS", 2)) { // Start of document
+      startfound = true;
       // Define === to print whatever is on the stack
       fprintf(eps_file, "/=== { (        ) cvs print } def\n");
       // Redefine stroke to also print the coordinates
