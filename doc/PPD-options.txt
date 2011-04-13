@@ -9,7 +9,7 @@ RasterRepeat
 VectorSpeed=[0-100]
 VectorPower=[0-100]
 VectorFrequency=[0-5000]
-VectorOptimize=0/1/2
+VectorOptimize=Simple/Inner-Outer/Flat
 FlipX / noFlipX
 Debug / noDebug
 EnableRaster / noEnableRaster
