@@ -67,7 +67,7 @@ runtest()
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
     rtlcompare=`scripts/rtlcompare.sh $prnfile $outfile 2>> $testcase.log`
-    if [ $? -ne 0 -o ! -f $outfile.png ]; then
+    if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
     fi
@@ -77,11 +77,11 @@ runtest()
       return
     fi
 
-    if [ $? -ne 0  -o ! -f $prnfile.png ]; then
+    if [ $? -ne 0  -o ! -f $prnfile-v.png ]; then
       errorstr="Err"
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn.png $outfile.png`
+      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn-v.png $outfile-v.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -90,6 +90,22 @@ runtest()
       fi
     else 
       pixelstr=$errorstr
+    fi
+    pad "$pixelstr" 7 $color
+
+    
+
+    if [ ! -f $prnfile-r.png ]; then
+      pixelstr="N/A"
+      color=red
+    else
+      errorstr=`scripts/compare-raster.sh $srcdir/$testcase.prn-r.png $outfile-r.png`
+      if [ $? == 0 ]; then
+        pixelstr="OK"
+        color=green
+      else
+        pixelstr=`echo $errorstr | awk '{ print $3 }'`
+      fi
     fi
     pad "$pixelstr" 7 $color
 
@@ -196,7 +212,8 @@ fi
 #Print header
 pad "Test case" 22
 pad "bin" 5
-pad "img" 7
+pad "vimg" 7
+pad "rimg" 7
 pad "bbox" 6
 pad "polylines" 14
 pad "length" 10
