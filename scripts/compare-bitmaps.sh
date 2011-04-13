@@ -14,7 +14,8 @@ shift $(($OPTIND - 1))
 # It's unknown why this happens..
 pixelerror=`compare -fuzz 10% -metric AE $1 $2 tmp.png 2>&1`
 if [ $? -ne 0 ]; then
-  exit 1 # Compare failed to read image
+    echo "General error: Ouch"
+    exit 1 # Compare failed to read image
 else
   # Check if $pixelerror contains an integer (it sometimes outputs things like '0 @ 0,0')
   if [ $pixelerror -eq $pixelerror 2> /dev/null ]; then
