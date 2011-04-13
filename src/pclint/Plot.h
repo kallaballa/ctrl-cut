@@ -113,6 +113,7 @@ public:
     } else {
       if (c == PCL_START_OF_INSTRUCTION) {
         this->invalidate("HPGL ended");
+        this->inputfile->unget();
         return NULL;
       }
 
@@ -397,6 +398,15 @@ public:
 
     if(checkHPGLContext())
         return HPGL_CONTEXT;
+
+    //try to initialize a new context and probe it
+    currentPclPlot = new PclPlot(inputfile);
+    if(checkPclContext())
+      return PCL_CONTEXT;
+
+    currentHpglPlot = new HpglPlot(inputfile);
+    if(checkHPGLContext())
+      return HPGL_CONTEXT;
 
     //try to initialize a new context and probe it
     currentPclPlot = new PclPlot(inputfile);
