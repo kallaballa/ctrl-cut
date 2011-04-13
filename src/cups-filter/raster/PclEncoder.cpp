@@ -100,7 +100,7 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out)
 
     if (l < width) {
       // a line to print
-      int packsize = width * 5 / 4 + 1;
+      int packsize = width * 2; // To be on the safe side
       char pack[packsize];
       // find left/right of data (dir==0 ? right : left )
       int r;
@@ -151,7 +151,7 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out)
           p = l;
           while (nextrun - p > 0) {
             // copy
-            uint8_t numbytes = nextrun - p;
+            int numbytes = nextrun - p;
             if (numbytes > 127) numbytes = 127;
             pack[n++] = numbytes - 1;
             for (int i=0;i<numbytes;i++) {
