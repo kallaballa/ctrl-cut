@@ -130,7 +130,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     this->vector_reduce = atof(v);
   }
   if ((v = cupsGetOption("VectorOptimize", numOptions, options))) {
-    if (!strcmp(v, "SIMPLE")) this->vector_optimize = OPTIMIZE_SIMPLE;
+    if (!strcmp(v, "Simple")) this->vector_optimize = OPTIMIZE_SIMPLE;
     else if (!strcmp(v, "Inner-Outer")) this->vector_optimize = OPTIMIZE_INNER_OUTER;
     else if (!strcmp(v, "Flat")) this->vector_optimize = OPTIMIZE_FLAT;
     else {
