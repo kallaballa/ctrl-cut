@@ -1,1 +1,1 @@
-EnableRaster
+EnableRaster RasterDithering=FloydSteinberg
