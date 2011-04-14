@@ -2,7 +2,7 @@ AutoFocus / noAutoFocus
 Resolution=75/150/300/600/1200
 RasterSpeed=[0-100]
 RasterPower=[0-100]
-RasterDithering=Default/Darken
+RasterDithering=Default/Darken/Threshold/Bayer/FloydSteinberg/Jarvis/Burke/Stucki/Sierra2/Sierra3
 RasterDirection=TopDown/BottomUp
 RasterMode
 RasterRepeat
