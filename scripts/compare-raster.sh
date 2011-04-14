@@ -14,7 +14,7 @@ shift $(($OPTIND - 1))
 # FIXME: Sometimes, compare fails when comparing very small images (e.g. 40 x 10 pixels).
 # It's unknown why this happens..
 
-pixelerror=`convert $1 $2 -scale 10% -scale 1000% -compose difference -composite -resize 1x1 PPM:/dev/stdout | tail -c1 | od -t d1 | tr -s " " | awk '{ print $2 }'`
+pixelerror=`convert $1 $2 -scale 10% -scale 1000% -compose difference -composite -resize 1x1 PPM:- | tail -c1 | od -t d1 | tr -s " " | awk '{ print $2 }'`
 
 #pixelerror=`echo "scale=2; $pixelerror/255" | bc`
 
