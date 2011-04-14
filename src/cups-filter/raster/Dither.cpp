@@ -70,7 +70,7 @@ void Dither::carryOver(const uint32_t x, const uint32_t y, const int8_t carryove
 
 BitmapImage &Dither::dither() {
   Pixel<uint8_t> pix;
-  uint8_t byteAlignOff = 8 - this->img.xPos() % 8;
+  uint8_t byteAlignOff = (8 - this->img.xPos() % 8) % 8;
   uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
 
