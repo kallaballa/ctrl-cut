@@ -97,7 +97,7 @@ runtest()
 
     if [ ! -f $prnfile-r.png ]; then
       pixelstr="N/A"
-      color=red
+      color=green
     else
       errorstr=`scripts/compare-raster.sh $srcdir/$testcase.prn-r.png $outfile-r.png`
       if [ $? == 0 ]; then
