@@ -20,7 +20,6 @@
 #include "Edge.h"
 #include "Vertex.h"
 #include "raster/DownSample.h"
-
 #include "stddef.h"
 #include "climits"
 #include "iostream"
@@ -122,9 +121,9 @@ Edge* Polyline::findLeftmostClockwise() {
 ostream& operator <<(ostream &os, Polyline &pl) {
   os << "<polyline id=\"" << pl.id << "\" >" << std::endl;
   BBox* bb = pl.getBoundingBox();
-  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul[0]=\""
-      << bb->ul[0] << "\" ul[1]=\"" << bb->ul[1] << "\" lr[0]=\"" << bb->lr[0]
-      << "\" lr[1]=\"" << bb->lr[1] << "\" />" << std::endl;
+  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul.x=\""
+      << bb->ul[0] << "\" ul.y=\"" << bb->ul[1] << "\" lr.x=\"" << bb->lr[0]
+      << "\" lr.y=\"" << bb->lr[1] << "\" />" << std::endl;
   for (Polyline::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
     os << *((Edge*) *it);
   }
