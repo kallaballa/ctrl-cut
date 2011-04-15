@@ -142,9 +142,8 @@ public:
   }
 
   int distanceToOrigin(){
-    return sqrt(this->ul[0] * this->ul[0] + this->ul[1] * this->ul[1]);
+    return hypot(this->ul[0], this->ul[1]);
   }
-
 };
 
 #endif /* TWOD_H_ */

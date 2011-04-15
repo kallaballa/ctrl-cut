@@ -82,14 +82,14 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.841772736" name="/" resourcePath="src/cups-filter/raster/filter">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1663501453" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.585424627" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.592636117"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.167450583" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.192506224"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1048904025" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1073741130"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1311842949" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.938735033"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1744988458" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1321971210"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1239158123" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1448181827"/>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.263738267" name="/" resourcePath="src/cups-filter/raster/filter">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1859522976" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.2053780670" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.592636117"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1041120731" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.192506224"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.373895115" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1073741130"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1403657967" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.938735033"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.725962327" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1321971210"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1890751718" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1448181827"/>
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.250644359.1457422446" name="Ctrl-Cut.h" rcbsApplicability="disable" resourcePath="src/cups-filter/Ctrl-Cut.h" toolsToInvoke=""/>

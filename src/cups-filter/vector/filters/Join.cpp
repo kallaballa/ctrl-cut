@@ -28,7 +28,6 @@
  */
 static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *current)
 {
-
   occupied.insert(current);
 
   for (Vertex::iterator it = (*current)[1].begin(); it != (*current)[1].end(); it++) {
@@ -40,6 +39,7 @@ static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *curre
       candidate->setEnd(candidate->start());
       candidate->setStart(current->end());
     }
+
     polyline->add(candidate);
     find_connected(occupied, polyline, candidate);
   }
@@ -58,9 +58,8 @@ void Join::filter(Cut *cut)
   for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
     Edge *edge = *it;
 
-    Polyline *polyline = new Polyline();
-
     if (occupied.find(edge) == occupied.end()) {
+      Polyline *polyline = new Polyline();
       polyline->add(edge);
       find_connected(occupied, polyline, edge);
       cut->add(polyline);

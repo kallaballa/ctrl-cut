@@ -6,5 +6,6 @@
 #include "Deonion.h"
 #include "Flat.h"
 #include "Reduce.h"
+#include "StreamLine.h"
 
 #endif /* FILTERS_H_ */

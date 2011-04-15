@@ -27,6 +27,7 @@ SOURCES += \
           vector/filters/Join.cpp \
           vector/filters/Flat.cpp \
           vector/filters/Reduce.cpp \
+          vector/filters/StreamLine.cpp \
           tri_logger/tri_logger.cpp
 
 HEADERS += \
@@ -50,6 +51,7 @@ HEADERS += \
           vector/filters/Join.h \
           vector/filters/Flat.h \
           vector/filters/Reduce.h \
+          vector/filters/StreamLine.h \
           tri_logger/tri_logger.hpp \
           tri_logger/nullstream.hpp
 
