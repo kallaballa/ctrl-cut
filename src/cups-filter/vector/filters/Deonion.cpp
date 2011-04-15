@@ -45,13 +45,13 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   for (Vertex::iterator it = edge->end()->begin(); it != edge->end()->end(); it++) {
     Edge *candidate = *it;
 
-    if (candidate == edge || !p->contains(candidate)) continue;
+    if (candidate == edge || !p->contains(candidate))
+      continue;
 
-    if (candidate->start() != edge->end()) {
+    if (candidate->start() != edge->end())
       candidate->invertDirection();
-    }
 
-    if(candidate->end() == edge->start())
+    if(p->size() > 1 && candidate->end() == edge->start())
       continue;
 
     float candidate_slope = candidate->getSlope();
@@ -72,9 +72,8 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
     // else, we reached a possible blind alley and must backtrack
     if (skin->isClosed()) return;
 
-
     edge->invertDirection();
-//    walkTheEdge(p, skin, edge, !cw);
+    walkTheEdge(p, skin, edge, !cw);
   } else if (next_edge != NULL) {
     if (!cw) {
       cw = true;
