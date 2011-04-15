@@ -56,6 +56,10 @@ const std::string &Vertex::getKey() const {
   return this->key;
 }
 
+int Vertex::distance(const Vertex &other) {
+  return hypot(abs(this->v[0] - other.v[0]), abs(this->v[1] - other.v[1]));
+}
+
 std::ostream &operator<<(std::ostream &os, const Vertex &v) {
   os << "<vertex x=\"" << v[0] << "\" y=\"" << v[1] << "\" id=\"" << v.getID()
      << "\" key=\"" << v.getKey() << "\" />" << std::endl;

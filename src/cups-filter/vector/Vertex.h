@@ -33,12 +33,11 @@ public:
 
   void attach(Edge *ls);
   void detach(Edge *ls);
-
+  int distance(const Vertex &other);
 private:
   void updateKey();
-
-  static int cnt;
   int id;
+  static int cnt;
   std::string key;
 
   EdgeSet edges;
