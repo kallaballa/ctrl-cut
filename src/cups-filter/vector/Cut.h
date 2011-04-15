@@ -43,6 +43,8 @@ public:
   const_iterator begin() const  { return this->polylines.begin(); }
   iterator end() { return this->polylines.end(); }
   const_iterator end() const  { return this->polylines.end(); }
+  PolylineVector::reference front() { return this->polylines.front(); }
+  PolylineVector::reference back() { return this->polylines.back(); }
   size_t size() const { return this->polylines.size(); }
   void swap(PolylineVector &v) { this->polylines.swap(v); }
 
