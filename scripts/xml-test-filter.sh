@@ -1,7 +1,7 @@
 #!/bin/bash
 
 XQ=`type -p xqilla`
-function usage { echo "test-filter.sh [-v] filtername"; }
+function usage { echo "xml-test-filter.sh [-v] filtername"; }
 function green { echo -e "\033[32;1m $1 \033[0m"; tput sgr0; }
 function red { echo -e "\033[31;1m $1 \033[0m"; tput sgr0; }
 function verbose  { [ $VERBOSE ] && echo $@; $@; }
@@ -26,11 +26,13 @@ function check {
 [ $# -eq 0 ] && usage
 
 res=0
-for filter in "$@"; do
-    echo "testing `basename $filter`..."
+for xml in "$@"; do
+    echo "testing `basename $xml`..."
     for xql in $CC_TEST_DATA/xml/xql/*.xql
     do
-        check $filter $xql
+        xml=`echo $( readlink -f $( dirname "$xml" ) )/$( basename "$xml" )`
+        echo $xml $xql
+        check $xml $xql
         res=$(($res || $?))
     done
 done
