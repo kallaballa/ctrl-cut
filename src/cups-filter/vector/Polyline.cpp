@@ -38,7 +38,14 @@ bool Polyline::isClosed() const
   return this->edges.size() > 0 && (*this->edges.front())[0] == (*this->edges.back())[1];
 }
 
-void Polyline::add(Edge *edge) {
+void Polyline::prepend(Edge *edge) {
+  edge->join(this);
+  this->edges.insert(this->edges.begin(),edge);
+  this->bb.invalidate();
+}
+
+void Polyline::append(Edge *edge) {
+  edge->join(this);
   this->edges.push_back(edge);
   this->bb.invalidate();
 }
@@ -46,6 +53,7 @@ void Polyline::add(Edge *edge) {
 void Polyline::remove(Edge *edge) {
   Polyline::iterator it = find(this->edges.begin(), this->edges.end(), edge);
   if (it != this->edges.end()) {
+    (*it)->leave(this);
     this->edges.erase(it);
     this->bb.invalidate();
   }
@@ -67,6 +75,13 @@ BBox *Polyline::getBoundingBox()
     }
   }
   return &this->bb;
+}
+
+void Polyline::reverseEdgeOrder() {
+  if(this->size() == 1)
+    this->front()->invertDirection(); // if there is only one edge  reversing the container has no effect, therefore invert the edge
+  else
+    reverse(this->begin(), this->end()); // end is closer to the last reference location, therefore reverse the polyline
 }
 
 /*!

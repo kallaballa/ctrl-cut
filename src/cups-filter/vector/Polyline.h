@@ -42,10 +42,11 @@ public:
   size_t size() const { return this->edges.size(); }
 
   bool isClosed() const;
-  void add(Edge* ls);
+  void prepend(Edge* ls);
+  void append(Edge* ls);
   void remove(Edge* ls);
   bool contains(Edge* ls);
-
+  void reverseEdgeOrder();
   Edge *findLeftmostClockwise();
   BBox* getBoundingBox();
 

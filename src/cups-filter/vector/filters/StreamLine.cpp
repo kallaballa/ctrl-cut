@@ -39,18 +39,28 @@ void StreamLine::filter(Cut *cut)
   Vertex *c_start = NULL;
   Vertex *c_end = NULL;
 
+  int s_dist;
+  int e_dist;
+
   for (Cut::iterator it_c = cut->begin(); it_c != cut->end(); it_c++) {
     current = *it_c;
+
+    c_start = current->front()->start();
+    c_end = current->back()->end();
+
     if(previous != NULL) {
       p_end = previous->back()->end();
-      c_start = current->front()->start();
-      c_end = current->back()->end();
-
-      int s_dist = p_end->distance(*c_start);
-      int e_dist = p_end->distance(*c_end);
-      if(e_dist < s_dist)
-        reverse(current->begin(), current->end());
+      s_dist = p_end->distance(*c_start);
+      e_dist = p_end->distance(*c_end);
+    } else {
+      Vertex at_origin(0,0);
+      s_dist = at_origin.distance(*c_start);
+      e_dist = at_origin.distance(*c_end);
     }
+
+    if(e_dist < s_dist)
+      current->reverseEdgeOrder();
+
     previous = current;
   }
 }
