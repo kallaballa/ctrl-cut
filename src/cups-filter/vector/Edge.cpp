@@ -18,12 +18,13 @@
  */
 #include "Edge.h"
 #include "Vertex.h"
+#include "util/Logger.h"
 
 // initialize counter
 int Edge::cnt = 0;
 
 Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency)
-  : power(power), speed(speed), frequency(frequency)
+  : power(power), speed(speed), frequency(frequency), parent(NULL)
 {
   v[0] = start;
   v[1] = end;
@@ -125,6 +126,29 @@ Vertex* Edge::intersects(const Edge &other) const
   }
 
   return NULL; //NOT_INTERSECTING;
+}
+
+
+bool Edge::isMemberOf(Polyline *p) {
+  return this->parent == p;
+}
+
+bool Edge::isPolylineMember() {
+  return this->parent != NULL;
+}
+
+void Edge::join(Polyline *p) {
+  if(isPolylineMember() && !isMemberOf(p))
+    LOG_ERR_MSG("edge already has a parent polyline", this->parent);
+
+  this->parent = p;
+}
+
+void Edge::leave(Polyline *p) {
+  if(!isPolylineMember())
+    LOG_ERR_MSG("leaving an edge without parent polyline", p);
+
+  this->parent = NULL;
 }
 
 std::ostream &operator<<(std::ostream &os, const Edge &e) {
