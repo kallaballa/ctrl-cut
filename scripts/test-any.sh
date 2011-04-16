@@ -77,8 +77,12 @@ runtest()
       return
     fi
 
-    if [ $? -ne 0  -o ! -f $prnfile-v.png ]; then
+    if [ $? -ne 0 ]; then
       errorstr="Err"
+      color=red
+    elif [ ! -f $prnfile-v.png ]; then
+      errorstr="N/A"
+      color=green
     fi
     if [ -z $errorstr ]; then
       errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn-v.png $outfile-v.png`
@@ -87,6 +91,7 @@ runtest()
         color=green
       else
         pixelstr=`echo $errorstr | awk '{ print $3 }'`
+        color=red
       fi
     else 
       pixelstr=$errorstr
@@ -105,6 +110,7 @@ runtest()
         color=green
       else
         pixelstr=`echo $errorstr | awk '{ print $3 }'`
+        color=red
       fi
     fi
     pad "$pixelstr" 7 $color
