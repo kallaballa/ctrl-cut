@@ -21,6 +21,7 @@ public:
   const_iterator begin() const  { return this->edges.begin(); }
   iterator end() { return this->edges.end(); }
   const_iterator end() const  { return this->edges.end(); }
+  size_t size() const { return this->edges.size(); }
 
   int getID() const { return this->id; }
   const std::string &getKey() const;
