@@ -18,6 +18,7 @@
  */
 #include <math.h>
 #include <iostream>
+#include <limits>
 #include "util/Logger.h"
 #include "vector/Edge.h"
 #include "vector/Vertex.h"
@@ -27,7 +28,6 @@
 
 StreamLine::~StreamLine() {}
 
-
 void StreamLine::filter(Cut *cut)
 {
   LOG_INFO_MSG("StreamLine", cut->size());
@@ -35,32 +35,51 @@ void StreamLine::filter(Cut *cut)
   Polyline *current = NULL;
   Polyline *previous = NULL;
 
-  Vertex *p_end = NULL;
+  Vertex *ref_vertex = NULL;
   Vertex *c_start = NULL;
   Vertex *c_end = NULL;
 
   int s_dist;
   int e_dist;
+  Vertex at_origin(0,0);
 
   for (Cut::iterator it_c = cut->begin(); it_c != cut->end(); it_c++) {
     current = *it_c;
 
-    c_start = current->front()->start();
-    c_end = current->back()->end();
+    if(previous != NULL)
+      ref_vertex = previous->back()->end();
+    else
+      ref_vertex = &at_origin;
 
-    if(previous != NULL) {
-      p_end = previous->back()->end();
-      s_dist = p_end->distance(*c_start);
-      e_dist = p_end->distance(*c_end);
+    if(current->isClosed()) {
+      int minDist = numeric_limits<int>::max();
+      Polyline::iterator* minDistIt = NULL;
+
+      for (Polyline::iterator it_p = current->begin(); it_p != current->end(); it_p++) {
+        Edge *e = *it_p;
+
+        s_dist = ref_vertex->distance(*e->start());
+        e_dist = ref_vertex->distance(*e->end());
+
+        int dist = min(s_dist, e_dist);
+
+        if(dist < minDist) {
+          minDistIt = &it_p;
+          minDist = dist;
+        }
+      }
+      swap_ranges(*minDistIt, current->end(), current->begin());
     } else {
-      Vertex at_origin(0,0);
-      s_dist = at_origin.distance(*c_start);
-      e_dist = at_origin.distance(*c_end);
+      c_start = current->front()->start();
+      c_end = current->back()->end();
+
+
+      s_dist = ref_vertex->distance(*c_start);
+      e_dist = ref_vertex->distance(*c_end);
+
+      if(e_dist < s_dist)
+        current->reverseOrder();
     }
-
-    if(e_dist < s_dist)
-      current->reverseEdgeOrder();
-
     previous = current;
   }
 }
