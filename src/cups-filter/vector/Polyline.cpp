@@ -77,7 +77,7 @@ BBox *Polyline::getBoundingBox()
   return &this->bb;
 }
 
-void Polyline::reverseEdgeOrder() {
+void Polyline::reverseOrder() {
   if(this->size() == 1)
     this->front()->invertDirection(); // if there is only one edge  reversing the container has no effect, therefore invert the edge
   else

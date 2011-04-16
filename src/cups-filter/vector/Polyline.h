@@ -46,7 +46,7 @@ public:
   void append(Edge* ls);
   void remove(Edge* ls);
   bool contains(Edge* ls);
-  void reverseEdgeOrder();
+  void reverseOrder();
   Edge *findLeftmostClockwise();
   BBox* getBoundingBox();
 
