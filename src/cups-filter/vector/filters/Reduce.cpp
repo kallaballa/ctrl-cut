@@ -85,7 +85,7 @@ void Reduce::filter(Cut *cut)
         Edge *newe = new Edge((*startit)->start(), (*largestit)->end(),
                               (*startit)->power, (*startit)->speed, (*startit)->frequency);
         newe->attach();
-        newpl->add(newe);
+        newpl->append(newe);
         startit = largestit + 1;
       }
     }
@@ -93,7 +93,7 @@ void Reduce::filter(Cut *cut)
     Edge *newe = new Edge((*startit)->start(), pl->back()->end(),
                           (*startit)->power, (*startit)->speed, (*startit)->frequency);
     newe->attach();
-    newpl->add(newe);
+    newpl->append(newe);
   }
 
   cut->swap(polylines);
