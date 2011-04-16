@@ -37,6 +37,8 @@ void Driver::filter(LaserJob *job) {
   Join join;
   Deonion deonion;
   Flat flat;
+  StreamLine streamLine;
+
   list<Cut*> cuts = job->getCuts();
   for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
     Cut *cut = *it;
@@ -57,6 +59,9 @@ void Driver::filter(LaserJob *job) {
       flat.filter(cut);
       if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-flat.xml");
     }
+
+    streamLine.filter(cut);
+    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-streamline.xml");
   }
 }
 
