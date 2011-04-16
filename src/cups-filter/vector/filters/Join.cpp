@@ -26,22 +26,32 @@
 /**
  * Recursive function
  */
-static void find_connected(set<Edge*> &occupied, Polyline *polyline, Edge *current)
-{
-  occupied.insert(current);
+static void find_connected(Polyline *polyline, Edge *current, bool forward) {
+  current->join(polyline);
+  Vertex* v;
 
-  for (Vertex::iterator it = (*current)[1].begin(); it != (*current)[1].end(); it++) {
+  if(forward)
+    v = current->end();
+  else
+    v = current->start();
+
+  for (Vertex::iterator it = v->begin(); it != v->end(); it++) {
     Edge *candidate = *it;
-    if (candidate == current || occupied.find(candidate) != occupied.end()) {
+    if (candidate == current || candidate->isPolylineMember())
       continue;
-    }
-    if (&(*candidate)[0] != &(*current)[1]) {
-      candidate->setEnd(candidate->start());
-      candidate->setStart(current->end());
-    }
 
-    polyline->add(candidate);
-    find_connected(occupied, polyline, candidate);
+    if (forward) {
+      if (candidate->start() != current->end())
+        candidate->invertDirection();
+
+      polyline->append(candidate);
+    } else {
+      if (candidate->end() != current->start())
+        candidate->invertDirection();
+
+      polyline->prepend(candidate);
+    }
+    find_connected(polyline, candidate, forward);
   }
 }
 
@@ -52,16 +62,15 @@ void Join::filter(Cut *cut)
 {
   LOG_INFO_STR("Join");
 
-  set<Edge*> occupied;
-
   Mesh &mesh = cut->getMesh();
   for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
     Edge *edge = *it;
 
-    if (occupied.find(edge) == occupied.end()) {
+    if (!edge->isPolylineMember()) {
       Polyline *polyline = new Polyline();
-      polyline->add(edge);
-      find_connected(occupied, polyline, edge);
+      polyline->append(edge);
+      find_connected(polyline, edge, true);
+      find_connected(polyline, edge, false);
       cut->add(polyline);
     }
   }

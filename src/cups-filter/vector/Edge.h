@@ -6,6 +6,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include "vector/Polyline.h"
 
 class Edge {
 public:
@@ -28,10 +29,14 @@ public:
   void detach();
   void attach();
 
+  bool isMemberOf(Polyline *p);
+  bool isPolylineMember();
+  void join(Polyline *parent);
+  void leave(Polyline *parent);
 private:
   static int cnt;
   int id;
-
+  Polyline *parent;
   Vertex *v[2];
 
   friend std::ostream &operator<<(std::ostream &os, const Edge &e);
