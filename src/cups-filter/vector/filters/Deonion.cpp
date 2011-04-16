@@ -38,7 +38,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   float min_slope_diff = 2 * M_PI;
 
   if (p->contains(edge)) {
-    skin->add(edge);
+    skin->append(edge);
     p->remove(edge);
   }
 
