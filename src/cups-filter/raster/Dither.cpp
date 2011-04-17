@@ -77,6 +77,7 @@ BitmapImage &Dither::dither() {
 
   uint32_t width = this->img.width() + (byteAlignOff ? 8 : 0);
   BitmapImage& result = *(new BitmapImage(width, this->img.height()));
+  result.translate(this->img.xPos(), this->img.yPos());
   size_t size = this->img.height() * width / 8;
   void *dataptr = malloc(size);
   assert(dataptr);
