@@ -11,26 +11,19 @@ done
 
 shift $(($OPTIND - 1))
 
-# FIXME: Sometimes, compare fails when comparing very small images (e.g. 40 x 10 pixels).
-# It's unknown why this happens..
+statistic=`convert $1 $2 -scale 10% -scale 1000% -compose difference -composite  PPM:- | identify -verbose -unique -`
 
-pixelerror=`convert $1 $2 -scale 10% -scale 1000% -compose difference -composite -resize 1x1 PPM:- | tail -c1 | od -t d1 | tr -s " " | awk '{ print $2 }'`
-
-#pixelerror=`echo "scale=2; $pixelerror/255" | bc`
+mean=`echo "$statistic" | grep "mean:" | awk '{ print $2 }' | head -c5`
+deviation=`echo "$statistic" | grep "standard deviation:" | awk '{ print $3 }' | head -c5`
 
 if [ $? -ne 0 ]; then
     echo "General error: Ouch"
     exit 1 # Compare failed to read image
 else
-  # Check if $pixelerror contains an integer (it sometimes outputs things like '0 @ 0,0')
-  if [ $pixelerror -eq $pixelerror 2> /dev/null ]; then
-    if [ $pixelerror == 0 ]; then 
+    if [ "$pixelerror" == 0 ]; then 
       exit 0
     fi
-    echo "Pixel error: $pixelerror"
-  else
-    echo "Pixel error: Err"
-  fi
+    echo "Pixel error: $mean|$deviation"
   exit 1
 fi
 exit 0
