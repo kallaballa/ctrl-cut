@@ -11,10 +11,23 @@ done
 
 shift $(($OPTIND - 1))
 
-statistic=`convert $1 $2 -scale 10% -scale 1000% -compose difference -composite  PPM:- | identify -verbose -unique -`
+function scale() {
+    echo "scale=1; $1/1" | bc
+}
 
-mean=`echo "$statistic" | grep "mean:" | awk '{ print $2 }' | head -c5`
-deviation=`echo "$statistic" | grep "standard deviation:" | awk '{ print $3 }' | head -c5`
+diff="`echo ${1%.prn-r.png}`_diff.png"
+convert $1 $2 -scale 10% -scale 1000% -compose difference -composite "$diff"
+statistic=`identify -verbose -unique "$diff"`
+
+mean=`echo "$statistic" | grep "mean:" | awk '{ print $2 }'`
+deviation=`echo "$statistic" | grep "standard deviation:" | awk '{ print $3 }'`
+skew=`echo "$statistic" | grep "skewness:" | awk '{ print $2 }'`
+kurtosis=`echo "$statistic" | grep "kurtosis:" | awk '{ print $2 }'`
+
+mean=`scale $mean`
+deviation=`scale $deviation`
+skew=`scale $skew`
+kurtosis=`scale $kurtosis`
 
 if [ $? -ne 0 ]; then
     echo "General error: Ouch"
@@ -23,7 +36,7 @@ else
     if [ "$pixelerror" == 0 ]; then 
       exit 0
     fi
-    echo "Pixel error: $mean|$deviation"
+    echo "Pixel error: $mean|$deviation|$skew|$kurtosis"
   exit 1
 fi
 exit 0
