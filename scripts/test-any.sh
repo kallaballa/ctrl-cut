@@ -113,7 +113,7 @@ runtest()
         color=red
       fi
     fi
-    pad "$pixelstr" 12 $color
+    pad "$pixelstr" 20 $color
 
     # Compare bboxes, number of polylines and total cut length
     color=red
@@ -219,7 +219,7 @@ fi
 pad "Test case" 22
 pad "bin" 5
 pad "vimg" 7
-pad "rimg" 12
+pad "rimg" 20
 pad "bbox" 6
 pad "polylines" 14
 pad "length" 10
