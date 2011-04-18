@@ -51,23 +51,8 @@ public:
   RtlPlot* rtlplot;
 
   Interpreter(RtlPlot* plot): width(0), height(0), bitmapPlotter(NULL), rtlplot(plot){
-    //FIXME determine the primary plot parameters
-/*
-    Point startPos(0,0);
-    if(this->plot->require(PCL_WIDTH) && this->plot->require(PCL_HEIGHT)) {
-      this->width = this->plot->setting(PCL_WIDTH);
-      this->height = this->plot->setting(PCL_HEIGHT);
-    } else
-      this->plot->invalidate("can't find plot dimensions");
-
-    if(this->plot->require(PCL_X) && this->plot->require(PCL_Y)) {
-      startPos.x = this->plot->setting(PCL_X);
-      startPos.y = this->plot->setting(PCL_Y);
-    } else
-      this->plot->invalidate("can't find start position");
-*/
-    this->bitmapPlotter = new BitmapPlotter(21600/8, 14400, PclIntConfig::singleton()->clip);
-    this->vectorPlotter = new VectorPlotter(21600,14400, PclIntConfig::singleton()->clip);
+    this->bitmapPlotter = new BitmapPlotter(plot->getWidth()/8, plot->getHeight(), PclIntConfig::singleton()->clip);
+    this->vectorPlotter = new VectorPlotter(plot->getWidth(),plot->getHeight(), PclIntConfig::singleton()->clip);
   };
 
   void renderPclPlot(PclPlot *pclPlot) {

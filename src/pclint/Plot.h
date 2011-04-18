@@ -197,21 +197,13 @@ private:
     return eof;
   }
 
-  void readSettings() {
-    PclInstr* instr;
-    while ((instr = readInstr()) && !instr->matches(PCL_RASTER_START)) {
-      settings[(char*) instr] = instr;
-    }
-    printSettings(cerr);
-  }
-
 public:
   PclInstr* currentInstr;
 
   PclPlot(ifstream *infile) :
     inputfile(infile), bufSize(1024), buffer(
         new char[1024]), eof(numeric_limits<off64_t>::max()), valid(true), currentInstr(NULL) {
-    readSettings();
+    this->readSettings();
   }
 
   virtual ~PclPlot() {
@@ -219,6 +211,14 @@ public:
 
   bool isValid() {
     return valid;
+  }
+
+  void readSettings() {
+    PclInstr* instr;
+    while ((instr = readInstr()) && !instr->matches(PCL_RASTER_START)) {
+      settings[(char*) instr] = instr;
+    }
+    printSettings(cerr);
   }
 
   void printSettings(ostream& os) {
@@ -342,6 +342,9 @@ private:
   PclPlot *currentPclPlot;
   HpglPlot *currentHpglPlot;
   bool valid;
+  uint32_t width;
+  uint32_t height;
+  uint16_t resolution;
 
   void readRTLIntro() {
     char* buffer = new char[MAGIC_SIZE];
@@ -382,6 +385,15 @@ public:
   RtlPlot(ifstream *infile) :
     inputfile(infile), currentPclPlot(NULL), currentHpglPlot(NULL), valid(true) {
     readRTLIntro();
+    currentPclPlot = new PclPlot(infile);
+
+    if (currentPclPlot->require(PCL_WIDTH) && currentPclPlot->require(PCL_HEIGHT)
+        && currentPclPlot->require(PCL_PRINT_RESOLUTION)) {
+      this->width = currentPclPlot->setting(PCL_WIDTH);
+      this->height = currentPclPlot->setting(PCL_HEIGHT);
+      this->resolution = currentPclPlot->setting(PCL_PRINT_RESOLUTION);
+    } else
+      currentPclPlot->invalidate("can't find plot dimensions");
   }
 
   virtual ~RtlPlot() {
@@ -389,6 +401,18 @@ public:
 
   bool isValid() {
     return valid;
+  }
+
+  uint32_t getWidth() {
+    return width;
+  }
+
+  uint32_t getHeight() {
+    return height;
+  }
+
+  uint32_t getResolution() {
+    return resolution;
   }
 
   RtlContext getActiveContext() {

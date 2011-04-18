@@ -58,6 +58,7 @@ const char *MAGIC = "\x1b%-12345X@PJL JOB NAME=";
 #define PCL_PIXEL_LEN "*bA"
 #define PCL_START_OF_PASS "%0B"
 #define PCL_END_OF_PASS "%1B"
+#define PCL_PRINT_RESOLUTION "&uD"
 #define PCL_START_OF_INSTRUCTION 0x1b
 
 class PclInstr {

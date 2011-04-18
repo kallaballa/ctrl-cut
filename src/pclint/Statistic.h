@@ -48,7 +48,7 @@ private:
   static Statistic* instance;
 
 public:
-  static Statistic* singleton();
+  static Statistic* singleton(uint16_t resolution);
 
   Statistic(uint16_t resolution) : slots(new Slot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
     slots[SLOT_RASTER] = *(new Slot());
@@ -170,9 +170,9 @@ public:
 };
 
 Statistic* Statistic::instance = NULL;
-Statistic* Statistic::singleton() {
+Statistic* Statistic::singleton(uint16_t resolution=600) {
   if (instance == NULL)
-    instance = new Statistic(600);
+    instance = new Statistic(resolution);
 
   return instance;
 }
