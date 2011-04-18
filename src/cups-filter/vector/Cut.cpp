@@ -124,6 +124,39 @@ void Cut::writeXml(const std::string &filename) const
   os.close();
 }
 
+void Cut::writeSvg(const std::string &filename) const
+{
+  ofstream os(filename.c_str(), ios_base::out);
+  os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" ";
+
+  BBox totalbb;
+  for (Cut::const_iterator it = this->begin(); it != this->end(); it++) {
+    Polyline *p = *it;
+    BBox* bb = p->getBoundingBox();
+    totalbb.adjustTo(bb);
+  }
+  int w, h;
+  totalbb.getSize(w, h);
+  os << "height=\"" << h << "\" width=\"" << w << "\"";
+  os << " version=\"1.1\" x=\"test-data/vector/x-line-2.raw\" preserveAspectRatio=\"xMidYMid meet\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"";
+  os << totalbb.ul[0] << " " << totalbb.ul[1] << " " << w << " " << h;
+  os << "\"  >\n";
+
+  for (Cut::const_iterator it = this->begin(); it != this->end(); it++) {
+    Polyline *p = *it;
+    os << "<polyline style=\"stroke:black; stroke-width:0.001mm; fill:none; \" points=\"";
+    Edge *e = *(p->begin());
+    os << (*(e->start()))[0] << "," << (*(e->start()))[1] << " ";
+    for (Polyline::iterator it = p->begin(); it != p->end(); it++) {
+      e = *it;
+      os << (*(e->end()))[0] << "," << (*(e->end()))[1] << " ";
+    }
+    os << "\"  />\n";
+  }
+  os << "</svg>\n";
+  os.close();
+}
+
 ostream &operator<<(ostream &os, const Cut &cut) {
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
   os << "<polylines cnt=\"" << cut.size() << "\" >" << std::endl;

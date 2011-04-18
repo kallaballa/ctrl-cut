@@ -62,6 +62,7 @@ public:
     return this->clipped;
   }
   void writeXml(const std::string &filename) const;
+  void writeSvg(const std::string &filename) const;
 
 private:
   bool clipped;
