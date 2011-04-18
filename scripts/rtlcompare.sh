@@ -206,4 +206,10 @@ R_BBOXDIFF=`diffBBox "$R_BBOX1" "$R_BBOX2"`
 fitCanvas "$F1-r.png" "$F2-r.png" "$R_BBOX1" "$R_BBOX2"
 fitCanvas "$F1-v.png" "$F2-v.png" "$V_BBOX1" "$V_BBOX2"
 
+echo "$R_RES1" > "$F1-r.info"
+echo "$R_RES2" > "$F2-r.info"
+echo "$V_RES1" > "$F1-v.info"
+echo "$V_RES2" > "$F2-v.info"
+
+
 echo "$V_PDDIFF $V_WORKDIFF $V_MOVEDIFF $V_SEGDIFF $V_BBOXDIFF $R_PDDIFF $R_WORKDIFF $R_MOVEDIFF $R_SEGDIFF $R_BBOXDIFF"
