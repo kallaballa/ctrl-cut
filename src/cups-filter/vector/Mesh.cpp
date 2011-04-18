@@ -64,7 +64,7 @@ void Mesh::remove(Edge* e)
   this->edges.remove(e);
 }
 
-Mesh::iterator Mesh::eliminate(Mesh::iterator it)
+Mesh::iterator Mesh::eliminate(Mesh::iterator& it)
 {
   (*it)->detach();
   return this->edges.erase(it);

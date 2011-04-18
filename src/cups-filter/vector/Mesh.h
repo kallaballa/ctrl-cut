@@ -35,6 +35,8 @@ public:
   typedef EdgeList::const_iterator const_iterator;
   typedef map<std::string, class Vertex*> VertexMap;
 
+  EdgeList edges;
+
   Mesh() {};
   virtual ~Mesh() {};
 
@@ -42,7 +44,11 @@ public:
   const_iterator begin() const  { return this->edges.begin(); }
   iterator end() { return this->edges.end(); }
   const_iterator end() const  { return this->edges.end(); }
+  Edge* front() const  { return this->edges.front(); }
+  Edge* back() { return this->edges.back(); }
+
   size_t size() const { return this->edges.size(); }
+
   void clear();
 
   const VertexMap &getVertexMap() const {
@@ -53,11 +59,11 @@ public:
   void create(Vertex *start, Vertex *end,
               int power = -1, int speed = -1, int frequency = -1);
   void remove(Edge *e);
-  iterator eliminate(iterator it);
+  iterator eliminate(iterator& it);
 
 private:
   VertexMap vertices;
-  EdgeList edges;
+
 
   Vertex *mapVertex(Vertex *p);
 };
