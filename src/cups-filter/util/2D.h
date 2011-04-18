@@ -95,6 +95,11 @@ public:
     return (m[0] < (lr[0] + tolerance) && m[0] > (ul[0] - tolerance) &&
             m[1] < (lr[1] + tolerance) && m[1] > (ul[1] - tolerance));
   }
+
+  void getSize(int &width, int &height) {
+    width = lr[0] - ul[0];
+    height = lr[1] - ul[1];
+  }
 };
 
 class BBox: public Rectangle {
