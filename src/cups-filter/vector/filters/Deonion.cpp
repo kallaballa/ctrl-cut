@@ -38,8 +38,8 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
   float min_slope_diff = 2 * M_PI;
 
   if (p->contains(edge)) {
-    skin->append(edge);
     p->remove(edge);
+    skin->append(edge);
   }
 
   for (Vertex::iterator it = edge->end()->begin(); it != edge->end()->end(); it++) {
