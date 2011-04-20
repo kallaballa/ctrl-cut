@@ -50,6 +50,7 @@ void Explode::filter(Cut *cut)
 
   while(it_m != mesh.end()) {
     stripe = carryOver;
+    carryOver.clear();
     stripeLimit+=stripeStep;
 
     for (; it_m != mesh.end(); it_m++) {
