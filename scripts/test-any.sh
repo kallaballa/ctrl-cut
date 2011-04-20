@@ -157,7 +157,7 @@ runtest()
     pad $lenstr 10 $color
   fi
 
-  if [ x$XML != "x" ]; then
+  if [ x$XML_TEST != "x" ]; then
     color=red
     $CC_SCRIPTS/xml-test-filter.sh $srcdir/$testcase-*.xml >> $testcase.log
     xmlstatus="$?"
@@ -192,11 +192,16 @@ printUsage()
   echo "  -v        Verbose"
 }
 
-while getopts 'x' c
+while getopts 'xy' c
 do
     case $c in
         x) 
             XML=-x
+            XML_TEST=true
+            ;;
+        y)
+            XML=-x
+            XML_TEST=
             ;;
         \?) 
             echo "Invalid option: -$OPTARG" >&2
@@ -224,7 +229,7 @@ pad "bbox" 6
 pad "polylines" 14
 pad "length" 10
 pad "move" 10
-if [ x$XML != "x" ]; then pad "XML" 3; fi
+if [ x$XML_TEST != "x" ]; then pad "XML" 3; fi
 echo
 
 # Run given test or all tests
