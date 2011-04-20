@@ -38,10 +38,15 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* current, bool cw)
   float slope_diff;
   float min_slope_diff = 2 * M_PI;
 
-  // transfer the edge from the polyline to the skin
+  /*
+   * transfer the edge from the polyline to the skin unless it was
+   * already consumed which should only happen during backtracking
+   */
   if (p->contains(current)) {
     p->remove(current);
     skin->append(current);
+  } else {
+    assert(!cw);
   }
 
   /*
@@ -73,7 +78,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* current, bool cw)
 
     slope_diff = edge_slope - candidate_slope;
 
-    //normalize radian to make them comparable
+    //normalize radians to make them comparable
     if (slope_diff < 0) {
       slope_diff += 2*M_PI;
     }
@@ -90,7 +95,7 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* current, bool cw)
     // else, we reached a possible blind alley and must backtrack
     if (skin->isClosed()) return;
 
-    // invert search direction (=count-clockwise)
+    // invert search direction (=counter-clockwise)
     current->invertDirection();
     walkTheEdge(p, skin, current, !cw);
   } else if (next_edge != NULL) {
