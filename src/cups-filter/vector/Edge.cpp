@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <assert.h>
 #include "Edge.h"
 #include "Vertex.h"
 #include "util/Logger.h"
@@ -138,15 +139,12 @@ bool Edge::isPolylineMember() {
 }
 
 void Edge::join(Polyline *p) {
-  if(isPolylineMember() && !isMemberOf(p))
-    LOG_ERR_MSG("edge already has a parent polyline", this->parent);
-
+  assert(!isPolylineMember() || isMemberOf(p));
   this->parent = p;
 }
 
 void Edge::leave(Polyline *p) {
-  if(!isPolylineMember())
-    LOG_ERR_MSG("leaving an edge without parent polyline", p);
+  assert(isPolylineMember());
 
   this->parent = NULL;
 }
