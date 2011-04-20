@@ -27,7 +27,6 @@
  * Recursive function
  */
 static void find_connected(Polyline *polyline, Edge *current, bool forward) {
-  current->join(polyline);
   Vertex* v;
 
   if(forward)
