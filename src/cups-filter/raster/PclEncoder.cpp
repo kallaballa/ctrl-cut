@@ -35,24 +35,6 @@ void PclEncoder::encode(Raster *raster, ostream &out)
 {
   LOG_DEBUG_MSG("Encode raster", raster->tiles.size());
 
-  // Raster Orientation
-  out << format(R_ORIENTATION) % 0;
-
-  // Raster power
-  out << format(R_POWER) % lconf->raster_power;
-
-  // Raster speed
-  out << format(R_SPEED) % lconf->raster_speed;
-
-  out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % ((lconf->height * lconf->resolution)
-      / POINTS_PER_INCH);
-  out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
-      / POINTS_PER_INCH);
-  // Raster compression
-  int compressionLevel = 2;
-
-  out << format(R_COMPRESSION) % compressionLevel;
   // Raster direction (1 = up)
   out << format(R_DIRECTION) % lconf->raster_direction;
   // start at current position

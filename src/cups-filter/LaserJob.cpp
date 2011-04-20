@@ -74,6 +74,25 @@ void LaserJob::serializeTo(ostream &out) {
   /* PCL resolution. */
   out << format(PCL_RESOLUTION) % this->lconf->resolution;
 
+  // Raster Orientation
+  out << format(R_ORIENTATION) % 0;
+
+  // Raster power
+  out << format(R_POWER) % lconf->raster_power;
+
+  // Raster speed
+  out << format(R_SPEED) % lconf->raster_speed;
+
+  out << PCL_UNKNOWN_BLAFOO3;
+  out << format(R_HEIGHT) % ((lconf->height * lconf->resolution)
+      / POINTS_PER_INCH);
+  out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
+      / POINTS_PER_INCH);
+  // Raster compression
+  int compressionLevel = 2;
+
+  out << format(R_COMPRESSION) % compressionLevel;
+
   /* If raster power is enabled and raster mode is not 'n' then add that
    * information to the print job.
    */
@@ -90,20 +109,6 @@ void LaserJob::serializeTo(ostream &out) {
   }
 
   if (this->lconf->enable_vector && this->cuts.size() > 0) {
-    out << format(R_ORIENTATION) % 0;
-    out << format(R_POWER) % 50;
-    out << format(R_SPEED) % 50;
-    out << PCL_UNKNOWN_BLAFOO3;
-    // New version; always use bed size until the Windows driver tells us smth. else..
-    out << format(R_HEIGHT) % (BED_HEIGHT);
-    out << format(R_WIDTH) % (BED_WIDTH);
-    // FIXME: Old version, kept for reference
-    //     out << format(R_HEIGHT) % (this->lconf->height * this->lconf->y_repeat);
-    //     out << format(R_WIDTH) % (this->lconf->width * this->lconf->x_repeat);
-
-    /* seems to be obsolete, but windows driver does it*/
-    out << format(R_COMPRESSION) % 2;
-
     // FIXME: This is to emulate the LT bug in the Epilog drivers:
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
