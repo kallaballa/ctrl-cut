@@ -58,6 +58,9 @@ if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
+#echo ctrl-cut invocation into log
+echo "$CC_BINARY $XML 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" 1>2
+
 # Don't run this with try since it produces stdout which is passed to our caller
 $CC_BINARY $XML 32 kintel $filename 1 "$commonoptions $options $CC_FILTER_OPTIONS" $file
 exit $?
