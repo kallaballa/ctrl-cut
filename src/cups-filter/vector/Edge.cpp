@@ -139,13 +139,12 @@ bool Edge::isPolylineMember() {
 }
 
 void Edge::join(Polyline *p) {
-  assert(!isPolylineMember() || isMemberOf(p));
+  assert(!isPolylineMember());
   this->parent = p;
 }
 
 void Edge::leave(Polyline *p) {
-  assert(isPolylineMember());
-
+  assert(isPolylineMember() && isMemberOf(p));
   this->parent = NULL;
 }
 
