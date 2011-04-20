@@ -116,6 +116,13 @@ Edge* Polyline::findLeftmostClockwise() {
   for (Vertex::iterator it_c = leftmostvertex->begin(); it_c != leftmostvertex->end(); it_c++) {
     Edge *edge = *it_c;
 
+    /*
+     * edges referenced by the vertex might not belong to this polyline
+     * and are ignored
+     */
+    if(!this->contains(edge))
+      continue;
+
     // make sure we're pointing into the positive halfsphere
     if ((*edge)[0][0] > (*edge)[1][0]) {
       edge->invertDirection();
