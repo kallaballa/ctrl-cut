@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <math.h>
 #include "LaserConfig.h"
 #include "Logger.h"
 #include <cups/cups.h>
@@ -56,6 +57,8 @@ LaserConfig::LaserConfig()
   this->height = BED_HEIGHT;
   this->width = BED_WIDTH;
   this->resolution = RESOLUTION_DEFAULT;
+  this->device_width = calcDeviceDimension(this->width, this->resolution);
+  this->device_height = calcDeviceDimension(this->height, this->resolution);
   this->raster_dithering = RASTER_DITHERING_DEFAULT;
   this->raster_direction = RASTER_DIRECTION_DEFAULT;
   this->raster_speed = RASTER_SPEED_DEFAULT;
@@ -75,6 +78,10 @@ LaserConfig::LaserConfig()
   this->enable_vector = true;
   this->enable_raster = false;
   calculate_base_position();
+}
+
+uint32_t LaserConfig::calcDeviceDimension(uint32_t dim, double res) {
+  return round(((double)(dim * res)  / POINTS_PER_INCH));
 }
 
 /*!
@@ -231,7 +238,7 @@ void LaserConfig::calculate_base_position()
     this->basey = 0;
   }
   // rasterises
-  this->basex = this->basex * this->resolution / POINTS_PER_INCH;
-  this->basey = this->basey * this->resolution / POINTS_PER_INCH;
+  this->basex = LaserConfig::calcDeviceDimension(this->basex,this->resolution);
+  this->basey = LaserConfig::calcDeviceDimension(this->basey,this->resolution);
 }
 
