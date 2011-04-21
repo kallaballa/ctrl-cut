@@ -120,7 +120,7 @@ Edge* Polyline::findLeftmostClockwise() {
      * edges referenced by the vertex might not belong to this polyline
      * and are ignored
      */
-    if(!this->contains(edge))
+    if(!edge->isMemberOf(this));
       continue;
 
     // make sure we're pointing into the positive halfsphere
