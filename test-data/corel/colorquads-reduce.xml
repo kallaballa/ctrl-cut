@@ -1,0 +1,80 @@
+<cut clipped="0">
+<polylines cnt="3" >
+<polyline id="832352073" >
+<bbox distToOrigin="343" ul.x="237" ul.y="249" lr.x="736" lr.y="748" />
+<edge power="-1" id="13" >
+<vertex x="237" y="249" id="9" key="237/249" />
+<vertex x="736" y="249" id="8" key="736/249" />
+</edge>
+<edge power="-1" id="15" >
+<vertex x="736" y="249" id="8" key="736/249" />
+<vertex x="736" y="748" id="10" key="736/748" />
+</edge>
+<edge power="-1" id="17" >
+<vertex x="736" y="748" id="10" key="736/748" />
+<vertex x="237" y="748" id="12" key="237/748" />
+</edge>
+<edge power="-1" id="18" >
+<vertex x="237" y="748" id="12" key="237/748" />
+<vertex x="237" y="249" id="9" key="237/249" />
+</edge>
+</polyline>
+<polyline id="832351961" >
+<bbox distToOrigin="962" ul.x="930" ul.y="249" lr.x="1429" lr.y="748" />
+<edge power="-1" id="20" >
+<vertex x="930" y="249" id="1" key="930/249" />
+<vertex x="1429" y="249" id="0" key="1429/249" />
+</edge>
+<edge power="-1" id="22" >
+<vertex x="1429" y="249" id="0" key="1429/249" />
+<vertex x="1429" y="748" id="2" key="1429/748" />
+</edge>
+<edge power="-1" id="24" >
+<vertex x="1429" y="748" id="2" key="1429/748" />
+<vertex x="930" y="748" id="4" key="930/748" />
+</edge>
+<edge power="-1" id="25" >
+<vertex x="930" y="748" id="4" key="930/748" />
+<vertex x="930" y="249" id="1" key="930/249" />
+</edge>
+</polyline>
+<polyline id="832351961" >
+<bbox distToOrigin="1607" ul.x="1588" ul.y="249" lr.x="2087" lr.y="748" />
+<edge power="-1" id="27" >
+<vertex x="1588" y="249" id="17" key="1588/249" />
+<vertex x="2087" y="249" id="16" key="2087/249" />
+</edge>
+<edge power="-1" id="29" >
+<vertex x="2087" y="249" id="16" key="2087/249" />
+<vertex x="2087" y="748" id="18" key="2087/748" />
+</edge>
+<edge power="-1" id="31" >
+<vertex x="2087" y="748" id="18" key="2087/748" />
+<vertex x="1588" y="748" id="20" key="1588/748" />
+</edge>
+<edge power="-1" id="32" >
+<vertex x="1588" y="748" id="20" key="1588/748" />
+<vertex x="1588" y="249" id="17" key="1588/249" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="12" >
+<vertex x="1429" y="249" id="0" key="1429/249" />
+<vertex x="1429" y="748" id="2" key="1429/748" />
+<vertex x="1588" y="249" id="17" key="1588/249" />
+<vertex x="1588" y="748" id="20" key="1588/748" />
+<vertex x="2087" y="249" id="16" key="2087/249" />
+<vertex x="2087" y="748" id="18" key="2087/748" />
+<vertex x="237" y="249" id="9" key="237/249" />
+<vertex x="237" y="748" id="12" key="237/748" />
+<vertex x="736" y="249" id="8" key="736/249" />
+<vertex x="736" y="748" id="10" key="736/748" />
+<vertex x="930" y="249" id="1" key="930/249" />
+<vertex x="930" y="748" id="4" key="930/748" />
+</vertices>
+</mesh>
+
+</cut>

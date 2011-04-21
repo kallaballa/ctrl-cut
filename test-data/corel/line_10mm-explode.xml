@@ -1,0 +1,17 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="1" >
+<edge power="-1" id="0" >
+<vertex x="65" y="74" id="1" key="65/74" />
+<vertex x="302" y="74" id="0" key="302/74" />
+</edge>
+</edges>
+<vertices cnt="2" >
+<vertex x="302" y="74" id="0" key="302/74" />
+<vertex x="65" y="74" id="1" key="65/74" />
+</vertices>
+</mesh>
+
+</cut>

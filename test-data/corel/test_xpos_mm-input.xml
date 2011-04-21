@@ -1,0 +1,71 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="10" >
+<edge power="-1" id="0" >
+<vertex x="23" y="3659" id="1" key="23/3659" />
+<vertex x="23" y="3719" id="0" key="23/3719" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="46" y="3659" id="3" key="46/3659" />
+<vertex x="46" y="3719" id="2" key="46/3719" />
+</edge>
+<edge power="-1" id="2" >
+<vertex x="70" y="3659" id="5" key="70/3659" />
+<vertex x="70" y="3719" id="4" key="70/3719" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="93" y="3659" id="7" key="93/3659" />
+<vertex x="93" y="3719" id="6" key="93/3719" />
+</edge>
+<edge power="-1" id="4" >
+<vertex x="117" y="3659" id="9" key="117/3659" />
+<vertex x="117" y="3719" id="8" key="117/3719" />
+</edge>
+<edge power="-1" id="5" >
+<vertex x="212" y="3659" id="11" key="212/3659" />
+<vertex x="212" y="3719" id="10" key="212/3719" />
+</edge>
+<edge power="-1" id="6" >
+<vertex x="141" y="3659" id="13" key="141/3659" />
+<vertex x="141" y="3719" id="12" key="141/3719" />
+</edge>
+<edge power="-1" id="7" >
+<vertex x="164" y="3659" id="15" key="164/3659" />
+<vertex x="164" y="3719" id="14" key="164/3719" />
+</edge>
+<edge power="-1" id="8" >
+<vertex x="188" y="3659" id="17" key="188/3659" />
+<vertex x="188" y="3719" id="16" key="188/3719" />
+</edge>
+<edge power="-1" id="9" >
+<vertex x="235" y="3659" id="19" key="235/3659" />
+<vertex x="235" y="3719" id="18" key="235/3719" />
+</edge>
+</edges>
+<vertices cnt="20" >
+<vertex x="117" y="3659" id="9" key="117/3659" />
+<vertex x="117" y="3719" id="8" key="117/3719" />
+<vertex x="141" y="3659" id="13" key="141/3659" />
+<vertex x="141" y="3719" id="12" key="141/3719" />
+<vertex x="164" y="3659" id="15" key="164/3659" />
+<vertex x="164" y="3719" id="14" key="164/3719" />
+<vertex x="188" y="3659" id="17" key="188/3659" />
+<vertex x="188" y="3719" id="16" key="188/3719" />
+<vertex x="212" y="3659" id="11" key="212/3659" />
+<vertex x="212" y="3719" id="10" key="212/3719" />
+<vertex x="23" y="3659" id="1" key="23/3659" />
+<vertex x="23" y="3719" id="0" key="23/3719" />
+<vertex x="235" y="3659" id="19" key="235/3659" />
+<vertex x="235" y="3719" id="18" key="235/3719" />
+<vertex x="46" y="3659" id="3" key="46/3659" />
+<vertex x="46" y="3719" id="2" key="46/3719" />
+<vertex x="70" y="3659" id="5" key="70/3659" />
+<vertex x="70" y="3719" id="4" key="70/3719" />
+<vertex x="93" y="3659" id="7" key="93/3659" />
+<vertex x="93" y="3719" id="6" key="93/3719" />
+</vertices>
+</mesh>
+
+</cut>

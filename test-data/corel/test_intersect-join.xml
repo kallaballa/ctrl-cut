@@ -1,0 +1,35 @@
+<cut clipped="0">
+<polylines cnt="1" >
+<polyline id="6666929" >
+<bbox distToOrigin="391" ul.x="171" ul.y="352" lr.x="2133" lr.y="2045" />
+<edge power="-1" id="2" >
+<vertex x="171" y="1225" id="3" key="171/1225" />
+<vertex x="910" y="1223" id="4" key="910/1223" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="910" y="1223" id="4" key="910/1223" />
+<vertex x="2133" y="1220" id="2" key="2133/1220" />
+</edge>
+<edge power="-1" id="4" >
+<vertex x="910" y="1223" id="4" key="910/1223" />
+<vertex x="565" y="352" id="1" key="565/352" />
+</edge>
+<edge power="-1" id="5" >
+<vertex x="910" y="1223" id="4" key="910/1223" />
+<vertex x="1237" y="2045" id="0" key="1237/2045" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="5" >
+<vertex x="1237" y="2045" id="0" key="1237/2045" />
+<vertex x="171" y="1225" id="3" key="171/1225" />
+<vertex x="2133" y="1220" id="2" key="2133/1220" />
+<vertex x="565" y="352" id="1" key="565/352" />
+<vertex x="910" y="1223" id="4" key="910/1223" />
+</vertices>
+</mesh>
+
+</cut>
