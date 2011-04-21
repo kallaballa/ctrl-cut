@@ -422,7 +422,7 @@ main(int  argc,				/* I - Number of command-line arguments (6 or 7) */
 
     if ((fd = cupsTempFd(tmpfilename, sizeof(tmpfilename))) < 0)
     {
-      _cupsLangPrintError(_("ERROR: Unable to create temporary file"));
+      _cupsLangPrintf(stderr, _("ERROR: Unable to create temporary file"));
       return (CUPS_BACKEND_FAILED);
     }
 
@@ -565,7 +565,7 @@ lpd_command(int  fd,		/* I - Socket connection to LPD host */
 
   if (lpd_write(fd, buf, bytes) < bytes)
   {
-    _cupsLangPrintError(_("ERROR: Unable to send LPD command"));
+    _cupsLangPrintf(stderr, _("ERROR: Unable to send LPD command"));
     return (-1);
   }
 
@@ -719,7 +719,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
 	if ((fd = socket(addr->addr.addr.sa_family, SOCK_STREAM, 0)) < 0)
 	{
-          _cupsLangPrintError(_("ERROR: Unable to create socket"));
+          _cupsLangPrintf(stderr, _("ERROR: Unable to create socket"));
 	  sleep(1);
 
           continue;
@@ -736,7 +736,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
 	if ((fd = rresvport_af(&lport, addr->addr.addr.sa_family)) < 0)
 	{
-	  _cupsLangPrintError(_("ERROR: Unable to reserve port"));
+	  _cupsLangPrintf(stderr, _("ERROR: Unable to reserve port"));
 	  sleep(1);
 
 	  continue;
@@ -871,7 +871,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 	httpAddrFreeList(addrlist);
 	close(fd);
 
-	_cupsLangPrintError(_("ERROR: unable to stat print file"));
+	_cupsLangPrintf(stderr, _("ERROR: unable to stat print file"));
 	return (CUPS_BACKEND_FAILED);
       }
 
@@ -958,7 +958,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       if (lpd_write(fd, control, strlen(control) + 1) < (strlen(control) + 1))
       {
 	status = errno;
-	_cupsLangPrintError(_("ERROR: Unable to write control file"));
+	_cupsLangPrintf(stderr, _("ERROR: Unable to write control file"));
       }
       else
       {
@@ -1018,7 +1018,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 
 	  if (lpd_write(fd, buffer, nbytes) < nbytes)
 	  {
-            _cupsLangPrintError(_("ERROR: Unable to send print file to printer"));
+            _cupsLangPrintf(stderr, _("ERROR: Unable to send print file to printer"));
             break;
 	  }
 	  else
@@ -1032,7 +1032,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
 	  status = errno;
 	else if (lpd_write(fd, "", 1) < 1)
 	{
-          _cupsLangPrintError(_("ERROR: Unable to send trailing nul to printer"));
+          _cupsLangPrintf(stderr, _("ERROR: Unable to send trailing nul to printer"));
 	  status = errno;
 	}
 	else
@@ -1089,7 +1089,7 @@ lpd_queue(const char *hostname,		/* I - Host to connect to */
       if (lpd_write(fd, control, strlen(control) + 1) < (strlen(control) + 1))
       {
 	status = errno;
-	_cupsLangPrintError(_("ERROR: Unable to write control file"));
+	_cupsLangPrintf(stderr, _("ERROR: Unable to write control file"));
       }
       else
       {
