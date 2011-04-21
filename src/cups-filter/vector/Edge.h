@@ -35,7 +35,7 @@ public:
   void leave(Polyline *parent);
 private:
   static int cnt;
-  int id;
+  uint32_t id;
   Polyline *parent;
   Vertex *v[2];
 

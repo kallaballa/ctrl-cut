@@ -30,7 +30,7 @@
 int Polyline::cnt = 0;
 
 Polyline::Polyline() {
-  this->id++;
+  this->id = Polyline::cnt++;
 }
 
 bool Polyline::isClosed() const

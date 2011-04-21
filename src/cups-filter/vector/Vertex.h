@@ -37,7 +37,7 @@ public:
   int distance(const Vertex &other);
 private:
   void updateKey();
-  int id;
+  uint32_t id;
   static int cnt;
   std::string key;
 

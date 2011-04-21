@@ -28,9 +28,8 @@ Driver::Driver() : dumpxml(false)
 Driver::~Driver() {
 }
 
-
 /**
- * run the filter stack. additionally if dumpxml is set to truedump cut graph to xml.
+ * run the filter stack. additionally if dumpxml is set to true dump cut graph to xml.
  */
 void Driver::filter(LaserJob *job) {
   Explode explode;
