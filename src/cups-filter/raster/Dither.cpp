@@ -70,15 +70,22 @@ void Dither::carryOver(const uint32_t x, const uint32_t y, const int8_t carryove
 
 BitmapImage &Dither::dither() {
   Pixel<uint8_t> pix;
+  uint32_t width = this->img.width();
+  uint32_t height = this->img.height();
+  /* FIXME width is made 8 divisible and the image is truncated to the
+  * correct size afterwards because i'm too lazy to fix it properly
+  */
+  uint8_t modW = width % 8;
+  width += modW;
   uint8_t byteAlignOff = (8 - this->img.xPos() % 8) % 8;
-  uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
+  uint32_t scanlineBreak = (width - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
 
+  width = width + (byteAlignOff ? 8 : 0);
 
-  uint32_t width = this->img.width() + (byteAlignOff ? 8 : 0);
-  BitmapImage& result = *(new BitmapImage(width, this->img.height()));
+  BitmapImage& result = *(new BitmapImage(width, height));
   result.translate(this->img.xPos(), this->img.yPos());
-  size_t size = this->img.height() * width / 8;
+  size_t size = height * width / 8;
   void *dataptr = malloc(size);
   assert(dataptr);
   result.setData(dataptr);
@@ -123,7 +130,7 @@ BitmapImage &Dither::dither() {
       *(data++) = bitmap;
     }
   }
-
+  result.setSize(width-modW, height);
   return result;
 }
 
