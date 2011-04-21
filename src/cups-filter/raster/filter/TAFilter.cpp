@@ -25,7 +25,6 @@ void TAFilter::filter(Raster *raster)
 {
   list<PixelBox*> markedCells;
   list<PixelBox*>::iterator it_c;
-  PixelBox* c;
   BBox newTileDim;
   list<DownSample*>::iterator it_tp;
   DownSample* tp;
@@ -38,7 +37,7 @@ void TAFilter::filter(Raster *raster)
     bool startNewTile = true;
 
     for (it_c = markedCells.begin(); it_c != markedCells.end(); it_c++) {
-      c = *it_c;
+      const PixelBox &c = *it_c;
 
       //cerr << "Cell: " << c->ul_x << "\t| "  << c->ul_y << "\t| " << c->lr_x << "\t| " << c->lr_y << endl;
       if (startNewTile) {
@@ -48,7 +47,7 @@ void TAFilter::filter(Raster *raster)
         newTileDim.lr_y = c->lr_y;
         startNewTile = false;
       } else {
-        newTileDim.adjustTo(c);
+        newTileDim.extendBy(c);
       }
     }
 /*    MMapImage<unsigned char>* tile = raster->sourceImage->tile((offset_t)newTileDim.ul_x, (offset_t)newTileDim.ul_y,(size_t) newTileDim.lr_x - newTileDim.ul_x, (size_t) newTileDim.lr_y - newTileDim.ul_y);

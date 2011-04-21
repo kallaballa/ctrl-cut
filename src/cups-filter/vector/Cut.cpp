@@ -48,10 +48,10 @@ bool Cut::contains(Polyline* pl) const {
 /*!
   Loads vector data from EPS/Ghostscript output
 */
-Cut *Cut::load(istream &input)
+Cut *Cut::load(std::istream &input)
 {
   Cut *cut = new Cut();
-  string line;
+  std::string line;
   char first;
   int power, x, y;
   int lx = 0, ly = 0;
@@ -108,9 +108,9 @@ Cut *Cut::load(istream &input)
 /*!
   Loads vector data from EPS/Ghostscript output from the given file
 */
-Cut *Cut::load(const string &filename)
+Cut *Cut::load(const std::string &filename)
 {
-  ifstream infile(filename.c_str(), ios_base::in);
+  std::ifstream infile(filename.c_str(), std::ios_base::in);
   return Cut::load(infile);
 }
 
@@ -119,20 +119,20 @@ Cut *Cut::load(const string &filename)
  */
 void Cut::writeXml(const std::string &filename) const
 {
-  ofstream os(filename.c_str(), ios_base::out);
+  std::ofstream os(filename.c_str(), std::ios_base::out);
   os << *this;
   os.close();
 }
 
 void Cut::writeSvg(const std::string &filename) const
 {
-  ofstream os(filename.c_str(), ios_base::out);
+  std::ofstream os(filename.c_str(), std::ios_base::out);
   os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" ";
 
   BBox totalbb;
   for (Cut::const_iterator it = this->begin(); it != this->end(); it++) {
     Polyline *p = *it;
-    totalbb.adjustTo(p->getBoundingBox());
+    totalbb.extendBy(p->getBoundingBox());
   }
   int w, h;
   totalbb.getSize(w, h);
@@ -156,7 +156,7 @@ void Cut::writeSvg(const std::string &filename) const
   os.close();
 }
 
-ostream &operator<<(ostream &os, const Cut &cut) {
+std::ostream &operator<<(std::ostream &os, const Cut &cut) {
   os << "<cut clipped=\"" << cut.wasClipped() << "\">" << std::endl;
   os << "<polylines cnt=\"" << cut.size() << "\" >" << std::endl;
   for (Cut::const_iterator it = cut.begin(); it != cut.end(); it++) {

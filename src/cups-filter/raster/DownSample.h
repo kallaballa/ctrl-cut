@@ -33,7 +33,7 @@ typedef Rectangle PixelBox;
 class DownSample {
 	typedef boost::multi_array<PixelBox*, 2> PB_Image;
   PB_Image* image;
-  list<PixelBox*> pixelBoxes;
+  std::list<PixelBox*> pixelBoxes;
   BBox boundingBox;
   uint16_t tolerance, pixel_width, pixel_height, res_x, res_y;
 
@@ -47,7 +47,7 @@ class DownSample {
   bool sample(const Point2D &m);
   BBox getBoundingBox();
   void resize(uint16_t width, uint16_t height);
-  list<PixelBox*> getPixels();
+  std::list<PixelBox*> getPixels();
 };
 
 #endif /* DOWNSAMPLE_H_ */

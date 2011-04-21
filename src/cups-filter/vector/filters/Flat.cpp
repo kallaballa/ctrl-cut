@@ -36,9 +36,9 @@ void Flat::filter(Cut *cut) {
   LOG_INFO_MSG("Flat", cut->size());
   sort(cut->begin(), cut->end(), closerToOrigin);
 
-  list<DownSample*> grids;
-  list<DownSample*>::iterator it_g;
-  map<DownSample*, vector<Polyline*>*> clusters;
+  std::list<DownSample*> grids;
+  std::list<DownSample*>::iterator it_g;
+  std::map<DownSample*, std::vector<Polyline*>*> clusters;
   DownSample * grid;
   Polyline* pl;
 
@@ -49,7 +49,7 @@ void Flat::filter(Cut *cut) {
     for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
       grid = *it_g;
       if ((added = grid->sample(p))) {
-        vector<Polyline* >* vp = (*clusters.find(grid)).second;
+        std::vector<Polyline* >* vp = (*clusters.find(grid)).second;
         vp->push_back(pl);
         break;
       }
@@ -59,16 +59,16 @@ void Flat::filter(Cut *cut) {
       DownSample* gridnew = new DownSample(p, 25, 25, 5, 5, 20);
       grids.push_back(gridnew);
 
-      vector<Polyline* >* vp = new vector<Polyline* >();
+      std::vector<Polyline* >* vp = new std::vector<Polyline* >();
       vp->push_back(pl);
-      clusters.insert(pair<DownSample*, vector<Polyline* >*> (gridnew, vp));
+      clusters.insert(pair<DownSample*, std::vector<Polyline* >*> (gridnew, vp));
     }
   }
 
-  vector<Polyline* >* newPolylines = new vector<Polyline* >();
+  std::vector<Polyline* >* newPolylines = new std::vector<Polyline* >();
   for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
     grid = *it_g;
-    vector<Polyline* >* vp = (*clusters.find(grid)).second;
+    std::vector<Polyline* >* vp = (*clusters.find(grid)).second;
     newPolylines->insert(newPolylines->end(), vp->begin(), vp->end());
   }
 

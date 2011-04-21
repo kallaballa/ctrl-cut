@@ -78,7 +78,7 @@ DownSample::DownSample(BBox* bbox, uint16_t res_x, uint16_t res_y,
         (*image)[cx][cy] = pb;
       }
 
-      boundingBox.adjustTo(*pb);
+      boundingBox.extendBy(*pb);
       pixelBoxes.push_back(pb);
       return true;
     }

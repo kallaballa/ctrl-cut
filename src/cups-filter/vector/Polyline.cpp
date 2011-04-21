@@ -70,8 +70,8 @@ const BBox &Polyline::getBoundingBox() const
   if (!this->bbox.isValid()) {
     for (Polyline::const_iterator it = this->begin(); it != this->end(); it++) {
       const Edge &e = **it;
-      this->bbox.adjustTo(e[0][0], e[0][1]);
-      this->bbox.adjustTo(e[1][0], e[1][1]);
+      this->bbox.extendBy(e[0]);
+      this->bbox.extendBy(e[1]);
     }
   }
   return this->bbox;
@@ -140,7 +140,7 @@ Edge* Polyline::findLeftmostClockwise() {
   return found;
 }
 
-ostream& operator <<(ostream &os, const Polyline &pl) {
+std::ostream& operator <<(std::ostream &os, const Polyline &pl) {
   os << "<polyline id=\"" << pl.getID() << "\" >" << std::endl;
   const BBox &bb = pl.getBoundingBox();
   os << "<bbox distToOrigin=\"" << bb.distanceToOrigin() << "\" ul.x=\""

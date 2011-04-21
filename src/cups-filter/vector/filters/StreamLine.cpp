@@ -52,7 +52,7 @@ void StreamLine::filter(Cut *cut)
       ref_vertex = &at_origin;
 
     if(current->isClosed()) {
-      int minDist = numeric_limits<int>::max();
+      int minDist = std::numeric_limits<int>::max();
       Polyline::iterator* minDistIt = NULL;
 
       for (Polyline::iterator it_p = current->begin(); it_p != current->end(); it_p++) {
@@ -61,9 +61,9 @@ void StreamLine::filter(Cut *cut)
         s_dist = ref_vertex->distance(*e->start());
         e_dist = ref_vertex->distance(*e->end());
 
-        int dist = min(s_dist, e_dist);
+        int dist = std::min(s_dist, e_dist);
 
-        if(dist < minDist) {
+        if (dist < minDist) {
           minDistIt = &it_p;
           minDist = dist;
         }
