@@ -388,11 +388,11 @@ void PostscriptParser::copyPage()
   uint64_t *gsaddr = (uint64_t *)this->gsimage->data();
   int i;
   for (i=0;i<size/8;i++) {
-    if (gsaddr[i] != 0xffffffffffffffff) break;
+    if (gsaddr[i] != 0xffffffffffffffffULL) break;
   }
   int startrow = i * 8 / this->gsimage->rowstride();
   for (i=size/8-1;i>=0;i--) {
-    if (gsaddr[i] != 0xffffffffffffffff) break;
+    if (gsaddr[i] != 0xffffffffffffffffULL) break;
   }
   int endrow = i * 8 / this->gsimage->rowstride();
 
