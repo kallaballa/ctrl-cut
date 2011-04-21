@@ -41,13 +41,13 @@ bool Polyline::isClosed() const
 void Polyline::prepend(Edge *edge) {
   edge->join(this);
   this->edges.insert(this->edges.begin(),edge);
-  this->bb.invalidate();
+  this->bbox.invalidate();
 }
 
 void Polyline::append(Edge *edge) {
   edge->join(this);
   this->edges.push_back(edge);
-  this->bb.invalidate();
+  this->bbox.invalidate();
 }
 
 void Polyline::remove(Edge *edge) {
@@ -55,7 +55,7 @@ void Polyline::remove(Edge *edge) {
   if (it != this->edges.end()) {
     (*it)->leave(this);
     this->edges.erase(it);
-    this->bb.invalidate();
+    this->bbox.invalidate();
   }
 }
 
@@ -65,16 +65,16 @@ bool Polyline::contains(Edge *edge) {
 }
 
 
-BBox *Polyline::getBoundingBox()
+const BBox &Polyline::getBoundingBox() const
 {
-  if (!this->bb.isValid()) {
-    for (Polyline::iterator it = this->begin(); it != this->end(); it++) {
-      Edge &e = **it;
-      this->bb.adjustTo(e[0][0], e[0][1]);
-      this->bb.adjustTo(e[1][0], e[1][1]);
+  if (!this->bbox.isValid()) {
+    for (Polyline::const_iterator it = this->begin(); it != this->end(); it++) {
+      const Edge &e = **it;
+      this->bbox.adjustTo(e[0][0], e[0][1]);
+      this->bbox.adjustTo(e[1][0], e[1][1]);
     }
   }
-  return &this->bb;
+  return this->bbox;
 }
 
 void Polyline::reverseOrder() {
@@ -140,14 +140,14 @@ Edge* Polyline::findLeftmostClockwise() {
   return found;
 }
 
-ostream& operator <<(ostream &os, Polyline &pl) {
-  os << "<polyline id=\"" << pl.id << "\" >" << std::endl;
-  BBox* bb = pl.getBoundingBox();
-  os << "<bbox distToOrigin=\"" << bb->distanceToOrigin() << "\" ul.x=\""
-      << bb->ul[0] << "\" ul.y=\"" << bb->ul[1] << "\" lr.x=\"" << bb->lr[0]
-      << "\" lr.y=\"" << bb->lr[1] << "\" />" << std::endl;
-  for (Polyline::iterator it = pl.edges.begin(); it != pl.edges.end(); it++) {
-    os << *((Edge*) *it);
+ostream& operator <<(ostream &os, const Polyline &pl) {
+  os << "<polyline id=\"" << pl.getID() << "\" >" << std::endl;
+  const BBox &bb = pl.getBoundingBox();
+  os << "<bbox distToOrigin=\"" << bb.distanceToOrigin() << "\" ul.x=\""
+      << bb.ul[0] << "\" ul.y=\"" << bb.ul[1] << "\" lr.x=\"" << bb.lr[0]
+      << "\" lr.y=\"" << bb.lr[1] << "\" />" << std::endl;
+  for (Polyline::const_iterator it = pl.begin(); it != pl.end(); it++) {
+    os << *((const Edge*) *it);
   }
   os << "</polyline>" << std::endl;
   return os;

@@ -29,7 +29,7 @@
 Flat::~Flat() {
 }
 bool closerToOrigin(Polyline* p1, Polyline* p2) {
-  return (p1->getBoundingBox()->distanceToOrigin() < p2->getBoundingBox()->distanceToOrigin() );
+  return (p1->getBoundingBox().distanceToOrigin() < p2->getBoundingBox().distanceToOrigin() );
 }
 
 void Flat::filter(Cut *cut) {
@@ -44,8 +44,7 @@ void Flat::filter(Cut *cut) {
 
   for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
     pl = (*it);
-    BBox *bb = pl->getBoundingBox();
-    const Point2D &p = bb->ul;
+    const Point2D &p = pl->getBoundingBox().ul;
     bool added = false;
     for (it_g = grids.begin(); it_g != grids.end(); it_g++) {
       grid = *it_g;

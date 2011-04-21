@@ -108,7 +108,7 @@ public:
             p[1] < (lr[1] + tol_y) && p[1] > (ul[1] - tol_y));
   }
   
-  bool isValid() {
+  bool isValid() const {
     return this->ul[0] < this->lr[0] &&
       this->ul[1] < this->lr[1] &&
       this->ul[0] < numeric_limits<int>::max() &&
@@ -138,14 +138,14 @@ public:
     this->lr[1] = max(m[1], lr[1]);
   }
 
-  void adjustTo(Rectangle* r) {
-    this->ul[0] = min(r->ul[0], ul[0]);
-    this->ul[1] = min(r->ul[1], ul[1]);
-    this->lr[0] = max(r->lr[0], lr[0]);
-    this->lr[1] = max(r->lr[1], lr[1]);
+  void adjustTo(const Rectangle &r) {
+    this->ul[0] = min(r.ul[0], ul[0]);
+    this->ul[1] = min(r.ul[1], ul[1]);
+    this->lr[0] = max(r.lr[0], lr[0]);
+    this->lr[1] = max(r.lr[1], lr[1]);
   }
 
-  int distanceToOrigin(){
+  int distanceToOrigin() const {
     return hypot(this->ul[0], this->ul[1]);
   }
 };

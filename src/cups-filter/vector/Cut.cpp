@@ -132,8 +132,7 @@ void Cut::writeSvg(const std::string &filename) const
   BBox totalbb;
   for (Cut::const_iterator it = this->begin(); it != this->end(); it++) {
     Polyline *p = *it;
-    BBox* bb = p->getBoundingBox();
-    totalbb.adjustTo(bb);
+    totalbb.adjustTo(p->getBoundingBox());
   }
   int w, h;
   totalbb.getSize(w, h);
