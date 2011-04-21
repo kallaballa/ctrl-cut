@@ -211,10 +211,10 @@ done
 
 shift $(($OPTIND - 1))
 
-if [ $# -gt 1 ]; then
-  printUsage
-  exit 1
-fi
+#if [ $# -gt 1 ]; then
+#  printUsage
+#  exit 1
+#fi
 
 if test $VERBOSE; then
   set -x
@@ -233,14 +233,16 @@ if [ x$XML_TEST != "x" ]; then pad "XML" 3; fi
 echo
 
 # Run given test or all tests
-if [ $# == 1 ]; then
-  if [ -d $1 ]; then
-    rundir $1
-  else
-    runtest $1 `basename $(dirname $1)`
-  fi
+if [ $# -gt 0 ]; then
+  for case in $@; do
+    if [ -d $case ]; then
+      rundir $case
+    else
+      runtest $case `basename $(dirname $case)`
+    fi
+  done
 else
- testdirs="corel qcad inkscape"
+ testdirs="corel-v corel-r corel-b qcad inkscape"
  testpaths=""
  for testdir in $testdirs
  do
