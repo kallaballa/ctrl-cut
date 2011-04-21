@@ -40,8 +40,7 @@ public:
     return this->v[0] == other.v[0] && this->v[1] == other.v[1];
   }
   float distance(const Point2D &other) const {
-    return sqrt((v[0] - other.v[0]) * (v[0] - other.v[0]) +
-                (v[1] - other.v[1]) * (v[1] - other.v[1]));
+    return hypot(float(v[0] - other.v[0]), float(v[1] - other.v[1]));
   }
 
 protected:

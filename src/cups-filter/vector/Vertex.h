@@ -34,7 +34,6 @@ public:
 
   void attach(Edge *ls);
   void detach(Edge *ls);
-  int distance(const Vertex &other);
 private:
   void updateKey();
   uint32_t id;
