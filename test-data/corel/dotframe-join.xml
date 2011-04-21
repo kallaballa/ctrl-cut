@@ -1,6 +1,6 @@
 <cut clipped="0">
 <polylines cnt="2" >
-<polyline id="412000009" >
+<polyline id="0" >
 <bbox distToOrigin="1528" ul.x="1033" ul.y="1127" lr.x="5734" lr.y="4401" />
 <edge power="-1" id="0" >
 <vertex x="1033" y="1127" id="1" key="1033/1127" />
@@ -19,7 +19,7 @@
 <vertex x="1033" y="1127" id="1" key="1033/1127" />
 </edge>
 </polyline>
-<polyline id="412000025" >
+<polyline id="1" >
 <bbox distToOrigin="2047" ul.x="1431" ul.y="1465" lr.x="5338" lr.y="4080" />
 <edge power="-1" id="4" >
 <vertex x="1431" y="1465" id="9" key="1431/1465" />
