@@ -59,7 +59,7 @@ if [ -f $optionsfile ]; then
 fi
 
 #echo ctrl-cut invocation into log
-echo "BLA $CC_BINARY $XML 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" &> ${file%.ps}.run
+echo "$CC_BINARY $XML 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" &> ${file%.ps}.run
 
 # Don't run this with try since it produces stdout which is passed to our caller
 $CC_BINARY $XML 32 kintel $filename 1 "$commonoptions $options $CC_FILTER_OPTIONS" $file
