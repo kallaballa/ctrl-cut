@@ -1001,17 +1001,17 @@ restore
 
 *%******** VectorOptimize ********
 *OpenUI *VectorOptimize/VectorOptimize: PickOne
-*DefaultVectorOptimize: 1
+*DefaultVectorOptimize: Inner-Outer
 *OrderDependency: 140 AnySetup *VectorOptimize
-*VectorOptimize 0/Simple: "
+*VectorOptimize Simple/Simple: "
         <</DeviceRenderingInfo <</Type 29 /VectorOptimize 0>> >>
                 setpagedevice"
 *End
-*VectorOptimize 1/Inner-Outer: "
+*VectorOptimize Inner-Outer/Inner-Outer: "
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
 	setpagedevice"
 *End
-*VectorOptimize 2/Flat: "
+*VectorOptimize Flat/Flat: "
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 2>> >>
 	setpagedevice"
 *End
