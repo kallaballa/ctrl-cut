@@ -34,8 +34,8 @@ public:
 	LaserConfig* lconf;
 
 	void averageXSequence(GrayscaleImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p);
-	void encode(Raster* raster, ostream &out);
-	void encodeBitmapTile(BitmapImage* tile, ostream& out);
+	void encode(Raster* raster, std::ostream &out);
+	void encodeBitmapTile(BitmapImage* tile, std::ostream& out);
 
 	PclEncoder(LaserConfig* lconf);
 	virtual ~PclEncoder();

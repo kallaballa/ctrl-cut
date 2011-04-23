@@ -24,23 +24,32 @@
 #include "DownSample.h"
 #include "MMapMatrix.h"
 
-using namespace std;
-
 class Raster
 {
 public:
-  AbstractImage* sourceImage;
-  static Raster* load(const string &filename);
+  typedef std::list<AbstractImage*> TileContainer;
+  typedef TileContainer::iterator iterator;
+  typedef TileContainer::const_iterator const_iterator;
 
-  list<AbstractImage*> tiles;
-  list<DownSample*> grids;
-
-  Raster(AbstractImage* sourceImage) {
-    this->sourceImage = sourceImage;
+  Raster(AbstractImage *sourceImage) {
+    this->sourceimage = sourceImage;
   }
-
   virtual ~Raster() {}
-  void addTile(AbstractImage* tile);
+
+  iterator begin() { return this->tiles.begin(); }
+  const_iterator begin() const  { return this->tiles.begin(); }
+  iterator end() { return this->tiles.end(); }
+  const_iterator end() const  { return this->tiles.end(); }
+  size_t size() const { return this->tiles.size(); }
+
+  AbstractImage *sourceImage() { return this->sourceimage; }
+  void addTile(AbstractImage *tile);
+
+  static Raster *load(const std::string &filename);
+private:
+  AbstractImage *sourceimage;
+  TileContainer tiles;
+  std::list<DownSample*> grids;
 };
 
 #endif

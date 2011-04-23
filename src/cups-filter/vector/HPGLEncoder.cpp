@@ -33,7 +33,7 @@ HPGLEncoder::~HPGLEncoder() {
   // TODO Auto-generated destructor stub
 }
 
-void HPGLEncoder::encode(Cut *cut, ostream &out) {
+void HPGLEncoder::encode(Cut *cut, std::ostream &out) {
   bool first = true;
   bool writingPolyline = false;
 

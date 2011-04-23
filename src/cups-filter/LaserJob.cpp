@@ -46,7 +46,7 @@ void LaserJob::addRaster(Raster* raster) {
 /**
  *
  */
-void LaserJob::serializeTo(ostream &out) {
+void LaserJob::serializeTo(std::ostream &out) {
   int i;
   /* Print the printer job language header. */
 

@@ -282,7 +282,7 @@ int main(int argc, char *argv[]) {
       }
     }
     if (raster) {
-      raster->addTile(raster->sourceImage);
+      raster->addTile(raster->sourceImage());
       job.addRaster(raster);
     }
   }

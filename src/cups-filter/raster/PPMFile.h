@@ -27,9 +27,7 @@
 #include "util/Logger.h"
 #include "MMapMatrix.h"
 
-using namespace std;
-
-GrayscaleImage *loadppm(string filename)
+GrayscaleImage *loadppm(std::string filename)
 {
   LOG_DEBUG_MSG("loading PPM..", filename);
 
@@ -70,7 +68,7 @@ GrayscaleImage *loadppm(string filename)
   return new MappedImage(filename, w, h, components, data_offset);
 }
 
-BitmapImage *loadpbm(string filename)
+BitmapImage *loadpbm(std::string filename)
 {
   LOG_DEBUG_MSG("loading PBM..", filename);
 

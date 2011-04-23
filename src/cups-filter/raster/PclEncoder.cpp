@@ -31,22 +31,22 @@ PclEncoder::~PclEncoder() {
 
 }
 
-void PclEncoder::encode(Raster *raster, ostream &out)
+void PclEncoder::encode(Raster *raster, std::ostream &out)
 {
-  LOG_DEBUG_MSG("Encode raster", raster->tiles.size());
+  LOG_DEBUG_MSG("Encode raster", raster->size());
 
   // Raster direction (1 = up)
   out << format(R_DIRECTION) % lconf->raster_direction;
   // start at current position
   out << R_START;
 
-  list<AbstractImage*>::iterator it;
-  for (it = raster->tiles.begin(); it != raster->tiles.end(); it++) {
+  std::list<AbstractImage*>::iterator it;
+  for (it = raster->begin(); it != raster->end(); it++) {
     LOG_DEBUG_STR("Encoding tile..");
     BitmapImage *bitmap = dynamic_cast<BitmapImage*>(*it);
     if (!bitmap) {
       GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(*it);
-      if(gsimage) {
+      if (gsimage) {
         Dither& dither = Dither::create(*gsimage, lconf->raster_dithering);
         bitmap = &dither.dither();
       }
@@ -58,7 +58,7 @@ void PclEncoder::encode(Raster *raster, ostream &out)
   out << R_END; // end raster
 }
 
-void PclEncoder::encodeBitmapTile(BitmapImage* tile, ostream& out)
+void PclEncoder::encodeBitmapTile(BitmapImage* tile, std::ostream& out)
 {
   LOG_DEBUG_STR("Encoding bitmap tile..");
 

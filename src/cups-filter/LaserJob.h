@@ -23,8 +23,8 @@ public:
   string user;   /*! User name that submitted the print job. */
   string title;  /*! Title for the print job. */
 
-  list<class Cut*> cuts;
-  list<Raster*> rasters;
+  std::list<class Cut*> cuts;
+  std::list<Raster*> rasters;
   LaserConfig *lconf;
 
   LaserJob(LaserConfig *lconf, 
@@ -34,9 +34,9 @@ public:
   void optimize();
   void addCut(Cut* cut);
   void addRaster(Raster* raster);
-  list<Cut*> getCuts() { return cuts; }
+  std::list<Cut*> getCuts() { return cuts; }
 
-  void serializeTo(ostream &out);
+  void serializeTo(std::ostream &out);
 };
 
 #endif /* LASERJOB_H_ */
