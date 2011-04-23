@@ -34,6 +34,9 @@ public:
   bool operator==(const Point2D &other) const {
     return this->v[0] == other.v[0] && this->v[1] == other.v[1];
   }
+  bool operator!=(const Point2D &other) const {
+    return !(*this == other);
+  }
   float distance(const Point2D &other) const {
     return hypot(float(v[0] - other.v[0]), float(v[1] - other.v[1]));
   }
