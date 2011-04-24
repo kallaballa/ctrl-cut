@@ -133,5 +133,6 @@ void Deonion::filter(Cut *cut)
       skins.push_back(skin);
     }
   }
+  reverse(skins.begin(), skins.end());
   cut->swap(skins);
 }
