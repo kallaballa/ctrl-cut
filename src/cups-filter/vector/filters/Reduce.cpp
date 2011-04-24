@@ -83,7 +83,7 @@ void Reduce::filter(Cut *cut)
       // We exceeded the epsilon, split the edge and continue
       if (largest > this->epsilon) {
         Edge *newe = new Edge((*startit)->start(), (*largestit)->end(),
-                              (*startit)->power, (*startit)->speed, (*startit)->frequency);
+                              (*startit)->power(), (*startit)->speed(), (*startit)->frequency());
         newe->attach();
         newpl->append(newe);
         startit = largestit + 1;
@@ -91,7 +91,7 @@ void Reduce::filter(Cut *cut)
     }
     // Add last line
     Edge *newe = new Edge((*startit)->start(), pl->back()->end(),
-                          (*startit)->power, (*startit)->speed, (*startit)->frequency);
+                          (*startit)->power(), (*startit)->speed(), (*startit)->frequency());
     newe->attach();
     newpl->append(newe);
   }

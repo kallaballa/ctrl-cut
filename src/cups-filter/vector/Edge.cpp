@@ -25,7 +25,7 @@
 int Edge::cnt = 0;
 
 Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency)
-  : power(power), speed(speed), frequency(frequency), parent(NULL)
+  : parent(NULL), laser_power(power), laser_speed(speed), laser_frequency(frequency)
 {
   v[0] = start;
   v[1] = end;
@@ -149,7 +149,7 @@ void Edge::leave(Polyline *p) {
 }
 
 std::ostream &operator<<(std::ostream &os, const Edge &e) {
-  os << "<edge power=\"" << e.power << "\" id=\"" << e.id << "\" >" << std::endl;
+  os << "<edge power=\"" << e.power() << "\" id=\"" << e.getID() << "\" >" << std::endl;
   os << e[0] << e[1];
   os << "</edge>" << std::endl;
   return os;

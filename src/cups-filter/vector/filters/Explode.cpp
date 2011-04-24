@@ -83,8 +83,8 @@ void Explode::filter(Cut *cut)
             pick->detach();
             mesh.remove(pick);
 
-            mesh.create(pick->start(), intersec, pick->power);
-            mesh.create(pick->end(), intersec, pick->power);
+            mesh.create(pick->start(), intersec, pick->power());
+            mesh.create(pick->end(), intersec, pick->power());
           }
 
           // if candidate doesnt tip intersect remove it and split it in two
@@ -92,8 +92,8 @@ void Explode::filter(Cut *cut)
             candidate->detach();
             mesh.remove(candidate);
 
-            mesh.create(candidate->start(), intersec, candidate->power);
-            mesh.create(candidate->end(), intersec, candidate->power);
+            mesh.create(candidate->start(), intersec, candidate->power());
+            mesh.create(candidate->end(), intersec, candidate->power());
           }
         }
       }

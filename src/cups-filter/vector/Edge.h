@@ -18,9 +18,11 @@ public:
   void setStart(Vertex *vtx) { v[0] = vtx; }
   void setEnd(Vertex *vtx) { v[1] = vtx; }
   const Vertex &operator[](size_t idx) const { return *v[idx]; }
-  int power;
-  int speed;
-  int frequency;
+
+  int getID() const { return this->id; }
+  int power() const { return laser_power; }
+  int speed() const { return laser_speed; }
+  int frequency() const { return laser_frequency; }
 
   float getSlope(bool invert=false);
   void invertDirection();
@@ -38,8 +40,11 @@ private:
   uint32_t id;
   Polyline *parent;
   Vertex *v[2];
-
-  friend std::ostream &operator<<(std::ostream &os, const Edge &e);
+  int laser_power;
+  int laser_speed;
+  int laser_frequency;
 };
+
+std::ostream &operator<<(std::ostream &os, const Edge &e);
 
 #endif
