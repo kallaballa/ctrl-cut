@@ -52,7 +52,7 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    diff -a $prnfile $outfile >> $testcase.log
+    cmp $prnfile $outfile >> $testcase.log
     if [ $? == 0 ]; then
       binary_ok=1
     fi
