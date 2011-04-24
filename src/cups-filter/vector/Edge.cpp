@@ -35,7 +35,7 @@ Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency
 /*!
   Calculates the distance from the vertex to the infinite line segment defined by this edge
 */
-float Edge::distance(const Vertex &p) const
+float Edge::distance(const Point2D &p) const
 {
   return 
     fabs(((*v[0])[1] - (*v[1])[1]) * p[0] + ((*v[1])[0] - (*v[0])[0]) * p[1] +
@@ -46,9 +46,7 @@ float Edge::distance(const Vertex &p) const
 
 void Edge::invertDirection()
 {
-  Vertex* tmp = this->v[0];
-  this->v[0] = this->v[1];
-  this->v[1] = tmp;
+  std::swap(this->v[0], this->v[1]);
 }
 
 void Edge::detach() {
@@ -64,16 +62,14 @@ void Edge::attach()
 
 /*!
   Returns angle to the positive Y axis
- */
-float Edge::getSlope(bool invert) {
-  int d_x;
-  int d_y;
+*/
+float Edge::getSlope(bool invert)
+{
+  int d_x = (*this)[1][0] - (*this)[0][0];
+  int d_y = (*this)[1][1] - (*this)[0][1];
   if (invert) {
-    d_x = (*this)[0][0] - (*this)[1][0];
-    d_y = (*this)[0][1] - (*this)[1][1];
-  } else {
-    d_x = (*this)[1][0] - (*this)[0][0];
-    d_y = (*this)[1][1] - (*this)[0][1];
+    d_x = -d_x;
+    d_y = -d_y;
   }
 
   // Swap x and y since we're measuring relative to the Y axis.
@@ -129,14 +125,6 @@ Vertex* Edge::intersects(const Edge &other) const
   return NULL; //NOT_INTERSECTING;
 }
 
-
-bool Edge::isMemberOf(Polyline *p) {
-  return this->parent == p;
-}
-
-bool Edge::isPolylineMember() {
-  return this->parent != NULL;
-}
 
 void Edge::join(Polyline *p) {
   assert(!isPolylineMember());

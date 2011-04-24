@@ -27,12 +27,13 @@ public:
   float getSlope(bool invert=false);
   void invertDirection();
   Vertex *intersects(const Edge &other) const;
-  float distance(const Vertex &v) const;
+  float distance(const Point2D &v) const;
   void detach();
   void attach();
 
-  bool isMemberOf(Polyline *p);
-  bool isPolylineMember();
+  bool isMemberOf(Polyline *p) { return this->parent == p; }
+  bool isPolylineMember() { return this->parent != NULL; }
+
   void join(Polyline *parent);
   void leave(Polyline *parent);
 private:
