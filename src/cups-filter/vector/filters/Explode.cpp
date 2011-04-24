@@ -24,8 +24,8 @@
 #include "Explode.h"
 
 bool sortEdgeByX(Edge* e1, Edge* e2) {
-  uint32_t e1_minX = min((*e1)[0][0], (*e1)[1][0]);
-  uint32_t e2_minX = min((*e2)[0][0], (*e2)[1][0]);
+  uint32_t e1_minX = std::min((*e1)[0][0], (*e1)[1][0]);
+  uint32_t e2_minX = std::min((*e2)[0][0], (*e2)[1][0]);
   return e1_minX < e2_minX;
 }
 
@@ -41,12 +41,12 @@ void Explode::filter(Cut *cut)
 
   Mesh &mesh = cut->getMesh();
   mesh.edges.sort(sortEdgeByX);
-  list<Edge*> stripe;
-  list<Edge*> carryOver;
+  std::list<Edge*> stripe;
+  std::list<Edge*> carryOver;
   Edge* first = mesh.front();
   uint32_t stripeStep = 200;
-  uint32_t stripeLimit = min((*first)[0][0], (*first)[1][0]);
-  list<Edge*>::iterator it_m = mesh.begin();
+  uint32_t stripeLimit = std::min((*first)[0][0], (*first)[1][0]);
+  std::list<Edge*>::iterator it_m = mesh.begin();
 
   while(it_m != mesh.end()) {
     stripe = carryOver;
