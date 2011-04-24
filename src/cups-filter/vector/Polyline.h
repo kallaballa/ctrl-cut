@@ -22,6 +22,7 @@
 
 #include "util/2D.h"
 #include <vector>
+#include <ostream>
 
 class Polyline
 {
