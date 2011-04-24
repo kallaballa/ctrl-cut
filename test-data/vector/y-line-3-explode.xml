@@ -1,0 +1,62 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="10" >
+<edge power="-1" id="0" >
+<vertex x="0" y="0" id="1" key="0/0" />
+<vertex x="0" y="1000" id="0" key="0/1000" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="0" y="1000" id="0" key="0/1000" />
+<vertex x="0" y="2000" id="2" key="0/2000" />
+</edge>
+<edge power="-1" id="2" >
+<vertex x="0" y="2000" id="2" key="0/2000" />
+<vertex x="0" y="3000" id="4" key="0/3000" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="0" y="3000" id="4" key="0/3000" />
+<vertex x="0" y="4000" id="6" key="0/4000" />
+</edge>
+<edge power="-1" id="4" >
+<vertex x="0" y="4000" id="6" key="0/4000" />
+<vertex x="0" y="5000" id="8" key="0/5000" />
+</edge>
+<edge power="-1" id="5" >
+<vertex x="0" y="5000" id="8" key="0/5000" />
+<vertex x="0" y="6000" id="10" key="0/6000" />
+</edge>
+<edge power="-1" id="6" >
+<vertex x="0" y="6000" id="10" key="0/6000" />
+<vertex x="0" y="7000" id="12" key="0/7000" />
+</edge>
+<edge power="-1" id="7" >
+<vertex x="0" y="7000" id="12" key="0/7000" />
+<vertex x="0" y="8000" id="14" key="0/8000" />
+</edge>
+<edge power="-1" id="8" >
+<vertex x="0" y="8000" id="14" key="0/8000" />
+<vertex x="0" y="9000" id="16" key="0/9000" />
+</edge>
+<edge power="-1" id="9" >
+<vertex x="0" y="9000" id="16" key="0/9000" />
+<vertex x="0" y="10000" id="18" key="0/10000" />
+</edge>
+</edges>
+<vertices cnt="11" >
+<vertex x="0" y="0" id="1" key="0/0" />
+<vertex x="0" y="1000" id="0" key="0/1000" />
+<vertex x="0" y="10000" id="18" key="0/10000" />
+<vertex x="0" y="2000" id="2" key="0/2000" />
+<vertex x="0" y="3000" id="4" key="0/3000" />
+<vertex x="0" y="4000" id="6" key="0/4000" />
+<vertex x="0" y="5000" id="8" key="0/5000" />
+<vertex x="0" y="6000" id="10" key="0/6000" />
+<vertex x="0" y="7000" id="12" key="0/7000" />
+<vertex x="0" y="8000" id="14" key="0/8000" />
+<vertex x="0" y="9000" id="16" key="0/9000" />
+</vertices>
+</mesh>
+
+</cut>

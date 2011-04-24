@@ -1,0 +1,74 @@
+<cut clipped="0">
+<polylines cnt="1" >
+<polyline id="1" >
+<bbox distToOrigin="51" ul.x="37" ul.y="36" lr.x="487" lr.y="486" />
+<edge power="-1" id="13" >
+<vertex x="149" y="148" id="14" key="149/148" />
+<vertex x="37" y="148" id="16" key="37/148" />
+</edge>
+<edge power="-1" id="15" >
+<vertex x="37" y="148" id="16" key="37/148" />
+<vertex x="37" y="373" id="18" key="37/373" />
+</edge>
+<edge power="-1" id="17" >
+<vertex x="37" y="373" id="18" key="37/373" />
+<vertex x="149" y="373" id="20" key="149/373" />
+</edge>
+<edge power="-1" id="19" >
+<vertex x="149" y="373" id="20" key="149/373" />
+<vertex x="149" y="486" id="1" key="149/486" />
+</edge>
+<edge power="-1" id="21" >
+<vertex x="149" y="486" id="1" key="149/486" />
+<vertex x="374" y="486" id="0" key="374/486" />
+</edge>
+<edge power="-1" id="23" >
+<vertex x="374" y="486" id="0" key="374/486" />
+<vertex x="374" y="373" id="2" key="374/373" />
+</edge>
+<edge power="-1" id="25" >
+<vertex x="374" y="373" id="2" key="374/373" />
+<vertex x="487" y="373" id="4" key="487/373" />
+</edge>
+<edge power="-1" id="27" >
+<vertex x="487" y="373" id="4" key="487/373" />
+<vertex x="487" y="148" id="6" key="487/148" />
+</edge>
+<edge power="-1" id="29" >
+<vertex x="487" y="148" id="6" key="487/148" />
+<vertex x="374" y="148" id="8" key="374/148" />
+</edge>
+<edge power="-1" id="31" >
+<vertex x="374" y="148" id="8" key="374/148" />
+<vertex x="374" y="36" id="10" key="374/36" />
+</edge>
+<edge power="-1" id="33" >
+<vertex x="374" y="36" id="10" key="374/36" />
+<vertex x="149" y="36" id="12" key="149/36" />
+</edge>
+<edge power="-1" id="34" >
+<vertex x="149" y="36" id="12" key="149/36" />
+<vertex x="149" y="148" id="14" key="149/148" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="12" >
+<vertex x="149" y="148" id="14" key="149/148" />
+<vertex x="149" y="36" id="12" key="149/36" />
+<vertex x="149" y="373" id="20" key="149/373" />
+<vertex x="149" y="486" id="1" key="149/486" />
+<vertex x="37" y="148" id="16" key="37/148" />
+<vertex x="37" y="373" id="18" key="37/373" />
+<vertex x="374" y="148" id="8" key="374/148" />
+<vertex x="374" y="36" id="10" key="374/36" />
+<vertex x="374" y="373" id="2" key="374/373" />
+<vertex x="374" y="486" id="0" key="374/486" />
+<vertex x="487" y="148" id="6" key="487/148" />
+<vertex x="487" y="373" id="4" key="487/373" />
+</vertices>
+</mesh>
+
+</cut>

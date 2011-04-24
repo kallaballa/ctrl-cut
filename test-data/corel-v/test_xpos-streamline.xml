@@ -1,0 +1,56 @@
+<cut clipped="0">
+<polylines cnt="5" >
+<polyline id="10" >
+<bbox distToOrigin="13" ul.x="0" ul.y="13" lr.x="234" lr.y="13" />
+<edge power="-1" id="5" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="234" y="13" id="0" key="234/13" />
+</edge>
+</polyline>
+<polyline id="11" >
+<bbox distToOrigin="37" ul.x="1" ul.y="37" lr.x="238" lr.y="37" />
+<edge power="-1" id="6" >
+<vertex x="238" y="37" id="2" key="238/37" />
+<vertex x="1" y="37" id="3" key="1/37" />
+</edge>
+</polyline>
+<polyline id="12" >
+<bbox distToOrigin="64" ul.x="23" ul.y="60" lr.x="259" lr.y="60" />
+<edge power="-1" id="7" >
+<vertex x="23" y="60" id="5" key="23/60" />
+<vertex x="259" y="60" id="4" key="259/60" />
+</edge>
+</polyline>
+<polyline id="13" >
+<bbox distToOrigin="87" ul.x="25" ul.y="84" lr.x="261" lr.y="84" />
+<edge power="-1" id="8" >
+<vertex x="261" y="84" id="6" key="261/84" />
+<vertex x="25" y="84" id="7" key="25/84" />
+</edge>
+</polyline>
+<polyline id="14" >
+<bbox distToOrigin="117" ul.x="46" ul.y="108" lr.x="282" lr.y="108" />
+<edge power="-1" id="9" >
+<vertex x="46" y="108" id="9" key="46/108" />
+<vertex x="282" y="108" id="8" key="282/108" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="10" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="1" y="37" id="3" key="1/37" />
+<vertex x="23" y="60" id="5" key="23/60" />
+<vertex x="234" y="13" id="0" key="234/13" />
+<vertex x="238" y="37" id="2" key="238/37" />
+<vertex x="25" y="84" id="7" key="25/84" />
+<vertex x="259" y="60" id="4" key="259/60" />
+<vertex x="261" y="84" id="6" key="261/84" />
+<vertex x="282" y="108" id="8" key="282/108" />
+<vertex x="46" y="108" id="9" key="46/108" />
+</vertices>
+</mesh>
+
+</cut>

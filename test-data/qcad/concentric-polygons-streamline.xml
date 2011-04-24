@@ -1,0 +1,242 @@
+<cut clipped="0">
+<polylines cnt="7" >
+<polyline id="14" >
+<bbox distToOrigin="12721" ul.x="406" ul.y="12715" lr.x="1903" lr.y="14188" />
+<edge power="-1" id="58" >
+<vertex x="406" y="13343" id="3" key="406/13343" />
+<vertex x="666" y="12893" id="5" key="666/12893" />
+</edge>
+<edge power="-1" id="57" >
+<vertex x="666" y="12893" id="5" key="666/12893" />
+<vertex x="1154" y="12715" id="7" key="1154/12715" />
+</edge>
+<edge power="-1" id="55" >
+<vertex x="1154" y="12715" id="7" key="1154/12715" />
+<vertex x="1643" y="12893" id="9" key="1643/12893" />
+</edge>
+<edge power="-1" id="53" >
+<vertex x="1643" y="12893" id="9" key="1643/12893" />
+<vertex x="1903" y="13343" id="11" key="1903/13343" />
+</edge>
+<edge power="-1" id="51" >
+<vertex x="1903" y="13343" id="11" key="1903/13343" />
+<vertex x="1812" y="13854" id="13" key="1812/13854" />
+</edge>
+<edge power="-1" id="49" >
+<vertex x="1812" y="13854" id="13" key="1812/13854" />
+<vertex x="1414" y="14188" id="15" key="1414/14188" />
+</edge>
+<edge power="-1" id="47" >
+<vertex x="1414" y="14188" id="15" key="1414/14188" />
+<vertex x="895" y="14188" id="0" key="895/14188" />
+</edge>
+<edge power="-1" id="45" >
+<vertex x="895" y="14188" id="0" key="895/14188" />
+<vertex x="497" y="13854" id="1" key="497/13854" />
+</edge>
+<edge power="-1" id="43" >
+<vertex x="497" y="13854" id="1" key="497/13854" />
+<vertex x="406" y="13343" id="3" key="406/13343" />
+</edge>
+</polyline>
+<polyline id="15" >
+<bbox distToOrigin="13037" ul.x="584" ul.y="13024" lr.x="1725" lr.y="14165" />
+<edge power="-1" id="60" >
+<vertex x="584" y="13831" id="19" key="584/13831" />
+<vertex x="918" y="14165" id="18" key="918/14165" />
+</edge>
+<edge power="-1" id="62" >
+<vertex x="918" y="14165" id="18" key="918/14165" />
+<vertex x="1391" y="14165" id="31" key="1391/14165" />
+</edge>
+<edge power="-1" id="64" >
+<vertex x="1391" y="14165" id="31" key="1391/14165" />
+<vertex x="1725" y="13831" id="29" key="1725/13831" />
+</edge>
+<edge power="-1" id="66" >
+<vertex x="1725" y="13831" id="29" key="1725/13831" />
+<vertex x="1725" y="13358" id="27" key="1725/13358" />
+</edge>
+<edge power="-1" id="68" >
+<vertex x="1725" y="13358" id="27" key="1725/13358" />
+<vertex x="1391" y="13024" id="25" key="1391/13024" />
+</edge>
+<edge power="-1" id="70" >
+<vertex x="1391" y="13024" id="25" key="1391/13024" />
+<vertex x="918" y="13024" id="23" key="918/13024" />
+</edge>
+<edge power="-1" id="72" >
+<vertex x="918" y="13024" id="23" key="918/13024" />
+<vertex x="584" y="13358" id="21" key="584/13358" />
+</edge>
+<edge power="-1" id="73" >
+<vertex x="584" y="13358" id="21" key="584/13358" />
+<vertex x="584" y="13831" id="19" key="584/13831" />
+</edge>
+</polyline>
+<polyline id="16" >
+<bbox distToOrigin="13227" ul.x="677" ul.y="13210" lr.x="1632" lr.y="14141" />
+<edge power="-1" id="86" >
+<vertex x="677" y="13809" id="35" key="677/13809" />
+<vertex x="771" y="13394" id="37" key="771/13394" />
+</edge>
+<edge power="-1" id="85" >
+<vertex x="771" y="13394" id="37" key="771/13394" />
+<vertex x="1154" y="13210" id="39" key="1154/13210" />
+</edge>
+<edge power="-1" id="83" >
+<vertex x="1154" y="13210" id="39" key="1154/13210" />
+<vertex x="1537" y="13394" id="41" key="1537/13394" />
+</edge>
+<edge power="-1" id="81" >
+<vertex x="1537" y="13394" id="41" key="1537/13394" />
+<vertex x="1632" y="13809" id="43" key="1632/13809" />
+</edge>
+<edge power="-1" id="79" >
+<vertex x="1632" y="13809" id="43" key="1632/13809" />
+<vertex x="1367" y="14141" id="45" key="1367/14141" />
+</edge>
+<edge power="-1" id="77" >
+<vertex x="1367" y="14141" id="45" key="1367/14141" />
+<vertex x="942" y="14141" id="34" key="942/14141" />
+</edge>
+<edge power="-1" id="75" >
+<vertex x="942" y="14141" id="34" key="942/14141" />
+<vertex x="677" y="13809" id="35" key="677/13809" />
+</edge>
+</polyline>
+<polyline id="17" >
+<bbox distToOrigin="13485" ul.x="777" ul.y="13463" lr.x="1532" lr.y="14118" />
+<edge power="-1" id="97" >
+<vertex x="777" y="13790" id="49" key="777/13790" />
+<vertex x="966" y="13463" id="51" key="966/13463" />
+</edge>
+<edge power="-1" id="96" >
+<vertex x="966" y="13463" id="51" key="966/13463" />
+<vertex x="1343" y="13463" id="53" key="1343/13463" />
+</edge>
+<edge power="-1" id="94" >
+<vertex x="1343" y="13463" id="53" key="1343/13463" />
+<vertex x="1532" y="13790" id="55" key="1532/13790" />
+</edge>
+<edge power="-1" id="92" >
+<vertex x="1532" y="13790" id="55" key="1532/13790" />
+<vertex x="1343" y="14118" id="57" key="1343/14118" />
+</edge>
+<edge power="-1" id="90" >
+<vertex x="1343" y="14118" id="57" key="1343/14118" />
+<vertex x="966" y="14118" id="48" key="966/14118" />
+</edge>
+<edge power="-1" id="88" >
+<vertex x="966" y="14118" id="48" key="966/14118" />
+<vertex x="777" y="13790" id="49" key="777/13790" />
+</edge>
+</polyline>
+<polyline id="18" >
+<bbox distToOrigin="13613" ul.x="887" ul.y="13585" lr.x="1422" lr.y="14094" />
+<edge power="-1" id="106" >
+<vertex x="887" y="13780" id="61" key="887/13780" />
+<vertex x="1154" y="13585" id="63" key="1154/13585" />
+</edge>
+<edge power="-1" id="105" >
+<vertex x="1154" y="13585" id="63" key="1154/13585" />
+<vertex x="1422" y="13780" id="65" key="1422/13780" />
+</edge>
+<edge power="-1" id="103" >
+<vertex x="1422" y="13780" id="65" key="1422/13780" />
+<vertex x="1320" y="14094" id="67" key="1320/14094" />
+</edge>
+<edge power="-1" id="101" >
+<vertex x="1320" y="14094" id="67" key="1320/14094" />
+<vertex x="989" y="14094" id="60" key="989/14094" />
+</edge>
+<edge power="-1" id="99" >
+<vertex x="989" y="14094" id="60" key="989/14094" />
+<vertex x="887" y="13780" id="61" key="887/13780" />
+</edge>
+</polyline>
+<polyline id="19" >
+<bbox distToOrigin="13824" ul.x="1013" ul.y="13787" lr.x="1296" lr.y="14070" />
+<edge power="-1" id="113" >
+<vertex x="1013" y="13787" id="71" key="1013/13787" />
+<vertex x="1296" y="13787" id="73" key="1296/13787" />
+</edge>
+<edge power="-1" id="112" >
+<vertex x="1296" y="13787" id="73" key="1296/13787" />
+<vertex x="1296" y="14070" id="75" key="1296/14070" />
+</edge>
+<edge power="-1" id="110" >
+<vertex x="1296" y="14070" id="75" key="1296/14070" />
+<vertex x="1013" y="14070" id="70" key="1013/14070" />
+</edge>
+<edge power="-1" id="108" >
+<vertex x="1013" y="14070" id="70" key="1013/14070" />
+<vertex x="1013" y="13787" id="71" key="1013/13787" />
+</edge>
+</polyline>
+<polyline id="20" >
+<bbox distToOrigin="13880" ul.x="1036" ul.y="13842" lr.x="1273" lr.y="14047" />
+<edge power="-1" id="115" >
+<vertex x="1036" y="14047" id="78" key="1036/14047" />
+<vertex x="1154" y="13842" id="79" key="1154/13842" />
+</edge>
+<edge power="-1" id="118" >
+<vertex x="1154" y="13842" id="79" key="1154/13842" />
+<vertex x="1273" y="14047" id="81" key="1273/14047" />
+</edge>
+<edge power="-1" id="117" >
+<vertex x="1273" y="14047" id="81" key="1273/14047" />
+<vertex x="1036" y="14047" id="78" key="1036/14047" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="42" >
+<vertex x="1013" y="13787" id="71" key="1013/13787" />
+<vertex x="1013" y="14070" id="70" key="1013/14070" />
+<vertex x="1036" y="14047" id="78" key="1036/14047" />
+<vertex x="1154" y="12715" id="7" key="1154/12715" />
+<vertex x="1154" y="13210" id="39" key="1154/13210" />
+<vertex x="1154" y="13585" id="63" key="1154/13585" />
+<vertex x="1154" y="13842" id="79" key="1154/13842" />
+<vertex x="1273" y="14047" id="81" key="1273/14047" />
+<vertex x="1296" y="13787" id="73" key="1296/13787" />
+<vertex x="1296" y="14070" id="75" key="1296/14070" />
+<vertex x="1320" y="14094" id="67" key="1320/14094" />
+<vertex x="1343" y="13463" id="53" key="1343/13463" />
+<vertex x="1343" y="14118" id="57" key="1343/14118" />
+<vertex x="1367" y="14141" id="45" key="1367/14141" />
+<vertex x="1391" y="13024" id="25" key="1391/13024" />
+<vertex x="1391" y="14165" id="31" key="1391/14165" />
+<vertex x="1414" y="14188" id="15" key="1414/14188" />
+<vertex x="1422" y="13780" id="65" key="1422/13780" />
+<vertex x="1532" y="13790" id="55" key="1532/13790" />
+<vertex x="1537" y="13394" id="41" key="1537/13394" />
+<vertex x="1632" y="13809" id="43" key="1632/13809" />
+<vertex x="1643" y="12893" id="9" key="1643/12893" />
+<vertex x="1725" y="13358" id="27" key="1725/13358" />
+<vertex x="1725" y="13831" id="29" key="1725/13831" />
+<vertex x="1812" y="13854" id="13" key="1812/13854" />
+<vertex x="1903" y="13343" id="11" key="1903/13343" />
+<vertex x="406" y="13343" id="3" key="406/13343" />
+<vertex x="497" y="13854" id="1" key="497/13854" />
+<vertex x="584" y="13358" id="21" key="584/13358" />
+<vertex x="584" y="13831" id="19" key="584/13831" />
+<vertex x="666" y="12893" id="5" key="666/12893" />
+<vertex x="677" y="13809" id="35" key="677/13809" />
+<vertex x="771" y="13394" id="37" key="771/13394" />
+<vertex x="777" y="13790" id="49" key="777/13790" />
+<vertex x="887" y="13780" id="61" key="887/13780" />
+<vertex x="895" y="14188" id="0" key="895/14188" />
+<vertex x="918" y="13024" id="23" key="918/13024" />
+<vertex x="918" y="14165" id="18" key="918/14165" />
+<vertex x="942" y="14141" id="34" key="942/14141" />
+<vertex x="966" y="13463" id="51" key="966/13463" />
+<vertex x="966" y="14118" id="48" key="966/14118" />
+<vertex x="989" y="14094" id="60" key="989/14094" />
+</vertices>
+</mesh>
+
+</cut>

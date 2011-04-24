@@ -1,0 +1,83 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="16" >
+<edge power="-1" id="0" >
+<vertex x="406" y="231" id="1" key="406/231" />
+<vertex x="256" y="294" id="0" key="256/294" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="256" y="294" id="0" key="256/294" />
+<vertex x="194" y="444" id="2" key="194/444" />
+</edge>
+<edge power="-1" id="2" >
+<vertex x="194" y="444" id="2" key="194/444" />
+<vertex x="256" y="594" id="4" key="256/594" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="256" y="594" id="4" key="256/594" />
+<vertex x="406" y="657" id="6" key="406/657" />
+</edge>
+<edge power="-1" id="4" >
+<vertex x="406" y="657" id="6" key="406/657" />
+<vertex x="556" y="594" id="8" key="556/594" />
+</edge>
+<edge power="-1" id="5" >
+<vertex x="556" y="594" id="8" key="556/594" />
+<vertex x="619" y="444" id="10" key="619/444" />
+</edge>
+<edge power="-1" id="6" >
+<vertex x="619" y="444" id="10" key="619/444" />
+<vertex x="556" y="294" id="12" key="556/294" />
+</edge>
+<edge power="-1" id="7" >
+<vertex x="556" y="294" id="12" key="556/294" />
+<vertex x="406" y="231" id="1" key="406/231" />
+</edge>
+<edge power="-1" id="8" >
+<vertex x="406" y="231" id="1" key="406/231" />
+<vertex x="256" y="294" id="0" key="256/294" />
+</edge>
+<edge power="-1" id="9" >
+<vertex x="256" y="294" id="0" key="256/294" />
+<vertex x="194" y="444" id="2" key="194/444" />
+</edge>
+<edge power="-1" id="10" >
+<vertex x="194" y="444" id="2" key="194/444" />
+<vertex x="256" y="594" id="4" key="256/594" />
+</edge>
+<edge power="-1" id="11" >
+<vertex x="256" y="594" id="4" key="256/594" />
+<vertex x="406" y="657" id="6" key="406/657" />
+</edge>
+<edge power="-1" id="12" >
+<vertex x="406" y="657" id="6" key="406/657" />
+<vertex x="556" y="594" id="8" key="556/594" />
+</edge>
+<edge power="-1" id="13" >
+<vertex x="556" y="594" id="8" key="556/594" />
+<vertex x="619" y="444" id="10" key="619/444" />
+</edge>
+<edge power="-1" id="14" >
+<vertex x="619" y="444" id="10" key="619/444" />
+<vertex x="556" y="294" id="12" key="556/294" />
+</edge>
+<edge power="-1" id="15" >
+<vertex x="556" y="294" id="12" key="556/294" />
+<vertex x="406" y="231" id="1" key="406/231" />
+</edge>
+</edges>
+<vertices cnt="8" >
+<vertex x="194" y="444" id="2" key="194/444" />
+<vertex x="256" y="294" id="0" key="256/294" />
+<vertex x="256" y="594" id="4" key="256/594" />
+<vertex x="406" y="231" id="1" key="406/231" />
+<vertex x="406" y="657" id="6" key="406/657" />
+<vertex x="556" y="294" id="12" key="556/294" />
+<vertex x="556" y="594" id="8" key="556/594" />
+<vertex x="619" y="444" id="10" key="619/444" />
+</vertices>
+</mesh>
+
+</cut>
