@@ -9,7 +9,11 @@
 </polyline>
 </polylines>
 <mesh>
-<edges cnt="0" >
+<edges cnt="1" >
+<edge power="-1" id="0" >
+<vertex x="0" y="94" id="1" key="0/94" />
+<vertex x="93" y="0" id="0" key="93/0" />
+</edge>
 </edges>
 <vertices cnt="2" >
 <vertex x="0" y="94" id="1" key="0/94" />

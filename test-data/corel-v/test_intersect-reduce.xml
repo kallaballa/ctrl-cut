@@ -16,7 +16,15 @@
 </polyline>
 </polylines>
 <mesh>
-<edges cnt="0" >
+<edges cnt="2" >
+<edge power="-1" id="1" >
+<vertex x="171" y="1225" id="3" key="171/1225" />
+<vertex x="2133" y="1220" id="2" key="2133/1220" />
+</edge>
+<edge power="-1" id="0" >
+<vertex x="565" y="352" id="1" key="565/352" />
+<vertex x="1237" y="2045" id="0" key="1237/2045" />
+</edge>
 </edges>
 <vertices cnt="4" >
 <vertex x="1237" y="2045" id="0" key="1237/2045" />
