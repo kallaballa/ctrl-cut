@@ -97,7 +97,7 @@ void LaserJob::serializeTo(ostream &out) {
    * information to the print job.
    */
 
-  if (this->lconf->enable_raster && this->rasters.size() > 0) {
+  if (this->lconf->enable_raster && !this->rasters.empty()) {
     for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
       Raster *raster = *it;
       if (raster) {
@@ -108,7 +108,7 @@ void LaserJob::serializeTo(ostream &out) {
     }
   }
 
-  if (this->lconf->enable_vector && this->cuts.size() > 0) {
+  if (this->lconf->enable_vector && !this->cuts.empty()) {
     // FIXME: This is to emulate the LT bug in the Epilog drivers:
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility

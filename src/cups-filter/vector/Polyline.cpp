@@ -35,7 +35,7 @@ Polyline::Polyline() {
 
 bool Polyline::isClosed() const
 {
-  return this->edges.size() > 0 && (*this->edges.front())[0] == (*this->edges.back())[1];
+  return !this->edges.empty() && (*this->edges.front())[0] == (*this->edges.back())[1];
 }
 
 void Polyline::prepend(Edge *edge) {

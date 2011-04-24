@@ -98,7 +98,7 @@ Cut *Cut::load(istream &input)
     }
   }
 
-  if (mesh.size() == 0) {
+  if (mesh.empty()) {
     delete cut;
     cut = NULL;
   }

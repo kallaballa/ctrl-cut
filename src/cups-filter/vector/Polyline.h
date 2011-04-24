@@ -39,6 +39,7 @@ public:
   const_iterator end() const  { return this->edges.end(); }
   EdgeVector::reference front() { return this->edges.front(); }
   EdgeVector::reference back() { return this->edges.back(); }
+  bool empty() const { return this->edges.empty(); }
   size_t size() const { return this->edges.size(); }
 
   bool isClosed() const;

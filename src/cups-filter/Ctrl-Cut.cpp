@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
         LOG_DEBUG_STR("Processing bitmap data from memory");
         raster = new Raster(parser->getImage());
       }
-      else if (parser->getBitmapFile().size() > 0) {
+      else if (!parser->getBitmapFile().empty()) {
         raster = Raster::load(parser->getBitmapFile());
       }
       else {

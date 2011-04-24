@@ -46,7 +46,7 @@ public:
   const_iterator end() const  { return this->edges.end(); }
   Edge* front() const  { return this->edges.front(); }
   Edge* back() { return this->edges.back(); }
-
+  bool empty() const { return this->edges.empty(); }
   size_t size() const { return this->edges.size(); }
 
   void clear();
