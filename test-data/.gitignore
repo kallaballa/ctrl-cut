@@ -4,6 +4,8 @@
 *.raw
 *.pbm
 *.eps
-corel/*.png
+corel-*/*.png
 inkscape/*.png
 qcad/*.png
+*.info
+*.run
