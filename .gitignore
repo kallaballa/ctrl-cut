@@ -1,0 +1,7 @@
+*.log
+EpilogFilter
+*.pyc
+out.*
+tmp.*
+tmp-*
+Makefile
