@@ -7,5 +7,7 @@
 corel-*/*.png
 inkscape/*.png
 qcad/*.png
+vector/*.png
+Gimp/*.png
 *.info
 *.run
