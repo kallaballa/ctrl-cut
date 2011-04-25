@@ -18,6 +18,7 @@ public:
   void setStart(Vertex *vtx) { v[0] = vtx; }
   void setEnd(Vertex *vtx) { v[1] = vtx; }
   const Vertex &operator[](size_t idx) const { return *v[idx]; }
+  Vertex &operator[](size_t idx) { return *v[idx]; }
 
   int getID() const { return this->id; }
   int power() const { return laser_power; }

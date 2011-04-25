@@ -50,6 +50,8 @@
 /** Default on whether or not auto-focus is enabled. */
 #define DEFAULT_AUTO_FOCUS (1)
 
+LaserConfig *LaserConfig::instance = NULL;
+
 LaserConfig::LaserConfig()
 {
   this->tempdir = TMP_DIRECTORY;
@@ -238,7 +240,7 @@ void LaserConfig::calculate_base_position()
     this->basey = 0;
   }
   // rasterises
-  this->basex = LaserConfig::calcDeviceDimension(this->basex,this->resolution);
-  this->basey = LaserConfig::calcDeviceDimension(this->basey,this->resolution);
+  this->basex = LaserConfig::calcDeviceDimension(this->basex, this->resolution);
+  this->basey = LaserConfig::calcDeviceDimension(this->basey, this->resolution);
 }
 

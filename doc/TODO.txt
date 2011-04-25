@@ -5,7 +5,8 @@ o Generate EpilogLegend36EXT.ppd with ppdc
 
 Postscript:
 -----------
-
+o Make sure the line width which distinguishes cutting and engraving is well-defined.
+  See test-data/corel-r/12233.cdr for an example where this is a problem.
 
 Installer:
 ----------
@@ -19,6 +20,9 @@ o Find out how to control the auto focus touch off point precisely
 
 Testing:
 --------
+o Rewrite regression compare to be able to detect how much polylines, length, move etc.
+  changed. This should enable us to color-code the output correctly.
+  Probably need to rewrite it in python or smth.
 o rtlinfo: Summarize laser parameters
 o Test which laser parameters affect actual coordinates in the RTL output
 

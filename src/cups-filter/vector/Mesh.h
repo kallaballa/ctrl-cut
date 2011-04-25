@@ -54,10 +54,10 @@ public:
   const VertexMap &getVertexMap() const {
     return this->vertices;
   }
-  void create(int startX, int startY, int endX, int endY, 
-              int power = -1, int speed = -1, int frequency = -1);
-  void create(Vertex *start, Vertex *end,
-              int power = -1, int speed = -1, int frequency = -1);
+  Edge *create(int startX, int startY, int endX, int endY, 
+               int power = -1, int speed = -1, int frequency = -1);
+  Edge *create(Vertex *start, Vertex *end,
+               int power = -1, int speed = -1, int frequency = -1);
   void remove(Edge *e);
   iterator eliminate(iterator& it);
 
