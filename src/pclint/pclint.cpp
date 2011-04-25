@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     if (combinedBBox.isValid()) {
       combinedImage = new CImg<uint8_t> (combinedBBox.lr.x - combinedBBox.ul.x
-          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 3, 255);
+          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 1, 255);
     }
 
     if (intr.vectorPlotter->getBoundingBox().isValid()) {
