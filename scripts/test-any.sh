@@ -62,6 +62,10 @@ runtest()
     echo -n OK
   else
     pad "no" 5
+ 
+    if [ $has_prnfile == 0 ]; then
+      pad "No prn file found. Generating output.." 67
+    else
 
     color=red
     # Convert cut vectors to bitmaps and compare them
@@ -70,11 +74,6 @@ runtest()
     if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
-    fi
-
-    if [ $has_prnfile == 0 ]; then
-      echo "No prn file found. Generating output.."
-      return
     fi
 
     if [ $? -ne 0 ]; then
@@ -155,6 +154,8 @@ runtest()
         color=green
     fi
     pad $lenstr 10 $color
+  fi
+
   fi
 
   if [ x$XML_TEST != "x" ]; then
