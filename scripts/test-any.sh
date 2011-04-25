@@ -85,7 +85,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn-v.png $outfile-v.png`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn-v.png $outfile-v.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -104,7 +104,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $srcdir/$testcase.prn-r.png $outfile-r.png`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $srcdir/$testcase.prn-r.png $outfile-r.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
