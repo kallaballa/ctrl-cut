@@ -5,7 +5,8 @@ o Generate EpilogLegend36EXT.ppd with ppdc
 
 Postscript:
 -----------
-
+o Make sure the line width which distinguishes cutting and engraving is well-defined.
+  See test-data/corel-r/12233.cdr for an example where this is a problem.
 
 Installer:
 ----------
