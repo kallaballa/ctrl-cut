@@ -144,6 +144,9 @@ function fitCanvas() {
   convert "$IMG2" -extent ${rpw2}x${rph2}+${rpx2}+${rpy2} "$IMG2"
 }
 
+# Remove any existing output to catch pclint failing to output images
+rm -f "$F1-r.png" "$F1-v.png" "$F2-r.png" "$F2-v.png"
+
 RES1=`$CC_PCLINT -dinfo -a -r "$F1-r.png" -v "$F1-v.png" "$F1" | grep "|"`
 RES2=`$CC_PCLINT -dinfo -a -r "$F2-r.png" -v "$F2-v.png" "$F2" | grep "|"`
 
