@@ -102,46 +102,50 @@ function fitCanvas() {
   rpw2=0
   rph2=0
 
-  if [ $ulx1 -lt $ulx2 ]; then
-    rpx2=`calc "$ulx2-$ulx1" 0`
-    rpx1=0
+  ew=0
+  eh=0
+
+  if [ $ulx1 -gt $ulx2 ]; then
+    rpx1=`calc "$ulx2-$ulx1" 0`
+    rpx1=${rpx1#-}
+    ew=$rpx1
   else
-    rpx1=`calc "$ulx1-$ulx2" 0`
-    rpx2=0
+    rpx2=`calc "$ulx1-$ulx2" 0`
+    rpx2=${rpx2#-}
+    ew=$rpx2
   fi
 
-  if [ $uly1 -lt $uly2 ]; then
-    rpy2=`calc "$uly2-$uly1" 0`
-    rpy1=0
+  if [ $uly1 -gt $uly2 ]; then
+    rpy1=`calc "$uly2-$uly1" 0`
+    rpy1=${rpy1#-}
+    eh=$rpy1
   else
-    rpy1=`calc "$uly1-$uly2" 0`
-    rpy2=0
+    rpy2=`calc "$uly1-$uly2" 0`
+    rpy2=${rpy2#-}
+    eh=$rpy2
   fi
 
-  rpw1=`calc "$lrx1-$ulx1" 0`
-  rpw2=`calc "$lrx2-$ulx2" 0`
-  rph1=`calc "$lry1-$uly1" 0`
-  rph2=`calc "$lry2-$uly2" 0`
+
+  rpw1=`calc "$lrx1-$ulx1+1" 0`
+  rpw2=`calc "$lrx2-$ulx2+1" 0`
+  rph1=`calc "$lry1-$uly1+1" 0`
+  rph2=`calc "$lry2-$uly2+1" 0`
+
 
   if [ $rpw1 -gt $rpw2 ]; then
-    rpw1=$rpw1
-    rpw2=$rpw1
+    ew=$[$ew+$rpw1]
   else
-    rpw1=$rpw2
-    rpw2=$rpw2
+    ew=$[$ew+$rpw2]
   fi
 
   if [ $rph1 -gt $rph2 ]; then
-    rph1=$rph1
-    rph2=$rph1
+    eh=$[$eh+$rph1]
   else
-    rph1=$rph2
-    rph2=$rph2
+    eh=$[$eh+$rph2]
   fi
 
-
-  convert "$IMG1" -extent ${rpw1}x${rph1}+${rpx1}+${rpy1} "$IMG1"
-  convert "$IMG2" -extent ${rpw2}x${rph2}+${rpx2}+${rpy2} "$IMG2"
+  convert "$IMG1" -extent ${ew}x${eh}-${rpx1}-${rpy1} "$IMG1"
+  convert "$IMG2" -extent ${ew}x${eh}-${rpx2}-${rpy2} "$IMG2"
 }
 
 # Remove any existing output to catch pclint failing to output images
