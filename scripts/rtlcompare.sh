@@ -1,5 +1,14 @@
 #!/bin/bash
 
+while getopts 'v' c
+do
+  case $c in
+    v) set -x ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
 . $CC_FUNCTIONS
 
 F1="$1"
