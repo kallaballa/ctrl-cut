@@ -16,7 +16,7 @@ function scale() {
 }
 
 diff="`echo ${1%.prn-r.png}`_diff.png"
-convert $1 $2 -depth 24 -scale 10% -scale 1000% -depth 1 -compose difference -composite "$diff"
+convert $1 $2 -depth 24 -scale 10% -scale 1000% -scale 10% -scale 1000% -depth 8 -compose difference -composite "$diff"
 statistic=`identify -verbose -unique "$diff"`
 
 mean=`echo "$statistic" | grep "mean:" | awk '{ print $2 }'`
