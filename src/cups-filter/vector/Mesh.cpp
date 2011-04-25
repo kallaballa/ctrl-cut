@@ -20,42 +20,77 @@
 #include "Mesh.h"
 #include "Vertex.h"
 #include "Edge.h"
+#include "util/LaserConfig.h"
+#include <assert.h>
 
-void Mesh::create(int startX, int startY, int endX, int endY, int power, int speed, int frequency)
+Edge *Mesh::create(int startX, int startY, int endX, int endY, int power, int speed, int frequency)
 {
-  // FIXME: Clip against page size
-  if (startX < 0 || startY < 0 || endX < 0 || endY < 0) {
+  return this->create(new Vertex(startX, startY), new Vertex(endX, endY), power, speed, frequency);
+}
 
-    if (startX < 0) startX = 0;
-    if (startY < 0) startY = 0;
-    if (endX < 0) endX = 0;
-    if (endY < 0) endY = 0;
-
-    // FIXME: The Windows driver subtracts 1 point from the X
-    // coordinate of the end of any line segment which is
-    // clipped. Strange, but let's follow suit for now.
-    if(endX > 0) endX -= 1;
+/*!
+  Clips the given edge against the laserbed.
+  FIXME: Currently only clips against the x and y axes, not the maximum axes.
+ */
+static void clip(Edge *edge)
+{
+  bool clipped = false;
+  Vertex origin(0, 0);
+  Vertex xmax(LaserConfig::inst().device_width, 0);
+  Vertex ymax(0, LaserConfig::inst().device_height);
+  Edge xaxis(&origin, &xmax);
+  Edge yaxis(&origin, &ymax);
+  // intersect against Y axis
+  if ((*edge)[0][0] < 0 || (*edge)[1][0] < 0) {
+    Vertex *intersect = edge->intersects(yaxis);
+    if (intersect) {
+      if ((*edge)[0][0] < 0) (*edge)[0] = *intersect;
+      else (*edge)[1] = *intersect;
+      clipped = true;
+    }
   }
-  this->create(new Vertex(startX, startY), new Vertex(endX, endY), power, speed, frequency);
+  // intersect against X axis
+  if ((*edge)[0][1] < 0 || (*edge)[1][1] < 0) {
+    Vertex *intersect = edge->intersects(xaxis);
+    if (intersect) {
+      if ((*edge)[0][1] < 0) (*edge)[0] = *intersect;
+      else (*edge)[1] = *intersect;
+      clipped = true;
+    }
+  }
+
+  assert((*edge)[0][0] >= 0 && (*edge)[0][1] >= 0 &&
+         (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0);
+
+  // FIXME: The Windows driver subtracts 1 point from the X
+  // coordinate of the end of any line segment which is
+  // clipped. Strange, but let's follow suit for now.
+  // FIXME FIXME: This behavior is not reproducible with the current test cases.
+  // Before putting this back, verify the original assumption again. kintel 20110426.
+  // if (clipped && (*edge)[1][0] > 0) (*edge)[1][0] -= 1;
 }
 
 /*
  * Adds the given edge to the vector pass.
  */
-void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequency)
+Edge *Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequency)
 {
   //filter zero length edges
   if (start->getKey() == end->getKey()) {
-    return;
+    return NULL;
   }
 
   start = mapVertex(start);
   end = mapVertex(end);
 
   Edge *edge = new Edge(start, end, power, speed, frequency);
+
+  clip(edge);
+
   edge->attach();
 
   this->edges.push_back(edge);
+  return edge;
 }
 
 void Mesh::remove(Edge* e)

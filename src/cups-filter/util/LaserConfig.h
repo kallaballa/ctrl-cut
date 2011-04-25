@@ -21,8 +21,12 @@
 class LaserConfig
 {
 public:
-  LaserConfig();
   ~LaserConfig() {}
+  static LaserConfig &inst() { 
+    if (!LaserConfig::instance) LaserConfig::instance = new LaserConfig; 
+    return *instance;
+  }
+
   void setCupsOptions(struct cups_option_s *options, int numOptions);
   void rangeCheck();
   static uint32_t calcDeviceDimension(uint32_t dim, double res);
@@ -128,7 +132,10 @@ public:
   bool enable_vector;
 
 private:
+  LaserConfig();
   void calculate_base_position();
+
+  static LaserConfig *instance;
 };
 
 #endif /* LASER_CONFIG_H_ */
