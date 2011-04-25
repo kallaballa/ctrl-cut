@@ -1,0 +1,41 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="5" >
+<edge power="-1" id="0" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="234" y="13" id="0" key="234/13" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="1" y="37" id="3" key="1/37" />
+<vertex x="238" y="37" id="2" key="238/37" />
+</edge>
+<edge power="-1" id="2" >
+<vertex x="23" y="60" id="5" key="23/60" />
+<vertex x="259" y="60" id="4" key="259/60" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="25" y="84" id="7" key="25/84" />
+<vertex x="261" y="84" id="6" key="261/84" />
+</edge>
+<edge power="-1" id="4" >
+<vertex x="46" y="108" id="9" key="46/108" />
+<vertex x="282" y="108" id="8" key="282/108" />
+</edge>
+</edges>
+<vertices cnt="10" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="1" y="37" id="3" key="1/37" />
+<vertex x="23" y="60" id="5" key="23/60" />
+<vertex x="234" y="13" id="0" key="234/13" />
+<vertex x="238" y="37" id="2" key="238/37" />
+<vertex x="25" y="84" id="7" key="25/84" />
+<vertex x="259" y="60" id="4" key="259/60" />
+<vertex x="261" y="84" id="6" key="261/84" />
+<vertex x="282" y="108" id="8" key="282/108" />
+<vertex x="46" y="108" id="9" key="46/108" />
+</vertices>
+</mesh>
+
+</cut>

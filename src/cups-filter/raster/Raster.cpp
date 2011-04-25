@@ -21,12 +21,12 @@
 
 int tile_cnt = 0;
 
-void Raster::addTile(AbstractImage* tile) {
+void Raster::addTile(AbstractImage *tile) {
   this->tiles.push_back(tile);
 }
 
-Raster* Raster::load(const string &filename) {
-  string suffix = filename.substr(filename.rfind(".") + 1);
+Raster *Raster::load(const std::string &filename) {
+  std::string suffix = filename.substr(filename.rfind(".") + 1);
   AbstractImage *img = NULL;
   if (suffix == "ppm" || suffix == "pgm") {
     img = loadppm(filename);

@@ -52,7 +52,7 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    diff -a $prnfile $outfile >> $testcase.log
+    cmp $prnfile $outfile >> $testcase.log
     if [ $? == 0 ]; then
       binary_ok=1
     fi
@@ -62,6 +62,10 @@ runtest()
     echo -n OK
   else
     pad "no" 5
+ 
+    if [ $has_prnfile == 0 ]; then
+      pad "No prn file found. Generating output.." 67
+    else
 
     color=red
     # Convert cut vectors to bitmaps and compare them
@@ -72,11 +76,6 @@ runtest()
       rawtopbmfailed=1
     fi
 
-    if [ $has_prnfile == 0 ]; then
-      echo "No prn file found. Generating output.."
-      return
-    fi
-
     if [ $? -ne 0 ]; then
       errorstr="Err"
       color=red
@@ -85,7 +84,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $srcdir/$testcase.prn-v.png $outfile-v.png`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn-v.png $outfile-v.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -104,7 +103,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $srcdir/$testcase.prn-r.png $outfile-r.png`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $srcdir/$testcase.prn-r.png $outfile-r.png`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -157,7 +156,9 @@ runtest()
     pad $lenstr 10 $color
   fi
 
-  if [ x$XML != "x" ]; then
+  fi
+
+  if [ x$XML_TEST != "x" ]; then
     color=red
     $CC_SCRIPTS/xml-test-filter.sh $srcdir/$testcase-*.xml >> $testcase.log
     xmlstatus="$?"
@@ -192,11 +193,16 @@ printUsage()
   echo "  -v        Verbose"
 }
 
-while getopts 'x' c
+while getopts 'xy' c
 do
     case $c in
         x) 
             XML=-x
+            XML_TEST=true
+            ;;
+        y)
+            XML=-x
+            XML_TEST=
             ;;
         \?) 
             echo "Invalid option: -$OPTARG" >&2
@@ -206,10 +212,10 @@ done
 
 shift $(($OPTIND - 1))
 
-if [ $# -gt 1 ]; then
-  printUsage
-  exit 1
-fi
+#if [ $# -gt 1 ]; then
+#  printUsage
+#  exit 1
+#fi
 
 if test $VERBOSE; then
   set -x
@@ -224,18 +230,20 @@ pad "bbox" 6
 pad "polylines" 14
 pad "length" 10
 pad "move" 10
-if [ x$XML != "x" ]; then pad "XML" 3; fi
+if [ x$XML_TEST != "x" ]; then pad "XML" 3; fi
 echo
 
 # Run given test or all tests
-if [ $# == 1 ]; then
-  if [ -d $1 ]; then
-    rundir $1
-  else
-    runtest $1 `basename $(dirname $1)`
-  fi
+if [ $# -gt 0 ]; then
+  for case in $@; do
+    if [ -d $case ]; then
+      rundir $case
+    else
+      runtest $case `basename $(dirname $case)`
+    fi
+  done
 else
- testdirs="corel qcad inkscape"
+ testdirs="corel-v corel-r corel-b qcad inkscape"
  testpaths=""
  for testdir in $testdirs
  do

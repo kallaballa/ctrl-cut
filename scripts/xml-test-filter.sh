@@ -30,7 +30,6 @@ for xml in "$@"; do
     echo "testing `basename $xml`..."
     for xql in $CC_TEST_DATA/xml/xql/*.xql
     do
-        xml=`echo $( readlink -f $( dirname "$xml" ) )/$( basename "$xml" )`
         echo $xml $xql
         check $xml $xql
         res=$(($res || $?))

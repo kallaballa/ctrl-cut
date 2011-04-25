@@ -19,6 +19,7 @@
 #include "Vertex.h"
 #include "Edge.h"
 
+#include <assert.h>
 #include <set>
 #include <string>
 #include <sstream>
@@ -28,6 +29,11 @@ int Vertex::cnt = 0;
 
 Vertex::Vertex(int x, int y) : Point2D(x,y)
 {
+  assert(x < 21600);
+  assert(y < 14400);
+  assert(x > -1);
+  assert(y > -1);
+
   this->id = cnt++;
   updateKey();
 }
@@ -54,10 +60,6 @@ void Vertex::detach(Edge* ls) {
 
 const std::string &Vertex::getKey() const {
   return this->key;
-}
-
-int Vertex::distance(const Vertex &other) {
-  return hypot(abs(this->v[0] - other.v[0]), abs(this->v[1] - other.v[1]));
 }
 
 std::ostream &operator<<(std::ostream &os, const Vertex &v) {

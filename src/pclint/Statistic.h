@@ -20,6 +20,7 @@
 #ifndef STATISTIC_H_
 #define STATISTIC_H_
 
+#include <assert.h>
 #include "2D.h"
 
 enum STAT_SLOT { SLOT_RASTER, SLOT_VECTOR, SLOT_GLOBAL };
@@ -48,7 +49,8 @@ private:
   static Statistic* instance;
 
 public:
-  static Statistic* singleton(uint16_t resolution);
+  static Statistic* init(uint16_t resolution);
+  static Statistic* singleton();
 
   Statistic(uint16_t resolution) : slots(new Slot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
     slots[SLOT_RASTER] = *(new Slot());
@@ -170,10 +172,13 @@ public:
 };
 
 Statistic* Statistic::instance = NULL;
-Statistic* Statistic::singleton(uint16_t resolution=600) {
-  if (instance == NULL)
-    instance = new Statistic(resolution);
+Statistic* Statistic::init(uint16_t resolution) {
+  assert(instance == NULL);
+  return instance = new Statistic(resolution);
+}
 
+Statistic* Statistic::singleton() {
+  assert(instance != NULL);
   return instance;
 }
 #endif /* STATISTIC_H_ */

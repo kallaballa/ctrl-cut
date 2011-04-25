@@ -1,0 +1,37 @@
+<cut clipped="0">
+<polylines cnt="2" >
+<polyline id="5" >
+<bbox distToOrigin="144" ul.x="144" ul.y="13" lr.x="188" lr.y="13" />
+<edge power="-1" id="3" >
+<vertex x="188" y="13" id="2" key="188/13" />
+<vertex x="144" y="13" id="3" key="144/13" />
+</edge>
+</polyline>
+<polyline id="4" >
+<bbox distToOrigin="13" ul.x="0" ul.y="13" lr.x="143" lr.y="13" />
+<edge power="-1" id="2" >
+<vertex x="143" y="13" id="0" key="143/13" />
+<vertex x="0" y="13" id="1" key="0/13" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="2" >
+<edge power="-1" id="0" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="143" y="13" id="0" key="143/13" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="144" y="13" id="3" key="144/13" />
+<vertex x="188" y="13" id="2" key="188/13" />
+</edge>
+</edges>
+<vertices cnt="4" >
+<vertex x="0" y="13" id="1" key="0/13" />
+<vertex x="143" y="13" id="0" key="143/13" />
+<vertex x="144" y="13" id="3" key="144/13" />
+<vertex x="188" y="13" id="2" key="188/13" />
+</vertices>
+</mesh>
+
+</cut>

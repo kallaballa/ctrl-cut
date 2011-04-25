@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include <assert.h>
 #include "Edge.h"
 #include "Vertex.h"
 #include "util/Logger.h"
@@ -24,7 +25,7 @@
 int Edge::cnt = 0;
 
 Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency)
-  : power(power), speed(speed), frequency(frequency), parent(NULL)
+  : parent(NULL), laser_power(power), laser_speed(speed), laser_frequency(frequency)
 {
   v[0] = start;
   v[1] = end;
@@ -34,7 +35,7 @@ Edge::Edge(class Vertex *start, Vertex *end, int power, int speed, int frequency
 /*!
   Calculates the distance from the vertex to the infinite line segment defined by this edge
 */
-float Edge::distance(const Vertex &p) const
+float Edge::distance(const Point2D &p) const
 {
   return 
     fabs(((*v[0])[1] - (*v[1])[1]) * p[0] + ((*v[1])[0] - (*v[0])[0]) * p[1] +
@@ -45,9 +46,7 @@ float Edge::distance(const Vertex &p) const
 
 void Edge::invertDirection()
 {
-  Vertex* tmp = this->v[0];
-  this->v[0] = this->v[1];
-  this->v[1] = tmp;
+  std::swap(this->v[0], this->v[1]);
 }
 
 void Edge::detach() {
@@ -63,16 +62,14 @@ void Edge::attach()
 
 /*!
   Returns angle to the positive Y axis
- */
-float Edge::getSlope(bool invert) {
-  int d_x;
-  int d_y;
+*/
+float Edge::getSlope(bool invert)
+{
+  int d_x = (*this)[1][0] - (*this)[0][0];
+  int d_y = (*this)[1][1] - (*this)[0][1];
   if (invert) {
-    d_x = (*this)[0][0] - (*this)[1][0];
-    d_y = (*this)[0][1] - (*this)[1][1];
-  } else {
-    d_x = (*this)[1][0] - (*this)[0][0];
-    d_y = (*this)[1][1] - (*this)[0][1];
+    d_x = -d_x;
+    d_y = -d_y;
   }
 
   // Swap x and y since we're measuring relative to the Y axis.
@@ -129,30 +126,18 @@ Vertex* Edge::intersects(const Edge &other) const
 }
 
 
-bool Edge::isMemberOf(Polyline *p) {
-  return this->parent == p;
-}
-
-bool Edge::isPolylineMember() {
-  return this->parent != NULL;
-}
-
 void Edge::join(Polyline *p) {
-  if(isPolylineMember() && !isMemberOf(p))
-    LOG_ERR_MSG("edge already has a parent polyline", this->parent);
-
+  assert(!isPolylineMember());
   this->parent = p;
 }
 
 void Edge::leave(Polyline *p) {
-  if(!isPolylineMember())
-    LOG_ERR_MSG("leaving an edge without parent polyline", p);
-
+  assert(isPolylineMember() && isMemberOf(p));
   this->parent = NULL;
 }
 
 std::ostream &operator<<(std::ostream &os, const Edge &e) {
-  os << "<edge power=\"" << e.power << "\" id=\"" << e.id << "\" >" << std::endl;
+  os << "<edge power=\"" << e.power() << "\" id=\"" << e.getID() << "\" >" << std::endl;
   os << e[0] << e[1];
   os << "</edge>" << std::endl;
   return os;

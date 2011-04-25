@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
         LOG_DEBUG_STR("Processing bitmap data from memory");
         raster = new Raster(parser->getImage());
       }
-      else if (parser->getBitmapFile().size() > 0) {
+      else if (!parser->getBitmapFile().empty()) {
         raster = Raster::load(parser->getBitmapFile());
       }
       else {
@@ -282,7 +282,7 @@ int main(int argc, char *argv[]) {
       }
     }
     if (raster) {
-      raster->addTile(raster->sourceImage);
+      raster->addTile(raster->sourceImage());
       job.addRaster(raster);
     }
   }

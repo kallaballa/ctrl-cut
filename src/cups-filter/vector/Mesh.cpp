@@ -23,6 +23,19 @@
 
 void Mesh::create(int startX, int startY, int endX, int endY, int power, int speed, int frequency)
 {
+  // FIXME: Clip against page size
+  if (startX < 0 || startY < 0 || endX < 0 || endY < 0) {
+
+    if (startX < 0) startX = 0;
+    if (startY < 0) startY = 0;
+    if (endX < 0) endX = 0;
+    if (endY < 0) endY = 0;
+
+    // FIXME: The Windows driver subtracts 1 point from the X
+    // coordinate of the end of any line segment which is
+    // clipped. Strange, but let's follow suit for now.
+    if(endX > 0) endX -= 1;
+  }
   this->create(new Vertex(startX, startY), new Vertex(endX, endY), power, speed, frequency);
 }
 
@@ -34,20 +47,6 @@ void Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequenc
   //filter zero length edges
   if (start->getKey() == end->getKey()) {
     return;
-  }
-
-  // FIXME: Clip against page size
-  if ((*start)[0] < 0 || (*start)[1] < 0 || (*end)[0] < 0 || (*end)[1] < 0) {
-    
-    if ((*start)[0] < 0) (*start)[0] = 0;
-    if ((*start)[1] < 0) (*start)[1] = 0;
-    if ((*end)[0] < 0) (*end)[0] = 0;
-    if ((*end)[1] < 0) (*end)[1] = 0;
-
-    // FIXME: The Windows driver subtracts 1 point from the X
-    // coordinate of the end of any line segment which is
-    // clipped. Strange, but let's follow suit for now.
-    (*end)[0] -= 1;
   }
 
   start = mapVertex(start);
@@ -64,7 +63,7 @@ void Mesh::remove(Edge* e)
   this->edges.remove(e);
 }
 
-Mesh::iterator Mesh::eliminate(Mesh::iterator it)
+Mesh::iterator Mesh::eliminate(Mesh::iterator& it)
 {
   (*it)->detach();
   return this->edges.erase(it);

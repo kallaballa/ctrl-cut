@@ -258,8 +258,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
 
   argstrings.push_back(str(format("-r%d") % this->conf.resolution));
   argstrings.push_back(str(format("-g%dx%d")
-                           % ((this->conf.width * this->conf.resolution) / POINTS_PER_INCH)
-                           % ((this->conf.height * this->conf.resolution) / POINTS_PER_INCH)));
+      % LaserConfig::calcDeviceDimension(this->conf.width,this->conf.resolution) % LaserConfig::calcDeviceDimension(this->conf.height,this->conf.resolution)));
 
   if (!this->conf.enable_raster) {
     argstrings.push_back("-sDEVICE=nullpage");

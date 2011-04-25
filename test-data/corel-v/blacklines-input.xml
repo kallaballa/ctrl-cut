@@ -1,0 +1,32 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="4" >
+<edge power="-1" id="0" >
+<vertex x="6166" y="1376" id="1" key="6166/1376" />
+<vertex x="8304" y="1376" id="0" key="8304/1376" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="4348" y="1376" id="3" key="4348/1376" />
+<vertex x="6166" y="1376" id="1" key="6166/1376" />
+</edge>
+<edge power="-1" id="2" >
+<vertex x="2530" y="1376" id="5" key="2530/1376" />
+<vertex x="4348" y="1376" id="3" key="4348/1376" />
+</edge>
+<edge power="-1" id="3" >
+<vertex x="534" y="1376" id="7" key="534/1376" />
+<vertex x="2530" y="1376" id="5" key="2530/1376" />
+</edge>
+</edges>
+<vertices cnt="5" >
+<vertex x="2530" y="1376" id="5" key="2530/1376" />
+<vertex x="4348" y="1376" id="3" key="4348/1376" />
+<vertex x="534" y="1376" id="7" key="534/1376" />
+<vertex x="6166" y="1376" id="1" key="6166/1376" />
+<vertex x="8304" y="1376" id="0" key="8304/1376" />
+</vertices>
+</mesh>
+
+</cut>

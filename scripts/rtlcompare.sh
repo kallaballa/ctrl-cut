@@ -144,6 +144,9 @@ function fitCanvas() {
   convert "$IMG2" -extent ${rpw2}x${rph2}+${rpx2}+${rpy2} "$IMG2"
 }
 
+# Remove any existing output to catch pclint failing to output images
+rm -f "$F1-r.png" "$F1-v.png" "$F2-r.png" "$F2-v.png"
+
 RES1=`$CC_PCLINT -dinfo -a -r "$F1-r.png" -v "$F1-v.png" "$F1" | grep "|"`
 RES2=`$CC_PCLINT -dinfo -a -r "$F2-r.png" -v "$F2-v.png" "$F2" | grep "|"`
 
@@ -203,8 +206,13 @@ R_BBOX2=`filter "$R_RES2" "bounding" | cut -d"=" -f2`
 
 R_BBOXDIFF=`diffBBox "$R_BBOX1" "$R_BBOX2"`
 
-fitCanvas "$F1-r.png" "$F2-r.png" "$R_BBOX1" "$R_BBOX2"
-fitCanvas "$F1-v.png" "$F2-v.png" "$V_BBOX1" "$V_BBOX2"
+if [ -f "$F1-r.png" -a -f "$F2-r.png" -a "$R_BBOX1" != "$R_BBOX2" ]; then
+    fitCanvas "$F1-r.png" "$F2-r.png" "$R_BBOX1" "$R_BBOX2"
+fi
+
+if [ -f "$F1-v.png" -a -f "$F2-v.png" -a "$V_BBOX1" != "$V_BBOX2" ]; then
+    fitCanvas "$F1-v.png" "$F2-v.png" "$V_BBOX1" "$V_BBOX2"
+fi
 
 echo "$R_RES1" > "$F1-r.info"
 echo "$R_RES2" > "$F2-r.info"

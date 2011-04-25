@@ -25,6 +25,7 @@ public:
   ~LaserConfig() {}
   void setCupsOptions(struct cups_option_s *options, int numOptions);
   void rangeCheck();
+  static uint32_t calcDeviceDimension(uint32_t dim, double res);
 
   /** Where to store temporary files */
   std::string tempdir;
@@ -46,6 +47,10 @@ public:
 
   /** Variable to track the resolution of the print. */
   int resolution;
+
+
+  uint32_t device_width;
+  uint32_t device_height;
 
   enum RasterDithering {
     DITHER_DEFAULT,

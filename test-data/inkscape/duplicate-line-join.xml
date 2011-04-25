@@ -1,0 +1,24 @@
+<cut clipped="0">
+<polylines cnt="1" >
+<polyline id="0" >
+<bbox distToOrigin="76" ul.x="64" ul.y="42" lr.x="1681" lr.y="966" />
+<edge power="-1" id="0" >
+<vertex x="64" y="966" id="1" key="64/966" />
+<vertex x="1681" y="42" id="0" key="1681/42" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="1681" y="42" id="0" key="1681/42" />
+<vertex x="64" y="966" id="1" key="64/966" />
+</edge>
+</polyline>
+</polylines>
+<mesh>
+<edges cnt="0" >
+</edges>
+<vertices cnt="2" >
+<vertex x="1681" y="42" id="0" key="1681/42" />
+<vertex x="64" y="966" id="1" key="64/966" />
+</vertices>
+</mesh>
+
+</cut>

@@ -22,6 +22,7 @@
 
 #include "util/2D.h"
 #include <vector>
+#include <ostream>
 
 class Polyline
 {
@@ -39,7 +40,10 @@ public:
   const_iterator end() const  { return this->edges.end(); }
   EdgeVector::reference front() { return this->edges.front(); }
   EdgeVector::reference back() { return this->edges.back(); }
+  bool empty() const { return this->edges.empty(); }
   size_t size() const { return this->edges.size(); }
+
+  int getID() const { return this->id; }
 
   bool isClosed() const;
   void prepend(Edge* ls);
@@ -48,17 +52,18 @@ public:
   bool contains(Edge* ls);
   void reverseOrder();
   Edge *findLeftmostClockwise();
-  BBox* getBoundingBox();
-
-  friend std::ostream& operator <<(std::ostream &os, Polyline &pl);
+  const BBox &getBoundingBox() const;
 
 private:
   static int cnt;
   int id;
 
-  BBox bb;
+  // Mutable since bbox is a cached value which is only updated lazily
+  mutable BBox bbox;
 
   EdgeVector edges;
 };
 
-#endif /* POLYGON_H_ */
+std::ostream& operator <<(std::ostream &os, const Polyline &pl);
+
+#endif

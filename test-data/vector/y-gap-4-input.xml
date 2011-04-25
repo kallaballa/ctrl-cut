@@ -1,0 +1,23 @@
+<cut clipped="0">
+<polylines cnt="0" >
+</polylines>
+<mesh>
+<edges cnt="2" >
+<edge power="-1" id="0" >
+<vertex x="0" y="0" id="1" key="0/0" />
+<vertex x="0" y="1000" id="0" key="0/1000" />
+</edge>
+<edge power="-1" id="1" >
+<vertex x="0" y="4000" id="3" key="0/4000" />
+<vertex x="0" y="5000" id="2" key="0/5000" />
+</edge>
+</edges>
+<vertices cnt="4" >
+<vertex x="0" y="0" id="1" key="0/0" />
+<vertex x="0" y="1000" id="0" key="0/1000" />
+<vertex x="0" y="4000" id="3" key="0/4000" />
+<vertex x="0" y="5000" id="2" key="0/5000" />
+</vertices>
+</mesh>
+
+</cut>

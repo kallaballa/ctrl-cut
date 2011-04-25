@@ -18,6 +18,7 @@
  */
 #include <math.h>
 #include <iostream>
+#include <assert.h>
 #include "util/Logger.h"
 #include "vector/Edge.h"
 #include "vector/Vertex.h"
@@ -28,39 +29,61 @@
 Deonion::~Deonion() {
 }
 
-void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
+void walkTheEdge(Polyline* p, Polyline* skin, Edge* current, bool cw)
 {
   Edge *next_edge = NULL;
 
-  float edge_slope = edge->getSlope(true);
+  float edge_slope = current->getSlope(true);
 
   float slope_diff;
   float min_slope_diff = 2 * M_PI;
 
-  if (p->contains(edge)) {
-    p->remove(edge);
-    skin->append(edge);
+  /*
+   * transfer the edge from the polyline to the skin unless it was
+   * already consumed which should only happen during backtracking
+   */
+  if (p->contains(current)) {
+    p->remove(current);
+    skin->append(current);
+  } else {
+    assert(!cw);
   }
 
-  for (Vertex::iterator it = edge->end()->begin(); it != edge->end()->end(); it++) {
+  /*
+   * from the edges that are connected to the end vertex of the current
+   * edge search the one with the least clock wise angle
+   */
+  for (Vertex::iterator it = current->end()->begin(); it != current->end()->end(); it++) {
     Edge *candidate = *it;
 
-    if (candidate == edge || !p->contains(candidate))
+    /*
+     * can't consider a candidate that is identical to the current
+     * edge or that has already been consumed
+     */
+    if (candidate == current || !p->contains(candidate))
       continue;
 
-    if (candidate->start() != edge->end())
+    // make sure edges point into search direction
+    if (candidate->start() != current->end())
       candidate->invertDirection();
 
-    if(p->size() > 1 && candidate->end() == edge->start())
+    /*
+     * don't consider candidates that are coincidental unless it's the
+     * last one to prevent going in circles.
+     */
+    if(p->size() > 1 && candidate->end() == current->start())
       continue;
 
     float candidate_slope = candidate->getSlope();
 
     slope_diff = edge_slope - candidate_slope;
+
+    //normalize radians to make them comparable
     if (slope_diff < 0) {
       slope_diff += 2*M_PI;
     }
 
+    //save the edge with the least clockwise angle (= least slop_diff)
     if (slope_diff < min_slope_diff) {
       min_slope_diff = slope_diff;
       next_edge = candidate;
@@ -72,14 +95,17 @@ void walkTheEdge(Polyline* p, Polyline* skin, Edge* edge, bool cw)
     // else, we reached a possible blind alley and must backtrack
     if (skin->isClosed()) return;
 
-    edge->invertDirection();
-    walkTheEdge(p, skin, edge, !cw);
+    // invert search direction (=counter-clockwise)
+    current->invertDirection();
+    walkTheEdge(p, skin, current, !cw);
   } else if (next_edge != NULL) {
     if (!cw) {
       cw = true;
     }
     walkTheEdge(p, skin, next_edge, cw);
   }
+
+  //polyline fully consumed
 }
 
 void Deonion::filter(Cut *cut)
@@ -88,16 +114,25 @@ void Deonion::filter(Cut *cut)
 
   Polyline* p;
   Cut::PolylineVector skins;
-
+  size_t psize;
   for (Cut::iterator it_c = cut->begin(); it_c != cut->end(); it_c++) {
     p = *it_c;
 
-    while (p->size() > 0) {
+    // recurse until the polyline is consumed
+    while ((psize = p->size()) > 0) {
       Polyline *skin = new Polyline();
+      /*
+       * traverse the polyline from the most left vertex and tranfer
+       * edges until the polyline is fully consumed or the skin forms
+       * a closed polyline
+       */
       walkTheEdge(p, skin, p->findLeftmostClockwise(), true);
+
+      //make sure polylines are consumed to prevent endless loops;
+      assert(skin->size() > 0 &&  p->size() < psize);
       skins.push_back(skin);
     }
-
   }
+  reverse(skins.begin(), skins.end());
   cut->swap(skins);
 }

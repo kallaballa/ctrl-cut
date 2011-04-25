@@ -18,28 +18,34 @@ public:
   void setStart(Vertex *vtx) { v[0] = vtx; }
   void setEnd(Vertex *vtx) { v[1] = vtx; }
   const Vertex &operator[](size_t idx) const { return *v[idx]; }
-  int power;
-  int speed;
-  int frequency;
+
+  int getID() const { return this->id; }
+  int power() const { return laser_power; }
+  int speed() const { return laser_speed; }
+  int frequency() const { return laser_frequency; }
 
   float getSlope(bool invert=false);
   void invertDirection();
   Vertex *intersects(const Edge &other) const;
-  float distance(const Vertex &v) const;
+  float distance(const Point2D &v) const;
   void detach();
   void attach();
 
-  bool isMemberOf(Polyline *p);
-  bool isPolylineMember();
+  bool isMemberOf(Polyline *p) { return this->parent == p; }
+  bool isPolylineMember() { return this->parent != NULL; }
+
   void join(Polyline *parent);
   void leave(Polyline *parent);
 private:
   static int cnt;
-  int id;
+  uint32_t id;
   Polyline *parent;
   Vertex *v[2];
-
-  friend std::ostream &operator<<(std::ostream &os, const Edge &e);
+  int laser_power;
+  int laser_speed;
+  int laser_frequency;
 };
+
+std::ostream &operator<<(std::ostream &os, const Edge &e);
 
 #endif

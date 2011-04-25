@@ -29,12 +29,12 @@ using namespace boost::interprocess;
 template<class T>
 class MMapMatrix : public Image<T> {
 public:
-  string filename;
+  std::string filename;
   file_mapping* m_file;
   mapped_region m_region;
   std::size_t size;
 
-  MMapMatrix(string filename, uint32_t width, uint32_t height, uint8_t components = 3, uint64_t region_off = 0) :
+  MMapMatrix(std::string filename, uint32_t width, uint32_t height, uint8_t components = 3, uint64_t region_off = 0) :
     Image<T>(width, height, components), filename(filename) {
     LOG_DEBUG(region_off);
     this->m_file = new file_mapping(filename.c_str(), read_write);

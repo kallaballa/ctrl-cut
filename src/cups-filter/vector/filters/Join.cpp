@@ -27,7 +27,6 @@
  * Recursive function
  */
 static void find_connected(Polyline *polyline, Edge *current, bool forward) {
-  current->join(polyline);
   Vertex* v;
 
   if(forward)
@@ -74,11 +73,15 @@ void Join::filter(Cut *cut)
       cut->add(polyline);
     }
   }
-
-  for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
-    Polyline *p = *it;
-    for (Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
-      mesh.remove(*it_e);
+  // remove edges one by one in debug mode to make dangling edges visible in the xml output
+  if (cc_loglevel == CC_DEBUG) {
+    for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
+      Polyline *p = *it;
+      for (Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
+        mesh.remove(*it_e);
+      }
     }
+  } else {
+    mesh.edges.clear();
   }
 }
