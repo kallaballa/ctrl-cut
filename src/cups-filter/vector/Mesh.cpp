@@ -30,19 +30,17 @@ Edge *Mesh::create(int startX, int startY, int endX, int endY, int power, int sp
 
 /*!
   Clips the given edge against the laserbed.
-  FIXME: Currently only clips against the x and y axes, not the maximum axes.
  */
 static void clip(Edge *edge)
 {
   bool clipped = false;
   Vertex origin(0, 0);
-  Vertex xmax(LaserConfig::inst().device_width, 0);
-  Vertex ymax(0, LaserConfig::inst().device_height);
-  Edge xaxis(&origin, &xmax);
-  Edge yaxis(&origin, &ymax);
+  Vertex xmax(LaserConfig::inst().device_width-1, 0);
+  Vertex ymax(0, LaserConfig::inst().device_height-1);
+  Vertex xymax(LaserConfig::inst().device_width-1, LaserConfig::inst().device_height-1);
   // intersect against Y axis
   if ((*edge)[0][0] < 0 || (*edge)[1][0] < 0) {
-    Vertex *intersect = edge->intersects(yaxis);
+    Vertex *intersect = edge->intersects(Edge(&origin, &ymax));
     if (intersect) {
       if ((*edge)[0][0] < 0) (*edge)[0] = *intersect;
       else (*edge)[1] = *intersect;
@@ -51,16 +49,36 @@ static void clip(Edge *edge)
   }
   // intersect against X axis
   if ((*edge)[0][1] < 0 || (*edge)[1][1] < 0) {
-    Vertex *intersect = edge->intersects(xaxis);
+    Vertex *intersect = edge->intersects(Edge(&origin, &xmax));
     if (intersect) {
       if ((*edge)[0][1] < 0) (*edge)[0] = *intersect;
       else (*edge)[1] = *intersect;
       clipped = true;
     }
   }
+  // intersect against max Y axis
+  if ((*edge)[0][0] >= xmax[0] || (*edge)[1][0] >= xmax[0]) {
+    Vertex *intersect = edge->intersects(Edge(&xmax, &xymax));
+    if (intersect) {
+      if ((*edge)[0][0] >= xmax[0]) (*edge)[0] = *intersect;
+      else (*edge)[1] = *intersect;
+      clipped = true;
+    }
+  }
+  // intersect against max X axis
+  if ((*edge)[0][1] >= ymax[1] || (*edge)[1][1] >= ymax[1]) {
+    Vertex *intersect = edge->intersects(Edge(&ymax, &xymax));
+    if (intersect) {
+      if ((*edge)[0][1] >= ymax[1]) (*edge)[0] = *intersect;
+      else (*edge)[1] = *intersect;
+      clipped = true;
+    }
+  }
 
   assert((*edge)[0][0] >= 0 && (*edge)[0][1] >= 0 &&
-         (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0);
+         (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0 &&
+         (*edge)[0][0] <= xmax[0] && (*edge)[0][1] <= ymax[1] &&
+         (*edge)[1][0] <= xmax[0] && (*edge)[1][1] <= ymax[1]);
 
   // FIXME: The Windows driver subtracts 1 point from the X
   // coordinate of the end of any line segment which is
