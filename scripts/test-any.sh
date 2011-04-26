@@ -70,7 +70,7 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh $prnfile $outfile 2>> $testcase.log`
+    rtlcompare=`scripts/rtlcompare.sh $VERBOSE $prnfile $outfile 2>> $testcase.log`
     if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
@@ -84,7 +84,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn-v.png $outfile-v.png`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn-v.png $outfile-v.png 2>> $testcase.log`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -103,7 +103,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $VERBOSE $srcdir/$testcase.prn-r.png $outfile-r.png`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $srcdir/$testcase.prn-r.png $outfile-r.png 2>> $testcase.log`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
