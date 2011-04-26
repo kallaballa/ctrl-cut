@@ -43,16 +43,18 @@ public:
 
 class Statistic {
 private:
+  uint32_t width;
+  uint32_t height;
   Slot *slots;
   const double in_factor;
   const double mm_factor;
   static Statistic* instance;
 
 public:
-  static Statistic* init(uint16_t resolution);
+  static Statistic* init(uint32_t width, uint32_t height, uint16_t resolution);
   static Statistic* singleton();
 
-  Statistic(uint16_t resolution) : slots(new Slot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
+  Statistic(uint32_t width, uint32_t height, uint16_t resolution) : width(width), height(height), slots(new Slot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
     slots[SLOT_RASTER] = *(new Slot());
     slots[SLOT_VECTOR] = *(new Slot());
   };
@@ -71,6 +73,7 @@ public:
   }
 
   void announceMove(const Point& from, const Point& to, const STAT_SLOT slot) {
+    assert(to.x < this->width && to.y < this->height);
     slots[slot].moveLen += distance(from, to);
   }
 
@@ -172,9 +175,9 @@ public:
 };
 
 Statistic* Statistic::instance = NULL;
-Statistic* Statistic::init(uint16_t resolution) {
+Statistic* Statistic::init(uint32_t width, uint32_t height, uint16_t resolution) {
   assert(instance == NULL);
-  return instance = new Statistic(resolution);
+  return instance = new Statistic(width, height, resolution);
 }
 
 Statistic* Statistic::singleton() {

@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   config->parseCommandLine(argc,argv);
   ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
   RtlPlot* plot = new RtlPlot(infile);
-  Statistic::init(plot->getResolution());
+  Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
 
   Interpreter intr(plot);
   if(config->interactive) {
