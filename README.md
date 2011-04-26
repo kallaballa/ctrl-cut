@@ -2,7 +2,7 @@ Laser cutter driver and control panel
 =====================================
 
 Ctrl-Cut is an initiative to produce Open Source software for talking
-to laser cutters without being restricted to proprietery drivers and
+to laser cutters without being restricted to proprietary drivers and
 the chosen operating system of the laser cutter vendor.
 
 Initially, this is targetted Epilog laser cutters.
