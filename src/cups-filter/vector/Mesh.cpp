@@ -31,7 +31,7 @@ Edge *Mesh::create(int startX, int startY, int endX, int endY, int power, int sp
 /*!
   Clips the given edge against the laserbed.
  */
-static void clip(Edge *edge)
+static bool clip(Edge *edge)
 {
   bool clipped = false;
   Vertex origin(0, 0);
@@ -75,17 +75,21 @@ static void clip(Edge *edge)
     }
   }
 
-  assert((*edge)[0][0] >= 0 && (*edge)[0][1] >= 0 &&
-         (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0 &&
-         (*edge)[0][0] <= xmax[0] && (*edge)[0][1] <= ymax[1] &&
-         (*edge)[1][0] <= xmax[0] && (*edge)[1][1] <= ymax[1]);
-
-  // FIXME: The Windows driver subtracts 1 point from the X
-  // coordinate of the end of any line segment which is
-  // clipped. Strange, but let's follow suit for now.
-  // FIXME FIXME: This behavior is not reproducible with the current test cases.
-  // Before putting this back, verify the original assumption again. kintel 20110426.
-  // if (clipped && (*edge)[1][0] > 0) (*edge)[1][0] -= 1;
+  if ((*edge)[0][0] >= 0 && (*edge)[0][1] >= 0 ||
+      (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0 ||
+      (*edge)[0][0] <= xmax[0] && (*edge)[0][1] <= ymax[1] ||
+      (*edge)[1][0] <= xmax[0] && (*edge)[1][1] <= ymax[1]) {
+    return false;
+  }
+  else {
+    // FIXME: The Windows driver subtracts 1 point from the X
+    // coordinate of the end of any line segment which is
+    // clipped. Strange, but let's follow suit for now.
+    // FIXME FIXME: This behavior is not reproducible with the current test cases.
+    // Before putting this back, verify the original assumption again. kintel 20110426.
+    // if (clipped && (*edge)[1][0] > 0) (*edge)[1][0] -= 1;
+    return true;
+  }
 }
 
 /*
@@ -103,11 +107,15 @@ Edge *Mesh::create(Vertex *start, Vertex *end, int power, int speed, int frequen
 
   Edge *edge = new Edge(start, end, power, speed, frequency);
 
-  clip(edge);
+  if (clip(edge)) {
+    edge->attach();
+    this->edges.push_back(edge);
+  }
+  else {
+    delete edge;
+    edge = NULL;
+  }
 
-  edge->attach();
-
-  this->edges.push_back(edge);
   return edge;
 }
 
