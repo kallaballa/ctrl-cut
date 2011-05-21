@@ -35,7 +35,7 @@ Source:       %{name}-%{version}.tar.bz2
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 
 %description
-Ctrl-Cut is an initiative to produce Open Source software for talking to laser cutters without being restricted to proprietery drivers and the chosen operating system of the laser cutter vendor.
+Ctrl-Cut is an initiative to produce Open Source toolchain for talking to laser cutters without being restricted to proprietery drivers and the chosen operating system of the laser cutter vendor.
 
 Initially, this is targetted at Epilog laser cutters.
 
@@ -75,6 +75,11 @@ mkdir -p $CUPS_SERVER_DATA/model
 %files
 %defattr(-,root,root,-)
 %doc README.md LICENSE
+%dir /usr/lib/cups/backend/
+%dir /usr/lib/cups/filter/
+%dir /usr/share/cups/model
+%dir /usr/share/cups/model/Epilog
+
 /usr/lib/cups/filter/ctrl-cut
 /usr/lib/cups/backend/lpd-epilog
 /usr/share/cups/model/Epilog/
