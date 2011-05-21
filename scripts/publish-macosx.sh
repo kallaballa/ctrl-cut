@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#VERSION=0.1
-VERSION=`date "+%Y.%m.%d"`
+VERSION=0.2
+#VERSION=`date "+%Y.%m.%d"`
 
 # This is the same location as DEPLOYDIR in macosx-build-dependencies.sh
 export MACOSX_DEPLOY_DIR=$PWD/../libraries/install
