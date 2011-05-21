@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="36in"
+   height="24in"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="New document 1">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.3149633"
+     inkscape:cx="170.77227"
+     inkscape:cy="1934.0289"
+     inkscape:window-width="1188"
+     inkscape:window-height="808"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata6">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Helvetica Neue;-inkscape-font-specification:Helvetica Neue"
+       id="text2986"
+       sodipodi:linespacing="125%"><textPath
+         xlink:href="#path3796"
+         id="textPath3816">You feel sleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeepy</textPath></text>
+    <path
+       transform="matrix(-1,0,0,1,541.16701,-19.896336)"
+       style="fill:none;stroke:#000000;stroke-width:0.07086614;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 408.6814,138.10204 c -50.29298,-22.99093 -111.90566,-10.54943 -147.92468,31.84787 -41.06741,48.33964 -37.15066,123.80421 11.9474,165.17303 44.61168,37.58872 114.07173,33.86623 151.94213,-11.52084 34.11165,-40.88228 30.5835,-104.34149 -11.09429,-138.71123 -37.15099,-30.63669 -94.61424,-27.30301 -125.48032,10.66774 -27.16454,33.4172 -24.02554,84.89113 10.24118,112.24941 29.67998,23.69627 75.17399,20.75228 99.01851,-9.81462 20.23353,-25.93789 17.48516,-65.46586 -9.38807,-85.78761 -22.18849,-16.7791 -55.77232,-14.22744 -72.5567,8.96151 -13.3379,18.42736 -10.98505,46.10459 8.53495,59.3258 14.6454,9.91955 36.48908,7.76978 46.09489,-8.1084 6.54552,-10.81959 4.60633,-27.0037 -7.68184,-32.86398 -6.86964,-3.27616 -17.98011,-1.51643 -19.63308,7.25528 -0.60996,3.23687 2.97679,10.51076 6.82873,6.40218"
+       id="path3796"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csssssssssssssc" />
+  </g>
+</svg>
