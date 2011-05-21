@@ -79,9 +79,6 @@ static bool clip(Edge *edge)
       (*edge)[1][0] >= 0 && (*edge)[1][1] >= 0 ||
       (*edge)[0][0] <= xmax[0] && (*edge)[0][1] <= ymax[1] ||
       (*edge)[1][0] <= xmax[0] && (*edge)[1][1] <= ymax[1]) {
-    return false;
-  }
-  else {
     // FIXME: The Windows driver subtracts 1 point from the X
     // coordinate of the end of any line segment which is
     // clipped. Strange, but let's follow suit for now.
@@ -89,6 +86,9 @@ static bool clip(Edge *edge)
     // Before putting this back, verify the original assumption again. kintel 20110426.
     // if (clipped && (*edge)[1][0] > 0) (*edge)[1][0] -= 1;
     return true;
+  }
+  else {
+    return false;
   }
 }
 
