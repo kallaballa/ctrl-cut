@@ -1,7 +1,7 @@
 Laser cutter driver and control panel
 =====================================
 
-Ctrl-Cut is an initiative to produce Open Source software for talking
+Ctrl-Cut is an initiative to produce Open Source toolchain for talking
 to laser cutters without being restricted to proprietary drivers and
 the chosen operating system of the laser cutter vendor.
 
