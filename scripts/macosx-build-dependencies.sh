@@ -15,8 +15,8 @@
 # o Port to other platforms?
 #
 
-BASEDIR=/Users/kintel/code/metalab/checkout/Ctrl-Cut/libraries
-CTRLCUTDIR=/Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut
+BASEDIR=$PWD/../libraries
+CTRLCUTDIR=$PWD
 SRCDIR=$BASEDIR/src
 DEPLOYDIR=$BASEDIR/install
 
