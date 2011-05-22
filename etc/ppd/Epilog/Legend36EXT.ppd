@@ -169,15 +169,36 @@ restore
 	<</DeviceRenderingInfo <</Type 29 /RasterDithering 1>> >>
 	setpagedevice"
 *End
-*RasterDithering Darken/Darken: "
+*RasterDithering FloydSteinberg/FloydSteinberg: "
 	<</DeviceRenderingInfo <</Type 29 /RasterDithering 2>> >>
 	setpagedevice"
 *End
+*RasterDithering Jarvis/Jarvis: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 3>> >>
+	setpagedevice"
+*End
+*RasterDithering Burke/Burke: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 4>> >>
+	setpagedevice"
+*End
+*RasterDithering Stucki/Stucki: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 5>> >>
+	setpagedevice"
+*End
+*RasterDithering Sierra2/Sierra2: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 6>> >>
+	setpagedevice"
+*End
+*RasterDithering Sierra3/Sierra3: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 7>> >>
+	setpagedevice"
+*End
+
 *?RasterDithering: "
 	save
-	[/Default /Darken]
+	[/Default /FloydSteinberg /Jarvis /Burke /Stucki /Sierra2 /Sierra3]
 	currentpagedevice /DeviceRenderingInfo get /RasterDithering get dup 0 gt
-	{dup 3 lt {get}{pop pop (Default)}ifelse} {pop pop (Default)} ifelse = flush
+	{dup 8 lt {get}{pop pop (Default)}ifelse} {pop pop (Default)} ifelse = flush
 	restore
 "
 *End
