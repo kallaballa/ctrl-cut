@@ -12,20 +12,19 @@ o FIXME: Update release notes
 o git tag "ctrl-cut-$VERSION"
   git push --tags
 o Create source package
-  git archive --format=tar ctrl-cut-$VERSION  --prefix=ctrl-cut-$VERSION/ | gzip > ctrl-cut-$VERSION.tar.gz
-
+  git archive --format=tar ctrl-cut-$VERSION  --prefix=ctrl-cut-$VERSION/ | bzip2 > ctrl-cut-$VERSION.tar.bz2
 o Unpack source package and run the rest from there
   cd <safe location>
-  tar xzf ctrl-cut-$VERSION.tar.gz
-  cd ctrl-cut-$VERSION
+  tar xjf ctrl-cut-$VERSION.tar.bz2
 
 o Mac:
+  - cd ctrl-cut-$VERSION
   - ./scripts/publish-macosx.sh
   - ./cc test-any
 
-o Linux
-  - FIXME: integration tests
-  - FIXME: Create src and binary packages
+o OpenSuse
+  - cp packaging/ctrl-cut.spec ..
+  - build
 
 o FIXME: Upload source and binary packages to download area
 o FIXME: Announce
