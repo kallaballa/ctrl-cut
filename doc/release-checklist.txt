@@ -7,7 +7,6 @@ o Update version numbers
   ./etc/ppd/Epilog/Legend36EXT.ppd (FileVersion if the PPD was updated)
   ./packaging/ctrl-cut.spec (Version and Release)
   ./packaging/Ctrl-Cut.pmdoc (increase all Package Version number - just increase, not sync with Ctrl-Cut version)
-o Mac OS X: Verify permissions in pmdoc: ctrl-cut: 755, lpd-epilog: 700
 o FIXME: Update release notes
 o git tag "ctrl-cut-$VERSION"
   git push --tags
@@ -19,6 +18,10 @@ o Unpack source package and run the rest from there
 
 o Mac:
   - cd ctrl-cut-$VERSION
+  - open  packaging/Ctrl-Cut.pmdoc
+    o Set permissions:
+       ctrl-cut: root/admin 755
+       lpd-epilog: root/admin 700
   - ./scripts/publish-macosx.sh
   - ./cc test-any
 
