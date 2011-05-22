@@ -1,5 +1,5 @@
 #
-# spec file for package ctrl-cut (Version 0.1)
+# spec file for package ctrl-cut (Version 0.2)
 #
 # Copyright 2009 SUSE LINUX Products GmbH, Nuernberg, Germany.
 # Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
