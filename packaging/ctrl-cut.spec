@@ -47,7 +47,7 @@ Initially, this is targetted at Epilog laser cutters.
 %if %{defined fedora_version}
 qmake-qt4 -recursive VERSION=0.2 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 %else
-qmake -recursivei VERSION=0.2 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
+qmake -recursive VERSION=0.2 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 %endif
 make %{?jobs:-j%jobs}
 
