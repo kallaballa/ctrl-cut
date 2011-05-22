@@ -23,7 +23,7 @@ o Mac:
   - ./cc test-any
 
 o OpenSuse
-  - cp packaging/ctrl-cut.spec ..
+  - cp ctrl-cut-$VERSION/packaging/ctrl-cut.spec ..
   - build
 
 o FIXME: Upload source and binary packages to download area
