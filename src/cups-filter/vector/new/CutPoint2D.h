@@ -6,7 +6,7 @@
 #include <boost/geometry/core/cs.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
 
-typedef boost::geometry::point<uint32_t, 2, boost::geometry::cs::cartesian> CutPoint2D;
+typedef boost::geometry::point<int32_t, 2, boost::geometry::cs::cartesian> CutPoint2D;
 
 
 #endif /* CUTPOINT2D_H_ */
