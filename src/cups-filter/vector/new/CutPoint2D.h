@@ -8,4 +8,5 @@
 
 typedef boost::geometry::point<uint32_t, 2, boost::geometry::cs::cartesian> CutPoint2D;
 
+
 #endif /* CUTPOINT2D_H_ */

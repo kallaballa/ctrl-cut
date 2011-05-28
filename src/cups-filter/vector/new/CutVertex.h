@@ -7,7 +7,7 @@
 
 enum vertex_point2d_t { vertex_point2d };
 
-typedef boost::property<vertex_point2d_t, CutPoint2D> VertexProperty;
+typedef boost::property<vertex_point2d_t, CutPoint2D> PointProperty;
 
 namespace boost {
   BOOST_INSTALL_PROPERTY(vertex, point2d);
