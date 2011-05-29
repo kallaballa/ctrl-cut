@@ -16,15 +16,20 @@ Indices& Indices::getIndices(CutModel& model) {
   return *(*it).second;
 }
 
-ComponentLookup& strong_componentlookup(CutModel& cutModel) {
+/*ComponentLookup& strong_componentlookup(CutModel& cutModel) {
   ComponentLookup *clup = new ComponentLookup();
-  clup->first = boost::strong_components(cutModel.getGraph(), boost::make_assoc_property_map(clup->second));
+  clup->first = boost::strong_components(cutModel.getUndirectedGraph(), boost::make_assoc_property_map(clup->second));
+  return *clup;
+}*/
+
+VertexComponentLookup& connected_componentlookup(CutModel& cutModel) {
+  VertexComponentLookup *clup = new VertexComponentLookup();
+  clup->first = boost::connected_components(cutModel.getUndirectedGraph(), boost::make_assoc_property_map(clup->second));
   return *clup;
 }
 
-ComponentLookup& connected_componentlookup(CutModel& cutModel) {
-  ComponentLookup *clup = new ComponentLookup();
-  clup->first = boost::connected_components(cutModel.getGraph(), boost::make_assoc_property_map(clup->second));
+EdgeComponentLookup& biconnected_componentlookup(CutModel& cutModel) {
+  EdgeComponentLookup *clup = new EdgeComponentLookup();
+  clup->first = boost::biconnected_components(cutModel.getUndirectedGraph(), boost::make_assoc_property_map(clup->second));
   return *clup;
 }
-

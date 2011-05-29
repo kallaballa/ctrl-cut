@@ -4,33 +4,65 @@
 #include "CutModel.h"
 #include "Indices.h"
 
-struct all_vertices_predicate {
-  all_vertices_predicate() {};
-  bool operator()(const Vertex& v) const {
-    return true;
-  }
-};
-
-struct all_edges_predicate {
-  all_edges_predicate() {};
-  bool operator()(const Edge& e) const {
-    return true;
-  }
-};
-
 struct is_component_vertex {
-  is_component_vertex() : compLookup(*new ComponentLookup()) {}
-  is_component_vertex(ComponentLookup& compLookup, int componentIndex) : compLookup(compLookup),  componentIndex(componentIndex) {
+  is_component_vertex() : compLookup(*new VertexComponentLookup()) {}
+  is_component_vertex(VertexComponentLookup& compLookup, int componentIndex) : compLookup(compLookup),  componentIndex(componentIndex) {
   }
   bool operator()(const Vertex& v) const {
     return compLookup.second.at(v) == componentIndex;
   }
-  ComponentLookup compLookup;
+  VertexComponentLookup compLookup;
   int componentIndex;
 };
 
-typedef filtered_graph<Graph, all_edges_predicate, is_component_vertex> GraphView;
+struct is_component_edge {
+  is_component_edge() : compLookup(*new EdgeComponentLookup()) {}
+  is_component_edge(EdgeComponentLookup& compLookup, int componentIndex) : compLookup(compLookup),  componentIndex(componentIndex) {
+  }
+  bool operator()(const UndirectedEdge& e) const {
+    map<UndirectedEdge, int>::const_iterator it = compLookup.second.find(e);
 
-GraphView& component_view(CutModel& cutModel, ComponentLookup& compLookup, int componentIndex);
-list<GraphView>& all_component_views(string name, CutModel& cutModel);
+    if(it != compLookup.second.end()) {
+      std::cerr << ((*it).second == componentIndex) << std::endl;
+      return (*it).second == componentIndex;
+    }
+    else
+      return false;
+  }
+  EdgeComponentLookup compLookup;
+  int componentIndex;
+};
+
+template<typename EdgePredicate, typename VertexPredicate>
+class UDGraphView : public filtered_graph<UndirectedGraph, EdgePredicate, VertexPredicate> {
+public:
+  UDGraphView(const UndirectedGraph& ug, EdgePredicate epredicate, VertexPredicate vpredicate) : filtered_graph<UndirectedGraph, EdgePredicate, VertexPredicate>(ug, epredicate, vpredicate) {}
+};
+
+typedef UDGraphView<is_component_edge,boost::keep_all> EdgeComponentGraphView;
+typedef UDGraphView<boost::keep_all, is_component_vertex> VertexComponentGraphView;
+
+inline list<EdgeComponentGraphView>& all_edge_component_views(string name, CutModel& cutModel) {
+  list<EdgeComponentGraphView> *cgList =  new list<EdgeComponentGraphView>();
+  EdgeComponentLookup& clup = Indices::getIndices(cutModel).getEdgeComponentLookup(name);
+  for (int i = 0; i < clup.first; ++i) {
+    is_component_edge& efilter = (*new is_component_edge(clup, i));
+    boost::keep_all &vfilter = (*new boost::keep_all());
+    cgList->push_back((* new EdgeComponentGraphView(cutModel.getUndirectedGraph(), efilter, vfilter)));
+  }
+
+  return *cgList;
+}
+
+inline list<VertexComponentGraphView>& all_vertex_component_views(string name, CutModel& cutModel) {
+  list<VertexComponentGraphView> *cgList =  new list<VertexComponentGraphView>();
+  VertexComponentLookup& clup = Indices::getIndices(cutModel).getVertexComponentLookup(name);
+  for (int i = 0; i < clup.first; ++i) {
+    boost::keep_all efilter = (*new boost::keep_all());
+    is_component_vertex vfilter = (*new is_component_vertex(clup, i));
+    cgList->push_back((* new VertexComponentGraphView(cutModel.getUndirectedGraph(), efilter, vfilter)));
+  }
+
+  return *cgList;
+}
 #endif /* GRAPHVIEW_H_ */

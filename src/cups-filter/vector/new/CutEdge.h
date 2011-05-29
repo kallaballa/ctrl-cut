@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <utility>
 #include <boost/utility.hpp>
-#include "CutSegment2D.h"
+
+#include "Geometry.h"
 
 struct LaserSettings {
   int power;
@@ -16,19 +17,16 @@ struct LaserSettings {
 };
 
 enum edge_length_t { edge_length };
-enum edge_segment_t { edge_segment };
 enum edge_geom_t { edge_geom };
 enum edge_cut_t { edge_cut };
 
-typedef boost::property<edge_length_t, double> LengthProperty;
-typedef boost::property<edge_segment_t, CutSegment2D, LengthProperty> SegmentProperty;
-//FIXME: bool owned_flag
-typedef boost::property<edge_geom_t, bool, SegmentProperty> GeomProperty;
+typedef boost::property<boost::edge_index_t, int> IndexProperty;
+typedef boost::property<edge_length_t, double, IndexProperty> LengthProperty;
+typedef boost::property<edge_geom_t, PolyLine*, LengthProperty> GeomProperty;
 typedef boost::property<edge_cut_t, LaserSettings, GeomProperty>  CutProperty;
 
 namespace boost {
 BOOST_INSTALL_PROPERTY(edge, length);
-BOOST_INSTALL_PROPERTY(edge, segment);
 BOOST_INSTALL_PROPERTY(edge, geom);
 BOOST_INSTALL_PROPERTY(edge, cut);
 }

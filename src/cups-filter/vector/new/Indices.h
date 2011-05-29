@@ -1,6 +1,7 @@
 #ifndef INDICES_H_
 #define INDICES_H_
-
+#include <boost/graph/biconnected_components.hpp>
+#include <boost/graph/connected_components.hpp>
 #include <string>
 #include <map>
 #include "CutModel.h"
@@ -10,7 +11,8 @@ using std::pair;
 using std::string;
 
 // numComponents, <vertex, componentIndex>
-typedef pair<int,  map<Vertex, int> > ComponentLookup;
+typedef pair<int,  map<Vertex, int> > VertexComponentLookup;
+typedef pair<int,  map<UndirectedEdge, int> > EdgeComponentLookup;
 
 struct IndexLifetime {
   // delete on create request on an existing index
@@ -28,7 +30,9 @@ struct IndexLifetime {
 class Indices {
 private:
   CutModel cutModel;
-  map<string, ComponentLookup*> compLookUpMap;
+  map<string, VertexComponentLookup*> vertexComponentLookUpMap;
+  map<string, EdgeComponentLookup*> edgeComponentLookUpMap;
+
   static map<CutModel*, Indices*> singletons;
 
   Indices(CutModel& model) : cutModel(model){}
@@ -36,19 +40,28 @@ public:
   static Indices& getIndices(CutModel& model);
   virtual ~Indices() {}
 
-  ComponentLookup& createComponentLookup(string name, ComponentLookup& (*build_comp_lookup)(CutModel& cutModel), IndexLifetime& lifetime = (* new IndexLifetime())) {
-    ComponentLookup& compLookup = build_comp_lookup(this->cutModel);
-    this->compLookUpMap[name] = &compLookup;
+  VertexComponentLookup& createVertexComponentLookup(string name, VertexComponentLookup& (*build_comp_lookup)(CutModel& cutModel), IndexLifetime& lifetime = (* new IndexLifetime())) {
+    VertexComponentLookup& compLookup = build_comp_lookup(this->cutModel);
+    this->vertexComponentLookUpMap[name] = &compLookup;
     return compLookup;
   }
 
-  ComponentLookup& getComponentLookup(string name) {
-    return *compLookUpMap[name];
+  VertexComponentLookup& getVertexComponentLookup(string name) {
+    return *vertexComponentLookUpMap[name];
+  }
+
+  EdgeComponentLookup& createEdgeComponentLookup(string name, EdgeComponentLookup& (*build_comp_lookup)(CutModel& cutModel), IndexLifetime& lifetime = (* new IndexLifetime())) {
+    EdgeComponentLookup& compLookup = build_comp_lookup(this->cutModel);
+    this->edgeComponentLookUpMap[name] = &compLookup;
+    return compLookup;
+  }
+
+  EdgeComponentLookup& getEdgeComponentLookup(string name) {
+    return *edgeComponentLookUpMap[name];
   }
 };
 
-
-ComponentLookup& strong_componentlookup(CutModel& cutModel);
-ComponentLookup& connected_componentlookup(CutModel& cutModel);
-
+//ComponentLookup& strong_componentlookup(CutModel& cutModel);
+VertexComponentLookup& connected_componentlookup(CutModel& cutModel);
+EdgeComponentLookup& biconnected_componentlookup(CutModel& cutModel);
 #endif /* INDICES_H_ */

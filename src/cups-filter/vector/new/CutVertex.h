@@ -3,14 +3,14 @@
 
 #include <stdint.h>
 #include <utility>
-#include "CutPoint2D.h"
+#include "Geometry.h"
 
-enum vertex_point2d_t { vertex_point2d };
+enum vertex_point_t { vertex_point };
 
-typedef boost::property<vertex_point2d_t, CutPoint2D> PointProperty;
+typedef boost::property<vertex_point_t, Point> PointProperty;
 
 namespace boost {
-  BOOST_INSTALL_PROPERTY(vertex, point2d);
+  BOOST_INSTALL_PROPERTY(vertex, point);
 }
 
 #endif
