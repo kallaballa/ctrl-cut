@@ -33,3 +33,5 @@ EdgeComponentLookup& biconnected_componentlookup(CutModel& cutModel) {
   clup->first = boost::biconnected_components(cutModel.getUndirectedGraph(), boost::make_assoc_property_map(clup->second));
   return *clup;
 }
+
+

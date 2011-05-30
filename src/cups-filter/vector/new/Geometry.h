@@ -5,13 +5,15 @@
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/core/cs.hpp>
 #include <boost/geometry/geometries/register/point.hpp>
-#include <vector>
+#include <deque>
 
 typedef boost::geometry::point<int32_t, 2, boost::geometry::cs::cartesian> Point;
-typedef boost::geometry::linear_ring<Point> LinearRing;
-typedef boost::geometry::linestring<Point> LineString;
+typedef boost::geometry::segment<Point> Segment;
+typedef boost::geometry::segment<const Point> ConstSegment;
+typedef boost::geometry::linear_ring<Point, std::deque> LinearRing;
+typedef boost::geometry::linestring<Point, std::deque> Linestring;
 
 // super type for LinearRing and LineString
-typedef std::vector<Point> PolyLine;
+typedef std::deque<Point> PolyLine;
 
 #endif /* GEOMETRY_H_ */

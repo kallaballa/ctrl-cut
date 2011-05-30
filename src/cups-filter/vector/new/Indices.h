@@ -10,9 +10,21 @@ using std::map;
 using std::pair;
 using std::string;
 
+struct compare_edge_vertices
+{
+  inline bool operator()(Edge const& left, Edge const& right) const {
+    return left.m_source < right.m_source ||
+        ((left.m_source == right.m_source) &&  (left.m_target < right.m_target));
+  }
+};
+
+typedef map<Vertex, int> VertexComponentMap;
+typedef map<Edge, int, compare_edge_vertices> EdgeComponentMap;
+
 // numComponents, <vertex, componentIndex>
-typedef pair<int,  map<Vertex, int> > VertexComponentLookup;
-typedef pair<int,  map<UndirectedEdge, int> > EdgeComponentLookup;
+typedef pair<int,  VertexComponentMap > VertexComponentLookup;
+// numComponents, <edge, componentIndex>
+typedef pair<int,  EdgeComponentMap > EdgeComponentLookup;
 
 struct IndexLifetime {
   // delete on create request on an existing index
@@ -64,4 +76,5 @@ public:
 //ComponentLookup& strong_componentlookup(CutModel& cutModel);
 VertexComponentLookup& connected_componentlookup(CutModel& cutModel);
 EdgeComponentLookup& biconnected_componentlookup(CutModel& cutModel);
+
 #endif /* INDICES_H_ */

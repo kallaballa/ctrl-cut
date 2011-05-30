@@ -12,59 +12,94 @@
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 
-
 #include "CutModel.h"
+
+using std::vector;
+using boost::planar_face_traversal;
+using boost::boyer_myrvold_planarity_test;
+using boost::graph_traits;
 
 using namespace boost;
 
-struct output_visitor : public planar_face_traversal_visitor
-{
-  void begin_face() { std::cout << "New face: "; }
-  void end_face() { std::cout << std::endl; }
-  template <typename Vertex>
-  void next_vertex(Vertex v)
-  {
-    std::cout << v << " ";
-  }
-
-  template <typename Edge>
-  void next_edge(Edge e)
-  {
-    std::cout << e << " ";
-  }
-};
-
-/*
+template<typename Graph>
 struct output_visitor: public planar_face_traversal_visitor {
   Graph& graph;
-  const property_map<Graph, vertex_point_t>::type &vPoint;
+  PolyLine* current;
+  typename property_map<Graph, edge_geom_t>::type const& e_geom;
 
   output_visitor(Graph& graph) :
-    graph(graph), vPoint(get(vertex_point, graph)) {
+    graph(graph), current(NULL), e_geom(get(edge_geom, graph)) {
   }
 
   void begin_face() {
-    std::cout << "New face: ";
+    std::cout << "begin face " << std::endl;
   }
   void end_face() {
-    std::cout << std::endl;
+    PolyLine::iterator it;
+    if (current != NULL) {
+      for (it = current->begin(); it != current->end(); ++it) {
+        std::cout << *it << " ";
+      }
+    }
+    std::cout << std::endl << "end face " << std::endl;
+    current = NULL;
   }
-  template <typename Edge>
+
+  template<typename Edge>
   void next_edge(Edge e) {
-    std::cout << "{" << vPoint[source(e, this->graph)] << " -> "
-        << vPoint[target(e, this->graph)] << "}" << std::endl;
+    const ConstSegment& seg = segment(e, graph);
+
+    if (e_geom[e] == NULL) {
+      if (current == NULL) {
+        current = new Linestring();
+        current->push_back(seg.first);
+        current->push_back(seg.second);
+      } else {
+        Point& last = current->back();
+        bool front = false;
+        if (equals(last, seg.first)) {
+          current->push_back(seg.second);
+        } else if (equals(last, seg.second)) {
+          current->push_back(seg.first);
+        } else {
+          front = true;
+          Point& first = current->front();
+          if (equals(first, seg.first)) {
+            current->push_front(seg.second);
+          } else if (equals(first, seg.second)) {
+            current->push_front(seg.first);
+          } else {
+            assert(false);
+          }
+        }
+      }
+
+      put(e_geom, e, current);
+    }
   }
-};*/
-
-class GeometryBuilder {
-private:
-  UndirectedGraph& graph;
-public:
-  GeometryBuilder(UndirectedGraph& graph) :
-    graph(graph) {}
-  virtual ~GeometryBuilder() {}
-
-  void build();
 };
+
+template<typename Graph, typename View>
+void build(Graph& graph, View& view) {
+  typename property_map<Graph, edge_index_t>::type e_index = get(edge_index,
+      graph);
+  typename graph_traits<Graph>::edges_size_type edge_count = 0;
+  typename graph_traits<Graph>::edge_iterator ei, ei_end;
+
+  for (tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
+    put(e_index, *ei, edge_count++);
+
+  // Test for planarity and compute the planar embedding as a side-effect
+  typedef std::vector<Edge> vec_t;
+  std::vector<vec_t> embedding(num_vertices(graph));
+  if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
+      boyer_myrvold_params::embedding = &embedding[0]))
+    std::cout << "Input graph is planar" << std::endl;
+  else
+    std::cout << "Input graph is not planar" << std::endl;
+
+  output_visitor<Graph> vis(graph);
+  planar_face_traversal(view, &embedding[0], vis);
+}
 
 #endif /* GEOMETRYBUILDER_H_ */

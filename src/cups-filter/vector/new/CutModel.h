@@ -23,6 +23,7 @@
 #include "CutEdge.h"
 #include "CutVertex.h"
 
+
 using boost::adjacency_list;
 using boost::undirectedS;
 using boost::directedS;
@@ -47,7 +48,7 @@ typedef typename boost::graph_traits<UndirectedGraph>
   ::vertex_descriptor Vertex;
 
 typedef typename boost::graph_traits<UndirectedGraph>
-  ::edge_descriptor UndirectedEdge;
+  ::edge_descriptor Edge;
 
 typedef map<Point, Vertex, boost::geometry::less<Point> > PointLookup;
 
@@ -55,8 +56,9 @@ class CutModel {
 private:
   UndirectedGraph graph;
   PointLookup pointLookup;
+  boost::graph_traits<UndirectedGraph>::edges_size_type edge_count;
 public:
-  CutModel() {}
+  CutModel() : edge_count(0) {}
   virtual ~CutModel() {}
 
   void createEdge(Point &in, Point &out, LaserSettings& settings);
@@ -70,6 +72,38 @@ public:
 inline std::ostream& operator<<(std::ostream &os, const Point &p) {
   os << "{" << p.get<0>() << "," << p.get<1>() << "}";
   return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const ConstSegment& segment) {
+  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
+
+//slow but comfortable... the property map should be retrieved directly for bulk operations
+template<typename Vertex, typename Graph>
+inline const Point& get_point(const Vertex& v, const Graph& graph) {
+  return get(vertex_point, graph)[v];
+}
+
+template<typename Edge, typename Graph>
+inline const Point& source_point(const Edge& e, const Graph& graph) {
+  return get_point(source(e, graph), graph);
+}
+
+template<typename Edge, typename Graph>
+inline const Point& target_point(const Edge& e, const Graph& graph) {
+  return get_point(target(e, graph), graph);
+}
+
+template<typename Edge, typename Graph>
+inline const ConstSegment& segment(const Edge& e, const Graph& graph) {
+  return (*new ConstSegment(source_point(e, graph), target_point(e, graph)));
+}
+
+template<typename Edge, typename Graph>
+inline double get_length(const Edge& e, const Graph& graph) {
+  return get(edge_length, graph)[e];
 }
 
 #endif

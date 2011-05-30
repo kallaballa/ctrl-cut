@@ -1,11 +1,13 @@
 #include "CutModel.h"
-#include "GraphView.h"
+
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/linear_ring.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 #include <iostream>
 #include <vector>
+#include "GraphView.h"
+#include "GeometryBuilder.h"
 
 using boost::geometry::linear_ring;
 using boost::geometry::linestring;
@@ -18,8 +20,8 @@ void CutModel::createEdge(Point &in, Point &out, LaserSettings& settings) {
 
   GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(0)));
   CutProperty cutProp(settings, geomProp);
-
-  add_edge(inV, outV, cutProp, this->graph);
+  property_map<UndirectedGraph, edge_index_t>::type e_index = get(edge_index, graph);
+  put(e_index, add_edge(inV, outV, cutProp, this->graph).first, edge_count++);
 }
 
 
@@ -49,65 +51,65 @@ int main() {
   cm.createEdge(0, 1, 0, 0, laserSettings);
   cm.createEdge(1, 1, 0, 0, laserSettings);
 
-  cm.createEdge(1, 1, 1, 2, laserSettings);
-  cm.createEdge(1, 2, 2, 2, laserSettings);
-  cm.createEdge(2, 2, 2, 1, laserSettings);
-  cm.createEdge(2, 1, 3, 3, laserSettings);
+  cm.createEdge(2, 1, 2, 2, laserSettings);
+  cm.createEdge(2, 2, 2, 3, laserSettings);
+  cm.createEdge(2, 3, 2, 4, laserSettings);
+  cm.createEdge(2, 4, 2, 5, laserSettings);
 
-  UndirectedGraph& udGraph = cm.getUndirectedGraph();
   UndirectedGraph::vertex_iterator v, vend;
 
-  property_map<UndirectedGraph, vertex_point_t>::type vPoint = get(vertex_point, udGraph);
-  property_map<UndirectedGraph, edge_length_t>::type eLength = get(edge_length, udGraph);
-
   Indices& indices = Indices::getIndices(cm);
-  indices.createEdgeComponentLookup("biconnected", biconnected_componentlookup);
-  indices.createVertexComponentLookup("connected", connected_componentlookup);
 
+  EdgeComponentLookup lookup =  indices.createEdgeComponentLookup("biconnected", biconnected_componentlookup);
+  for(EdgeComponentMap::iterator it = lookup.second.begin(); it!= lookup.second.end(); ++it) {
+    std::cerr << segment((*it).first, cm.getUndirectedGraph()) << " <> " << (*it).second << std::endl;
+  }
+  return 1;
 
   list<EdgeComponentGraphView> &biconnected_views = all_edge_component_views("biconnected", cm);
-  list<VertexComponentGraphView> &connected_views = all_vertex_component_views("connected", cm);
 
-  EdgeComponentGraphView::vertex_iterator egv_vertex,egv_vertex_end;
-  EdgeComponentGraphView::edge_iterator egv_edge,egv_edge_end;
-
-  VertexComponentGraphView::vertex_iterator vgv_vertex,vgv_vertex_end;
-  VertexComponentGraphView::edge_iterator vgv_edge,vgv_edge_end;
-
-
+  EdgeComponentGraphView::vertex_iterator egv_vit,egv_vit_end;
+  EdgeComponentGraphView::edge_iterator egv_eit,egv_eit_end;
   list<EdgeComponentGraphView>::iterator egv;
-  list<VertexComponentGraphView>::iterator vgv;
 
+  std::cout << "biconnected components" << std::endl;
   for (egv = biconnected_views.begin(); egv != biconnected_views.end(); ++egv) {
     std::cout << std::endl;
 
-    for(boost::tie(egv_vertex,egv_vertex_end) = vertices(*egv); egv_vertex != egv_vertex_end; ++egv_vertex)
-      std::cout << vPoint[*egv_vertex] << std::endl;
+    build(cm.getUndirectedGraph(), *egv);
 
-    for(boost::tie(egv_edge,egv_edge_end) = edges(*egv); egv_edge != egv_edge_end; ++egv_edge)
-      std::cout << "{" << vPoint[source(*egv_edge, *egv)]
-                                 << " -> " << vPoint[target(*egv_edge, *egv)]
-                                                     << "}" << eLength[*egv_edge] << std::endl;
+    for(boost::tie(egv_vit,egv_vit_end) = vertices(*egv); egv_vit != egv_vit_end; ++egv_vit)
+      std::cout << get_point(*egv_vit, *egv) << std::endl;
+
+    for(boost::tie(egv_eit,egv_eit_end) = edges(*egv); egv_eit != egv_eit_end; ++egv_eit)
+      std::cout << segment(*egv_eit, *egv) << "=" << get_length(*egv_eit, *egv) << std::endl;
   }
 
+  indices.createVertexComponentLookup("connected", connected_componentlookup);
+  list<VertexComponentGraphView> &connected_views = all_vertex_component_views("connected", cm);
+
+  VertexComponentGraphView::vertex_iterator vgv_vit,vgv_vit_end;
+  VertexComponentGraphView::edge_iterator vgv_eit,vgv_eit_end;
+  list<VertexComponentGraphView>::iterator vgv;
+
+  std::cout << "connected components" << std::endl;
   for (vgv = connected_views.begin(); vgv != connected_views.end(); ++vgv) {
     std::cout << std::endl;
 
-    for(boost::tie(vgv_vertex,vgv_vertex_end) = vertices(*vgv); vgv_vertex != vgv_vertex_end; ++vgv_vertex)
-      std::cout << vPoint[*vgv_vertex] << std::endl;
+    build(cm.getUndirectedGraph(), *vgv);
 
-    for(boost::tie(vgv_edge,vgv_edge_end) = edges(*vgv); vgv_edge != vgv_edge_end; ++vgv_edge)
-      std::cout << "{" << vPoint[source(*vgv_edge, *vgv)]
-                                 << " -> " << vPoint[target(*vgv_edge, *vgv)]
-                                                     << "}" << eLength[*vgv_edge] << std::endl;
+    for(boost::tie(vgv_vit,vgv_vit_end) = vertices(*vgv); vgv_vit != vgv_vit_end; ++vgv_vit)
+      std::cout << get_point(*vgv_vit, *vgv) << std::endl;
+
+    for(boost::tie(vgv_eit,vgv_eit_end) = edges(*vgv); vgv_eit != vgv_eit_end; ++vgv_eit)
+      std::cout << segment(*vgv_eit, *vgv) << "=" << get_length(*vgv_eit, *vgv) << std::endl;
   }
 
-  linear_ring<Point> lr;
-  linestring<Point> ls;
+  LinearRing lr;
+  Linestring ls;
   Point cp;
 
-  vector<vector<Point> > geometryVector;
+  vector<PolyLine> geometryVector;
   geometryVector.push_back(lr);
   geometryVector.push_back(ls);
-
 }
