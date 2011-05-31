@@ -14,13 +14,12 @@ void CutModel::createEdge(Point &in, Point &out, LaserSettings& settings) {
   add_edge(inV, outV, cutProp, this->graph);
 }
 
-
 void CutModel::createEdge(uint32_t inX, uint32_t inY, uint32_t outX, uint32_t outY, LaserSettings& settings) {
   this->createEdge(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
 Vertex CutModel::findOrInsertVertex(const Point &point) {
-  PointLookup::const_iterator it = pointLookup.find(point);
+  typename Indices<CutGraph>::PointLookup::const_iterator it = pointLookup.find(point);
     if (it == pointLookup.end()) {
         Vertex new_vertex = add_vertex(PointProperty(point),graph);
         pointLookup[point] = new_vertex;
@@ -29,7 +28,6 @@ Vertex CutModel::findOrInsertVertex(const Point &point) {
 
     return it->second;
 }
-
 
 int main() {
   CutModel cm;

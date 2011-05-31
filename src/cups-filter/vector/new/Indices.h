@@ -39,8 +39,11 @@ public:
   // numComponents, <edge, componentIndex>
   typedef pair<int,  EdgeComponentMap > EdgeComponentLookup;
 
+  typedef map<Point, Vertex, boost::geometry::less<Point> > PointLookup;
+
   VertexComponentLookup* vc_lookup;
   EdgeComponentLookup* ec_lookup;
+  PointLookup* pointLookup;
 
   static Indices<Graph>& getIndices(Graph& graph);
   virtual ~Indices() {}
@@ -63,6 +66,11 @@ Indices<Graph>& Indices<Graph>::getIndices(Graph& graph) {
 }
 
 template<typename Graph>
+void put_point_lookup(Graph& graph, typename Indices<Graph>::PointLookup& pointLookup) {
+  Indices<Graph>::getIndices(graph).pointLookup = &pointLookup;
+}
+
+template<typename Graph>
 void put_vertex_component_lookup(Graph& graph, typename Indices<Graph>::VertexComponentLookup& vc_lookup) {
   Indices<Graph>::getIndices(graph).vc_lookup = &vc_lookup;
 }
@@ -70,6 +78,13 @@ void put_vertex_component_lookup(Graph& graph, typename Indices<Graph>::VertexCo
 template<typename Graph>
 void put_edge_component_lookup(Graph& graph, typename Indices<Graph>::EdgeComponentLookup& ec_lookup) {
   Indices<Graph>::getIndices(graph).ec_lookup = &ec_lookup;
+}
+
+template<typename Graph>
+typename Indices<Graph>::PointLookup& get_point_lookup(Graph& graph) {
+  typename Indices<Graph>::PointLookup *pointLookup = Indices<Graph>::getIndices(graph).pointLookup;
+  assert(pointLookup != NULL);
+  return *pointLookup;
 }
 
 template<typename Graph>

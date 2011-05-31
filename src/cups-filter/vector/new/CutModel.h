@@ -33,22 +33,22 @@ typedef typename boost::graph_traits<CutGraph>
 typedef typename boost::graph_traits<CutGraph>
   ::edge_descriptor Edge;
 
-typedef map<Point, Vertex, boost::geometry::less<Point> > PointLookup;
-
 class CutModel {
 private:
   CutGraph graph;
-  PointLookup pointLookup;
+  Indices<CutGraph>::PointLookup pointLookup;
   boost::graph_traits<CutGraph>::edges_size_type edge_count;
 public:
-  CutModel() : edge_count(0) {}
+  CutModel() : edge_count(0) {
+    put_point_lookup(this->graph, this->pointLookup);
+  }
   virtual ~CutModel() {}
 
   void createEdge(Point &in, Point &out, LaserSettings& settings);
   void createEdge(uint32_t inX, uint32_t inY, uint32_t outX, uint32_t outY, LaserSettings& settings);
   Vertex findOrInsertVertex(const Point &point);
   CutGraph& getCutGraph() { return this->graph; }
-  PointLookup& getPointLookup(){ return this->pointLookup; };
+  Indices<CutGraph>::PointLookup& getPointLookup(){ return this->pointLookup; };
 };
 
 //slow but comfortable... the property map should be retrieved directly for bulk operations
