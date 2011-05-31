@@ -2,17 +2,12 @@
 #define GEOMETRYBUILDER_H_
 
 #include <iostream>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/properties.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/property_map/property_map.hpp>
-#include <boost/ref.hpp>
 #include <vector>
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 
-#include "CutModel.h"
+#include "Geometry.h"
 
 using std::vector;
 using boost::planar_face_traversal;
@@ -81,16 +76,10 @@ struct output_visitor: public planar_face_traversal_visitor {
 
 template<typename Graph, typename View>
 void build(Graph& graph, View& view) {
-  typename property_map<Graph, edge_index_t>::type e_index = get(edge_index,
-      graph);
-  typename graph_traits<Graph>::edges_size_type edge_count = 0;
-  typename graph_traits<Graph>::edge_iterator ei, ei_end;
-
-  for (tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
-    put(e_index, *ei, edge_count++);
+  typedef typename graph_traits<Graph>::edge_descriptor Edge;
+  typedef std::vector<Edge> vec_t;
 
   // Test for planarity and compute the planar embedding as a side-effect
-  typedef std::vector<Edge> vec_t;
   std::vector<vec_t> embedding(num_vertices(graph));
   if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
       boyer_myrvold_params::embedding = &embedding[0]))

@@ -14,6 +14,7 @@
 #include "CutEdge.h"
 #include "CutVertex.h"
 #include "GraphView.h"
+#include "GeometryBuilder.h"
 
 using boost::adjacency_list;
 using boost::undirectedS;
@@ -49,17 +50,6 @@ public:
   CutGraph& getCutGraph() { return this->graph; }
   PointLookup& getPointLookup(){ return this->pointLookup; };
 };
-
-inline std::ostream& operator<<(std::ostream &os, const Point &p) {
-  os << "{" << p.get<0>() << "," << p.get<1>() << "}";
-  return os;
-}
-
-inline std::ostream& operator<<(std::ostream &os, const ConstSegment& segment) {
-  os << "{" << segment.first << "," << segment.second << "}";
-  return os;
-}
-
 
 //slow but comfortable... the property map should be retrieved directly for bulk operations
 template<typename Vertex, typename Graph>

@@ -16,4 +16,14 @@ typedef boost::geometry::linestring<Point, std::deque> Linestring;
 // super type for LinearRing and LineString
 typedef std::deque<Point> PolyLine;
 
+inline std::ostream& operator<<(std::ostream &os, const Point &p) {
+  os << "{" << p.get<0>() << "," << p.get<1>() << "}";
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const ConstSegment& segment) {
+  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
 #endif /* GEOMETRY_H_ */

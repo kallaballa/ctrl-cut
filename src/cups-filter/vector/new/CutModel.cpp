@@ -1,26 +1,17 @@
 #include "CutModel.h"
 
-#include <boost/geometry/geometry.hpp>
-#include <boost/geometry/geometries/linear_ring.hpp>
-#include <boost/geometry/geometries/linestring.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
 #include <iostream>
 #include <vector>
-#include "GeometryBuilder.h"
 
-using boost::geometry::linear_ring;
-using boost::geometry::linestring;
-using boost::geometry::polygon;
 using std::vector;
 
 void CutModel::createEdge(Point &in, Point &out, LaserSettings& settings) {
   Vertex inV = this->findOrInsertVertex(in);
   Vertex outV = this->findOrInsertVertex(out);
 
-  GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(0)));
+  GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(edge_count++)));
   CutProperty cutProp(settings, geomProp);
-  property_map<CutGraph, edge_index_t>::type e_index = get(edge_index, graph);
-  put(e_index, add_edge(inV, outV, cutProp, this->graph).first, edge_count++);
+  add_edge(inV, outV, cutProp, this->graph);
 }
 
 
