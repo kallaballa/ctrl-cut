@@ -4,7 +4,6 @@
 #include <boost/graph/connected_components.hpp>
 #include <string>
 #include <map>
-#include "CutModel.h"
 
 using std::map;
 using std::pair;

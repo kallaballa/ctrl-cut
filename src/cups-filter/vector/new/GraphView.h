@@ -2,10 +2,11 @@
 #define GRAPHVIEW_H_
 
 #include <list>
-#include "CutModel.h"
+#include <boost/graph/filtered_graph.hpp>
 #include "Indices.h"
 
 using std::list;
+using boost::filtered_graph;
 
 template<typename Graph>
 struct is_free_edge {

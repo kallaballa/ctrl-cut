@@ -6,7 +6,6 @@
 #include <boost/geometry/geometries/polygon.hpp>
 #include <iostream>
 #include <vector>
-#include "GraphView.h"
 #include "GeometryBuilder.h"
 
 using boost::geometry::linear_ring;
@@ -20,7 +19,7 @@ void CutModel::createEdge(Point &in, Point &out, LaserSettings& settings) {
 
   GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(0)));
   CutProperty cutProp(settings, geomProp);
-  property_map<UndirectedGraph, edge_index_t>::type e_index = get(edge_index, graph);
+  property_map<CutGraph, edge_index_t>::type e_index = get(edge_index, graph);
   put(e_index, add_edge(inV, outV, cutProp, this->graph).first, edge_count++);
 }
 
@@ -56,21 +55,23 @@ int main() {
   cm.createEdge(2, 3, 2, 4, laserSettings);
   cm.createEdge(2, 4, 2, 5, laserSettings);
 
-  UndirectedGraph::vertex_iterator v, vend;
-  UndirectedGraph& graph = cm.getUndirectedGraph();
+
+  CutGraph::vertex_iterator v, vend;
+  CutGraph& graph = cm.getCutGraph();
+  build(graph, graph);
 
   create_biconnected_component_lookup(graph);
-  list<EdgeComponentView<UndirectedGraph> >& biconnected_views = all_edge_component_views(graph);
+  list<EdgeComponentView<CutGraph> >& biconnected_views = all_edge_component_views(graph);
 
-  EdgeComponentView<UndirectedGraph>::vertex_iterator egv_vit,egv_vit_end;
-  EdgeComponentView<UndirectedGraph>::edge_iterator egv_eit,egv_eit_end;
-  list<EdgeComponentView<UndirectedGraph> >::iterator egv;
+  EdgeComponentView<CutGraph>::vertex_iterator egv_vit,egv_vit_end;
+  EdgeComponentView<CutGraph>::edge_iterator egv_eit,egv_eit_end;
+  list<EdgeComponentView<CutGraph> >::iterator egv;
 
   std::cout << "biconnected components" << std::endl;
   for (egv = biconnected_views.begin(); egv != biconnected_views.end(); ++egv) {
     std::cout << std::endl;
 
-    build(cm.getUndirectedGraph(), *egv);
+    build(cm.getCutGraph(), *egv);
 
     for(boost::tie(egv_vit,egv_vit_end) = vertices(*egv); egv_vit != egv_vit_end; ++egv_vit)
       std::cout << get_point(*egv_vit, *egv) << std::endl;
