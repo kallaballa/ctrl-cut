@@ -57,20 +57,14 @@ int main() {
   cm.createEdge(2, 4, 2, 5, laserSettings);
 
   UndirectedGraph::vertex_iterator v, vend;
+  UndirectedGraph& graph = cm.getUndirectedGraph();
 
-  Indices& indices = Indices::getIndices(cm);
+  create_biconnected_component_lookup(graph);
+  list<EdgeComponentView<UndirectedGraph> >& biconnected_views = all_edge_component_views(graph);
 
-  EdgeComponentLookup lookup =  indices.createEdgeComponentLookup("biconnected", biconnected_componentlookup);
-  for(EdgeComponentMap::iterator it = lookup.second.begin(); it!= lookup.second.end(); ++it) {
-    std::cerr << segment((*it).first, cm.getUndirectedGraph()) << " <> " << (*it).second << std::endl;
-  }
-  return 1;
-
-  list<EdgeComponentGraphView> &biconnected_views = all_edge_component_views("biconnected", cm);
-
-  EdgeComponentGraphView::vertex_iterator egv_vit,egv_vit_end;
-  EdgeComponentGraphView::edge_iterator egv_eit,egv_eit_end;
-  list<EdgeComponentGraphView>::iterator egv;
+  EdgeComponentView<UndirectedGraph>::vertex_iterator egv_vit,egv_vit_end;
+  EdgeComponentView<UndirectedGraph>::edge_iterator egv_eit,egv_eit_end;
+  list<EdgeComponentView<UndirectedGraph> >::iterator egv;
 
   std::cout << "biconnected components" << std::endl;
   for (egv = biconnected_views.begin(); egv != biconnected_views.end(); ++egv) {
@@ -84,11 +78,11 @@ int main() {
     for(boost::tie(egv_eit,egv_eit_end) = edges(*egv); egv_eit != egv_eit_end; ++egv_eit)
       std::cout << segment(*egv_eit, *egv) << "=" << get_length(*egv_eit, *egv) << std::endl;
   }
-
+/*
   indices.createVertexComponentLookup("connected", connected_componentlookup);
   list<VertexComponentGraphView> &connected_views = all_vertex_component_views("connected", cm);
 
-  VertexComponentGraphView::vertex_iterator vgv_vit,vgv_vit_end;
+  VertexComponentView<Undi::vertex_iterator vgv_vit,vgv_vit_end;
   VertexComponentGraphView::edge_iterator vgv_eit,vgv_eit_end;
   list<VertexComponentGraphView>::iterator vgv;
 
@@ -111,5 +105,5 @@ int main() {
 
   vector<PolyLine> geometryVector;
   geometryVector.push_back(lr);
-  geometryVector.push_back(ls);
+  geometryVector.push_back(ls);*/
 }
