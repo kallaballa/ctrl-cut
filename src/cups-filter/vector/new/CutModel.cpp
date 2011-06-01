@@ -18,15 +18,17 @@ void CutModel::createEdge(uint32_t inX, uint32_t inY, uint32_t outX, uint32_t ou
   this->createEdge(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
-Vertex CutModel::findOrInsertVertex(const Point &point) {
-  typename Indices<CutGraph>::PointLookup::const_iterator it = pointLookup.find(point);
-    if (it == pointLookup.end()) {
+Vertex CutModel::findOrInsertVertex(Point &point) {
+  typename Indices<CutGraph>::PointIndex::const_iterator it = pointIndex.find(point);
+    if (it == pointIndex.end()) {
         Vertex new_vertex = add_vertex(PointProperty(point),graph);
-        pointLookup[point] = new_vertex;
+        point.vertexID = (unsigned long int) new_vertex;
+        pointIndex.insert(point);
+
         return new_vertex;
     }
 
-    return it->second;
+    return ((Vertex)(*it).vertexID);
 }
 
 int main() {

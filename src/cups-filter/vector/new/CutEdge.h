@@ -22,7 +22,7 @@ enum edge_cut_t { edge_cut };
 
 typedef boost::property<boost::edge_index_t, int> IndexProperty;
 typedef boost::property<edge_length_t, double, IndexProperty> LengthProperty;
-typedef boost::property<edge_geom_t, PolyLine*, LengthProperty> GeomProperty;
+typedef boost::property<edge_geom_t, Linestring*, LengthProperty> GeomProperty;
 typedef boost::property<edge_cut_t, LaserSettings, GeomProperty>  CutProperty;
 
 namespace boost {

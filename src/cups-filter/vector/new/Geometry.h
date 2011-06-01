@@ -7,17 +7,30 @@
 #include <boost/geometry/geometries/register/point.hpp>
 #include <deque>
 
-typedef boost::geometry::point<int32_t, 2, boost::geometry::cs::cartesian> Point;
-typedef boost::geometry::segment<Point> Segment;
-typedef boost::geometry::segment<const Point> ConstSegment;
-typedef boost::geometry::linear_ring<Point, std::deque> LinearRing;
-typedef boost::geometry::linestring<Point, std::deque> Linestring;
+namespace bg = boost::geometry;
 
-// super type for LinearRing and LineString
-typedef std::deque<Point> PolyLine;
+struct Point {
+  Point() {}
+  Point(int32_t x, int32_t y): x(x), y(y) {}
+
+  int32_t x;
+  int32_t y;
+  unsigned long int vertexID;
+
+  bool operator==(const Point& other) const {
+    return this->x == other.x && this->y == other.y;
+  }
+};
+
+BOOST_GEOMETRY_REGISTER_POINT_2D(Point, int32_t, bg::cs::cartesian, x,y)
+
+typedef bg::segment<Point> Segment;
+typedef bg::segment<const Point> ConstSegment;
+typedef bg::linestring<Point, std::deque > Linestring;
+typedef bg::box<Point> Box;
 
 inline std::ostream& operator<<(std::ostream &os, const Point &p) {
-  os << "{" << p.get<0>() << "," << p.get<1>() << "}";
+  os << "{" << p.x << "," << p.y << "}";
   return os;
 }
 
@@ -26,4 +39,8 @@ inline std::ostream& operator<<(std::ostream &os, const ConstSegment& segment) {
   return os;
 }
 
+inline std::ostream& operator<<(std::ostream &os, const Linestring& ls) {
+//FIXME  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
 #endif /* GEOMETRY_H_ */

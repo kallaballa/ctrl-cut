@@ -13,13 +13,13 @@ using std::vector;
 using boost::planar_face_traversal;
 using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
-
+using boost::geometry::equals;
 using namespace boost;
 
 template<typename Graph>
 struct output_visitor: public planar_face_traversal_visitor {
   Graph& graph;
-  PolyLine* current;
+  Linestring* current;
   typename property_map<Graph, edge_geom_t>::type const& e_geom;
 
   output_visitor(Graph& graph) :
@@ -30,11 +30,12 @@ struct output_visitor: public planar_face_traversal_visitor {
     std::cout << "begin face " << std::endl;
   }
   void end_face() {
-    PolyLine::iterator it;
+    Linestring::iterator it;
     if (current != NULL) {
       for (it = current->begin(); it != current->end(); ++it) {
         std::cout << *it << " ";
       }
+      index_linestring(graph, *current);
     }
     std::cout << std::endl << "end face " << std::endl;
     current = NULL;
@@ -67,6 +68,7 @@ struct output_visitor: public planar_face_traversal_visitor {
             assert(false);
           }
         }
+
       }
 
       put(e_geom, e, current);
