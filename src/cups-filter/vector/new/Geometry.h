@@ -9,38 +9,33 @@
 
 namespace bg = boost::geometry;
 
-struct Point {
-  Point() {}
-  Point(int32_t x, int32_t y): x(x), y(y) {}
-
-  int32_t x;
-  int32_t y;
-  unsigned long int vertexID;
-
-  bool operator==(const Point& other) const {
-    return this->x == other.x && this->y == other.y;
-  }
-};
-
-BOOST_GEOMETRY_REGISTER_POINT_2D(Point, int32_t, bg::cs::cartesian, x,y)
-
-typedef bg::segment<Point> Segment;
-typedef bg::segment<const Point> ConstSegment;
-typedef bg::linestring<Point, std::deque > Linestring;
+typedef bg::point<int32_t, 2, bg::cs::cartesian> Point;
+typedef bg::segment<const Point> Segment;
+typedef bg::linestring<Point > Linestring;
 typedef bg::box<Point> Box;
 
 inline std::ostream& operator<<(std::ostream &os, const Point &p) {
-  os << "{" << p.x << "," << p.y << "}";
+  os << "{" << p.get<0>() << "," << p.get<1>() << "}";
   return os;
 }
 
-inline std::ostream& operator<<(std::ostream &os, const ConstSegment& segment) {
+inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   os << "{" << segment.first << "," << segment.second << "}";
   return os;
 }
 
 inline std::ostream& operator<<(std::ostream &os, const Linestring& ls) {
-//FIXME  os << "{" << segment.first << "," << segment.second << "}";
+//FIXME
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const Linestring* ls) {
+//FIXME
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const Box& box) {
+//FIXME
   return os;
 }
 #endif /* GEOMETRY_H_ */

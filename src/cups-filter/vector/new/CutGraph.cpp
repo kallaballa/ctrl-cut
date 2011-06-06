@@ -1,36 +1,25 @@
-#include "CutModel.h"
+#include "CutGraph.h"
 
 #include <iostream>
 #include <vector>
 
 using std::vector;
 
-void CutModel::createEdge(Point &in, Point &out, LaserSettings& settings) {
-  Vertex inV = this->findOrInsertVertex(in);
-  Vertex outV = this->findOrInsertVertex(out);
 
-  GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(edge_count++)));
+void createEdge(CutGraph& graph, Point &in, Point &out, LaserSettings& settings) {
+  Vertex inV = findOrAddVertex(graph, in);
+  Vertex outV = findOrAddVertex(graph, out);
+
+  GeomProperty geomProp(0, LengthProperty(boost::geometry::distance(in, out), IndexProperty(Index<CutGraph>::edge_count++)));
   CutProperty cutProp(settings, geomProp);
-  add_edge(inV, outV, cutProp, this->graph);
+  add_edge(inV, outV, cutProp, graph);
 }
 
-void CutModel::createEdge(uint32_t inX, uint32_t inY, uint32_t outX, uint32_t outY, LaserSettings& settings) {
-  this->createEdge(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
+void createEdge(CutGraph& graph, uint32_t inX, uint32_t inY, uint32_t outX, uint32_t outY, LaserSettings& settings) {
+  createEdge(graph, *(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
-Vertex CutModel::findOrInsertVertex(Point &point) {
-  typename Indices<CutGraph>::PointIndex::const_iterator it = pointIndex.find(point);
-    if (it == pointIndex.end()) {
-        Vertex new_vertex = add_vertex(PointProperty(point),graph);
-        point.vertexID = (unsigned long int) new_vertex;
-        pointIndex.insert(point);
-
-        return new_vertex;
-    }
-
-    return ((Vertex)(*it).vertexID);
-}
-
+/*
 int main() {
   CutModel cm;
   LaserSettings laserSettings(0,0,0);
@@ -70,7 +59,7 @@ int main() {
     for(boost::tie(egv_eit,egv_eit_end) = edges(*egv); egv_eit != egv_eit_end; ++egv_eit)
       std::cout << segment(*egv_eit, *egv) << "=" << get_length(*egv_eit, *egv) << std::endl;
   }
-/*
+
   indices.createVertexComponentLookup("connected", connected_componentlookup);
   list<VertexComponentGraphView> &connected_views = all_vertex_component_views("connected", cm);
 
@@ -97,5 +86,6 @@ int main() {
 
   vector<PolyLine> geometryVector;
   geometryVector.push_back(lr);
-  geometryVector.push_back(ls);*/
+  geometryVector.push_back(ls);
 }
+*/
