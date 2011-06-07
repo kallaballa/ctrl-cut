@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGraphicsView" name="graphicsView"/>
+     <widget class="CtrlCutView" name="graphicsView"/>
     </item>
    </layout>
   </widget>
@@ -63,6 +63,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CtrlCutView</class>
+   <extends>QGraphicsView</extends>
+   <header>CtrlCutView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="ctrl-cut.qrc"/>
  </resources>

@@ -15,7 +15,6 @@ public slots:
   void on_fileOpenAction_triggered();
 
 private:
-  class QGraphicsScene *scene;
 };
 
 #endif

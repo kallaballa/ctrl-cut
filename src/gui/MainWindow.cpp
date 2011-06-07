@@ -9,8 +9,6 @@ MainWindow::MainWindow()
 {
   setupUi(this);
 
-  this->scene = new QGraphicsScene();
-  this->graphicsView->setScene(this->scene);
 }
 
 MainWindow::~MainWindow()
@@ -29,7 +27,7 @@ void MainWindow::on_fileOpenAction_triggered()
     const Mesh &mesh = cut->getMesh();
     for (Mesh::const_iterator iter = mesh.begin(); iter != mesh.end(); iter++) {
       const Edge &edge = **iter;
-      this->scene->addLine(edge[0][0], edge[0][1], edge[1][0], edge[1][1]);
+      this->graphicsView->scene()->addLine(edge[0][0], edge[0][1], edge[1][0], edge[1][1]);
     }
   }
 }

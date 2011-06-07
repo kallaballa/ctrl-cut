@@ -17,6 +17,7 @@ FORMS   += MainWindow.ui
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += MainWindow.h \
+           CtrlCutView.h \
            ../cups-filter/vector/Cut.h \
            ../cups-filter/vector/Vertex.h \
            ../cups-filter/vector/Edge.h \
@@ -28,6 +29,7 @@ HEADERS += MainWindow.h \
 
 SOURCES += gui.cpp \
            MainWindow.cpp \
+           CtrlCutView.cpp \
            ../cups-filter/vector/Cut.cpp \
            ../cups-filter/vector/Vertex.cpp \
            ../cups-filter/vector/Edge.cpp \
