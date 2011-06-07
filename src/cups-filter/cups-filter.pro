@@ -2,11 +2,10 @@ TARGET = ctrl-cut
 #CONFIG += raster
 CONFIG += gsapi
 CONFIG += boost
+CONFIG += cups
 include(common.pri)
 
 DEFINES += ETLOG DEBUG=4
-
-LIBS += -lcups
 
 SOURCES += \
           Driver.cpp \
