@@ -4,8 +4,7 @@ CONFIG += gsapi
 CONFIG += boost
 include(common.pri)
 
-QMAKE_CXXFLAGS+=-DETLOG
-QMAKE_CXXFLAGS+=-DDEBUG=4
+DEFINES += ETLOG DEBUG=4
 
 LIBS += -lcups
 
