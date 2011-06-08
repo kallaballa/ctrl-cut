@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="CtrlCutView" name="graphicsView"/>
+     <widget class="NavigationView" name="graphicsView"/>
     </item>
    </layout>
   </widget>
@@ -65,9 +65,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CtrlCutView</class>
+   <class>NavigationView</class>
    <extends>QGraphicsView</extends>
-   <header>CtrlCutView.h</header>
+   <header>NavigationView.h</header>
   </customwidget>
  </customwidgets>
  <resources>
