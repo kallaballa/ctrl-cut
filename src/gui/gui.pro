@@ -1,5 +1,5 @@
 TARGET = ctrl-cut
-CONFIG += boost cups
+CONFIG += boost cups gsapi
 include(common.pri)
 CONFIG += qt
 CONFIG += app_bundle
@@ -8,7 +8,7 @@ MOC_DIR = objects
 UI_DIR = objects
 RCC_DIR = objects
 
-DEFINES += ETLOG DEBUG=4
+DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
 
 INCLUDEPATH += ../cups-filter
 
@@ -24,6 +24,8 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/Polyline.h \
            ../cups-filter/vector/Mesh.h \
            ../cups-filter/util/LaserConfig.h \
+           ../cups-filter/util/Eps.h \
+           ../cups-filter/FileParser.h \
            ../cups-filter/tri_logger/tri_logger.hpp \
            ../cups-filter/tri_logger/nullstream.hpp
 
@@ -36,5 +38,7 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/Polyline.cpp \
            ../cups-filter/vector/Mesh.cpp \
            ../cups-filter/util/LaserConfig.cpp \
+           ../cups-filter/util/Eps.cpp \
+           ../cups-filter/PostscriptParser.cpp \
            ../cups-filter/tri_logger/tri_logger.cpp
 
