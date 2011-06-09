@@ -17,84 +17,48 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <deque>
 #include "util/Logger.h"
-#include "vector/Edge.h"
-#include "vector/Vertex.h"
-#include "vector/Cut.h"
 #include "Explode.h"
 
-bool sortEdgeByX(Edge* e1, Edge* e2) {
-  uint32_t e1_minX = std::min((*e1)[0][0], (*e1)[1][0]);
-  uint32_t e2_minX = std::min((*e2)[0][0], (*e2)[1][0]);
-  return e1_minX < e2_minX;
-}
+using std::deque;
 
 /*
- * Split edges at intersection points.
+ * Split segments at intersection points.
  */
-void Explode::filter(Cut *cut)
-{
+void Explode::filter(CutModel& cut) {
   LOG_INFO_STR("Explode");
+  vector<SpatialItem> in_range;
 
-  Vertex *intersec = NULL;
-  Edge *pick, *candidate;
+  for (CutModel::iterator it_s = cut.begin(); it_s != cut.end(); ++it_s) {
+    if(it_s == cut.end())
+      continue;
+    Segment* pick = *it_s;
+    if(!in_range.empty())
+      in_range.clear();
+    cut.findWithinRange(it_s, in_range);
 
-  Mesh &mesh = cut->getMesh();
-  mesh.edges.sort(sortEdgeByX);
-  std::list<Edge*> stripe;
-  std::list<Edge*> carryOver;
-  Edge* first = mesh.front();
-  uint32_t stripeStep = 200;
-  uint32_t stripeLimit = std::min((*first)[0][0], (*first)[1][0]);
-  std::list<Edge*>::iterator it_m = mesh.begin();
+    for (vector<SpatialItem>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
+      Segment* candidate = *((*it_o).owner);
+      if(pick == candidate)
+        continue;
 
-  while(it_m != mesh.end()) {
-    stripe = carryOver;
-    carryOver.clear();
-    stripeLimit+=stripeStep;
+      Point* intersec;
+      // check if pick does intersect candidate
+      if ((intersec = intersects(*pick, *candidate)) != NULL) {
 
-    for (; it_m != mesh.end(); it_m++) {
-      pick = *it_m;
+        // if pick doesnt tip intersect remove it and split it in two
+        if (!((*pick)[0] == *intersec) && !((*pick)[1] == *intersec)) {
+         it_s = cut.removeSegment(it_s);
+         cut.createSegment((*pick)[0], *intersec, pick->settings);
+         cut.createSegment((*pick)[1], *intersec, pick->settings);
+        }
 
-      uint32_t s_x = (*pick)[0][0];
-      uint32_t e_x = (*pick)[1][0];
-
-      if(s_x > stripeLimit && e_x > stripeLimit)
-        break;
-
-      if(s_x > stripeLimit || e_x > stripeLimit)
-        carryOver.push_back(pick);
-
-      stripe.push_back(pick);
-    }
-
-    for (list<Edge*>::iterator it_i = stripe.begin(); it_i != stripe.end(); it_i++) {
-      for (list<Edge*>::iterator it_j = it_i; ++it_j != stripe.end(); ) {
-        pick = *it_i;
-        candidate = *it_j;
-
-        // check if pick does intersect candidate
-        if ((intersec = pick->intersects(*candidate)) != NULL) {
-
-          // FIXME: We should inherit speed and frequency too
-
-          // if pick doesnt tip intersect remove it and split it in two
-          if (!((*pick)[0] == *intersec) && !((*pick)[1] == *intersec)) {
-            pick->detach();
-            mesh.remove(pick);
-
-            mesh.create(pick->start(), intersec, pick->power());
-            mesh.create(pick->end(), intersec, pick->power());
-          }
-
-          // if candidate doesnt tip intersect remove it and split it in two
-          if (!((*candidate)[0] == *intersec) && !((*candidate)[1] == *intersec)) {
-            candidate->detach();
-            mesh.remove(candidate);
-
-            mesh.create(candidate->start(), intersec, candidate->power());
-            mesh.create(candidate->end(), intersec, candidate->power());
-          }
+        // if candidate doesnt tip intersect remove it and split it in two
+        if (!((*candidate)[0] == *intersec) && !((*candidate)[1] == *intersec)) {
+         cut.removeSegment((*it_o).owner);
+         cut.createSegment((*candidate)[0], *intersec, candidate->settings);
+         cut.createSegment((*candidate)[1], *intersec, candidate->settings);
         }
       }
     }

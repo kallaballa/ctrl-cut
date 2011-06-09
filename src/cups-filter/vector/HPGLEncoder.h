@@ -5,12 +5,13 @@
 
 #include "util/LaserConfig.h"
 #include "LaserJob.h"
+#include "CutModel.h"
 
 class HPGLEncoder {
 
 public:
   LaserConfig *lconf;
-  void encode(class Cut *cut, std::ostream &out);
+  void encode(CutModel& cut, std::ostream &out);
   HPGLEncoder(LaserConfig *lconf);
   virtual ~HPGLEncoder();
 };

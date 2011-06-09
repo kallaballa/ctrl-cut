@@ -17,10 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "HPGLEncoder.h"
-#include "Polyline.h"
-#include "Edge.h"
-#include "Vertex.h"
-#include "Cut.h"
+#include "CutModel.h"
+#include "Traverse.h"
 #include "boost/format.hpp"
 
 using boost::format;
@@ -33,7 +31,10 @@ HPGLEncoder::~HPGLEncoder() {
   // TODO Auto-generated destructor stub
 }
 
-void HPGLEncoder::encode(Cut *cut, std::ostream &out) {
+void HPGLEncoder::encode(CutModel& cut, std::ostream &out) {
+  CutGraph& graph = cut.createCutGraph();
+  typedef vector<SegmentString*> SegStringVector;
+  SegStringVector& segstringVector = traverse_segmentstrings(graph);
   bool first = true;
   bool writingPolyline = false;
 
@@ -45,12 +46,12 @@ void HPGLEncoder::encode(Cut *cut, std::ostream &out) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
-  for (Cut::iterator it_p = cut->begin(); it_p != cut->end(); it_p++) {
-    Polyline *p = *it_p;
-    for (Polyline::iterator it_s = p->begin(); it_s != p->end(); it_s++) {
-      const Edge &edge = **it_s;
+  for (SegStringVector::iterator it_ss = segstringVector.begin(); it_ss != segstringVector.end(); it_ss++) {
+    SegmentString& segString = *(*it_ss);
+    for (SegmentString::iterator it_s = segString.begin(); it_s != segString.end(); it_s++) {
+      const Segment &seg = **it_s;
 
-      int power = (edge.power() != -1) ? edge.power() : this->lconf->vector_power;
+      int power = (seg.settings.power != -1) ? seg.settings.power : this->lconf->vector_power;
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;
@@ -81,10 +82,10 @@ void HPGLEncoder::encode(Cut *cut, std::ostream &out) {
         out << format(V_POWER) % epower << SEP;
       }
 
-      int startX = this->lconf->basex + edge[0][0];
-      int startY = this->lconf->basey + edge[0][1];
-      int endX = this->lconf->basex + edge[1][0];
-      int endY = this->lconf->basey + edge[1][1];
+      int startX = this->lconf->basex + seg[0][0];
+      int startY = this->lconf->basey + seg[0][1];
+      int endX = this->lconf->basex + seg[1][0];
+      int endY = this->lconf->basey + seg[1][1];
 
       //     if (beginX < 0) {
       //       beginX = startX;
@@ -99,7 +100,7 @@ void HPGLEncoder::encode(Cut *cut, std::ostream &out) {
           // Check if any clipping has been done in any of the passes, and
           // inject the stray "LT" string. This has no function, just for bug compatibility
           // of the output files. See corresponding FIXME in LaserJob.cpp.
-          if (!cut->wasClipped())
+          if (!cut.wasClipped())
             out << HPGL_LINE_TYPE;
           first = false;
         } else {
