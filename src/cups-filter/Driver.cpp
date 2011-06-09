@@ -16,10 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include <list>
 #include "Driver.h"
 #include "LaserJob.h"
-#include "vector/Cut.h"
-#include "vector/filters/Filters.h"
+#include "vector/CutModel.h"
+#include "vector/filters/Explode.h"
+
+using std::list;
 
 Driver::Driver() : dumpxml(false)
 {
@@ -33,35 +37,12 @@ Driver::~Driver() {
  */
 void Driver::filter(LaserJob *job) {
   Explode explode;
-  Join join;
-  Deonion deonion;
-  Flat flat;
-  StreamLine streamLine;
 
-  list<Cut*> cuts = job->getCuts();
-  for (list<Cut*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
-    Cut *cut = *it;
-    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-input.xml");
-    explode.filter(cut);
-    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-explode.xml");
-    join.filter(cut);
-    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-join.xml");
-    if (job->lconf->vector_reduce >= 0) {
-      Reduce reduce(job->lconf->vector_reduce);
-      reduce.filter(cut);
-      if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-reduce.xml");
-    }
-    if (job->lconf->vector_optimize == LaserConfig::OPTIMIZE_INNER_OUTER) {
-      deonion.filter(cut);
-      if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-deonion.xml");
-    } else if (job->lconf->vector_optimize == LaserConfig::OPTIMIZE_FLAT) {
-      flat.filter(cut);
-      if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-flat.xml");
-    }
-
-    streamLine.filter(cut);
-    if (this->dumpxml) cut->writeXml(job->lconf->datadir + "/" + job->lconf->basename + "-streamline.xml");
-  }
+   list<CutModel*> cuts = job->getCuts();
+   for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
+     CutModel& cut = *(*it);
+     explode.filter(cut);
+   }
 }
 
 void Driver::process(LaserJob *job) {
