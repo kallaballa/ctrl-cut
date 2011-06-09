@@ -3,7 +3,7 @@
 #include <fstream>
 
   void CutModel::createSegment(const Point &p1, const Point &p2, CutSettings& settings) {
-    if(p1 == p2)
+    if(p1 == p2) // ignore zero length segments
       return;
     addSegment(* new Segment(p1, p2, settings));
   }

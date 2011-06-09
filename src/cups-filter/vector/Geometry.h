@@ -86,6 +86,8 @@ public:
   CutSettings& settings;
 
   Segment(const Point& first, const Point& second, CutSettings& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
+    //ensure there are no zero length segments
+    assert(first != second);
   }
 
   const Point &operator[](size_t idx) const {
@@ -131,31 +133,31 @@ private:
 typedef std::deque<const Segment*> SegmentString;
 typedef std::list<Segment*> SegmentList;
 
-/*!
-  Intersection test.
-  If the two edges intersect, returns a new vertex at the intersection point.
+enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 
-  Returns NULL on no intersection
+/*!
+  Calculates alignment of two segments to each other and sets the supplied point to the resulting point if they intersect
+  Tip intersections are reported as ordinary intersections.
 */
-inline Point* intersects(const Segment& s1, const Segment &s2)
+inline intersection_result intersects(const Segment& s1, const Segment &s2, Point& intersection)
 {
   float denom =
-    ((s2[1][1] - s2[0][1]) * ((s1)[1][0] - (s1)[0][0])) -
-    ((s2[1][0] - s2[0][0]) * ((s1)[1][1] - (s1)[0][1]));
+    ((s2[1][1] - s2[0][1]) * (s1[1][0] - s1[0][0])) -
+    ((s2[1][0] - s2[0][0]) * (s1[1][1] - s1[0][1]));
 
   float nume_a =
-    ((s2[1][0] - s2[0][0]) * ((s1)[0][1] - s2[0][1])) -
-    ((s2[1][1] - s2[0][1]) * ((s1)[0][0] - s2[0][0]));
+    ((s2[1][0] - s2[0][0]) * (s1[0][1] - s2[0][1])) -
+    ((s2[1][1] - s2[0][1]) * (s1[0][0] - s2[0][0]));
 
   float nume_b =
-    (((s1)[1][0] - (s1)[0][0]) * ((s1)[0][1] - s2[0][1])) -
-    (((s1)[1][1] - (s1)[0][1]) * ((s1)[0][0] - s2[0][0]));
+    ((s1[1][0] - s1[0][0]) * (s1[0][1] - s2[0][1])) -
+    ((s1[1][1] - s1[0][1]) * (s1[0][0] - s2[0][0]));
 
   if (denom == 0.0f) {
-    if (nume_a == 0.0f && nume_b == 0.0f) {
-      return NULL; //COINCIDENCE
-    }
-    return NULL; //PARALLEL;
+    if (nume_a == 0.0f && nume_b == 0.0f)
+      return ALIGN_COINCIDENCE;
+    else
+      return ALIGN_PARALLEL;
   }
 
   float ua = nume_a / denom;
@@ -163,20 +165,13 @@ inline Point* intersects(const Segment& s1, const Segment &s2)
 
   if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
     // Get the intersection LSPoint.
-    int ix = (s1)[0][0] + ua * ((int64_t)(s1)[1][0] - (int64_t)(s1)[0][0]);
-    int iy = (s1)[0][1] + ua * ((int64_t)(s1)[1][1] - (int64_t)(s1)[0][1]);
+    intersection.x = s1[0][0] + ua * (s1[1][0] - s1[0][0]);
+    intersection.y = s1[0][1] + ua * (s1[1][1] - s1[0][1]);
 
-    Point* intersection = new Point(ix, iy);
-    if (((s1)[0] == *intersection || (s1)[1] == *intersection) &&
-        (s2[0] == *intersection || s2[1] == *intersection)) {
-      return NULL; //tip intersection
-    }
-    else {
-      return intersection;
-    }
+    return ALIGN_INTERSECT;
   }
 
-  return NULL; //NOT_INTERSECTING;
+  return ALIGN_NONE; //NOT_INTERSECTING;
 }
 
 inline std::ostream& operator<<(std::ostream &os, const Point &p) {
