@@ -4,6 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <list>
+#include "util/LaserConfig.h"
 #include "Geometry.h"
 #include "CutGraph.h"
 
@@ -13,8 +14,15 @@ public:
   typedef SegmentList::const_iterator const_iterator;
 
   CutModel() :
-    clipped(false), spatialIndex(std::ptr_fun(spatial_item_ac)) {
-  }
+    config(LaserConfig::inst()),
+    clipped(false),
+    spatialIndex(std::ptr_fun(spatial_item_ac)),
+    leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
+    bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
+    rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
+    topBedBorder(*new Point(config.device_width-1, 0), *new Point(0, 0), *new CutSettings(0,0,0))
+  {}
+
   virtual ~CutModel() {
   }
 
@@ -43,10 +51,16 @@ public:
   }
 
 private:
+  LaserConfig& config;
   bool clipped;
   SegmentList segmentIndex;
   SpatialTree spatialIndex;
+  Segment leftBedBorder;
+  Segment bottomBedBorder;
+  Segment rightBedBorder;
+  Segment topBedBorder;
 
+  Segment& clipSegmentToLaserBed(Segment& seg);
   std::pair<SpatialItem, SpatialItem>& createSpatialItems(iterator it_seg);
 };
 

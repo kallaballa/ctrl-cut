@@ -86,8 +86,6 @@ public:
   CutSettings& settings;
 
   Segment(const Point& first, const Point& second, CutSettings& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
-    //ensure there are no zero length segments
-    assert(first != second);
   }
 
   const Point &operator[](size_t idx) const {
