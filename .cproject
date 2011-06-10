@@ -23,12 +23,13 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.289689694" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/boost_1_46_1}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wykobi}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libkdtree}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cups-filter}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.420862760" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -DETLOG -DDEBUG=4 -DUSE_GHOSTSCRIPT_API" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.optimization.level.993590070" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.993590070" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.496567331" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1036880613" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
@@ -52,14 +53,24 @@
 					</folderInfo>
 					<fileInfo id="0.787130372.339128202" name="GeometryBuilder.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Traverse.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1257433860" name="CutGraph.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutGraph.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1337149674" name="GraphView.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/GraphView.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1803341971" name="Lookup.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/Lookup.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1483698561" name="CutEdge.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutEdge.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1442715179" name="CutVertex.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutVertex.h" toolsToInvoke=""/>
+					<folderInfo id="0.787130372.1452507306" name="/" resourcePath="wykobi">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.271602044" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1513093682" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1925872491"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1226371626" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.416185731" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1036880613"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.516567045" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.410345195"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.450961774" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.559921952"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1929283793" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.735576580"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry excluding="vector/filters/old|vector/old|vector/new/Traverse.h|vector/new/Lookup.h|vector/new/Index.h|vector/new/GraphView.h|vector/new/Geometry.h|vector/new/explode.cpp|vector/new/CutVertex.h|vector/new/CutGraph.h|vector/new/CutGraph.cpp|vector/new/CutEdge.h|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
-						<entry excluding="libkdtree|test-code|boost-geometry|boost_1_46_1|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="wykobi|libkdtree|test-code|boost-geometry|boost_1_46_1|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

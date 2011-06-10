@@ -7,6 +7,15 @@ using std::vector;
 
 boost::graph_traits<CutGraph>::edges_size_type CutGraph::edge_count = 0;
 
+CutGraph& CutGraph::createCutGraph(SegmentList::const_iterator start, SegmentList::const_iterator end) {
+  CutGraph& graph = (*new CutGraph());
+
+  for (SegmentList::const_iterator it = start; it != end; ++it)
+    graph.createEdge(*(*it));
+
+  return graph;
+}
+
 CutGraph::Vertex CutGraph::findOrAddVertex(const Point &point) {
   PointMap::const_iterator it = points.find(point);
     if (it == points.end()) {

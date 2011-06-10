@@ -28,11 +28,11 @@ using std::deque;
  */
 void Explode::filter(CutModel& cut) {
   LOG_INFO_STR("Explode");
-  vector<SpatialItem> in_range;
+  vector<SegmentNode> in_range;
   Point intersection;
 
-  for (CutModel::iterator it_s = cut.begin(); it_s != cut.end(); ++it_s) {
-    if(it_s == cut.end())
+  for (CutModel::SegmentIter it_s = cut.beginSegments(); it_s != cut.endSegments(); ++it_s) {
+    if(it_s == cut.endSegments())
       continue;
     Segment& pick = *(*it_s);
 
@@ -40,7 +40,7 @@ void Explode::filter(CutModel& cut) {
       in_range.clear();
     cut.findWithinRange(it_s, in_range);
 
-    for (vector<SpatialItem>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
+    for (vector<SegmentNode>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
       Segment& candidate = *(*((*it_o).owner));
       if(&pick == &candidate)
         continue;
@@ -51,14 +51,14 @@ void Explode::filter(CutModel& cut) {
       if (is_res == ALIGN_INTERSECT) {
         // if pick doesnt tip intersect remove it and split it in two
         if (!(pick[0] == intersection) && !(pick[1] == intersection)) {
-         it_s = cut.removeSegment(it_s);
+         it_s = cut.remove(it_s);
          cut.createSegment(pick[0], intersection, pick.settings);
          cut.createSegment(pick[1], intersection, pick.settings);
         }
 
         // if candidate doesnt tip intersect remove it and split it in two
         if (!(candidate[0] == intersection) && !(candidate[1] == intersection)) {
-         cut.removeSegment((*it_o).owner);
+         cut.remove((*it_o).owner);
          cut.createSegment(candidate[0], intersection, candidate.settings);
          cut.createSegment(candidate[1], intersection, candidate.settings);
         }
@@ -87,8 +87,8 @@ void Explode::filter(CutModel& cut) {
         // FIXME which gets which settings?
         if(candidate_min < pick_max) {
           if(pick_min < candidate_min) {
-            it_s = cut.removeSegment(it_s);
-            cut.removeSegment((*it_o).owner);
+            it_s = cut.remove(it_s);
+            cut.remove((*it_o).owner);
 
             if(pick_max < candidate_max) {
               cut.createSegment(pick_min, candidate_min, pick.settings);
@@ -100,8 +100,8 @@ void Explode::filter(CutModel& cut) {
               cut.createSegment(candidate_max, pick_max, pick.settings);
             }
           } else if(pick_min < candidate_max) {
-            it_s = cut.removeSegment(it_s);
-            cut.removeSegment((*it_o).owner);
+            it_s = cut.remove(it_s);
+            cut.remove((*it_o).owner);
             cut.createSegment(candidate_min, pick_min, candidate.settings);
             cut.createSegment(pick_min, candidate_max, candidate.settings);
             cut.createSegment(candidate_max, pick_max, pick.settings);

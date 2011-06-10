@@ -13,6 +13,7 @@
 
 #include "CutEdge.h"
 #include "CutVertex.h"
+#include "Geometry.h"
 
 using boost::adjacency_list;
 using boost::undirectedS;
@@ -36,9 +37,13 @@ public:
 
   CutGraph::Vertex findOrAddVertex(const Point &point);
   void createEdge(const Segment& seg);
+  void createEdges(const SegmentString& string);
 
+  static CutGraph& createCutGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
+  static CutGraph& createCutGraph(StringList::const_iterator start, StringList::const_iterator end);
 private:
   static boost::graph_traits<CutGraph>::edges_size_type edge_count;
+
   PointMap points;
 };
 
@@ -48,6 +53,13 @@ inline const Point& get_point(const CutGraph::Vertex& v, const CutGraph& graph) 
 
 inline const Segment* get_segment(const CutGraph::Edge& e, const CutGraph& graph) {
   return get(edge_geom, graph)[e];
+}
+inline const SegmentString* get_segment_string(const CutGraph::Edge& e, const CutGraph& graph) {
+  return get(edge_string, graph)[e];
+}
+
+inline void put_segment_string(const CutGraph::Edge& e, const SegmentString& string, CutGraph& graph) {
+  put(get(edge_string, graph),e, &string);
 }
 
 #endif

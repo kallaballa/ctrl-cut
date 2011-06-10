@@ -7,7 +7,7 @@ void CutModel::createSegment(const Point &p1, const Point &p2,
   if (p1 == p2) // ignore zero length segments
     return;
 
-  addSegment(*new Segment(p1, p2, settings));
+  add(*new Segment(p1, p2, settings));
 }
 
 Segment& CutModel::clipSegmentToLaserBed(Segment &unclipped) {
@@ -79,46 +79,63 @@ void CutModel::createSegment(int32_t inX, int32_t inY, int32_t outX,
   createSegment(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
-void CutModel::addSegment(Segment& seg) {
+void CutModel::add(Segment& seg) {
   Segment& clipped = clipSegmentToLaserBed(seg);
   if (clipped.first == clipped.second) // ignore zero length segments
     return;
 
-  CutModel::iterator it_clipped = segmentIndex.insert(end(), &clipped);
-  std::pair<SpatialItem, SpatialItem>& items = createSpatialItems(it_clipped);
-  spatialIndex.insert(items.first);
-  spatialIndex.insert(items.second);
+  CutModel::SegmentIter it_clipped = segmentIndex.insert(endSegments(), &clipped);
+  std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_clipped);
+  segmentTree.insert(items.first);
+  segmentTree.insert(items.second);
 }
 
-CutModel::iterator CutModel::removeSegment(iterator it_seg) {
-  assert(it_seg != end());
-  std::pair<SpatialItem, SpatialItem>& items = createSpatialItems(it_seg);
-  spatialIndex.erase_exact(items.first);
-  spatialIndex.erase_exact(items.second);
+CutModel::SegmentIter CutModel::remove(SegmentIter it_seg) {
+  assert(it_seg != endSegments());
+  std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_seg);
+  segmentTree.erase_exact(items.first);
+  segmentTree.erase_exact(items.second);
   return segmentIndex.erase(it_seg);
 }
 
-void CutModel::findWithinRange(iterator it_seg, std::vector<SpatialItem> v) {
+void CutModel::add(SegmentString& string) {
+  CutModel::StringIter it_str = stringIndex.insert(endStrings(), &string);
+  /*std::vector<StringNode>& nodes = createStringNodes(it_str);
+  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
+    stringTree.insert(*it_n);*/
+}
+
+CutModel::StringIter CutModel::remove(StringIter it_str) {
+  assert(it_str != endStrings());
+  std::vector<StringNode>& nodes = createStringNodes(it_str);
+  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
+    stringTree.erase_exact(*it_n);
+  return stringIndex.erase(it_str);
+}
+
+void CutModel::findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v) {
   const Sphere& bsphere = (*it_seg)->getSphere();
-  SpatialItem scenter = *new SpatialItem(it_seg, bsphere.center);
-  spatialIndex.find_within_range(scenter, bsphere.radius, std::back_inserter(v));
+  SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
+  segmentTree.find_within_range(scenter, bsphere.radius, std::back_inserter(v));
 }
 
-CutGraph& CutModel::createCutGraph() const {
-  CutGraph& graph = (*new CutGraph());
-
-  for (CutModel::const_iterator it = begin(); it != end(); ++it)
-    graph.createEdge(*(*it));
-
-  return graph;
-}
-
-std::pair<SpatialItem, SpatialItem>& CutModel::createSpatialItems(
-    iterator it_seg) {
+std::pair<SegmentNode, SegmentNode>& CutModel::createSegmentNodes(
+    SegmentIter it_seg) {
   Segment& seg = *(*it_seg);
-  SpatialItem si_first = (*new SpatialItem(it_seg, seg.first));
-  SpatialItem si_second = (*new SpatialItem(it_seg, seg.second));
-  return *new std::pair<SpatialItem, SpatialItem>(si_first, si_second);
+  SegmentNode si_first = (*new SegmentNode(it_seg, seg.first));
+  SegmentNode si_second = (*new SegmentNode(it_seg, seg.second));
+  return *new std::pair<SegmentNode, SegmentNode>(si_first, si_second);
+}
+
+std::vector<StringNode>& CutModel::createStringNodes(StringIter it_str){
+  std::vector<StringNode>& nodes = * new std::vector<StringNode>();
+  SegmentString& segStr = *(*it_str);
+
+  for(SegmentString::PointIter it = segStr.beginPoints(); it != segStr.endPoints(); ++it) {
+    nodes.push_back(* new StringNode(it_str, *(*it)));
+  }
+
+  return nodes;
 }
 
 /*!
@@ -172,7 +189,7 @@ CutModel *CutModel::load(std::istream &input) {
     }
   }
 
-  if (model->empty()) {
+  if (model->segmentsEmpty()) {
     delete model;
     model = NULL;
   }

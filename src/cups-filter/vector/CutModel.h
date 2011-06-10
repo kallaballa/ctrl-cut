@@ -10,13 +10,15 @@
 
 class CutModel {
 public:
-  typedef SegmentList::iterator iterator;
-  typedef SegmentList::const_iterator const_iterator;
+  typedef SegmentList::iterator SegmentIter;
+  typedef SegmentList::const_iterator SegmentConstIter;
+  typedef StringList::iterator StringIter;
+  typedef StringList::const_iterator StringConstIter;
 
   CutModel() :
     config(LaserConfig::inst()),
     clipped(false),
-    spatialIndex(std::ptr_fun(spatial_item_ac)),
+    segmentTree(std::ptr_fun(segment_node_ac)),
     leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
     rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
@@ -26,22 +28,34 @@ public:
   virtual ~CutModel() {
   }
 
-  iterator begin() { return this->segmentIndex.begin(); }
-  const_iterator begin() const  { return this->segmentIndex.begin(); }
-  iterator end() { return this->segmentIndex.end(); }
-  const_iterator end() const  { return this->segmentIndex.end(); }
-  SegmentList::reference front() { return this->segmentIndex.front(); }
-  SegmentList::reference back() { return this->segmentIndex.back(); }
-  size_t size() const { return this->segmentIndex.size(); }
-  bool empty() const { return this->segmentIndex.empty(); }
-  void swap(SegmentList &v) { this->segmentIndex.swap(v); }
+  SegmentIter beginSegments() { return this->segmentIndex.begin(); }
+  SegmentConstIter beginSegments() const  { return this->segmentIndex.begin(); }
+  SegmentIter endSegments() { return this->segmentIndex.end(); }
+  SegmentConstIter endSegments() const  { return this->segmentIndex.end(); }
+  SegmentList::reference frontSegments() { return this->segmentIndex.front(); }
+  SegmentList::reference backSegments() { return this->segmentIndex.back(); }
+  size_t numSegments() const { return this->segmentIndex.size(); }
+  bool segmentsEmpty() const { return this->segmentIndex.empty(); }
+
+  StringIter beginStrings() { return this->stringIndex.begin(); }
+  StringConstIter beginStrings() const  { return this->stringIndex.begin(); }
+  StringIter endStrings() { return this->stringIndex.end(); }
+  StringConstIter endStrings() const  { return this->stringIndex.end(); }
+  StringList::reference frontStrings() { return this->stringIndex.front(); }
+  StringList::reference backStrings() { return this->stringIndex.back(); }
+  size_t numStrings() const { return this->stringIndex.size(); }
+  bool stringsEmpty() const { return this->stringIndex.empty(); }
+
 
   void createSegment(const Point &p1, const Point &p2, CutSettings& settings);
   void createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
-  void addSegment(Segment& seg);
-  iterator removeSegment(iterator it_seg);
-  void findWithinRange(iterator it_seg, std::vector<SpatialItem> v);
-  CutGraph& createCutGraph() const;
+
+  void add(Segment& seg);
+  SegmentIter remove(SegmentIter it_seg);
+  void findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v);
+
+  void add(SegmentString& seg);
+  StringIter remove(StringIter it_seg);
 
   static CutModel *load(const std::string &filename);
   static CutModel *load(std::istream &input);
@@ -54,17 +68,22 @@ private:
   LaserConfig& config;
   bool clipped;
   SegmentList segmentIndex;
-  SpatialTree spatialIndex;
+  SegmentTree segmentTree;
+
+  StringList stringIndex;
+  StringTree stringTree;
+
   Segment leftBedBorder;
   Segment bottomBedBorder;
   Segment rightBedBorder;
   Segment topBedBorder;
 
   Segment& clipSegmentToLaserBed(Segment& seg);
-  std::pair<SpatialItem, SpatialItem>& createSpatialItems(iterator it_seg);
+  std::pair<SegmentNode, SegmentNode>& createSegmentNodes(SegmentIter it_seg);
+  std::vector<StringNode>& createStringNodes(StringIter it_str);
 };
 
-inline std::ostream& operator<<(std::ostream &os, const CutModel::iterator it) {
+inline std::ostream& operator<<(std::ostream &os, const CutModel::SegmentIter it) {
 //FIXME
   return os;
 }

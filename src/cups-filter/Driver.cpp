@@ -22,7 +22,7 @@
 #include "LaserJob.h"
 #include "vector/CutModel.h"
 #include "vector/filters/Explode.h"
-
+#include "vector/filters/Join.h"
 using std::list;
 
 Driver::Driver() : dumpxml(false)
@@ -37,11 +37,13 @@ Driver::~Driver() {
  */
 void Driver::filter(LaserJob *job) {
   Explode explode;
+  Join join;
 
    list<CutModel*> cuts = job->getCuts();
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& cut = *(*it);
      explode.filter(cut);
+     join.filter(cut);
    }
 }
 

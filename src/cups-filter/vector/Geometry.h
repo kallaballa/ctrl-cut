@@ -127,9 +127,74 @@ private:
   Sphere* sphere;
 };
 
+class SegmentString {
+public:
+  typedef std::deque<const Segment*> SegmentDeque;
+  typedef std::deque<const Point*> PointDeque;
+  typedef SegmentDeque::iterator SegmentIter;
+  typedef SegmentDeque::const_iterator SegmentConstIter;
+  typedef PointDeque::iterator PointIter;
+  typedef PointDeque::const_iterator PointConstIter;
 
-typedef std::deque<const Segment*> SegmentString;
+  SegmentIter beginSegments() { return this->segments.begin(); }
+  SegmentConstIter beginSegments() const  { return this->segments.begin(); }
+  SegmentIter endSegments() { return this->segments.end(); }
+  SegmentConstIter endSegments() const  { return this->segments.end(); }
+  SegmentDeque::reference frontSegments() { return this->segments.front(); }
+  SegmentDeque::reference backSegments() { return this->segments.back(); }
+  size_t numSegments() const { return this->segments.size(); }
+  bool segmentsEmpty() const { return this->segments.empty(); }
+
+  PointIter beginPoints() { return this->points.begin(); }
+  PointConstIter beginPoints() const  { return this->points.begin(); }
+  PointIter endPoints() { return this->points.end(); }
+  PointConstIter endPoints() const  { return this->points.end(); }
+  PointDeque::reference frontPoints() { return this->points.front(); }
+  PointDeque::reference backPoints() { return this->points.back(); }
+  size_t numPoints() const { return this->points.size(); }
+  bool pointsEmpty() const { return this->points.empty(); }
+
+  bool addSegment(const Segment& segref) {
+    const Segment* seg = &segref;
+
+    if (segments.empty()) {
+      segments.push_back(seg);
+      points.push_back(&seg->first);
+      points.push_back(&seg->second);
+      return true;
+    } else {
+      const Point& last = *points.back();
+      bool front = false;
+      if (last == seg->first) {
+        segments.push_back(seg);
+        points.push_back(&seg->second);
+      } else if (last == seg->second) {
+        segments.push_back(new Segment(seg->second, seg->first, seg->settings));
+        points.push_back(&seg->first);
+      } else {
+        front = true;
+        const Point& first = *points.front();
+        if (first == seg->first) {
+          segments.push_front(new Segment(seg->second, seg->first, seg->settings));
+          points.push_front(&seg->second);
+        } else if (first == seg->second) {
+          segments.push_front(seg);
+          points.push_front(&seg->first);
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+private:
+  SegmentDeque segments;
+  PointDeque points;
+};
+
 typedef std::list<Segment*> SegmentList;
+typedef std::list<SegmentString*> StringList;
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 
@@ -162,14 +227,13 @@ inline intersection_result intersects(const Segment& s1, const Segment &s2, Poin
   float ub = nume_b / denom;
 
   if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
-    // Get the intersection LSPoint.
     intersection.x = s1[0][0] + ua * (s1[1][0] - s1[0][0]);
     intersection.y = s1[0][1] + ua * (s1[1][1] - s1[0][1]);
 
     return ALIGN_INTERSECT;
   }
 
-  return ALIGN_NONE; //NOT_INTERSECTING;
+  return ALIGN_NONE;
 }
 
 inline std::ostream& operator<<(std::ostream &os, const Point &p) {
@@ -182,19 +246,33 @@ inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   return os;
 }
 
-struct SpatialItem {
+struct SegmentNode {
   SegmentList::iterator owner;
   Point end_point;
 
-  SpatialItem(const SegmentList::iterator owner, const Point& end_point) : owner(owner), end_point(end_point) {}
+  SegmentNode(const SegmentList::iterator owner, const Point& end_point) : owner(owner), end_point(end_point) {}
 
-  const bool operator==(const SpatialItem& other) const {
+  const bool operator==(const SegmentNode& other) const {
     return *this->owner == *other.owner;
   }
 };
 
-inline int32_t spatial_item_ac( SpatialItem item, int k ) { return item.end_point[k]; }
+struct StringNode {
+  StringList::iterator owner;
+  Point point;
 
-typedef KDTree::KDTree<2, SpatialItem, std::pointer_to_binary_function<SpatialItem,int,int32_t> > SpatialTree;
+  StringNode(const StringList::iterator owner, const Point& point) : owner(owner), point(point) {}
+
+  const bool operator==(const StringNode& other) const {
+    return *this->owner == *other.owner;
+  }
+};
+
+
+inline int32_t segment_node_ac( SegmentNode item, int k ) { return item.end_point[k]; }
+inline int32_t string_node_ac( StringNode item, int k ) { return item.point[k]; }
+
+typedef KDTree::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > SegmentTree;
+typedef KDTree::KDTree<2, StringNode, std::pointer_to_binary_function<StringNode,int,int32_t> > StringTree;
 
 #endif /* GEOMETRY_H_ */

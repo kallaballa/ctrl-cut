@@ -31,10 +31,7 @@ HPGLEncoder::~HPGLEncoder() {
   // TODO Auto-generated destructor stub
 }
 
-void HPGLEncoder::encode(CutModel& cut, std::ostream &out) {
-  CutGraph& graph = cut.createCutGraph();
-  typedef vector<SegmentString*> SegStringVector;
-  SegStringVector& segstringVector = traverse_segmentstrings(graph);
+void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   bool first = true;
   bool writingPolyline = false;
 
@@ -46,9 +43,10 @@ void HPGLEncoder::encode(CutModel& cut, std::ostream &out) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
-  for (SegStringVector::iterator it_ss = segstringVector.begin(); it_ss != segstringVector.end(); it_ss++) {
+
+  for (CutModel::StringIter it_ss = model.beginStrings(); it_ss != model.endStrings(); it_ss++) {
     SegmentString& segString = *(*it_ss);
-    for (SegmentString::iterator it_s = segString.begin(); it_s != segString.end(); it_s++) {
+    for (SegmentString::SegmentIter it_s = segString.beginSegments(); it_s != segString.endSegments(); it_s++) {
       const Segment &seg = **it_s;
 
       int power = (seg.settings.power != -1) ? seg.settings.power : this->lconf->vector_power;
@@ -100,7 +98,7 @@ void HPGLEncoder::encode(CutModel& cut, std::ostream &out) {
           // Check if any clipping has been done in any of the passes, and
           // inject the stray "LT" string. This has no function, just for bug compatibility
           // of the output files. See corresponding FIXME in LaserJob.cpp.
-          if (!cut.wasClipped())
+          if (!model.wasClipped())
             out << HPGL_LINE_TYPE;
           first = false;
         } else {
