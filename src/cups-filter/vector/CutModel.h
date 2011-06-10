@@ -19,6 +19,7 @@ public:
     config(LaserConfig::inst()),
     clipped(false),
     segmentTree(std::ptr_fun(segment_node_ac)),
+    stringTree(std::ptr_fun(string_node_ac)),
     leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
     rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
@@ -37,6 +38,11 @@ public:
   size_t numSegments() const { return this->segmentIndex.size(); }
   bool segmentsEmpty() const { return this->segmentIndex.empty(); }
 
+  void clearSegments() {
+    this->segmentIndex.clear();
+    this->segmentTree.clear();
+  }
+
   StringIter beginStrings() { return this->stringIndex.begin(); }
   StringConstIter beginStrings() const  { return this->stringIndex.begin(); }
   StringIter endStrings() { return this->stringIndex.end(); }
@@ -45,17 +51,27 @@ public:
   StringList::reference backStrings() { return this->stringIndex.back(); }
   size_t numStrings() const { return this->stringIndex.size(); }
   bool stringsEmpty() const { return this->stringIndex.empty(); }
+  void clearStrings() {
+    this->stringIndex.clear();
+    this->stringTree.clear();
+  }
+
+  void loseStrings() {
+    this->stringIndex = *new StringList();
+    this->stringTree = *new StringTree(std::ptr_fun(string_node_ac));
+  }
 
 
   void createSegment(const Point &p1, const Point &p2, CutSettings& settings);
   void createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
 
-  void add(Segment& seg);
+  void add(const Segment& seg);
   SegmentIter remove(SegmentIter it_seg);
   void findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v);
 
-  void add(SegmentString& seg);
+  void add(const SegmentString& seg);
   StringIter remove(StringIter it_seg);
+  void remove(const SegmentString& string);
 
   static CutModel *load(const std::string &filename);
   static CutModel *load(std::istream &input);
@@ -78,14 +94,17 @@ private:
   Segment rightBedBorder;
   Segment topBedBorder;
 
-  Segment& clipSegmentToLaserBed(Segment& seg);
+  const Segment& clipSegmentToLaserBed(const Segment& seg);
   std::pair<SegmentNode, SegmentNode>& createSegmentNodes(SegmentIter it_seg);
   std::vector<StringNode>& createStringNodes(StringIter it_str);
 };
 
 inline std::ostream& operator<<(std::ostream &os, const CutModel::SegmentIter it) {
-//FIXME
+  os << *(*it);
   return os;
 }
 
+inline std::ostream& operator<<(std::ostream &os, const CutModel::StringIter it) {
+  return os;
+}
 #endif /* CUTMODEL_H_ */

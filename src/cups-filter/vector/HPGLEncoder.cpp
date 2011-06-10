@@ -45,8 +45,8 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   int lastPower = this->lconf->vector_power;
 
   for (CutModel::StringIter it_ss = model.beginStrings(); it_ss != model.endStrings(); it_ss++) {
-    SegmentString& segString = *(*it_ss);
-    for (SegmentString::SegmentIter it_s = segString.beginSegments(); it_s != segString.endSegments(); it_s++) {
+    const SegmentString& segString = *(*it_ss);
+    for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); it_s++) {
       const Segment &seg = **it_s;
 
       int power = (seg.settings.power != -1) ? seg.settings.power : this->lconf->vector_power;

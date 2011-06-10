@@ -36,7 +36,7 @@ public:
   }
 
   const bool operator<(const Point& other) const {
-      return (! (this->x > other.x)) || (this->y < other.y);
+      return  (this->x < other.x) || ((this->x == other.x) && (this->y < other.y));
   }
 
   const bool operator==(const Point& other) const {
@@ -58,8 +58,8 @@ public:
     this->y = other.y;
   }
 
-  float distance(const Point& other) const {
-    return hypot(float(this->x - other.x), float(this->y - other.y));
+  double distance(const Point& other) const {
+    return hypot(double(this->x - other.x), double(this->y - other.y));
   }
 };
 
@@ -86,6 +86,15 @@ public:
   CutSettings& settings;
 
   Segment(const Point& first, const Point& second, CutSettings& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
+    if(first < second)
+      this->box = new Box(first, second);
+    else
+      this->box = new Box(second, first);
+
+    Point& diff = this->box->max_corner - this->box->min_corner;
+    Point center = (* new Point(this->box->min_corner.x + (diff.x / 2), this->box->min_corner.y + (diff.y / 2)));
+    uint32_t radius = boost::math::hypot((diff.x / 2), (diff.y / 2));
+    this->sphere = new Sphere(center, radius);
   }
 
   const Point &operator[](size_t idx) const {
@@ -100,26 +109,11 @@ public:
     return this->first == other.first && this->second == other.second;
   }
 
-  const Box& getBox() {
-    if(this->box == NULL) {
-      if(first < second)
-        this->box = new Box(first, second);
-      else
-        this->box = new Box(second, first);
-    }
-
+  const Box& getBox() const {
     return *this->box;
   }
 
-  const Sphere& getSphere() {
-    if(this->sphere == NULL) {
-      const Box& box = this->getBox();
-      Point& diff = box.max_corner - box.min_corner;
-      Point center = (* new Point(box.min_corner.x + (diff.x / 2), box.min_corner.y + (diff.y / 2)));
-      uint32_t radius = boost::math::hypot((diff.x / 2), (diff.y / 2));
-      this->sphere = new Sphere(center, radius);
-    }
-
+  const Sphere& getSphere() const {
     return *this->sphere;
   }
 private:
@@ -142,6 +136,8 @@ public:
   SegmentConstIter endSegments() const  { return this->segments.end(); }
   SegmentDeque::reference frontSegments() { return this->segments.front(); }
   SegmentDeque::reference backSegments() { return this->segments.back(); }
+  SegmentDeque::const_reference frontSegments() const { return this->segments.front(); }
+  SegmentDeque::const_reference backSegments() const { return this->segments.back(); }
   size_t numSegments() const { return this->segments.size(); }
   bool segmentsEmpty() const { return this->segments.empty(); }
 
@@ -149,8 +145,11 @@ public:
   PointConstIter beginPoints() const  { return this->points.begin(); }
   PointIter endPoints() { return this->points.end(); }
   PointConstIter endPoints() const  { return this->points.end(); }
-  PointDeque::reference frontPoints() { return this->points.front(); }
-  PointDeque::reference backPoints() { return this->points.back(); }
+  PointDeque::reference frontPoints()  { return this->points.front(); }
+  PointDeque::reference backPoints()  { return this->points.back(); }
+  PointDeque::const_reference frontPoints() const { return this->points.front(); }
+  PointDeque::const_reference backPoints() const { return this->points.back(); }
+
   size_t numPoints() const { return this->points.size(); }
   bool pointsEmpty() const { return this->points.empty(); }
 
@@ -193,8 +192,8 @@ private:
   PointDeque points;
 };
 
-typedef std::list<Segment*> SegmentList;
-typedef std::list<SegmentString*> StringList;
+typedef std::list<const Segment*> SegmentList;
+typedef std::list<const SegmentString*> StringList;
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 
@@ -267,7 +266,6 @@ struct StringNode {
     return *this->owner == *other.owner;
   }
 };
-
 
 inline int32_t segment_node_ac( SegmentNode item, int k ) { return item.end_point[k]; }
 inline int32_t string_node_ac( StringNode item, int k ) { return item.point[k]; }

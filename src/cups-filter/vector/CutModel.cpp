@@ -10,8 +10,8 @@ void CutModel::createSegment(const Point &p1, const Point &p2,
   add(*new Segment(p1, p2, settings));
 }
 
-Segment& CutModel::clipSegmentToLaserBed(Segment &unclipped) {
-  Segment* seg = &unclipped;
+const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
+  const Segment* seg = &unclipped;
   Point* intersection = new Point();
 
   if(seg->first.x < 0 || seg->second.x < 0) {
@@ -74,13 +74,14 @@ Segment& CutModel::clipSegmentToLaserBed(Segment &unclipped) {
 
   return *seg;
 }
+
 void CutModel::createSegment(int32_t inX, int32_t inY, int32_t outX,
     int32_t outY, CutSettings& settings) {
   createSegment(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
-void CutModel::add(Segment& seg) {
-  Segment& clipped = clipSegmentToLaserBed(seg);
+void CutModel::add(const Segment& seg) {
+  const Segment& clipped = clipSegmentToLaserBed(seg);
   if (clipped.first == clipped.second) // ignore zero length segments
     return;
 
@@ -98,18 +99,21 @@ CutModel::SegmentIter CutModel::remove(SegmentIter it_seg) {
   return segmentIndex.erase(it_seg);
 }
 
-void CutModel::add(SegmentString& string) {
+void CutModel::add(const SegmentString& string) {
   CutModel::StringIter it_str = stringIndex.insert(endStrings(), &string);
-  /*std::vector<StringNode>& nodes = createStringNodes(it_str);
+/*  std::vector<StringNode>& nodes = createStringNodes(it_str);
   for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
     stringTree.insert(*it_n);*/
 }
 
 CutModel::StringIter CutModel::remove(StringIter it_str) {
   assert(it_str != endStrings());
-  std::vector<StringNode>& nodes = createStringNodes(it_str);
-  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
+
+/*  std::vector<StringNode>& nodes = createStringNodes(it_str);
+  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n) {
+    std::cerr << (*it_n).point << std::endl;
     stringTree.erase_exact(*it_n);
+  }*/
   return stringIndex.erase(it_str);
 }
 
@@ -121,17 +125,23 @@ void CutModel::findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v) {
 
 std::pair<SegmentNode, SegmentNode>& CutModel::createSegmentNodes(
     SegmentIter it_seg) {
-  Segment& seg = *(*it_seg);
+  const Segment& seg = *(*it_seg);
   SegmentNode si_first = (*new SegmentNode(it_seg, seg.first));
   SegmentNode si_second = (*new SegmentNode(it_seg, seg.second));
   return *new std::pair<SegmentNode, SegmentNode>(si_first, si_second);
 }
 
+void CutModel::remove(const SegmentString& string) {
+  StringIter it = find(stringIndex.begin(), stringIndex.end(), &string);
+  if(it != stringIndex.end())
+    remove(it);
+}
+
 std::vector<StringNode>& CutModel::createStringNodes(StringIter it_str){
   std::vector<StringNode>& nodes = * new std::vector<StringNode>();
-  SegmentString& segStr = *(*it_str);
-
-  for(SegmentString::PointIter it = segStr.beginPoints(); it != segStr.endPoints(); ++it) {
+  const SegmentString& segStr = *(*it_str);
+  SegmentString::PointConstIter it = segStr.beginPoints();
+  for(; it != segStr.endPoints(); ++it) {
     nodes.push_back(* new StringNode(it_str, *(*it)));
   }
 
