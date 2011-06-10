@@ -34,14 +34,14 @@ void Explode::filter(CutModel& cut) {
   for (CutModel::SegmentIter it_s = cut.beginSegments(); it_s != cut.endSegments(); ++it_s) {
     if(it_s == cut.endSegments())
       continue;
-    Segment& pick = *(*it_s);
+    const Segment& pick = *(*it_s);
 
     if(!in_range.empty())
       in_range.clear();
     cut.findWithinRange(it_s, in_range);
 
     for (vector<SegmentNode>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
-      Segment& candidate = *(*((*it_o).owner));
+      const Segment& candidate = *(*((*it_o).owner));
       if(&pick == &candidate)
         continue;
 
