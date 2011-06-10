@@ -27,24 +27,32 @@ using std::pair;
 class CutGraph : public adjacency_list<vecS, vecS, undirectedS, PointProperty, GeomProperty> {
 
 public:
+  boost::graph_traits<CutGraph>::edges_size_type edge_count;
+
   typedef typename boost::graph_traits<CutGraph>
     ::vertex_descriptor Vertex;
-
   typedef typename boost::graph_traits<CutGraph>
     ::edge_descriptor Edge;
+  typedef typename boost::graph_traits<CutGraph>
+      ::vertices_size_type v_size;
 
-  typedef map<Point, Vertex> PointMap;
+  typedef map<const Point, Vertex> PointMap;
 
-  CutGraph::Vertex findOrAddVertex(const Point &point);
+  CutGraph() : adjacency_list<vecS, vecS, undirectedS, PointProperty, GeomProperty>() , edge_count(0){}
+  CutGraph(const CutGraph& graph) : adjacency_list<vecS, vecS, undirectedS, PointProperty, GeomProperty>(graph) , edge_count(0) {}
+  CutGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, PointProperty, GeomProperty>(size) , edge_count(0){}
+
+  CutGraph::Vertex* findVertex(const Point &point);
+  CutGraph::Vertex addVertex(const Point &point);
   void createEdge(const Segment& seg);
-  void createEdges(const SegmentString& string);
-
+  void createEdge(const SegmentString& string);
+  void printPoints();
   static CutGraph& createCutGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
   static CutGraph& createCutGraph(StringList::const_iterator start, StringList::const_iterator end);
-private:
-  static boost::graph_traits<CutGraph>::edges_size_type edge_count;
 
+private:
   PointMap points;
+
 };
 
 inline const Point& get_point(const CutGraph::Vertex& v, const CutGraph& graph) {

@@ -10,7 +10,8 @@
 enum edge_string_t { edge_string };
 enum edge_geom_t { edge_geom };
 
-typedef boost::property<boost::edge_index_t, int> IndexProperty;
+typedef boost::property<boost::edge_weight_t, double> WeightProperty;
+typedef boost::property<boost::edge_index_t, int, WeightProperty> IndexProperty;
 typedef boost::property<edge_string_t, const SegmentString*, IndexProperty>  StringProperty;
 typedef boost::property<edge_geom_t, const Segment*, StringProperty>  GeomProperty;
 
