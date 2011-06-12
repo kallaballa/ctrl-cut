@@ -2,12 +2,10 @@ TARGET = ctrl-cut
 #CONFIG += raster
 CONFIG += gsapi
 CONFIG += boost
+CONFIG += cups
 include(common.pri)
 
-QMAKE_CXXFLAGS+=-DETLOG
-QMAKE_CXXFLAGS+=-DDEBUG=4
-
-LIBS += -lcups
+DEFINES += ETLOG DEBUG=4
 
 SOURCES += \
           Driver.cpp \
