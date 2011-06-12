@@ -24,10 +24,10 @@
 
 struct join_strings_visitor: public planar_face_traversal_visitor {
   CutModel& model;
-  PointGraph& graph;
+  CutGraph& graph;
   SegmentString* current;
 
-  join_strings_visitor(CutModel& model, PointGraph& graph) :
+  join_strings_visitor(CutModel& model, CutGraph& graph) :
     model(model), graph(graph), current(NULL) {
   }
 
@@ -42,7 +42,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
     current = NULL;
   }
 
-  void next_edge(PointGraph::Edge e) {
+  void next_edge(CutGraph::Edge e) {
     const Segment* seg = graph.getSegment(e);
 
     if (graph.getSegmentString(e) == NULL) {
@@ -60,7 +60,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
  */
 void Join::filter(CutModel& model) {
   LOG_INFO_STR("Join");
-  PointGraph& graph = PointGraph::createPlanarGraph(model.beginSegments(), model.endSegments());
+  CutGraph& graph = CutGraph::createPlanarGraph(model.beginSegments(), model.endSegments());
   join_strings_visitor vis = *new join_strings_visitor(model, graph);
   traverse_planar_faces(graph, vis);
 }

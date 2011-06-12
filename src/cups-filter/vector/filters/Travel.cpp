@@ -26,35 +26,35 @@ void Travel::filter(CutModel& model) {
   LOG_INFO_STR("Travel");
   LOG_DEBUG_MSG("String count before TSP: ",model.numStrings());
   // if the tsp should mind the origin too
-  bool mindOrigin = false;
+  bool mindOrigin = true;
 
-  PointGraph& graph = * new PointGraph();
-  PointGraph::Vertex v_origin;
+  CutGraph& graph = * new CutGraph();
+  CutGraph::Vertex v_origin;
 
   if(mindOrigin) {
-    std::pair<PointGraph&, PointGraph::Vertex>& withOrigin = PointGraph::createCompleteGraphFromPoint(* new Point(0,0),model.beginStrings(), model.endStrings());
+    std::pair<CutGraph&, CutGraph::Vertex>& withOrigin = CutGraph::createCompleteGraphFromPoint(* new Point(0,0),model.beginStrings(), model.endStrings());
     graph = withOrigin.first;
     v_origin= withOrigin.second;
   } else {
-    graph = PointGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
-    v_origin = PointGraph::null_vertex();
+    graph = CutGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
+    v_origin = CutGraph::null_vertex();
   }
 
-  typedef boost::property_map<PointGraph, boost::edge_weight_t>::type WeightMap;
+  typedef boost::property_map<CutGraph, boost::edge_weight_t>::type WeightMap;
   WeightMap weight_map(get(boost::edge_weight, graph));
 
-  vector<PointGraph::Vertex> route;
+  vector<CutGraph::Vertex> route;
   double len = 0.0;
   if(mindOrigin)
     boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
   else
     boost::metric_tsp_approx(graph, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
-  const PointGraph::Vertex* lastVertex = NULL;
-  const PointGraph::Vertex* nextVertex = NULL;
+  const CutGraph::Vertex* lastVertex = NULL;
+  const CutGraph::Vertex* nextVertex = NULL;
   const SegmentString* lastString = NULL;
   const SegmentString* nextString = NULL;
-  for (vector<PointGraph::Vertex>::iterator it = route.begin(); it
+  for (vector<CutGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
     nextVertex = &(*it);
     if (lastVertex != NULL) {
