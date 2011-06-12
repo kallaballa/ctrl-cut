@@ -35,57 +35,49 @@ public:
   typedef typename boost::graph_traits<PointGraph>
       ::vertices_size_type v_size;
 
-  typedef map<const Point, Vertex> PointVertexMap;
+  typedef map<const GeometryMapping, Vertex> GeomVertexMap;
 
   PointGraph() : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>() , edge_count(0){}
   PointGraph(const PointGraph& graph) : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>(graph) , edge_count(0) {}
   PointGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>(size) , edge_count(0){}
 
-  inline const Point& get_point(const PointGraph::Vertex& v) {
-    return *get(vertex_geom, *this)[v].get<0>();
+  inline const Point* gePoint(const PointGraph::Vertex& v) {
+    return get(vertex_geom, *this)[v].get<0>();
   }
 
-  inline const Segment* get_segment(const PointGraph::Edge& e) {
-    return get(edge_geom, *this)[e].get<1>();
-  }
-
-  PointGraph::Vertex* findVertex(const Point &point);
-  PointGraph::Vertex addVertex(const Point &point);
-  void createEdge(const Segment& seg);
-  static PointGraph& createPointGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
-
-private:
-  PointVertexMap points;
-};
-
-
-class SegmentGraph : public adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty> {
-public:
-  boost::graph_traits<PointGraph>::edges_size_type edge_count;
-
-  typedef typename boost::graph_traits<PointGraph>
-    ::vertex_descriptor Vertex;
-  typedef typename boost::graph_traits<PointGraph>
-    ::edge_descriptor Edge;
-  typedef typename boost::graph_traits<PointGraph>
-      ::vertices_size_type v_size;
-
-  typedef map<const Segment, Vertex> SegmentVertexMap;
-
-  SegmentGraph() : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>() , edge_count(0){}
-  SegmentGraph(const SegmentGraph& graph) : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>(graph) , edge_count(0) {}
-  SegmentGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, VertexGeomProperty, EdgeGeomProperty>(size) , edge_count(0){}
-
-  const Segment* getSegment(const SegmentGraph::Vertex& v) {
+  inline const Segment* getSegment(const PointGraph::Vertex& v) {
     return get(vertex_geom, *this)[v].get<1>();
   }
 
-  SegmentGraph::Vertex* findVertex(const Segment& seg);
-  SegmentGraph::Vertex addVertex(const Segment& seg);
-  void createEdges(const Segment& seg1, const Segment& seg2);
+  inline const SegmentString* getSegmentString(const PointGraph::Vertex& v) {
+    return get(vertex_geom, *this)[v].get<2>();
+  }
 
-  static SegmentGraph& createSegmentGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
+  inline const Point* gePoint(const PointGraph::Edge& e) {
+    return get(edge_geom, *this)[e].get<0>();
+  }
+
+  inline const Segment* getSegment(const PointGraph::Edge& e) {
+    return get(edge_geom, *this)[e].get<1>();
+  }
+
+  inline const SegmentString* getSegmentString(const PointGraph::Edge& e) {
+    return get(edge_geom, *this)[e].get<2>();
+  }
+
+  inline const SegmentString* setSegmentString(const PointGraph::Edge& e, const SegmentString& string) {
+    return get(edge_geom, *this)[e].get<2>() = &string;
+  }
+
+  PointGraph::Vertex* findVertex(const GeometryMapping &map);
+  PointGraph::Vertex addVertex(const GeometryMapping &map);
+  void createEdge(const Segment& seg);
+  void createEdges(const SegmentString& string1, const SegmentString& string2, const PointGraph::Vertex& v_origin);
+  static PointGraph& createPlanarGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
+  static std::pair<PointGraph&, PointGraph::Vertex>& createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end);
+
 private:
-  SegmentVertexMap segments;
+  GeomVertexMap geometries;
 };
+
 #endif

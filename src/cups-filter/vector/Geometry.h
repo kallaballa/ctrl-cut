@@ -158,6 +158,8 @@ public:
   size_t numPoints() const { return this->points.size(); }
   bool pointsEmpty() const { return this->points.empty(); }
 
+  bool isClosed() const { return *this->frontPoints() == *this->backPoints(); }
+
   bool addSegment(const Segment& segref) {
     const Segment* seg = &segref;
 
@@ -199,7 +201,44 @@ private:
 
 typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
-typedef boost::tuple<const Point*, const Segment*, const SegmentString*> GeometryMapping;
+
+class GeometryMapping : public boost::tuple<const Point*, const Segment*, const SegmentString*> {
+public:
+  GeometryMapping() : boost::tuple<const Point*, const Segment*, const SegmentString*>(0,0,0){}
+  GeometryMapping(const Point* p, const Segment* seg, const SegmentString* string) : boost::tuple<const Point*, const Segment*, const SegmentString*>(p,seg,string){}
+
+  const bool operator<(const GeometryMapping& other) const {
+    const Point* p1 = this->get<0>();
+    const Point* p2 = other.get<0>();
+    const Segment* seg1 = this->get<1>();
+    const Segment* seg2 = other.get<1>();
+    const SegmentString* string1 = this->get<2>();
+    const SegmentString* string2 = other.get<2>();
+
+
+    bool stringLess = string1 < string2;
+    bool stringEqual = string1 == string2;
+    bool segLess = seg1 < seg2;
+    bool segEqual = seg1 == seg2;
+    bool pLess;
+    bool pEqual;
+
+    if(p1 != NULL && p2 != NULL) {
+      if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
+        pLess = p1 < p2;
+        pEqual = p1 == p2;
+      } else {
+        pLess = *p1 < *p2;
+        pEqual = *p1 == *p2;
+      }
+    } else {
+      pLess = p1 < p2;
+      pEqual = p1 == p2;
+    }
+
+    return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
+  }
+};
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 

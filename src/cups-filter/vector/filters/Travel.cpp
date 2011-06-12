@@ -25,33 +25,34 @@
 void Travel::filter(CutModel& model) {
   LOG_INFO_STR("Travel");
   LOG_INFO_MSG("Before: ",model.numStrings());
-  SegmentGraph& graph = SegmentGraph::createSegmentGraph(model.beginSegments(), model.endSegments());
+  std::pair<PointGraph&, PointGraph::Vertex>& completeGraph = PointGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
 
-  typedef boost::property_map<SegmentGraph, boost::edge_weight_t>::type WeightMap;
+  PointGraph& graph = completeGraph.first;
+  PointGraph::Vertex v_origin = completeGraph.second;
+
+  typedef boost::property_map<PointGraph, boost::edge_weight_t>::type WeightMap;
   WeightMap weight_map(get(boost::edge_weight, graph));
 
-  vector<SegmentGraph::Vertex> route;
-  SegmentGraph::Vertex v_origin =*graph.findVertex(* new Segment(* new Point(), * new Point(), * new CutSettings(-1,-1,-1)));
+  vector<PointGraph::Vertex> route;
   double len = 0.0;
   boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
-  const Segment* nextSegment = NULL;
-  SegmentString* string = NULL;
-  int edgecount = 0;
-  for (vector<SegmentGraph::Vertex>::iterator it = route.begin(); it
+  const PointGraph::Vertex* lastVertex = NULL;
+  const PointGraph::Vertex* nextVertex = NULL;
+  const SegmentString* lastString = NULL;
+  const SegmentString* nextString = NULL;
+  for (vector<PointGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
-    if (*it == v_origin)
-      continue;
-    nextSegment = graph.getSegment(*it);
-    edgecount++;
-    if (nextSegment != NULL) {
-      if (string == NULL || !string->addSegment(*nextSegment)) {
-        string = new SegmentString();
-        string->addSegment(*nextSegment);
-        model.add(*string);
+    nextVertex = &(*it);
+    if (lastVertex != NULL) {
+      nextString = graph.getSegmentString(*it);
+      if (nextString != NULL && nextString != lastString) {
+        model.remove(*nextString);
+        model.add(*nextString);
+        lastString = nextString;
       }
     }
+    lastVertex = nextVertex;
   }
 
-  LOG_INFO(edgecount);
   LOG_INFO_MSG("After: ",model.numStrings());
 }

@@ -39,14 +39,14 @@ Driver::~Driver() {
  */
 void Driver::filter(LaserJob *job) {
   Explode explode;
-//  Join join;
+  Join join;
   Travel travel;
 
    list<CutModel*> cuts = job->getCuts();
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& cut = *(*it);
      explode.filter(cut);
-//     join.filter(cut);
+     join.filter(cut);
      travel.filter(cut);
    }
 }

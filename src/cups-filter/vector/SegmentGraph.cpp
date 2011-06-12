@@ -4,7 +4,7 @@
 #include <vector>
 
 using std::vector;
-
+/*
 SegmentGraph& SegmentGraph::createSegmentGraph(SegmentList::const_iterator start, SegmentList::const_iterator end) {
   SegmentGraph& graph = *new SegmentGraph();
   const Segment& origin = *new Segment(* new Point(), * new Point(), * new CutSettings(-1,-1,-1));
@@ -20,8 +20,9 @@ SegmentGraph& SegmentGraph::createSegmentGraph(SegmentList::const_iterator start
       if(s_i == s_j)
         continue;
 
-      graph.createEdges(origin, *s_i);
+
       graph.createEdges(*s_i, *s_j);
+      graph.createEdges(origin, *s_i);
     }
   }
 
@@ -41,10 +42,10 @@ void SegmentGraph::createEdges(const Segment& seg1, const Segment& seg2) {
   double w2 = seg1.second.distance(seg2.first);
   double w3 = seg1.second.distance(seg2.second);
 
-//  add_edge(inV, outV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w0))), *this);
+  add_edge(inV, outV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w0))), *this);
   add_edge(inV, outV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w1))), *this);
-//  add_edge(outV, inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w2))), *this);
-//  add_edge(outV, inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w3))), *this);
+  add_edge(outV, inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w2))), *this);
+  add_edge(outV, inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w3))), *this);
 }
 
 SegmentGraph::Vertex* SegmentGraph::findVertex(const Segment &seg) {
@@ -65,4 +66,4 @@ SegmentGraph::Vertex SegmentGraph::addVertex(const Segment &seg) {
 
   return *v;
 }
-
+*/
