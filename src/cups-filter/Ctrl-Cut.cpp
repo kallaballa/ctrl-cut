@@ -81,7 +81,7 @@ void printUsage(const char *name) {
  * value represents an error code.
  */
 
-int mains(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   LOG_INFO_MSG("log level", cc_loglevel);
   clock_t start = clock();
 
