@@ -101,19 +101,19 @@ CutModel::SegmentIter CutModel::remove(SegmentIter it_seg) {
 
 void CutModel::add(const SegmentString& string) {
   CutModel::StringIter it_str = stringIndex.insert(endStrings(), &string);
-/*  std::vector<StringNode>& nodes = createStringNodes(it_str);
+  std::vector<StringNode>& nodes = createStringNodes(it_str);
   for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
-    stringTree.insert(*it_n);*/
+    stringTree.insert(*it_n);
 }
 
 CutModel::StringIter CutModel::remove(StringIter it_str) {
   assert(it_str != endStrings());
 
-/*  std::vector<StringNode>& nodes = createStringNodes(it_str);
+  std::vector<StringNode>& nodes = createStringNodes(it_str);
   for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n) {
     std::cerr << (*it_n).point << std::endl;
     stringTree.erase_exact(*it_n);
-  }*/
+  }
   return stringIndex.erase(it_str);
 }
 
@@ -121,6 +121,14 @@ void CutModel::findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v) {
   const Sphere& bsphere = (*it_seg)->getSphere();
   SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
   segmentTree.find_within_range(scenter, bsphere.radius, std::back_inserter(v));
+}
+
+SegmentTree::const_iterator CutModel::findSegment(const Point& p) {
+  return segmentTree.find(*new SegmentNode(segmentIndex.end(), p));
+}
+
+StringTree::const_iterator CutModel::findString(const Point& p) {
+  return stringTree.find(*new StringNode(stringIndex.end(), p));
 }
 
 std::pair<SegmentNode, SegmentNode>& CutModel::createSegmentNodes(

@@ -17,9 +17,9 @@ using boost::graph_traits;
 using namespace boost;
 
 template<typename Visitor>
-inline void traverse_planar_faces(CutGraph& graph, Visitor& visitor) {
+inline void traverse_planar_faces(PointGraph& graph, Visitor& visitor) {
   // Test for planarity and compute the planar embedding as a side-effect
-  typedef std::vector< CutGraph::Edge > vec_t;
+  typedef std::vector< PointGraph::Edge > vec_t;
   std::vector<vec_t> embedding(num_vertices(graph));
 
   if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,

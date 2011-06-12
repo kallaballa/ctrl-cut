@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <kdtree++/kdtree.hpp>
 #include <boost/math/special_functions.hpp>
+#include <boost/tuple/tuple.hpp>
 
 struct CutSettings {
   int power;
@@ -105,6 +106,10 @@ public:
       return second;
   }
 
+  const bool operator<(const Segment& other) const {
+      return  (this->first < other.first) || ((this->first == other.first) && (this->second < other.second));
+  }
+
   const bool operator==(const Segment& other) const {
     return this->first == other.first && this->second == other.second;
   }
@@ -194,6 +199,7 @@ private:
 
 typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
+typedef boost::tuple<const Point*, const Segment*, const SegmentString*> GeometryMapping;
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 

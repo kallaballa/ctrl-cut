@@ -5,12 +5,12 @@
 #include <utility>
 #include "Geometry.h"
 
-enum vertex_point_t { vertex_point };
+enum vertex_geom_t { vertex_geom };
 
-typedef boost::property<vertex_point_t, Point> PointProperty;
+typedef boost::property<vertex_geom_t, GeometryMapping> VertexGeomProperty;
 
 namespace boost {
-  BOOST_INSTALL_PROPERTY(vertex, point);
+  BOOST_INSTALL_PROPERTY(vertex, geom);
 }
 
 #endif

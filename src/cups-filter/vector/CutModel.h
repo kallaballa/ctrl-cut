@@ -56,22 +56,18 @@ public:
     this->stringTree.clear();
   }
 
-  void loseStrings() {
-    this->stringIndex = *new StringList();
-    this->stringTree = *new StringTree(std::ptr_fun(string_node_ac));
-  }
-
-
   void createSegment(const Point &p1, const Point &p2, CutSettings& settings);
   void createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
 
   void add(const Segment& seg);
   SegmentIter remove(SegmentIter it_seg);
   void findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v);
+  SegmentTree::const_iterator findSegment(const Point& p);
 
   void add(const SegmentString& seg);
   StringIter remove(StringIter it_seg);
   void remove(const SegmentString& string);
+  StringTree::const_iterator findString(const Point& p);
 
   static CutModel *load(const std::string &filename);
   static CutModel *load(std::istream &input);
