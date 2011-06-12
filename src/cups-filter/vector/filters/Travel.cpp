@@ -24,18 +24,32 @@
 
 void Travel::filter(CutModel& model) {
   LOG_INFO_STR("Travel");
-  LOG_INFO_MSG("Before: ",model.numStrings());
-  std::pair<PointGraph&, PointGraph::Vertex>& completeGraph = PointGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
+  LOG_DEBUG_MSG("String count before TSP: ",model.numStrings());
+  // if the tsp should mind the origin too
+  bool mindOrigin = false;
 
-  PointGraph& graph = completeGraph.first;
-  PointGraph::Vertex v_origin = completeGraph.second;
+  PointGraph& graph = * new PointGraph();
+  PointGraph::Vertex v_origin;
+
+  if(mindOrigin) {
+    std::pair<PointGraph&, PointGraph::Vertex>& withOrigin = PointGraph::createCompleteGraphFromPoint(* new Point(0,0),model.beginStrings(), model.endStrings());
+    graph = withOrigin.first;
+    v_origin= withOrigin.second;
+  } else {
+    graph = PointGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
+    v_origin = PointGraph::null_vertex();
+  }
 
   typedef boost::property_map<PointGraph, boost::edge_weight_t>::type WeightMap;
   WeightMap weight_map(get(boost::edge_weight, graph));
 
   vector<PointGraph::Vertex> route;
   double len = 0.0;
-  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
+  if(mindOrigin)
+    boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
+  else
+    boost::metric_tsp_approx(graph, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
+
   const PointGraph::Vertex* lastVertex = NULL;
   const PointGraph::Vertex* nextVertex = NULL;
   const SegmentString* lastString = NULL;
@@ -54,5 +68,6 @@ void Travel::filter(CutModel& model) {
     lastVertex = nextVertex;
   }
 
-  LOG_INFO_MSG("After: ",model.numStrings());
+  LOG_INFO_MSG("Tour length: ", len);
+  LOG_DEBUG_MSG("String count after TSP: ",model.numStrings());
 }

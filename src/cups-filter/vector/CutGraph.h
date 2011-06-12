@@ -72,9 +72,11 @@ public:
   PointGraph::Vertex* findVertex(const GeometryMapping &map);
   PointGraph::Vertex addVertex(const GeometryMapping &map);
   void createEdge(const Segment& seg);
+  void createEdges(const SegmentString& string1, const SegmentString& string2);
   void createEdges(const SegmentString& string1, const SegmentString& string2, const PointGraph::Vertex& v_origin);
   static PointGraph& createPlanarGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
-  static std::pair<PointGraph&, PointGraph::Vertex>& createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end);
+  static PointGraph& createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end);
+  static std::pair<PointGraph&, PointGraph::Vertex>& createCompleteGraphFromPoint(const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
 
 private:
   GeomVertexMap geometries;

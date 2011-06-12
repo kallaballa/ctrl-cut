@@ -14,11 +14,28 @@ PointGraph& PointGraph::createPlanarGraph(SegmentList::const_iterator start, Seg
   return graph;
 }
 
-std::pair<PointGraph&,PointGraph::Vertex>& PointGraph::createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end) {
+PointGraph& PointGraph::createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end) {
   PointGraph& graph = *new PointGraph();
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
-  PointGraph::Vertex v_origin = graph.addVertex(* new GeometryMapping(new Point(0,0), 0, 0));
+
+  for(StringList::const_iterator it_i = start; it_i != end; ++it_i) {
+    s_i = *it_i;
+    for (StringList::const_iterator it_j = start; it_j != end; ++it_j) {
+      s_j = *it_j;
+
+      graph.createEdges(*s_i, *s_j);
+    }
+  }
+
+  return graph;
+}
+
+std::pair<PointGraph&,PointGraph::Vertex>& PointGraph::createCompleteGraphFromPoint(const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
+  PointGraph& graph = *new PointGraph();
+  const SegmentString* s_i = NULL;
+  const SegmentString* s_j = NULL;
+  PointGraph::Vertex v_origin = graph.addVertex(* new GeometryMapping(&origin, 0, 0));
 
   for(StringList::const_iterator it_i = start; it_i != end; ++it_i) {
     s_i = *it_i;
@@ -30,6 +47,48 @@ std::pair<PointGraph&,PointGraph::Vertex>& PointGraph::createCompleteGraph(Strin
   }
 
   return * new std::pair<PointGraph&,PointGraph::Vertex>(graph, v_origin);
+}
+
+void PointGraph::createEdges(const SegmentString& string1, const SegmentString& string2) {
+  const Point& s1_inP = *string1.frontPoints();
+  const Point& s1_outP = *string1.backPoints();
+  const Point& s2_inP = *string2.frontPoints();
+  const Point& s2_outP = *string2.backPoints();
+
+  bool sameString = &string1 == &string2;
+
+  GeometryMapping s1_inMap =  * new GeometryMapping(&s1_inP  ,0 ,&string1);
+  GeometryMapping s1_outMap = * new GeometryMapping(&s1_outP ,0 ,&string1);
+  GeometryMapping s2_inMap =  * new GeometryMapping(&s2_inP  ,0 ,&string2);
+  GeometryMapping s2_outMap = * new GeometryMapping(&s2_outP ,0 ,&string2);
+
+  PointGraph::Vertex s1_inV = addVertex(s1_inMap);
+  PointGraph::Vertex s1_outV = addVertex(s1_outMap);
+
+  if(!boost::edge(s1_inV, s1_outV, *this).second) {
+    add_edge(s1_inV, s1_outV, EdgeGeomProperty(*new GeometryMapping(0, 0, &string1), IndexProperty(edge_count++, WeightProperty(0))), *this);
+  }
+
+  if(!sameString) {
+    PointGraph::Vertex s2_inV = addVertex(s2_inMap);
+    PointGraph::Vertex s2_outV = addVertex(s2_outMap);
+
+    if(!boost::edge(s2_inV, s2_outV, *this).second) {
+      add_edge(s2_inV, s2_outV, EdgeGeomProperty(*new GeometryMapping(0, 0, &string2), IndexProperty(edge_count++, WeightProperty(0))), *this);
+    }
+
+    if(!boost::edge(s1_inV,s2_inV, *this).second) {
+      double w0 = s1_inP.distance(s2_inP);
+      double w1 = s1_inP.distance(s2_outP);
+      double w2 = s1_outP.distance(s2_inP);
+      double w3 = s1_outP.distance(s2_outP);
+
+      add_edge(s1_inV, s2_inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w0))), *this);
+      add_edge(s1_inV, s2_outV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w1))), *this);
+      add_edge(s1_outV, s2_inV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w2))), *this);
+      add_edge(s1_outV, s2_outV, EdgeGeomProperty(*new GeometryMapping(0, 0, 0), IndexProperty(edge_count++, WeightProperty(w3))), *this);
+    }
+  }
 }
 
 void PointGraph::createEdge(const Segment& seg) {
