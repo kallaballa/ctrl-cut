@@ -27,11 +27,11 @@
 #include <sstream>
 #include <string>
 #include <limits>
-#include "CImg.h"
 #include "2D.h"
 #include "PclIntConfig.h"
 #include "HPGL.h"
 #include "Statistic.h"
+#include "Canvas.h"
 
 using std::cin;
 using std::cerr;
@@ -45,7 +45,7 @@ class VectorPlotter {
 private:
   BoundingBox *clip;
   bool down;
-  CImg<uint8_t> *imgBuffer;
+  Canvas *canvas;
   uint8_t intensity[1];
 public:
   Point penPos;
@@ -56,14 +56,13 @@ public:
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
     }
-    intensity[0] = 0;
+    intensity[0] = 255;
 
-    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 1, 255);
+    this->canvas = new Canvas(width, height, 1024, 768);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
-    clip(clip), down(false), penPos(0, 0) {
-    this->imgBuffer = NULL;
+    clip(clip), down(false), canvas(NULL), penPos(0, 0) {
   }
 
   void penUp() {
@@ -117,7 +116,7 @@ public:
     ss << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0];
     Trace::singleton()->debug(ss.str());
 
-    imgBuffer->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
+    canvas->drawCut(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y);
   }
 
   void move(Point& to) {
@@ -126,6 +125,7 @@ public:
         draw(penPos, to);
         Statistic::singleton()->announceWork(penPos, to, SLOT_VECTOR);
       } else {
+        canvas->drawMove(penPos.x, penPos.y, to.x, to.y);
         Statistic::singleton()->announceMove(penPos, to, SLOT_VECTOR);
       }
 
@@ -138,6 +138,10 @@ public:
     return Statistic::singleton()->getBoundingBox(SLOT_VECTOR);
   }
 
+  virtual Canvas* getCanvas() {
+    return canvas;
+  }
+/*
   virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
     CImg<uint8_t>* canvas;
 
@@ -154,7 +158,7 @@ public:
     }
 
     return canvas;
-  }
+  } */
 };
 
 class BitmapPlotter {
@@ -220,7 +224,8 @@ public:
       if (this->clip) {
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
-      this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
+     // REFACTOR
+     this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
     }
     Statistic::singleton()->announcePenUp(SLOT_RASTER);
   }
@@ -228,7 +233,7 @@ public:
   virtual BoundingBox& getBoundingBox() {
     return Statistic::singleton()->getBoundingBox(SLOT_RASTER);
   }
-
+/*
   virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
     BoundingBox bbox = getBoundingBox();
     if(!bbox.isValid())
@@ -265,7 +270,7 @@ public:
     }
 
     return canvas;
-  }
+  }*/
 };
 
 #endif /* PLOTTER_H_ */

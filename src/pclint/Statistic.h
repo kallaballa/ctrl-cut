@@ -36,6 +36,10 @@ public:
   BoundingBox bbox;
 
   Slot(): workLen(0), moveLen(0), penDownCnt(0), penUpCnt(0) {
+    bbox.ul.x = 0;
+    bbox.ul.y = 0;
+    bbox.lr.x = 0;
+    bbox.lr.y = 0;
   }
 
   virtual ~Slot(){};

@@ -27,6 +27,8 @@
 #include "2D.h"
 #include "PclIntConfig.h"
 #include "Plotter.h"
+#include <stdlib.h>
+#include <SDL.h>
 
 using std::ofstream;
 using std::ifstream;
@@ -47,12 +49,11 @@ int main(int argc, char *argv[]) {
 
   Interpreter intr(plot);
   if(config->interactive) {
-    Debugger::create(intr.bitmapPlotter);
     Debugger::getInstance()->setInteractive(true);
   }
 
   intr.render();
-
+/*
   BoundingBox combinedBBox;
 
   if (intr.vectorPlotter->getBoundingBox().isValid())
@@ -120,10 +121,13 @@ int main(int argc, char *argv[]) {
       }
     }
   }
-
+*/
   if(config->debugLevel >= LVL_INFO) {
     Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
     Statistic::singleton()->printSlot(cout, SLOT_RASTER);
   }
+
+  intr.vectorPlotter->getCanvas()->update();
+  SDL_Delay(10000);
   return 0;
 }

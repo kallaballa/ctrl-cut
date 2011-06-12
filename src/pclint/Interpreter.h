@@ -71,8 +71,6 @@ public:
 
           while (raster.decode(run))
             run->nextRun();
-
-          Debugger::getInstance()->animate();
       }
     }
   }
@@ -89,12 +87,14 @@ public:
         if (hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && 
            hpglInstr->parameters[1] != (int32_t)HPGL_UNSET) {
           vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+          vectorPlotter->getCanvas()->update();
         }
       } else if (hpglInstr->matches(HPGL_PENDOWN)) {
         vectorPlotter->penDown();
         if (hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && 
             hpglInstr->parameters[1] != (int32_t)HPGL_UNSET) {
           vectorPlotter->move(hpglInstr->parameters[0], hpglInstr->parameters[1]);
+          vectorPlotter->getCanvas()->update();
         }
       } else if (hpglInstr->matches(HPGL_MOVE)) {
         if (hpglInstr->parameters[0] == (int32_t)HPGL_UNSET || 

@@ -40,7 +40,6 @@ using namespace cimg_library;
 
 class Debugger {
 private:
-  BitmapPlotter* plotter;
   boost::mutex ia_mutex;
   volatile bool interactive;
   CImgDisplay* canvas_disp;
@@ -55,8 +54,6 @@ private:
   void exec(string cmd, string param) {
     if (cmd.compare("run") == 0) {
       this->consume();
-    } else if (cmd.compare("show") == 0) {
-      this->displayCanvas();
     } else {
       if (cmd.compare("break") == 0) {
         off64_t off = strtoll(param.c_str(), NULL, 16);
@@ -75,7 +72,7 @@ private:
         else if (param.compare("off") == 0)
           this->anim = false;
       } else if (cmd.compare("dump") == 0) {
-        this->dumpCanvas(param.c_str());
+        //this->dumpCanvas(param.c_str());
         cerr << "dumped: " << param << endl;
       }
     }
@@ -127,11 +124,11 @@ private:
 
 
 public:
-  static void create(BitmapPlotter* plotter);
+  static void create();
   static Debugger* getInstance();
 
-  Debugger(BitmapPlotter* plotter) :
-    plotter(plotter), interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
+  Debugger() :
+    interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
   }
 
   virtual void loop() {
@@ -170,57 +167,14 @@ public:
     checkBreakpoints(instr);
     checkSignatures(instr);
   }
-
-  virtual void animate() {
-    if (anim)
-      this->updateCanvas();
-  }
-
-  virtual void dumpCanvas(const char* filename) {
-    plotter->getCanvas()->save(filename);
-  }
-
-  virtual void updateCanvas() {
-    if (canvas_disp) {
-      canvas_disp->display(*plotter->getCanvas());
-      canvas_disp->paint();
-    }
-  }
-
-  virtual void displayCanvas() {
-    if (!canvas_disp) {
-      canvas_disp = new CImgDisplay(*plotter->getCanvas(), "Plot");
-    }
-    updateCanvas();
-  }
-};
-
-class Nullbugger : public Debugger {
-public:
-  Nullbugger() : Debugger(NULL){}
-  bool isInteractive() {
-    return false;
-  }
-
-  void loop() {}
-  void setInteractive(bool) {}
-  void announce(PclInstr*) {}
-  void animate() {}
-  void dumpCanvas(const char*) {}
-  void updateCanvas() {}
-  void displayCanvas() {}
 };
 
 Debugger* Debugger::instance = NULL;
 
 Debugger* Debugger::getInstance() {
   if(instance == NULL)
-    instance = new Nullbugger();
+    instance = new Debugger();
   return instance;
-}
-void Debugger::create(BitmapPlotter* plotter) {
-  if(instance == NULL)
-    instance = new Debugger(plotter);
 }
 
 #endif /* CLI_H_ */
