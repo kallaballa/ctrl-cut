@@ -17,11 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #define PJL_PARAM
-
+#include <list>
 #include "LaserJob.h"
-#include "vector/Cut.h"
+#include "vector/CutModel.h"
 
 using boost::format;
+using std::list;
 
 LaserJob::LaserJob(LaserConfig *lconf, const string &user, const string &name,
     const string &title) {
@@ -35,7 +36,7 @@ LaserJob::~LaserJob() {
   // TODO Auto-generated destructor stub
 }
 
-void LaserJob::addCut(Cut* cut) {
+void LaserJob::addCut(CutModel* cut) {
   this->cuts.push_back(cut);
 }
 
@@ -113,8 +114,8 @@ void LaserJob::serializeTo(std::ostream &out) {
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
     // of the output files. See corresponding FIXME in LaserJob.cpp.
-    for (list<Cut*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
-      Cut *cut = *it;
+    for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
+      CutModel *cut = *it;
       if (cut && cut->wasClipped())
         out << "LT";
     }
@@ -122,11 +123,11 @@ void LaserJob::serializeTo(std::ostream &out) {
     out << PCL_SECTION_END;
 
     /* We're going to perform a vector print. */
-    for (list<Cut*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
-      Cut *cut = *it;
+    for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
+      CutModel *cut = *it;
       if (cut) {
         HPGLEncoder r(this->lconf);
-        r.encode(cut, out);
+        r.encode(*cut, out);
       }
     }
   }

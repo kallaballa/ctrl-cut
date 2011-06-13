@@ -16,72 +16,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "util/Logger.h"
+
+
 #include "Join.h"
-#include "vector/Edge.h"
-#include "vector/Vertex.h"
-#include "vector/Polyline.h"
-#include "vector/Cut.h"
+#include "util/Logger.h"
+#include "vector/Traverse.h"
 
-/**
- * Recursive function
- */
-static void find_connected(Polyline *polyline, Edge *current, bool forward) {
-  Vertex* v;
+struct join_strings_visitor: public planar_face_traversal_visitor {
+  CutModel& model;
+  CutGraph& graph;
+  SegmentString* current;
 
-  if(forward)
-    v = current->end();
-  else
-    v = current->start();
-
-  for (Vertex::iterator it = v->begin(); it != v->end(); it++) {
-    Edge *candidate = *it;
-    if (candidate == current || candidate->isPolylineMember())
-      continue;
-
-    if (forward) {
-      if (candidate->start() != current->end())
-        candidate->invertDirection();
-
-      polyline->append(candidate);
-    } else {
-      if (candidate->end() != current->start())
-        candidate->invertDirection();
-
-      polyline->prepend(candidate);
-    }
-    find_connected(polyline, candidate, forward);
+  join_strings_visitor(CutModel& model, CutGraph& graph) :
+    model(model), graph(graph), current(NULL) {
   }
-}
 
-/*
- * Iterate over all free edges and collect connected ones into polylines.
- */
-void Join::filter(Cut *cut)
-{
-  LOG_INFO_STR("Join");
-
-  Mesh &mesh = cut->getMesh();
-  for (Mesh::iterator it = mesh.begin(); it != mesh.end(); it++) {
-    Edge *edge = *it;
-
-    if (!edge->isPolylineMember()) {
-      Polyline *polyline = new Polyline();
-      polyline->append(edge);
-      find_connected(polyline, edge, true);
-      find_connected(polyline, edge, false);
-      cut->add(polyline);
-    }
+  void begin_face() {
+//    std::cerr << "begin face " << std::endl;
   }
-  // remove edges one by one in debug mode to make dangling edges visible in the xml output
-  if (cc_loglevel == CC_DEBUG) {
-    for (Cut::iterator it = cut->begin(); it != cut->end(); it++) {
-      Polyline *p = *it;
-      for (Polyline::iterator it_e = p->begin(); it_e != p->end(); it_e++) {
-        mesh.remove(*it_e);
+
+  void end_face() {
+    if (current != NULL)
+      model.add(*current);
+
+    current = NULL;
+  }
+
+  void next_edge(CutGraph::Edge e) {
+    const Segment* seg = graph.getSegment(e);
+
+    if (graph.getSegmentString(e) == NULL) {
+      if (current == NULL || !current->addSegment(*seg)) {
+        current = new SegmentString();
+        current->addSegment(*seg);
       }
+
+      graph.setSegmentString(e, *current);
     }
-  } else {
-    mesh.edges.clear();
   }
+};
+/*
+ * Split segments at intersection points.
+ */
+void Join::filter(CutModel& model) {
+  LOG_INFO_STR("Join");
+  CutGraph& graph = CutGraph::createPlanarGraph(model.beginSegments(), model.endSegments());
+  join_strings_visitor vis = *new join_strings_visitor(model, graph);
+  traverse_planar_faces(graph, vis);
 }

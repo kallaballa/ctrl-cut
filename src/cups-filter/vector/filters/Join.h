@@ -1,13 +1,14 @@
 #ifndef JOIN_H_
 #define JOIN_H_
 
-class Join
-{
-public:
-  Join() {}
-  virtual ~Join() {}
+#include "util/LaserConfig.h"
+#include "vector/CutModel.h"
 
-  void filter(class Cut *cut);
+class Join {
+public:
+  Join(){}
+  virtual ~Join() {}
+  void filter(CutModel& cut);
 };
 
 #endif

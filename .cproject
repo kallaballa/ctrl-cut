@@ -8,8 +8,6 @@
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -18,18 +16,39 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildProperties="" description="" id="0.787130372" name="Default" parent="org.eclipse.cdt.build.core.prefbase.cfg">
 					<folderInfo id="0.787130372." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.base.747355377" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.747355377" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.base" resourceTypeBasedDiscovery="false" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1390253655" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder arguments="-c build.sh" command="bash" id="cdt.managedbuild.target.gnu.builder.base.2113844170" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ctrl-cut/Default}" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.1359701364" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="-1" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1925872491" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
+								<option id="gnu.cpp.compiler.option.include.paths.289689694" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/boost_1_46_1}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/Qt"/>
+									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/pclint}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wykobi}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libkdtree}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cups-filter}&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.420862760" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -DETLOG -DDEBUG=4 -DUSE_GHOSTSCRIPT_API   -L/usr/X11R6/lib64 -lboost_thread-mt -lX11 -lpng -lXext -lX11 -lm  -Dcimg_use_png -D__cplusplus" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.993590070" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.496567331" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1036880613" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<option id="gnu.c.compiler.option.include.paths.418192063" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths"/>
+								<option id="gnu.c.compiler.option.misc.other.1870746425" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -lSDL" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1641133122" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.410345195" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.559921952" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+								<option id="gnu.cpp.link.option.libs.681646825" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="SDL"/>
+									<listOptionValue builtIn="false" value="SDL_gfx"/>
+									<listOptionValue builtIn="false" value="gs"/>
+									<listOptionValue builtIn="false" value="cups"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.1444967700" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-lboost_thread-mt -lX11 -lpng -lXext -lX11 -lm" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1705797670" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -40,6 +59,19 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="0.787130372.339128202" name="GeometryBuilder.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Traverse.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1257433860" name="CutGraph.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutGraph.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1337149674" name="GraphView.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/GraphView.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1803341971" name="Lookup.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/Lookup.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1483698561" name="CutEdge.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutEdge.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1442715179" name="CutVertex.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutVertex.h" toolsToInvoke=""/>
+					<sourceEntries>
+						<entry excluding="SDL_draw-1.2.13/src|wykobi|libkdtree|test-code|boost-geometry|boost_1_46_1|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/gui"/>
+						<entry excluding="vector/old|vector/new|vector/filters/old|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/pclint"/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

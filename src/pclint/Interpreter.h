@@ -71,8 +71,6 @@ public:
 
           while (raster.decode(run))
             run->nextRun();
-
-          Debugger::getInstance()->animate();
       }
     }
   }
@@ -81,9 +79,10 @@ public:
     HpglInstr* hpglInstr;
 
     while (hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
-      if (PclIntConfig::singleton()->debugLevel >= LVL_DEBUG) {
+      if (PclIntConfig::singleton()->debugLevel >= LVL_DEBUG || PclIntConfig::singleton()->interactive) {
         cerr << *hpglInstr << endl;
       }
+      Debugger::getInstance()->announce(hpglInstr);
       if (hpglInstr->matches(HPGL_PENUP) || hpglInstr->matches(HPGL_LTPENUP)) {
         vectorPlotter->penUp();
         if (hpglInstr->parameters[0] != (int32_t)HPGL_UNSET && 

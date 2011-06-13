@@ -156,13 +156,13 @@ public:
       return NULL;
     bb->ul.x = strtol(strCoord.c_str(), NULL, 10);
     if(!getline(ss,strCoord, 'x'))
-      return NULL;
+      return bb;
     bb->ul.y = strtol(strCoord.c_str(), NULL, 10);
     if(!getline(ss,strCoord, 'x'))
-      return NULL;
+      return bb;
     bb->lr.x = strtol(strCoord.c_str(), NULL, 10);
     if(!getline(ss,strCoord, 'x'))
-      return NULL;
+      return bb;
     bb->lr.y = strtol(strCoord.c_str(), NULL, 10);
 
     return bb;

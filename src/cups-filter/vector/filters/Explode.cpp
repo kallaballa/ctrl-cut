@@ -17,83 +17,94 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <deque>
 #include "util/Logger.h"
-#include "vector/Edge.h"
-#include "vector/Vertex.h"
-#include "vector/Cut.h"
 #include "Explode.h"
 
-bool sortEdgeByX(Edge* e1, Edge* e2) {
-  uint32_t e1_minX = std::min((*e1)[0][0], (*e1)[1][0]);
-  uint32_t e2_minX = std::min((*e2)[0][0], (*e2)[1][0]);
-  return e1_minX < e2_minX;
-}
+using std::deque;
 
 /*
- * Split edges at intersection points.
+ * Split segments at intersection points.
  */
-void Explode::filter(Cut *cut)
-{
+void Explode::filter(CutModel& cut) {
   LOG_INFO_STR("Explode");
+  vector<SegmentNode> in_range;
+  Point intersection;
 
-  Vertex *intersec = NULL;
-  Edge *pick, *candidate;
+  for (CutModel::SegmentIter it_s = cut.beginSegments(); it_s != cut.endSegments(); ++it_s) {
+    if(it_s == cut.endSegments())
+      continue;
+    const Segment& pick = *(*it_s);
 
-  Mesh &mesh = cut->getMesh();
-  mesh.edges.sort(sortEdgeByX);
-  std::list<Edge*> stripe;
-  std::list<Edge*> carryOver;
-  Edge* first = mesh.front();
-  uint32_t stripeStep = 200;
-  uint32_t stripeLimit = std::min((*first)[0][0], (*first)[1][0]);
-  std::list<Edge*>::iterator it_m = mesh.begin();
+    if(!in_range.empty())
+      in_range.clear();
+    cut.findWithinRange(it_s, in_range);
 
-  while(it_m != mesh.end()) {
-    stripe = carryOver;
-    carryOver.clear();
-    stripeLimit+=stripeStep;
+    for (vector<SegmentNode>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
+      const Segment& candidate = *(*((*it_o).owner));
+      if(&pick == &candidate)
+        continue;
 
-    for (; it_m != mesh.end(); it_m++) {
-      pick = *it_m;
+      intersection_result is_res = intersects(pick, candidate, intersection);
 
-      uint32_t s_x = (*pick)[0][0];
-      uint32_t e_x = (*pick)[1][0];
+      // check if pick does intersect candidate
+      if (is_res == ALIGN_INTERSECT) {
+        // if pick doesnt tip intersect remove it and split it in two
+        if (!(pick[0] == intersection) && !(pick[1] == intersection)) {
+         it_s = cut.remove(it_s);
+         cut.createSegment(pick[0], intersection, pick.settings);
+         cut.createSegment(pick[1], intersection, pick.settings);
+        }
 
-      if(s_x > stripeLimit && e_x > stripeLimit)
-        break;
+        // if candidate doesnt tip intersect remove it and split it in two
+        if (!(candidate[0] == intersection) && !(candidate[1] == intersection)) {
+         cut.remove((*it_o).owner);
+         cut.createSegment(candidate[0], intersection, candidate.settings);
+         cut.createSegment(candidate[1], intersection, candidate.settings);
+        }
+      } else if(is_res == ALIGN_PARALLEL) {
+        Point pick_min;
+        Point pick_max;
+        Point candidate_min;
+        Point candidate_max;
 
-      if(s_x > stripeLimit || e_x > stripeLimit)
-        carryOver.push_back(pick);
+        if(pick.first < pick.second) {
+          pick_min = pick.first;
+          pick_max = pick.second;
+        } else {
+          pick_min = pick.second;
+          pick_max = pick.first;
+        }
 
-      stripe.push_back(pick);
-    }
+        if(candidate.first < candidate.second) {
+          candidate_min = candidate.first;
+          candidate_max = candidate.second;
+        } else {
+          candidate_min = candidate.second;
+          candidate_max = candidate.first;
+        }
 
-    for (list<Edge*>::iterator it_i = stripe.begin(); it_i != stripe.end(); it_i++) {
-      for (list<Edge*>::iterator it_j = it_i; ++it_j != stripe.end(); ) {
-        pick = *it_i;
-        candidate = *it_j;
+        // FIXME which gets which settings?
+        if(candidate_min < pick_max) {
+          if(pick_min < candidate_min) {
+            it_s = cut.remove(it_s);
+            cut.remove((*it_o).owner);
 
-        // check if pick does intersect candidate
-        if ((intersec = pick->intersects(*candidate)) != NULL) {
-
-          // FIXME: We should inherit speed and frequency too
-
-          // if pick doesnt tip intersect remove it and split it in two
-          if (!((*pick)[0] == *intersec) && !((*pick)[1] == *intersec)) {
-            pick->detach();
-            mesh.remove(pick);
-
-            mesh.create(pick->start(), intersec, pick->power());
-            mesh.create(pick->end(), intersec, pick->power());
-          }
-
-          // if candidate doesnt tip intersect remove it and split it in two
-          if (!((*candidate)[0] == *intersec) && !((*candidate)[1] == *intersec)) {
-            candidate->detach();
-            mesh.remove(candidate);
-
-            mesh.create(candidate->start(), intersec, candidate->power());
-            mesh.create(candidate->end(), intersec, candidate->power());
+            if(pick_max < candidate_max) {
+              cut.createSegment(pick_min, candidate_min, pick.settings);
+              cut.createSegment(candidate_min, pick_max, pick.settings);
+              cut.createSegment(pick_max, candidate_max, candidate.settings);
+            } else {
+              cut.createSegment(pick_min, candidate_min, pick.settings);
+              cut.createSegment(candidate_min, candidate_max, candidate.settings);
+              cut.createSegment(candidate_max, pick_max, pick.settings);
+            }
+          } else if(pick_min < candidate_max) {
+            it_s = cut.remove(it_s);
+            cut.remove((*it_o).owner);
+            cut.createSegment(candidate_min, pick_min, candidate.settings);
+            cut.createSegment(pick_min, candidate_max, candidate.settings);
+            cut.createSegment(candidate_max, pick_max, pick.settings);
           }
         }
       }

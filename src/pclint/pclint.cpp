@@ -27,6 +27,8 @@
 #include "2D.h"
 #include "PclIntConfig.h"
 #include "Plotter.h"
+#include <stdlib.h>
+#include <SDL.h>
 
 using std::ofstream;
 using std::ifstream;
@@ -40,90 +42,40 @@ using namespace cimg_library;
 int main(int argc, char *argv[]) {
   Trace* trace = Trace::singleton();
   PclIntConfig* config = PclIntConfig::singleton();
-  config->parseCommandLine(argc,argv);
+  config->parseCommandLine(argc, argv);
   ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
   RtlPlot* plot = new RtlPlot(infile);
   Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
 
   Interpreter intr(plot);
-  if(config->interactive) {
-    Debugger::create(intr.bitmapPlotter);
+  if (config->interactive) {
+    Debugger::create(intr.vectorPlotter);
     Debugger::getInstance()->setInteractive(true);
-  }
+  } else
+    Debugger::create();
 
   intr.render();
 
-  BoundingBox combinedBBox;
-
-  if (intr.vectorPlotter->getBoundingBox().isValid())
-    combinedBBox += intr.vectorPlotter->getBoundingBox();
-
-  if (intr.bitmapPlotter->getBoundingBox().isValid())
-    combinedBBox += intr.bitmapPlotter->getBoundingBox();
-
-  if (config->vectorFilename || config->rasterFilename
-      || config->combinedFilename) {
-    CImg<uint8_t>* combinedImage = NULL;
-
-    if (combinedBBox.isValid()) {
-      combinedImage = new CImg<uint8_t> (combinedBBox.lr.x - combinedBBox.ul.x
-          + 1, combinedBBox.lr.y - combinedBBox.ul.y + 1, 1, 1, 255);
-    }
-
-    if (intr.vectorPlotter->getBoundingBox().isValid()) {
-      CImg<uint8_t>* vectorImage;
-
-      if (combinedImage && !config->vectorFilename)
-        vectorImage = intr.vectorPlotter->getCanvas(combinedImage);
-      else if (config->combinedFilename) {
-        vectorImage = intr.vectorPlotter->getCanvas();
-        combinedImage->draw_image(*vectorImage);
-      } else {
-        vectorImage = intr.vectorPlotter->getCanvas();
-      }
-
-      if (config->vectorFilename != NULL)
-        vectorImage->save(config->vectorFilename);
-    } else {
-      trace->warn("Vector image is empty.");
-      ofstream combinedout(config->combinedFilename);
-      combinedout << "";
-    }
-
-    if(intr.bitmapPlotter->getBoundingBox().isValid()) {
-      CImg<uint8_t>* bitmapImage;
-
-      if (combinedImage && !config->rasterFilename) {
-        bitmapImage = intr.bitmapPlotter->getCanvas(combinedImage);
-      } else if(config->combinedFilename) {
-        bitmapImage = intr.bitmapPlotter->getCanvas();
-        combinedImage->draw_image(*bitmapImage);
-      } else {
-        bitmapImage = intr.bitmapPlotter->getCanvas();
-      }
-
-      if (config->rasterFilename != NULL)
-        bitmapImage->save(config->rasterFilename);
-    } else {
-      trace->warn("Bitmap image is empty.");
-      ofstream combinedout(config->combinedFilename);
-      combinedout << "";
-    }
-
-    if (config->combinedFilename) {
-      if (combinedBBox.isValid()) {
-        combinedImage->save(config->combinedFilename);
-      } else {
-        trace->warn("Blend image is empty.");
-        ofstream combinedout(config->combinedFilename);
-        combinedout << "";
-      }
-    }
+  BoundingBox& vBox = intr.vectorPlotter->getBoundingBox();
+  if (vBox.isValid()) {
+    if (config->vectorFilename != NULL)
+      intr.vectorPlotter->dumpCanvas(*new string(config->vectorFilename));
+  } else {
+    trace->warn("Vector image is empty.");
   }
 
-  if(config->debugLevel >= LVL_INFO) {
+  BoundingBox& bmpBox = intr.bitmapPlotter->getBoundingBox();
+  if (bmpBox.isValid()) {
+    if (config->rasterFilename != NULL)
+      intr.bitmapPlotter->dumpCanvas(*new string(config->rasterFilename));
+  } else {
+    trace->warn("Bitmap image is empty.");
+  }
+
+  if (config->debugLevel >= LVL_INFO) {
     Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
     Statistic::singleton()->printSlot(cout, SLOT_RASTER);
   }
+
   return 0;
 }

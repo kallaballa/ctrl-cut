@@ -8,50 +8,39 @@ include(common.pri)
 DEFINES += ETLOG DEBUG=4
 
 SOURCES += \
-          Driver.cpp \
+	  Driver.cpp \
           Ctrl-Cut.cpp \
           LaserJob.cpp \
           PostscriptParser.cpp \
-          util/Eps.cpp \
           util/LaserConfig.cpp \
-          vector/Cut.cpp \
-          vector/Mesh.cpp \
-          vector/Polyline.cpp \
-          vector/Vertex.cpp \
-          vector/Edge.cpp \
+          util/Eps.cpp \
+          tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
-          vector/filters/Deonion.cpp \
+          vector/CutGraph.cpp \
+          vector/CutModel.cpp \
           vector/filters/Explode.cpp \
-          vector/filters/Join.cpp \
-          vector/filters/Flat.cpp \
-          vector/filters/Reduce.cpp \
-          vector/filters/StreamLine.cpp \
-          tri_logger/tri_logger.cpp
-
+          vector/filters/Travel.cpp \
+          vector/filters/Join.cpp
 HEADERS += \
-          Driver.h \
-          Ctrl-Cut.h \
           LaserJob.h \
           FileParser.h \
-          util/Eps.h \
-          util/LaserConfig.h \
-          util/PJL.h \
           util/2D.h \
-          vector/Cut.h \
-          vector/Mesh.h \
-          vector/Polyline.h \
-          vector/Edge.h \
+          util/PJL.h \
+          util/Eps.h \
+          util/Logger.h \
+          util/LaserConfig.h \
+          Ctrl-Cut.h \
+          Driver.h \
+          vector/CutEdge.h \
+          vector/CutVertex.h \
+          vector/Traverse.h \
           vector/HPGLEncoder.h \
-          vector/Vertex.h \
-          vector/filters/Deonion.h \
-          vector/filters/Filters.h \
-          vector/filters/Explode.h \
+          vector/Geometry.h \
+          vector/CutModel.h \
+          vector/CutGraph.h \
           vector/filters/Join.h \
-          vector/filters/Flat.h \
-          vector/filters/Reduce.h \
-          vector/filters/StreamLine.h \
-          tri_logger/tri_logger.hpp \
-          tri_logger/nullstream.hpp
+          vector/filters/Travel.h \
+          vector/filters/Explode.h
 
 SOURCES += \
           raster/DownSample.cpp \
@@ -66,7 +55,6 @@ SOURCES += \
           raster/DitherBurke.cpp \
           raster/DitherSierra2.cpp \
           raster/DitherThreshold.cpp
-          
 
 HEADERS  += \
           raster/DownSample.h \
@@ -85,4 +73,3 @@ HEADERS  += \
           raster/DitherBurke.h \
           raster/DitherSierra2.h \
           raster/DitherThreshold.h
-          

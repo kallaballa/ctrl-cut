@@ -30,7 +30,7 @@
 #include "util/Logger.h"
 #include "util/LaserConfig.h"
 #include "util/Eps.h"
-#include "vector/Cut.h"
+#include "vector/CutModel.h"
 #include "LaserJob.h"
 #include "Driver.h"
 #include "Ctrl-Cut.h"
@@ -286,14 +286,13 @@ int main(int argc, char *argv[]) {
     }
   }
 
-
-  Cut *cut = NULL;
+  CutModel *cut = NULL;
   if (LaserConfig::inst().enable_vector) {
     if (inputformat == FORMAT_VECTOR) {
-      cut = Cut::load(filename_vector);
+      cut = CutModel::load(filename_vector);
     }
     else if (parser) {
-      cut = Cut::load(parser->getVectorData());
+      cut = CutModel::load(parser->getVectorData());
     }
     if (cut) job.addCut(cut);
   }

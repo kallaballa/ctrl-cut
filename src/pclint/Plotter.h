@@ -27,11 +27,11 @@
 #include <sstream>
 #include <string>
 #include <limits>
-#include "CImg.h"
 #include "2D.h"
 #include "PclIntConfig.h"
 #include "HPGL.h"
 #include "Statistic.h"
+#include "Canvas.h"
 
 using std::cin;
 using std::cerr;
@@ -45,7 +45,7 @@ class VectorPlotter {
 private:
   BoundingBox *clip;
   bool down;
-  CImg<uint8_t> *imgBuffer;
+  Canvas *canvas;
   uint8_t intensity[1];
 public:
   Point penPos;
@@ -56,14 +56,15 @@ public:
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
     }
-    intensity[0] = 0;
-
-    this->imgBuffer = new CImg<uint8_t> (width, height, 1, 1, 255);
+    intensity[0] = 255;
+    if(PclIntConfig::singleton()->screenSize != NULL)
+      this->canvas = new Canvas(width, height, PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
+    else
+      this->canvas = new Canvas(width, height);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
-    clip(clip), down(false), penPos(0, 0) {
-    this->imgBuffer = NULL;
+    clip(clip), down(false), canvas(NULL), penPos(0, 0) {
   }
 
   void penUp() {
@@ -117,7 +118,7 @@ public:
     ss << "\t\t" << drawFrom << " - " << drawTo << " i = " << (unsigned int)this->intensity[0];
     Trace::singleton()->debug(ss.str());
 
-    imgBuffer->draw_line(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y, this->intensity);
+    canvas->drawCut(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y);
   }
 
   void move(Point& to) {
@@ -126,6 +127,7 @@ public:
         draw(penPos, to);
         Statistic::singleton()->announceWork(penPos, to, SLOT_VECTOR);
       } else {
+        canvas->drawMove(penPos.x, penPos.y, to.x, to.y);
         Statistic::singleton()->announceMove(penPos, to, SLOT_VECTOR);
       }
 
@@ -138,22 +140,16 @@ public:
     return Statistic::singleton()->getBoundingBox(SLOT_VECTOR);
   }
 
-  virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
-    CImg<uint8_t>* canvas;
-
-    if (PclIntConfig::singleton()->autocrop) {
-      BoundingBox& bbox = getBoundingBox();
-      canvas = &(imgBuffer->crop(bbox.ul.x, bbox.ul.y, bbox.lr.x, bbox.lr.y, false));
-    } else {
-      canvas = imgBuffer;
-    }
-
-    if(img != NULL) {
-      img->draw_image(*canvas);
-      canvas = img;
-    }
-
+  virtual Canvas* getCanvas() {
     return canvas;
+  }
+
+  virtual void dumpCanvas(const string& filename) {
+    if (PclIntConfig::singleton()->autocrop) {
+      canvas->dump(filename,&getBoundingBox());
+    } else {
+      canvas->dump(filename);
+    }
   }
 };
 
@@ -220,7 +216,7 @@ public:
       if (this->clip) {
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
-      this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
+     this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
     }
     Statistic::singleton()->announcePenUp(SLOT_RASTER);
   }
@@ -229,42 +225,34 @@ public:
     return Statistic::singleton()->getBoundingBox(SLOT_RASTER);
   }
 
-  virtual CImg<uint8_t>* getCanvas(CImg<uint8_t>* img = NULL) {
+  void dumpCanvas(const string& filename) {
     BoundingBox bbox = getBoundingBox();
-    if(!bbox.isValid())
-      return NULL;
+    if(bbox.isValid()) {
+      Point start(0,0);
+      Point size(this->width * 8, this->height);
+      if (PclIntConfig::singleton()->autocrop) {
+        start.x = bbox.ul.x;
+        start.y = bbox.ul.y;
 
-    Point start(0,0);
-    Point size(this->width * 8, this->height);
-    if (PclIntConfig::singleton()->autocrop) {
-      start.x = bbox.ul.x;
-      start.y = bbox.ul.y;
+        size.x = bbox.lr.x - bbox.ul.x + 1;
+        size.y = bbox.lr.y - bbox.ul.y + 1;
+      }
 
-      size.x = bbox.lr.x - bbox.ul.x + 1;
-      size.y = bbox.lr.y - bbox.ul.y + 1;
-    }
+      CImg<uint8_t>* canvas = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
 
-    CImg<uint8_t>* canvas;
-
-    if(img != NULL)
-      canvas = img;
-    else {
-      canvas = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
-    }
-
-    uint8_t on = 0;
-    for (uint32_t y=0;y<size.y;y++) {
-      for (uint32_t x=0;x<(size.x/8);x++) {
-        uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x/8)];
-        for (int b=0;b<8;b++) {
-          if ((bitmap & (0x80 >> b))) {
-            canvas->draw_point(x*8 + b, y, &on);
+      uint8_t on = 0;
+      for (uint32_t y=0;y<size.y;y++) {
+        for (uint32_t x=0;x<(size.x/8);x++) {
+          uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x/8)];
+          for (int b=0;b<8;b++) {
+            if ((bitmap & (0x80 >> b))) {
+              canvas->draw_point(x*8 + b, y, &on);
+            }
           }
         }
       }
+      canvas->save(filename.c_str());
     }
-
-    return canvas;
   }
 };
 

@@ -13,6 +13,7 @@
 #include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
 #include "raster/PclEncoder.h"
+#include "vector/CutModel.h"
 
 using std::string;
 
@@ -23,7 +24,7 @@ public:
   string user;   /*! User name that submitted the print job. */
   string title;  /*! Title for the print job. */
 
-  std::list<class Cut*> cuts;
+  std::list<CutModel*> cuts;
   std::list<Raster*> rasters;
   LaserConfig *lconf;
 
@@ -32,9 +33,9 @@ public:
   virtual ~LaserJob();
 
   void optimize();
-  void addCut(Cut* cut);
+  void addCut(CutModel* cut);
   void addRaster(Raster* raster);
-  std::list<Cut*> getCuts() { return cuts; }
+  std::list<CutModel*> getCuts() { return cuts; }
 
   void serializeTo(std::ostream &out);
 };
