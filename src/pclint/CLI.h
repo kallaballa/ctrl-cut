@@ -41,9 +41,10 @@ using namespace cimg_library;
 class Debugger {
 private:
   boost::mutex ia_mutex;
+  VectorPlotter* vplotter;
   volatile bool interactive;
   CImgDisplay* canvas_disp;
-  bool anim;
+  bool autoupdate;
   list<off64_t> breakpoints;
   string find;
   string lastCliCmd[2];
@@ -57,23 +58,33 @@ private:
     } else {
       if (cmd.compare("break") == 0) {
         off64_t off = strtoll(param.c_str(), NULL, 16);
-        if (off > 0)
+        if (off > 0) {
           breakpoints.push_back(off);
+          cerr << "=== seeking: " << off << endl;
+        } else
+        cerr << "=== invalid offset: " << off << endl;
       } else if (cmd.compare("step") == 0) {
         this->waitSteps(strtol(param.c_str(), NULL, 10));
       } else if (cmd.compare("find") == 0) {
         find = param;
+        cerr << "=== searching: " << find << endl;
         this->setInteractive(false);
         this->consume();
         find = "";
-      } else if (cmd.compare("anim") == 0) {
-        if (param.compare("on") == 0)
-          this->anim = true;
-        else if (param.compare("off") == 0)
-          this->anim = false;
-      } else if (cmd.compare("dump") == 0) {
-        //this->dumpCanvas(param.c_str());
-        cerr << "dumped: " << param << endl;
+      } else if (cmd.compare("update") == 0) {
+        if (param.compare("on") == 0) {
+          this->autoupdate = true;
+          cerr << "=== auto update on" << endl;
+        }
+        else if (param.compare("off") == 0) {
+          this->autoupdate = false;
+          cerr << "=== auto update off" << endl;
+        }
+        else if(vplotter != NULL)
+          vplotter->getCanvas()->update();
+      } else if (cmd.compare("dump") == 0 && vplotter != NULL) {
+        vplotter->getCanvas()->dump(param.c_str());
+        cerr << "=== dumped: " << param << endl;
       }
     }
 
@@ -103,6 +114,25 @@ private:
           setInteractive(true);
           this->step_barrier.wait();
           it = breakpoints.erase(it);
+//          break;
+        }
+      }
+    }
+  }
+
+  void checkBreakpoints(HpglInstr *instr) {
+    if (breakpoints.size() > 0 && instr) {
+      list<off64_t>::iterator it;
+      off64_t bp = numeric_limits<off64_t>::max();
+      for (it = breakpoints.begin(); it != breakpoints.end(); it++) {
+        bp = *it;
+        if (instr->file_off >= bp) {
+          cerr << (format("=== breakpoint (%08X)") % bp) << endl;
+          setInteractive(true);
+          if(vplotter != NULL)
+            vplotter->getCanvas()->update();
+          this->step_barrier.wait();
+          it = breakpoints.erase(it);
           break;
         }
       }
@@ -117,18 +147,30 @@ private:
     }
   }
 
+  void checkSignatures(HpglInstr *instr) {
+    if (find.length() > 0 && instr && instr->matches(find)) {
+      cerr << "=== found " << instr->operation << endl;
+      if(vplotter != NULL)
+        vplotter->getCanvas()->update();
+      setInteractive(true);
+      this->step_barrier.wait();
+    }
+  }
+
   void checkStepBarrier() {
     if (isInteractive())
       this->step_barrier.wait();
+    if(this->autoupdate && vplotter != NULL)
+      vplotter->getCanvas()->update();
   }
 
 
 public:
-  static void create();
+  static void create(VectorPlotter *vplotter = NULL);
   static Debugger* getInstance();
 
-  Debugger() :
-    interactive(false), canvas_disp(NULL), anim(false), cli_thrd(NULL), step_barrier(2) {
+  Debugger(VectorPlotter* vplotter) :
+    vplotter(vplotter), interactive(false), canvas_disp(NULL), autoupdate(false), cli_thrd(NULL), step_barrier(2) {
   }
 
   virtual void loop() {
@@ -167,13 +209,22 @@ public:
     checkBreakpoints(instr);
     checkSignatures(instr);
   }
+
+  virtual void announce(HpglInstr* instr) {
+    checkStepBarrier();
+    checkBreakpoints(instr);
+    checkSignatures(instr);
+  }
 };
 
 Debugger* Debugger::instance = NULL;
 
-Debugger* Debugger::getInstance() {
+void Debugger::create(VectorPlotter *vplotter) {
   if(instance == NULL)
-    instance = new Debugger();
+    instance = new Debugger(vplotter);
+}
+
+Debugger* Debugger::getInstance() {
   return instance;
 }
 

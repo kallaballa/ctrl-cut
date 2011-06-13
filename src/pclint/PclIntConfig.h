@@ -30,12 +30,13 @@ enum DEBUG_LEVEL {
 };
 class PclIntConfig {
 private:
-  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), combinedFilename(NULL), debugLevel(LVL_WARN) {};
+  PclIntConfig(): interactive(false), autocrop(false), clip(NULL), screenSize(NULL), ifilename(NULL), rasterFilename(NULL), vectorFilename(NULL), combinedFilename(NULL), debugLevel(LVL_WARN) {};
   static PclIntConfig* instance;
 public:
   bool interactive;
   bool autocrop;
   BoundingBox *clip;
+  BoundingBox *screenSize;
   char *ifilename;
   char *rasterFilename;
   char *vectorFilename;
@@ -48,7 +49,7 @@ public:
     int c;
     opterr = 0;
     while (optind < argc) {
-      while ((c = getopt(argc, argv, "iac:r:v:b:d:")) != -1) {
+      while ((c = getopt(argc, argv, "iac:r:v:b:d:s:")) != -1) {
         switch (c) {
         case 'i':
           this->interactive = true;
@@ -79,6 +80,9 @@ public:
             debugLevel = LVL_DEBUG;
           else
             printUsage();
+          break;
+        case 's':
+          this->screenSize = BoundingBox::createFromGeometryString(optarg);
           break;
         case ':':
           printUsage();
