@@ -59,8 +59,7 @@ void CutGraph::createEdges(const SegmentString& string1, const SegmentString& st
 
   GeometryMapping s1_inMap =  * new GeometryMapping(&s1_inP  ,0 ,&string1);
   GeometryMapping s1_outMap = * new GeometryMapping(&s1_outP ,0 ,&string1);
-  GeometryMapping s2_inMap =  * new GeometryMapping(&s2_inP  ,0 ,&string2);
-  GeometryMapping s2_outMap = * new GeometryMapping(&s2_outP ,0 ,&string2);
+
 
   CutGraph::Vertex s1_inV = addVertex(s1_inMap);
   CutGraph::Vertex s1_outV = addVertex(s1_outMap);
@@ -70,6 +69,8 @@ void CutGraph::createEdges(const SegmentString& string1, const SegmentString& st
   }
 
   if(!sameString) {
+    GeometryMapping s2_inMap =  * new GeometryMapping(&s2_inP  ,0 ,&string2);
+    GeometryMapping s2_outMap = * new GeometryMapping(&s2_outP ,0 ,&string2);
     CutGraph::Vertex s2_inV = addVertex(s2_inMap);
     CutGraph::Vertex s2_outV = addVertex(s2_outMap);
 
@@ -111,9 +112,9 @@ void CutGraph::createEdges(const SegmentString& string1, const SegmentString& st
 
   bool sameString = &string1 == &string2;
 
-  GeometryMapping s1_inMap =  * new GeometryMapping(&s1_inP  ,0 ,&string1);
+  GeometryMapping s1_inMap  = * new GeometryMapping(&s1_inP  ,0 ,&string1);
   GeometryMapping s1_outMap = * new GeometryMapping(&s1_outP ,0 ,&string1);
-  GeometryMapping s2_inMap =  * new GeometryMapping(&s2_inP  ,0 ,&string2);
+  GeometryMapping s2_inMap  = * new GeometryMapping(&s2_inP  ,0 ,&string2);
   GeometryMapping s2_outMap = * new GeometryMapping(&s2_outP ,0 ,&string2);
 
   CutGraph::Vertex s1_inV = addVertex(s1_inMap);

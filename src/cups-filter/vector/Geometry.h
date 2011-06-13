@@ -215,7 +215,6 @@ public:
     const SegmentString* string1 = this->get<2>();
     const SegmentString* string2 = other.get<2>();
 
-
     bool stringLess = string1 < string2;
     bool stringEqual = string1 == string2;
     bool segLess = seg1 < seg2;
