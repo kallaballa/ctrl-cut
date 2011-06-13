@@ -28,3 +28,5 @@ include(X11.pri)
 include(ImageMagick.pri)
 include(png.pri)
 include(cups.pri)
+include(SDL.pri)
+

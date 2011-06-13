@@ -2,10 +2,8 @@
 #include <QtGui>
 
 #include "FileParser.h"
-#include "vector/Cut.h"
-#include "vector/Polyline.h"
-#include "vector/Edge.h"
-#include "vector/Vertex.h"
+#include "vector/CutModel.h"
+#include "vector/Geometry.h"
 
 #include <assert.h>
 
@@ -23,7 +21,7 @@ void MainWindow::on_fileOpenAction_triggered()
 {
   QString filename = QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)");
   if (!filename.isEmpty()) {
-    Cut *cut = NULL;
+    CutModel *cut = NULL;
 
 
     QFileInfo finfo(filename);
@@ -59,14 +57,14 @@ void MainWindow::on_fileOpenAction_triggered()
         return;
       }
 
-      cut = Cut::load(psparser->getVectorData());
+      cut = CutModel::load(psparser->getVectorData());
       if (!cut) {
         fprintf(stderr, "Error: Unable to open postscript file\n");
         return;
       }
     }
     else if (suffix == "vector") {
-      cut = Cut::load(filename.toStdString());
+      cut = CutModel::load(filename.toStdString());
       if (!cut) {
         fprintf(stderr, "Error: Unable to open vector file\n");
         return;
@@ -74,10 +72,9 @@ void MainWindow::on_fileOpenAction_triggered()
     }
 
     if (cut) {
-      const Mesh &mesh = cut->getMesh();
-      for (Mesh::const_iterator iter = mesh.begin(); iter != mesh.end(); iter++) {
-        const Edge &edge = **iter;
-        this->graphicsView->scene()->addLine(edge[0][0], edge[0][1], edge[1][0], edge[1][1]);
+      for (CutModel::SegmentIter iter = cut->beginSegments(); iter != cut->endSegments(); iter++) {
+        const Segment &segment = **iter;
+        this->graphicsView->scene()->addLine(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);
       }
     }
   }
