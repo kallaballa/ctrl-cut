@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   intr.render();
 
   BoundingBox& vBox = intr.vectorPlotter->getBoundingBox();
-  if ((vBox.lr.x - vBox.ul.x >= 0) && (vBox.lr.y - vBox.ul.y >= 0)) {
+  if (vBox.isValid()) {
     if (config->vectorFilename != NULL)
       intr.vectorPlotter->dumpCanvas(*new string(config->vectorFilename));
   } else {
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   }
 
   BoundingBox& bmpBox = intr.bitmapPlotter->getBoundingBox();
-  if ((bmpBox.lr.x - bmpBox.ul.x >= 0) && (bmpBox.lr.y - bmpBox.ul.y >= 0)) {
+  if (bmpBox.isValid()) {
     if (config->rasterFilename != NULL)
       intr.bitmapPlotter->dumpCanvas(*new string(config->rasterFilename));
   } else {
