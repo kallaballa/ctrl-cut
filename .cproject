@@ -23,6 +23,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.289689694" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/boost_1_46_1}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/Qt"/>
 									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/pclint}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wykobi}&quot;"/>
@@ -60,16 +61,14 @@
 					</folderInfo>
 					<fileInfo id="0.787130372.339128202" name="GeometryBuilder.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Traverse.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1257433860" name="CutGraph.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutGraph.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1337149674" name="GraphView.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/GraphView.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1803341971" name="Lookup.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/new/Lookup.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1483698561" name="CutEdge.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutEdge.h" toolsToInvoke=""/>
 					<fileInfo id="0.787130372.1442715179" name="CutVertex.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutVertex.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.528197259" name="Join.cpp" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/filters/Join.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.182814649">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.182814649" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
-					</fileInfo>
 					<sourceEntries>
 						<entry excluding="SDL_draw-1.2.13/src|wykobi|libkdtree|test-code|boost-geometry|boost_1_46_1|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/gui"/>
 						<entry excluding="vector/old|vector/new|vector/filters/old|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/pclint"/>
 					</sourceEntries>
