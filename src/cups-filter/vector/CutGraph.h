@@ -28,11 +28,11 @@ class CutGraph : public adjacency_list<vecS, vecS, undirectedS, VertexGeomProper
 public:
   boost::graph_traits<CutGraph>::edges_size_type edge_count;
 
-  typedef typename boost::graph_traits<CutGraph>
+  typedef boost::graph_traits<CutGraph>
     ::vertex_descriptor Vertex;
-  typedef typename boost::graph_traits<CutGraph>
+  typedef boost::graph_traits<CutGraph>
     ::edge_descriptor Edge;
-  typedef typename boost::graph_traits<CutGraph>
+  typedef boost::graph_traits<CutGraph>
       ::vertices_size_type v_size;
 
   typedef map<const GeometryMapping, Vertex> GeomVertexMap;
