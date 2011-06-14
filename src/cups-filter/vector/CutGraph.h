@@ -74,9 +74,9 @@ public:
   void createEdge(const Segment& seg);
   void createEdges(const SegmentString& string1, const SegmentString& string2);
   void createEdges(const SegmentString& string1, const SegmentString& string2, const CutGraph::Vertex& v_origin);
-  static CutGraph& createPlanarGraph(SegmentList::const_iterator start, SegmentList::const_iterator end);
-  static CutGraph& createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end);
-  static std::pair<CutGraph&, CutGraph::Vertex>& createCompleteGraphFromPoint(const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
+  static void createPlanarGraph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end);
+  static void createCompleteGraph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end);
+  static CutGraph::Vertex createCompleteGraphFromPoint(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
 
 private:
   GeomVertexMap geometries;

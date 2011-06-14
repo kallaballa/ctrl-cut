@@ -60,7 +60,8 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
  */
 void Join::filter(CutModel& model) {
   LOG_INFO_STR("Join");
-  CutGraph& graph = CutGraph::createPlanarGraph(model.beginSegments(), model.endSegments());
+  CutGraph& graph = * new CutGraph();
+  CutGraph::createPlanarGraph(graph, model.beginSegments(), model.endSegments());
   join_strings_visitor vis = *new join_strings_visitor(model, graph);
   traverse_planar_faces(graph, vis);
 }

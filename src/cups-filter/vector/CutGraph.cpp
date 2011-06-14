@@ -5,17 +5,12 @@
 
 using std::vector;
 
-CutGraph& CutGraph::createPlanarGraph(SegmentList::const_iterator start, SegmentList::const_iterator end) {
-  CutGraph& graph = (*new CutGraph());
-
+void CutGraph::createPlanarGraph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end) {
     for (SegmentList::const_iterator it = start; it != end; ++it)
      graph.createEdge(*(*it));
-
-  return graph;
 }
 
-CutGraph& CutGraph::createCompleteGraph(StringList::const_iterator start, StringList::const_iterator end) {
-  CutGraph& graph = *new CutGraph();
+void CutGraph::createCompleteGraph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end) {
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
 
@@ -27,12 +22,9 @@ CutGraph& CutGraph::createCompleteGraph(StringList::const_iterator start, String
       graph.createEdges(*s_i, *s_j);
     }
   }
-
-  return graph;
 }
 
-std::pair<CutGraph&,CutGraph::Vertex>& CutGraph::createCompleteGraphFromPoint(const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
-  CutGraph& graph = *new CutGraph();
+CutGraph::Vertex CutGraph::createCompleteGraphFromPoint(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
   CutGraph::Vertex v_origin = graph.addVertex(* new GeometryMapping(&origin, 0, 0));
@@ -46,7 +38,7 @@ std::pair<CutGraph&,CutGraph::Vertex>& CutGraph::createCompleteGraphFromPoint(co
     }
   }
 
-  return * new std::pair<CutGraph&,CutGraph::Vertex>(graph, v_origin);
+  return v_origin;
 }
 
 void CutGraph::createEdges(const SegmentString& string1, const SegmentString& string2) {

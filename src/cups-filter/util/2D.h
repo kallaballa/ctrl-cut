@@ -133,7 +133,6 @@ public:
     this->lr[0] = std::max(r.lr[0], lr[0]);
     this->lr[1] = std::max(r.lr[1], lr[1]);
   }
-
 };
 
 #endif /* TWOD_H_ */

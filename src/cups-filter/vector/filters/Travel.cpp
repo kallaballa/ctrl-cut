@@ -32,12 +32,9 @@ void Travel::filter(CutModel& model) {
   CutGraph::Vertex v_origin;
 
   if(mindOrigin) {
-    std::pair<CutGraph&, CutGraph::Vertex>& withOrigin = CutGraph::createCompleteGraphFromPoint(* new Point(0,0),model.beginStrings(), model.endStrings());
-    graph = withOrigin.first;
-    v_origin= withOrigin.second;
+    v_origin = CutGraph::createCompleteGraphFromPoint(graph, * new Point(0,0),model.beginStrings(), model.endStrings());
   } else {
-    graph = CutGraph::createCompleteGraph(model.beginStrings(), model.endStrings());
-    v_origin = CutGraph::null_vertex();
+    CutGraph::createCompleteGraph(graph, model.beginStrings(), model.endStrings());
   }
 
   typedef boost::property_map<CutGraph, boost::edge_weight_t>::type WeightMap;
