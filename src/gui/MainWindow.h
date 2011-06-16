@@ -20,6 +20,7 @@ public slots:
 
 private:
   class LpdClient *lpdclient;
+  class CutModel *cutmodel;
 };
 
 #endif

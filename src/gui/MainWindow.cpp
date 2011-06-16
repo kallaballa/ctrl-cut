@@ -2,6 +2,8 @@
 #include <QtGui>
 
 #include "FileParser.h"
+#include "LaserJob.h"
+#include "Driver.h"
 #include "vector/CutModel.h"
 #include "vector/Geometry.h"
 
@@ -9,7 +11,7 @@
 
 #include <assert.h>
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() : cutmodel(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -25,8 +27,10 @@ void MainWindow::on_fileOpenAction_triggered()
 {
   QString filename = QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)");
   if (!filename.isEmpty()) {
-    CutModel *cut = NULL;
-
+    if (this->cutmodel) {
+      delete this->cutmodel;
+      this->cutmodel = NULL;
+    }
 
     QFileInfo finfo(filename);
     QString suffix = finfo.suffix();
@@ -61,22 +65,22 @@ void MainWindow::on_fileOpenAction_triggered()
         return;
       }
 
-      cut = CutModel::load(psparser->getVectorData());
-      if (!cut) {
+      this->cutmodel = CutModel::load(psparser->getVectorData());
+      if (!this->cutmodel) {
         fprintf(stderr, "Error: Unable to open postscript file\n");
         return;
       }
     }
     else if (suffix == "vector") {
-      cut = CutModel::load(filename.toStdString());
-      if (!cut) {
+      this->cutmodel = CutModel::load(filename.toStdString());
+      if (!this->cutmodel) {
         fprintf(stderr, "Error: Unable to open vector file\n");
         return;
       }
     }
 
-    if (cut) {
-      for (CutModel::SegmentIter iter = cut->beginSegments(); iter != cut->endSegments(); iter++) {
+    if (this->cutmodel) {
+      for (CutModel::SegmentIter iter = this->cutmodel->beginSegments(); iter != this->cutmodel->endSegments(); iter++) {
         const Segment &segment = **iter;
         this->graphicsView->scene()->addLine(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);
       }
@@ -84,6 +88,7 @@ void MainWindow::on_fileOpenAction_triggered()
   }
 }
 
+#if 0
 void MainWindow::on_filePrintAction_triggered()
 {
   QString filename = QFileDialog::getOpenFileName(this, "Open RTL File", "", "Supported files (*.prn *.raw)");
@@ -100,6 +105,26 @@ void MainWindow::on_filePrintAction_triggered()
     rtlfile.close();
 
   }
+}
+#endif
+
+void MainWindow::on_filePrintAction_triggered()
+{
+  if (!this->cutmodel) {
+    fprintf(stderr, "No model loaded\n");
+    return;
+  }
+
+  LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
+  job.addCut(this->cutmodel);
+  Driver drv;
+  drv.process(&job);
+
+  // The driver calls the filters, handles XML and serialized into a RTL buffer
+
+  // rtlbuffer is a QByteArray
+  //  this->lpdclient->print("MyDocument", rtlbuffer);
+
 }
 
 void MainWindow::on_lpdclient_done(bool error)

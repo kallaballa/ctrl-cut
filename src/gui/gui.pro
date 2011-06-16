@@ -26,9 +26,18 @@ HEADERS += MainWindow.h \
            LpdClient.h \
            ../cups-filter/vector/Geometry.h \
            ../cups-filter/vector/CutModel.h \
+           ../cups-filter/vector/CutGraph.h \
+           ../cups-filter/vector/HPGLEncoder.h \
+           ../cups-filter/vector/filters/Join.h \
+           ../cups-filter/vector/filters/Travel.h \
+           ../cups-filter/vector/filters/Explode.h \
+           ../cups-filter/raster/PclEncoder.h \
+           ../cups-filter/raster/Dither.h \
            ../cups-filter/util/LaserConfig.h \
            ../cups-filter/util/Eps.h \
            ../cups-filter/FileParser.h \
+           ../cups-filter/Driver.h \
+           ../cups-filter/LaserJob.h \
            ../cups-filter/tri_logger/tri_logger.hpp \
            ../cups-filter/tri_logger/nullstream.hpp \
            ../lpd-epilog/backend-private.h \
@@ -47,9 +56,26 @@ SOURCES += gui.cpp \
            NavigationView.cpp \
            LpdClient.cpp \
            ../cups-filter/vector/CutModel.cpp \
+           ../cups-filter/vector/CutGraph.cpp \
+           ../cups-filter/vector/HPGLEncoder.cpp \
+           ../cups-filter/vector/filters/Join.cpp \
+           ../cups-filter/vector/filters/Travel.cpp \
+           ../cups-filter/vector/filters/Explode.cpp \
+           ../cups-filter/raster/PclEncoder.cpp \
+           ../cups-filter/raster/Dither.cpp \
+           ../cups-filter/raster/DitherFloydSteinberg.cpp \
+           ../cups-filter/raster/DitherSierra3.cpp \
+           ../cups-filter/raster/DitherBayer.cpp \
+           ../cups-filter/raster/DitherJarvis.cpp \
+           ../cups-filter/raster/DitherStucki.cpp \
+           ../cups-filter/raster/DitherBurke.cpp \
+           ../cups-filter/raster/DitherSierra2.cpp \
+           ../cups-filter/raster/DitherThreshold.cpp \
            ../cups-filter/util/LaserConfig.cpp \
            ../cups-filter/util/Eps.cpp \
            ../cups-filter/PostscriptParser.cpp \
+           ../cups-filter/Driver.cpp \
+           ../cups-filter/LaserJob.cpp \
            ../cups-filter/tri_logger/tri_logger.cpp \
            ../lpd-epilog/network.c \
            ../lpd-epilog/runloop.c \
