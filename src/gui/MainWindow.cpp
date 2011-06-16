@@ -5,12 +5,16 @@
 #include "vector/CutModel.h"
 #include "vector/Geometry.h"
 
+#include "LpdClient.h"
+
 #include <assert.h>
 
 MainWindow::MainWindow()
 {
-  setupUi(this);
+  this->lpdclient = new LpdClient(this);
+  this->lpdclient->setObjectName("lpdclient");
 
+  setupUi(this);
 }
 
 MainWindow::~MainWindow()
@@ -79,3 +83,35 @@ void MainWindow::on_fileOpenAction_triggered()
     }
   }
 }
+
+void MainWindow::on_filePrintAction_triggered()
+{
+  QString filename = QFileDialog::getOpenFileName(this, "Open RTL File", "", "Supported files (*.prn *.raw)");
+  if (!filename.isEmpty()) {
+    printf("RTL file: %s\n", filename.toLocal8Bit().data());
+
+    QFile rtlfile(filename);
+    if (!rtlfile.open(QIODevice::ReadOnly)) {
+      fprintf(stderr, "Unable to open RTL file\n");
+      return;
+    }
+
+    this->lpdclient->print("MyDocument", rtlfile.readAll());
+    rtlfile.close();
+
+  }
+}
+
+void MainWindow::on_lpdclient_done(bool error)
+{
+  if (error) fprintf(stderr, "LPD error\n");
+  else printf("LPD done\n");
+}
+
+void MainWindow::on_lpdclient_progress(int done, int total)
+{
+  printf("Progress: %.0f%%\n", 100.0f*done/total);
+}
+
+
+
