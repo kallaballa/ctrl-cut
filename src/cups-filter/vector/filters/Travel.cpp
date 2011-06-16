@@ -57,8 +57,18 @@ void Travel::filter(CutModel& model) {
     if (lastVertex != NULL) {
       nextString = graph.getSegmentString(*it);
       if (nextString != NULL && nextString != lastString) {
-        model.remove(*nextString);
-        model.add(*nextString);
+        const Point& first = *graph.getPoint(*it);
+        if(nextString->isClosed()) {
+          if(*nextString->frontPoints() != first) {
+            SegmentString* rotated = new SegmentString(*nextString);
+            rotated->rotate(first);
+            model.remove(*nextString);
+            model.add(*rotated);
+          }
+        } else {
+          model.remove(*nextString);
+          model.add(*nextString);
+        }
         lastString = nextString;
       }
     }

@@ -1,6 +1,7 @@
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
 
+#include <algorithm>
 #include <iostream>
 #include <stdint.h>
 #include <deque>
@@ -128,8 +129,8 @@ private:
 
 class SegmentString {
 public:
-  typedef std::deque<const Segment*> SegmentDeque;
-  typedef std::deque<const Point*> PointDeque;
+  typedef std::list<const Segment*> SegmentDeque;
+  typedef std::list<const Point*> PointDeque;
   typedef SegmentDeque::iterator SegmentIter;
   typedef SegmentDeque::const_iterator SegmentConstIter;
   typedef PointDeque::iterator PointIter;
@@ -159,6 +160,28 @@ public:
   bool pointsEmpty() const { return this->points.empty(); }
 
   bool isClosed() const { return *this->frontPoints() == *this->backPoints(); }
+
+  bool rotate(const Point& first) {
+    assert(isClosed());
+    if(first != *frontPoints()) {
+      for(PointIter it = beginPoints()++; it != endPoints(); ++it) {
+        if(**it == first) {
+          points.splice(endPoints(), points, beginPoints(), --it);
+          break;
+        }
+      }
+
+      for(SegmentIter it = beginSegments()++; it != endSegments(); ++it) {
+        if((*it)->first == first) {
+          segments.splice(endSegments(), segments, beginSegments(), --it);
+          return true;
+        }
+      }
+    } else
+      return true;
+
+    return false;
+  }
 
   bool addSegment(const Segment& segref) {
     const Segment* seg = &segref;
