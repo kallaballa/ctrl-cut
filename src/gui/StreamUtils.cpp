@@ -1,5 +1,6 @@
 #include "StreamUtils.h"
 #include <QBuffer>
+#include <stdio.h>
 
 ByteArrayOStreambuf::ByteArrayOStreambuf(QByteArray& ba) : _buffer(new QBuffer(&ba))
 {
