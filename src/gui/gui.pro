@@ -31,8 +31,6 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/CutModel.h \
            ../cups-filter/vector/CutGraph.h \
            ../cups-filter/vector/HPGLEncoder.h \
-           ../cups-filter/vector/filters/Join.h \
-           ../cups-filter/vector/filters/Travel.h \
            ../cups-filter/vector/filters/Explode.h \
            ../cups-filter/raster/PclEncoder.h \
            ../cups-filter/raster/Dither.h \
@@ -63,8 +61,7 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/CutModel.cpp \
            ../cups-filter/vector/CutGraph.cpp \
            ../cups-filter/vector/HPGLEncoder.cpp \
-           ../cups-filter/vector/filters/Join.cpp \
-           ../cups-filter/vector/filters/Travel.cpp \
+	   ../cups-filter/vector/Traverse.cpp \
            ../cups-filter/vector/filters/Explode.cpp \
            ../cups-filter/raster/PclEncoder.cpp \
            ../cups-filter/raster/Dither.cpp \
