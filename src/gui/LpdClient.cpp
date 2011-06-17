@@ -7,7 +7,7 @@ LpdClient::LpdClient(QObject *parent) : QObject(parent), lpdstate(LPD_IDLE)
   QMetaObject::connectSlotsByName(this);
 }
 
-bool LpdClient::print(const QString &jobname, QByteArray rtldata)
+bool LpdClient::print(const QString &host, const QString &jobname, QByteArray rtldata)
 {
   this->header.sprintf("\002EpilogCapture\n");
   this->ctrlfile.sprintf
@@ -26,7 +26,7 @@ bool LpdClient::print(const QString &jobname, QByteArray rtldata)
   this->totalsize = this->header.size() + this->ctrlfile.size() + this->ctrlheader.size() + this->fileheader.size() + this->rtldata.size();
   this->totalprogress = 0;
 
-  this->socket->connectToHost("localhost", 515);
+  this->socket->connectToHost(host, 515);
 }
 
 void LpdClient::on_socket_connected()
@@ -57,6 +57,10 @@ void LpdClient::on_socket_readyRead()
 void LpdClient::on_socket_disconnected()
 {
   printf("disconnected\n");
+  if (this->lpdstate == LPD_DONE) {
+    emit done(false);
+  }
+  this->lpdstate = LPD_IDLE;
 }
 
 void LpdClient::on_socket_error(QAbstractSocket::SocketError err)
@@ -100,8 +104,8 @@ void LpdClient::handle_lpd()
     this->lpdstate = LPD_FILE;
     break;
   case LPD_FILE:
-    this->lpdstate = LPD_IDLE;
-    emit done(false);
+    this->lpdstate = LPD_DONE;
+    this->socket->disconnectFromHost();
     break;
   }
   this->socket->flush();

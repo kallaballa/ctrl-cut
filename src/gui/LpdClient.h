@@ -11,7 +11,7 @@ public:
   LpdClient(QObject *parent = 0);
   ~LpdClient() {}
 
-  bool print(const QString &jobname, QByteArray rtldata);
+  bool print(const QString &host, const QString &jobname, QByteArray rtldata);
 
 signals:
   void done(bool error);
@@ -28,7 +28,7 @@ private:
   void handle_lpd();
 
   class QTcpSocket *socket;
-  enum LpdState { LPD_IDLE, LPD_HEADER, LPD_CTRL_HEADER, LPD_CTRL_FILE, LPD_FILE_HEADER, LPD_FILE } lpdstate;
+  enum LpdState { LPD_IDLE, LPD_HEADER, LPD_CTRL_HEADER, LPD_CTRL_FILE, LPD_FILE_HEADER, LPD_FILE, LPD_DONE } lpdstate;
   QString header;
   QString ctrlheader;
   QString ctrlfile;

@@ -8,6 +8,7 @@
 #include "vector/Geometry.h"
 
 #include "LpdClient.h"
+#include "StreamUtils.h"
 
 #include <assert.h>
 
@@ -115,16 +116,23 @@ void MainWindow::on_filePrintAction_triggered()
     return;
   }
 
-  LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-  job.addCut(this->cutmodel);
-  Driver drv;
-  drv.process(&job);
+  QStringList items;
+  items << "Lazzzor" << "localhost";
+  bool ok;
+  QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
+  if (ok && !item.isEmpty()) {
+    QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
-  // The driver calls the filters, handles XML and serialized into a RTL buffer
-
-  // rtlbuffer is a QByteArray
-  //  this->lpdclient->print("MyDocument", rtlbuffer);
-
+    LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
+    job.addCut(this->cutmodel);
+    Driver drv;
+    QByteArray rtlbuffer;
+    ByteArrayOStreambuf streambuf(rtlbuffer);
+    std::ostream ostream(&streambuf);
+    drv.process(&job, ostream);
+    
+    this->lpdclient->print(host, "MyDocument", rtlbuffer);
+  }
 }
 
 void MainWindow::on_lpdclient_done(bool error)
@@ -137,6 +145,3 @@ void MainWindow::on_lpdclient_progress(int done, int total)
 {
   printf("Progress: %.0f%%\n", 100.0f*done/total);
 }
-
-
-
