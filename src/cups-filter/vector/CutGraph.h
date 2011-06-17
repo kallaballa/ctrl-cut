@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <string>
 
 #include <boost/graph/properties.hpp>
 #include <boost/graph/graph_traits.hpp>
@@ -34,6 +35,7 @@ public:
     ::edge_descriptor Edge;
   typedef boost::graph_traits<CutGraph>
       ::vertices_size_type v_size;
+  typedef std::vector<std::vector< CutGraph::Edge > > Embedding;
 
   typedef map<const GeometryMapping, Vertex> GeomVertexMap;
 
@@ -77,12 +79,14 @@ public:
   void createMetricEdge(const Vertex& in, const Vertex& out, const GeometryMapping& map);
   bool hasEdge(const Vertex& in, const Vertex& out);
   void permutateEdges(const SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices);
-  static void createPlanarGraph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end);
-  static void createCompleteGraph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end);
-  static CutGraph::Vertex createCompleteGraphFromPoint(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
 
 private:
   GeomVertexMap geometries;
 };
+
+void dump_graph(const CutGraph& graph, const std::string& filename);
+void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end);
+void create_complete_graph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end);
+CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
 
 #endif
