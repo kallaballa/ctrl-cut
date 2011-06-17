@@ -42,17 +42,7 @@ HEADERS += MainWindow.h \
            ../cups-filter/Driver.h \
            ../cups-filter/LaserJob.h \
            ../cups-filter/tri_logger/tri_logger.hpp \
-           ../cups-filter/tri_logger/nullstream.hpp \
-           ../lpd-epilog/backend-private.h \
-           ../lpd-epilog/config.h \
-           ../lpd-epilog/cups-string.h \
-           ../lpd-epilog/debug.h \
-           ../lpd-epilog/http-private.h \
-           ../lpd-epilog/i18n.h \
-           ../lpd-epilog/ipp-private.h \
-           ../lpd-epilog/md5.h \
-           ../lpd-epilog/ppd-private.h \
-           ../lpd-epilog/snmp-private.h
+           ../cups-filter/tri_logger/nullstream.hpp
 
 SOURCES += gui.cpp \
            MainWindow.cpp \
@@ -81,8 +71,4 @@ SOURCES += gui.cpp \
            ../cups-filter/PostscriptParser.cpp \
            ../cups-filter/Driver.cpp \
            ../cups-filter/LaserJob.cpp \
-           ../cups-filter/tri_logger/tri_logger.cpp \
-           ../lpd-epilog/network.c \
-           ../lpd-epilog/runloop.c \
-           lpd-client.c
-
+           ../cups-filter/tri_logger/tri_logger.cpp
