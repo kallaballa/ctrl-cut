@@ -18,6 +18,7 @@
  */
 #include "HPGLEncoder.h"
 #include "CutModel.h"
+#include "CutGraph.h"
 #include "Traverse.h"
 #include "boost/format.hpp"
 
@@ -32,6 +33,11 @@ HPGLEncoder::~HPGLEncoder() {
 }
 
 void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
+  StringList join;
+  make_linestrings(join,model.begin(), model.end());
+  StringList travel;
+  travel_linestrings(travel, join.begin(), join.end());
+
   bool first = true;
   bool writingPolyline = false;
 
@@ -44,9 +50,9 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
 
-  for (CutModel::StringIter it_ss = model.beginStrings(); it_ss != model.endStrings(); it_ss++) {
+  for (StringList::iterator it_ss = travel.begin(); it_ss != travel.end(); ++it_ss) {
     const SegmentString& segString = *(*it_ss);
-    for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); it_s++) {
+    for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); ++it_s) {
       const Segment &seg = **it_s;
 
       int power = (seg.settings.power != -1) ? seg.settings.power : this->lconf->vector_power;
@@ -122,9 +128,8 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
 
       // FIXME: This is a temporary hack to emulate the Epilog Windows driver,
       // which appears to repeat the first vertex in a closed polyline twice at the end.
-      if (beginX == lastX && beginY == lastY) {
+      if (beginX == lastX && beginY == lastY)
         out << format(",%d,%d") % beginX % beginY;
-      }
     }
   }
 

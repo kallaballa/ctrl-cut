@@ -2,15 +2,30 @@
 
 #include <iostream>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <boost/graph/graphml.hpp>
+#include <boost/property_map/dynamic_property_map.hpp>
 
 using std::vector;
 
-void CutGraph::createPlanarGraph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end) {
+void dump_graph(const CutGraph& graph, const std::string& filename) {
+  boost::dynamic_properties dp;
+//  dp.property("vertex_geom", get(vertex_geom_t(), graph));
+//  dp.property("edge_geom", get(edge_geom_t(), graph));
+//  dp.property("weight", get(boost::edge_weight_t(), graph));
+
+  std::ofstream os(filename.c_str(), std::ios_base::out);
+  boost::write_graphml(os, graph, dp, true);
+  os.close();
+}
+
+void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end) {
     for (SegmentList::const_iterator it = start; it != end; ++it)
      graph.createEdge(*(*it));
 }
 
-void CutGraph::createCompleteGraph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end) {
+void create_complete_graph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end) {
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
 
@@ -24,7 +39,7 @@ void CutGraph::createCompleteGraph(CutGraph& graph, StringList::const_iterator s
   }
 }
 
-CutGraph::Vertex CutGraph::createCompleteGraphFromPoint(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
+CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
   CutGraph::Vertex v_origin = graph.addVertex(GeometryMapping(&origin, 0, 0));
@@ -74,7 +89,7 @@ bool CutGraph::hasEdge(const Vertex& in, const Vertex& out) {
 void CutGraph::permutateEdges(const SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices) {
   std::cerr << "permutate" << std::endl;
 
-  if(string.isClosed()) {
+  /*if(string.isClosed()) {
     for(SegmentString::PointConstIter it = string.beginPoints(); it != string.endPoints(); ++it) {
       CutGraph::Vertex nextV = addVertex(GeometryMapping(*it ,0 ,&string));
 
@@ -95,17 +110,19 @@ void CutGraph::permutateEdges(const SegmentString& string, Vertex v_origin, vect
     if(!hasEdge(frontV, backV))
       add_edge(frontV, backV, EdgeGeomProperty(GeometryMapping(0, 0, &string), IndexProperty(edge_count++, WeightProperty(0))), *this);
     std::cerr << frontV << " " << backV << std::endl;
-  } else {
+  } else {*/
     CutGraph::Vertex frontV = addVertex(GeometryMapping(string.frontPoints(),0 ,&string));
     CutGraph::Vertex backV = addVertex(GeometryMapping(string.backPoints(),0 ,&string));
     outVertices.push_back(frontV);
     outVertices.push_back(backV);
 
-    add_edge(frontV, backV, EdgeGeomProperty(GeometryMapping(0, 0, &string), IndexProperty(edge_count++, WeightProperty(0))), *this);
-    std::cerr << frontV << " " << backV << std::endl;
+    if(!hasEdge(frontV, backV)) {
+      add_edge(frontV, backV, EdgeGeomProperty(GeometryMapping(0, 0, &string), IndexProperty(edge_count++, WeightProperty(0))), *this);
+      std::cerr << frontV << " " << backV << std::endl;
+    }
     createMetricEdge(frontV, v_origin, GeometryMapping(0, 0, 0));
     createMetricEdge(backV, v_origin, GeometryMapping(0, 0, 0));
-  }
+  //}
 
   for(vector<Vertex>::iterator it_i = outVertices.begin(); it_i != outVertices.end(); ++it_i) {
     for(vector<Vertex>::iterator it_j = outVertices.begin(); it_j != outVertices.end(); ++it_j) {

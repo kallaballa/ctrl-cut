@@ -1,5 +1,5 @@
 #include "CutModel.h"
-
+#include "util/Logger.h"
 #include <fstream>
 
 void CutModel::createSegment(const Point &p1, const Point &p2,
@@ -85,39 +85,22 @@ void CutModel::add(const Segment& seg) {
   if (clipped.first == clipped.second) // ignore zero length segments
     return;
 
-  CutModel::SegmentIter it_clipped = segmentIndex.insert(endSegments(), &clipped);
+  CutModel::iterator it_clipped = segmentIndex.insert(end(), &clipped);
   std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_clipped);
   segmentTree.insert(items.first);
   segmentTree.insert(items.second);
 }
 
-CutModel::SegmentIter CutModel::remove(SegmentIter it_seg) {
-  assert(it_seg != endSegments());
+CutModel::iterator CutModel::remove(iterator it_seg) {
+  assert(it_seg != end());
   std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_seg);
   segmentTree.erase_exact(items.first);
   segmentTree.erase_exact(items.second);
   return segmentIndex.erase(it_seg);
 }
 
-void CutModel::add(const SegmentString& string) {
-  CutModel::StringIter it_str = stringIndex.insert(endStrings(), &string);
-/*  std::vector<StringNode>& nodes = createStringNodes(it_str);
-  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n)
-    stringTree.insert(*it_n);*/
-}
 
-CutModel::StringIter CutModel::remove(StringIter it_str) {
-  assert(it_str != endStrings());
-
-  /*std::vector<StringNode>& nodes = createStringNodes(it_str);
-  for(std::vector<StringNode>::iterator it_n = nodes.begin(); it_n != nodes.end(); ++it_n) {
-    std::cerr << (*it_n).point << std::endl;
-    stringTree.erase_exact(*it_n);
-  }*/
-  return stringIndex.erase(it_str);
-}
-
-void CutModel::findWithinRange(SegmentIter it_seg, std::vector<SegmentNode> v) {
+void CutModel::findWithinRange(iterator it_seg, std::vector<SegmentNode> v) {
   const Sphere& bsphere = (*it_seg)->getSphere();
   SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
   segmentTree.find_within_range(scenter, bsphere.radius, std::back_inserter(v));
@@ -127,33 +110,12 @@ SegmentTree::const_iterator CutModel::findSegment(const Point& p) {
   return segmentTree.find(*new SegmentNode(segmentIndex.end(), p));
 }
 
-StringTree::const_iterator CutModel::findString(const Point& p) {
-  return stringTree.find(*new StringNode(stringIndex.end(), p));
-}
-
 std::pair<SegmentNode, SegmentNode>& CutModel::createSegmentNodes(
-    SegmentIter it_seg) {
+    iterator it_seg) {
   const Segment& seg = *(*it_seg);
   SegmentNode si_first = (*new SegmentNode(it_seg, seg.first));
   SegmentNode si_second = (*new SegmentNode(it_seg, seg.second));
   return *new std::pair<SegmentNode, SegmentNode>(si_first, si_second);
-}
-
-void CutModel::remove(const SegmentString& string) {
-  StringIter it = find(stringIndex.begin(), stringIndex.end(), &string);
-  if(it != stringIndex.end())
-    remove(it);
-}
-
-std::vector<StringNode>& CutModel::createStringNodes(StringIter it_str){
-  std::vector<StringNode>& nodes = * new std::vector<StringNode>();
-  const SegmentString& segStr = *(*it_str);
-  SegmentString::PointConstIter it = segStr.beginPoints();
-  for(; it != segStr.endPoints(); ++it) {
-    nodes.push_back(* new StringNode(it_str, *(*it)));
-  }
-
-  return nodes;
 }
 
 /*!
@@ -166,7 +128,8 @@ CutModel *CutModel::load(std::istream &input) {
   int power, x, y;
   int lx = 0, ly = 0;
   int mx = 0, my = 0;
-
+  LOG_INFO_STR("Load vector data");
+  int segmentCnt = 0;
   while (std::getline(input, line)) {
     first = line[0];
 
@@ -186,6 +149,7 @@ CutModel *CutModel::load(std::istream &input) {
         break;
       case 'C': // close
         if (lx != mx || ly != my) {
+          segmentCnt++;
           model->createSegment(lx, ly, mx, my, (*new CutSettings(power, 0, 0)));
         }
         break;
@@ -198,6 +162,7 @@ CutModel *CutModel::load(std::istream &input) {
         break;
       case 'L': // line to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
+          segmentCnt++;
           model->createSegment(lx, ly, x, y, (*new CutSettings(power, 0, 0)));
           lx = x;
           ly = y;
@@ -207,10 +172,13 @@ CutModel *CutModel::load(std::istream &input) {
     }
   }
 
-  if (model->segmentsEmpty()) {
+  if (model->empty()) {
     delete model;
     model = NULL;
   }
+
+  LOG_DEBUG_MSG("loaded segments", segmentCnt);
+
   return model;
 }
 

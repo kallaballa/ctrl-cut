@@ -260,6 +260,11 @@ public:
 
     return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
   }
+
+  std::ostream& operator<<(std::ostream &os) const {
+    os << this->get<0>() << "," << this->get<1>() << "," <<  this->get<2>();
+    return os;
+  }
 };
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };

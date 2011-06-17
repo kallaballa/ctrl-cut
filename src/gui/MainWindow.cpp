@@ -94,7 +94,7 @@ void MainWindow::on_fileOpenAction_triggered()
       QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
       //QGraphicsItemGroup *parentitem = new GroupItem();
       parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-      for (CutModel::SegmentIter iter = this->cutmodel->beginSegments(); iter != this->cutmodel->endSegments(); iter++) {
+      for (CutModel::iterator iter = this->cutmodel->begin(); iter != this->cutmodel->end(); iter++) {
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
           // new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);

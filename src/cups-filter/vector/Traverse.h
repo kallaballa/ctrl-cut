@@ -16,18 +16,14 @@ using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
 
+void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last);
+void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator last);
+bool build_planar_embedding(CutGraph::Embedding& embedding, CutGraph& graph);
+
 template<typename Visitor>
 inline void traverse_planar_faces(CutGraph& graph, Visitor& visitor) {
-  // Test for planarity and compute the planar embedding as a side-effect
-  typedef std::vector< CutGraph::Edge > vec_t;
-  std::vector<vec_t> embedding(num_vertices(graph));
-
-  if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
-      boyer_myrvold_params::embedding = &embedding[0]))
-    std::cerr<< "Input graph is planar" << std::endl;
-  else
-    std::cerr << "Input graph is not planar" << std::endl;
-
+  CutGraph::Embedding embedding(num_vertices(graph));
+  assert(build_planar_embedding(embedding, graph));
   planar_face_traversal(graph, &embedding[0], visitor);
 }
 

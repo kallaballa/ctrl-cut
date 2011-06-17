@@ -18,9 +18,9 @@ SOURCES += \
           vector/HPGLEncoder.cpp \
           vector/CutGraph.cpp \
           vector/CutModel.cpp \
-          vector/filters/Explode.cpp \
-          vector/filters/Travel.cpp \
-          vector/filters/Join.cpp
+	  vector/Traverse.cpp \
+	  vector/filters/Explode.cpp
+
 HEADERS += \
           LaserJob.h \
           FileParser.h \
@@ -38,8 +38,6 @@ HEADERS += \
           vector/Geometry.h \
           vector/CutModel.h \
           vector/CutGraph.h \
-          vector/filters/Join.h \
-          vector/filters/Travel.h \
           vector/filters/Explode.h
 
 SOURCES += \

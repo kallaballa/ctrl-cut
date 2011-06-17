@@ -31,8 +31,8 @@ void Explode::filter(CutModel& cut) {
   vector<SegmentNode> in_range;
   Point intersection;
 
-  for (CutModel::SegmentIter it_s = cut.beginSegments(); it_s != cut.endSegments(); ++it_s) {
-    if(it_s == cut.endSegments())
+  for (CutModel::iterator it_s = cut.begin(); it_s != cut.end(); ++it_s) {
+    if(it_s == cut.end())
       continue;
     const Segment& pick = *(*it_s);
 
