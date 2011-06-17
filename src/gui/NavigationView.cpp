@@ -23,29 +23,8 @@ NavigationView::NavigationView(QWidget* parent) : QGraphicsView(parent)
 
   setBackgroundBrush(Qt::lightGray);
  
-  QGraphicsScene *scene = new QGraphicsScene(this);
-  this->setScene(scene);
+  // this->ensureVisible(laserbed);
 
-  QGraphicsPolygonItem *laserbed = new QGraphicsPolygonItem(QPolygonF(QRectF(QPointF(0,0), QSizeF(21600, 14400))));
-  laserbed->setBrush(QBrush(Qt::white));
-  laserbed->setZValue(-1000); // Render at the back
-  scene->addItem(laserbed);
-
-  for (int j=1000;j<14400;j+=1000) {
-    scene->addLine(0, j, 21600, j);
-  }
-  for (int i=1000;i<21600;i+=1000) {
-    scene->addLine(i, 0, i, 14400);
-  }
-
-  this->ensureVisible(laserbed);
-
-  //Set-up the view
-  QRectF rect = scene->sceneRect();
-  rect.adjust(-rect.width(), -rect.height(), rect.width(), rect.height());
-  setSceneRect(rect);
-
-  setCursor(Qt::OpenHandCursor);
 }
  
 void NavigationView::wheelEvent(QWheelEvent* event)
@@ -73,18 +52,6 @@ void NavigationView::keyPressEvent(QKeyEvent *event)
   QRectF g = this->mapToScene(0, 0, this->viewport()->geometry().width(), this->viewport()->geometry().height()).boundingRect();
 
   switch (event->key()) {
-  case Qt::Key_Up:
-    translate(0, g.width()/25);
-    break;
-  case Qt::Key_Down:
-    translate(0, -g.width()/25);
-    break;
-  case Qt::Key_Left:
-    translate(g.height()/25, 0);
-    break;
-  case Qt::Key_Right:
-    translate(-g.height()/25, 0);
-    break;
   case Qt::Key_Plus:
     scaleView(1.2, mapToScene(this->mapFromGlobal(QCursor::pos())));
     break;
@@ -109,5 +76,10 @@ void NavigationView::paintEvent(QPaintEvent *event)
 {
   QGraphicsView::paintEvent(event);
   emit matrixUpdated();
+}
+
+void NavigationView::updateSceneRect(const QRectF &rect)
+{
+  setSceneRect(rect.adjusted(-rect.width(), -rect.height(), rect.width(), rect.height()));
 }
 

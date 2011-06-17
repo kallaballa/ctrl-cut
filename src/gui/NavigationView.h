@@ -10,6 +10,9 @@ class NavigationView : public QGraphicsView
 public:
   NavigationView(QWidget* parent = NULL);
 
+public slots:
+  void updateSceneRect(const QRectF &);
+
 signals:
   void matrixUpdated();
 

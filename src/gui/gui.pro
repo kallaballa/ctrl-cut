@@ -25,6 +25,8 @@ HEADERS += MainWindow.h \
            NavigationView.h \          
            LpdClient.h \
            StreamUtils.h \
+           GroupItem.h \
+           CtrlCutScene.h \
            ../cups-filter/vector/Geometry.h \
            ../cups-filter/vector/CutModel.h \
            ../cups-filter/vector/CutGraph.h \
@@ -57,6 +59,7 @@ SOURCES += gui.cpp \
            NavigationView.cpp \
            LpdClient.cpp \
            StreamUtils.cpp \
+           CtrlCutScene.cpp \
            ../cups-filter/vector/CutModel.cpp \
            ../cups-filter/vector/CutGraph.cpp \
            ../cups-filter/vector/HPGLEncoder.cpp \

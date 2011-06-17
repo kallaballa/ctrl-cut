@@ -18,9 +18,13 @@ public slots:
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
 
+  void sceneSelectionChanged();
+
 private:
   class LpdClient *lpdclient;
   class CutModel *cutmodel;
+  class QGraphicsItem *firstitem;
+  class CtrlCutScene *scene;
 };
 
 #endif

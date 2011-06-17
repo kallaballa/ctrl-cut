@@ -9,6 +9,8 @@
 
 #include "LpdClient.h"
 #include "StreamUtils.h"
+#include "GroupItem.h"
+#include "CtrlCutScene.h"
 
 #include <assert.h>
 
@@ -18,6 +20,13 @@ MainWindow::MainWindow() : cutmodel(NULL)
   this->lpdclient->setObjectName("lpdclient");
 
   setupUi(this);
+
+  this->scene = new CtrlCutScene(this);
+  this->graphicsView->setScene(this->scene);
+
+  connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(sceneSelectionChanged()));
+  connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
+          this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
 }
 
 MainWindow::~MainWindow()
@@ -81,10 +90,22 @@ void MainWindow::on_fileOpenAction_triggered()
     }
 
     if (this->cutmodel) {
+      this->firstitem = NULL;
+      QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
+      //QGraphicsItemGroup *parentitem = new GroupItem();
+      parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
       for (CutModel::SegmentIter iter = this->cutmodel->beginSegments(); iter != this->cutmodel->endSegments(); iter++) {
         const Segment &segment = **iter;
-        this->graphicsView->scene()->addLine(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);
+        QGraphicsLineItem *line = 
+          // new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);
+          new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
+                                parentitem);
+        //        line->setFlags(QGraphicsItem::ItemIsSelectable);
+        //        this->graphicsView->scene()->addItem(line);
+        parentitem->addToGroup(line);
+        if (!this->firstitem) this->firstitem = line;
       }
+      this->scene->addItem(parentitem);
     }
   }
 }
@@ -144,4 +165,12 @@ void MainWindow::on_lpdclient_done(bool error)
 void MainWindow::on_lpdclient_progress(int done, int total)
 {
   printf("Progress: %.0f%%\n", 100.0f*done/total);
+}
+
+void MainWindow::sceneSelectionChanged()
+{
+  printf("selectionChanged\n");
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    printf("item: %p\n", item);
+  }
 }
