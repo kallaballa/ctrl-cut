@@ -299,7 +299,10 @@ int main(int argc, char *argv[]) {
 
   Driver drv;
   if (dumpxml) drv.enableXML(true);
-  drv.process(&job);
+  std::stringstream ss;
+  drv.process(&job, ss);
+  LOG_DEBUG_MSG("Output size", ss.str().size());
+  std::cout << ss.rdbuf();
 
   delete cut;
   delete parser;

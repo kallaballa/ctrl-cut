@@ -17,9 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <list>
 #include "Driver.h"
-#include "LaserJob.h"
+#include <list>
 #include "vector/CutModel.h"
 #include "vector/filters/Explode.h"
 #include "vector/filters/Join.h"
@@ -51,11 +50,8 @@ void Driver::filter(LaserJob *job) {
    }
 }
 
-void Driver::process(LaserJob *job) {
+void Driver::process(LaserJob *job, std::ostream &stream)
+{
   filter(job);
-  std::stringstream ss;
-  job->serializeTo(ss);
-  LOG_DEBUG_MSG("Output size", ss.str().size());
-
-  std::cout << ss.rdbuf();
+  job->serializeTo(stream);
 }

@@ -12,8 +12,8 @@ public:
   virtual ~Driver();
   void enableXML(bool on) { dumpxml = on; }
   void filter(LaserJob *job);
-  void process(LaserJob *job);
 
+  void process(LaserJob *job, std::ostream &stream);
 private:
   bool dumpxml;
 };
