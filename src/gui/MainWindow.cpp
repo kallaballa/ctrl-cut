@@ -80,6 +80,29 @@ void MainWindow::on_fileOpenAction_triggered()
         fprintf(stderr, "Error: Unable to open postscript file\n");
         return;
       }
+
+      if (psparser->hasBitmapData()) {
+        AbstractImage *image = psparser->getImage();
+        QImage *img;
+        BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
+        if (bitmap) {
+          img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
+                           image->rowstride(), QImage::Format_Mono);
+          QVector<QRgb> colortable;
+          colortable.append(qRgba(0,0,0,255));
+          colortable.append(qRgba(0,0,0,0));
+          img->setColorTable(colortable);
+          this->rasterpixmap = QPixmap::fromImage(*img);
+        }
+        else {
+          GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
+          if (gsimage) {
+            qDebug() << "grayscale images not implemented";
+            // img = new QImage(image->data(), image->width(), image->height(), 
+            //                  image->rowstride(), QImage::Format_Mono);
+          }
+        }
+      }
     }
     else if (suffix == "vector") {
       this->cutmodel = CutModel::load(filename.toStdString());
@@ -89,25 +112,32 @@ void MainWindow::on_fileOpenAction_triggered()
       }
     }
 
+    QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
+    parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+    this->scene->addItem(parentitem);
+
     if (this->cutmodel) {
       this->firstitem = NULL;
-      QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
-      //QGraphicsItemGroup *parentitem = new GroupItem();
-      parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
       for (CutModel::iterator iter = this->cutmodel->begin(); iter != this->cutmodel->end(); iter++) {
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
-          // new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1]);
           new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
                                 parentitem);
-        //        line->setFlags(QGraphicsItem::ItemIsSelectable);
-        //        this->graphicsView->scene()->addItem(line);
         parentitem->addToGroup(line);
         if (!this->firstitem) this->firstitem = line;
       }
-      this->scene->addItem(parentitem);
+    }
+
+    if (!this->rasterpixmap.isNull()) {
+      QGraphicsPixmapItem *imgitem = new QGraphicsPixmapItem(this->rasterpixmap, parentitem);
+      parentitem->addToGroup(imgitem);
     }
   }
+}
+
+void MainWindow::on_fileImportAction_triggered()
+{
+  QMessageBox::information(this, "Not Implemented", "Not Implemented");
 }
 
 #if 0

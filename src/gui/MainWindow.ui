@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Ctrl-Cut</string>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="NavigationView" name="graphicsView"/>
     </item>
@@ -37,6 +40,7 @@
      <string>File</string>
     </property>
     <addaction name="fileOpenAction"/>
+    <addaction name="fileImportAction"/>
     <addaction name="separator"/>
     <addaction name="filePrintAction"/>
    </widget>
@@ -73,6 +77,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="fileImportAction">
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>
