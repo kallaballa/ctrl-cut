@@ -260,11 +260,6 @@ public:
 
     return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
   }
-
-  std::ostream& operator<<(std::ostream &os) const {
-    os << this->get<0>() << "," << this->get<1>() << "," <<  this->get<2>();
-    return os;
-  }
 };
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
@@ -316,6 +311,17 @@ inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   os << "{" << segment.first << "," << segment.second << "}";
   return os;
 }
+
+inline std::ostream& operator<<(std::ostream &os, const SegmentString& segment) {
+//  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const GeometryMapping& map) {
+//  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
 
 struct SegmentNode {
   SegmentList::iterator owner;

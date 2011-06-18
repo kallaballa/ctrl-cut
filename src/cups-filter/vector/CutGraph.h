@@ -84,7 +84,7 @@ private:
   GeomVertexMap geometries;
 };
 
-void dump_graph(const CutGraph& graph, const std::string& filename);
+void dump_graph(CutGraph& graph, const std::string& filename);
 void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end);
 void create_complete_graph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end);
 CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end);

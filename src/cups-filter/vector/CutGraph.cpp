@@ -9,11 +9,41 @@
 
 using std::vector;
 
-void dump_graph(const CutGraph& graph, const std::string& filename) {
+void dump_graph(CutGraph& graph, const std::string& filename) {
   boost::dynamic_properties dp;
-//  dp.property("vertex_geom", get(vertex_geom_t(), graph));
-//  dp.property("edge_geom", get(edge_geom_t(), graph));
-//  dp.property("weight", get(boost::edge_weight_t(), graph));
+  // build property maps using associative_property_map
+  std::map<CutGraph::Vertex, size_t> vertex2point;
+  std::map<CutGraph::Vertex, size_t> vertex2segment;
+  std::map<CutGraph::Vertex, size_t> vertex2string;
+
+  std::map<CutGraph::Edge, size_t> edge2point;
+  std::map<CutGraph::Edge, size_t> edge2segment;
+  std::map<CutGraph::Edge, size_t> edge2string;
+
+  boost::graph_traits<CutGraph>::vertex_iterator v, v_end;
+  for (tie(v,v_end) = boost::vertices(graph); v != v_end; ++v) {
+    vertex2point.insert(std::make_pair(*v, size_t(graph.getPoint(*v))));
+    vertex2segment.insert(std::make_pair(*v, size_t(graph.getSegment(*v))));
+    vertex2string.insert(std::make_pair(*v, size_t(graph.getSegmentString(*v))));
+  }
+
+  boost::graph_traits<CutGraph>::edge_iterator e, e_end;
+  for (tie(e,e_end) = boost::edges(graph); e != e_end; ++e) {
+    edge2point.insert(std::make_pair(*e, size_t(graph.getPoint(*e))));
+    edge2segment.insert(std::make_pair(*e, size_t(graph.getSegment(*e))));
+    edge2string.insert(std::make_pair(*e, size_t(graph.getSegmentString(*e))));
+  }
+
+  // build and populate dynamic interface
+  boost::dynamic_properties properties;
+  properties.property("vertex_point",boost::make_assoc_property_map(vertex2point));
+  properties.property("vertex_segment",boost::make_assoc_property_map(vertex2segment));
+  properties.property("vertex_string",boost::make_assoc_property_map(vertex2string));
+  properties.property("edge_point",boost::make_assoc_property_map(edge2point));
+  properties.property("edge_segment",boost::make_assoc_property_map(edge2segment));
+  properties.property("edge_string",boost::make_assoc_property_map(edge2string));
+
+  dp.property("weight", get(boost::edge_weight_t(), graph));
 
   std::ofstream os(filename.c_str(), std::ios_base::out);
   boost::write_graphml(os, graph, dp, true);
