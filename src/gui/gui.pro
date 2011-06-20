@@ -31,6 +31,7 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/CutModel.h \
            ../cups-filter/vector/CutGraph.h \
            ../cups-filter/vector/HPGLEncoder.h \
+	   ../cups-filter/vector/graphml.hpp \
            ../cups-filter/vector/filters/Explode.h \
            ../cups-filter/raster/PclEncoder.h \
            ../cups-filter/raster/Dither.h \

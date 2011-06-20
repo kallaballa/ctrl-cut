@@ -4,13 +4,14 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <boost/graph/graphml.hpp>
 #include <boost/property_map/dynamic_property_map.hpp>
+#include "graphml.hpp"
 
 using std::vector;
 
 void dump_graph(CutGraph& graph, const std::string& filename) {
   boost::dynamic_properties dp;
+  // graphml property keys need to be unique! see: vector/graphml.hpp:264
   dp.property("vertex_point", get(&VertexGeometry::point, graph));
   dp.property("vertex_segment", get(&VertexGeometry::segment, graph));
   dp.property("vertex_string", get(&VertexGeometry::string, graph));

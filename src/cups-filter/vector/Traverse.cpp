@@ -84,7 +84,6 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   }
 
   typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, double EdgeGeometry::*>::type WeightMap;
-  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, long unsigned int VertexGeometry::*>::type VertexIndexMap;
   WeightMap weight_map(get(&EdgeGeometry::weight, graph));
   std::map<CutGraph::Vertex, graph_traits<CutGraph>::vertices_size_type > v_index_map;
   graph_traits<CutGraph>::vertices_size_type vertex_count = 0;

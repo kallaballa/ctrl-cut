@@ -38,6 +38,7 @@ HEADERS += \
           vector/Geometry.h \
           vector/CutModel.h \
           vector/CutGraph.h \
+	  vector/graphml.hpp \
           vector/filters/Explode.h
 
 SOURCES += \
