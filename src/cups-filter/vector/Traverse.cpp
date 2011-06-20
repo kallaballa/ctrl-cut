@@ -83,15 +83,22 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
     create_complete_graph(graph, first, last);
   }
 
-  typedef boost::property_map<CutGraph, boost::edge_weight_t>::type WeightMap;
-  WeightMap weight_map(get(boost::edge_weight, graph));
+  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, double EdgeGeometry::*>::type WeightMap;
+  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, long unsigned int VertexGeometry::*>::type VertexIndexMap;
+  WeightMap weight_map(get(&EdgeGeometry::weight, graph));
+  std::map<CutGraph::Vertex, graph_traits<CutGraph>::vertices_size_type > v_index_map;
+  graph_traits<CutGraph>::vertices_size_type vertex_count = 0;
+  graph_traits<CutGraph>::vertex_iterator vi, vi_end;
+
+  for(tie(vi, vi_end) = vertices(graph); vi != vi_end; ++vi)
+    v_index_map[*vi] = vertex_count++;
 
   vector<CutGraph::Vertex> route;
   double len = 0.0;
   if(mindOrigin)
     boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
   else
-    boost::metric_tsp_approx(graph, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
+    boost::metric_tsp_approx(graph, weight_map, make_assoc_property_map(v_index_map), boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
   const CutGraph::Vertex* lastVertex = NULL;
   const CutGraph::Vertex* nextVertex = NULL;

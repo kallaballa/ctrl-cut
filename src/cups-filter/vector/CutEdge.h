@@ -6,7 +6,7 @@
 #include <boost/utility.hpp>
 
 #include "Geometry.h"
-
+/*
 enum edge_geom_t { edge_geom };
 
 typedef boost::property<boost::edge_weight_t, double> WeightProperty;
@@ -16,5 +16,5 @@ typedef boost::property<edge_geom_t, GeometryMapping, IndexProperty>  EdgeGeomPr
 namespace boost {
 BOOST_INSTALL_PROPERTY(edge, geom);
 }
-
+*/
 #endif /* EDGEPROPERTY_H_ */

@@ -225,18 +225,65 @@ private:
 typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
 
-class GeometryMapping : public boost::tuple<const Point*, const Segment*, const SegmentString*> {
-public:
-  GeometryMapping() : boost::tuple<const Point*, const Segment*, const SegmentString*>(0,0,0){}
-  GeometryMapping(const Point* p, const Segment* seg, const SegmentString* string) : boost::tuple<const Point*, const Segment*, const SegmentString*>(p,seg,string){}
+struct EdgeGeometry {
+  const Point* point;
+  const Segment* segment;
+  const SegmentString* string;
+  double weight;
 
-  const bool operator<(const GeometryMapping& other) const {
-    const Point* p1 = this->get<0>();
-    const Point* p2 = other.get<0>();
-    const Segment* seg1 = this->get<1>();
-    const Segment* seg2 = other.get<1>();
-    const SegmentString* string1 = this->get<2>();
-    const SegmentString* string2 = other.get<2>();
+  EdgeGeometry() : point(0), segment(0), string(0), weight(0) {}
+  EdgeGeometry(const Point* p, const Segment* seg, const SegmentString* string, double weight=0) : point(p),segment(seg), string(string), weight(weight) {}
+
+  const bool operator<(const EdgeGeometry& other) const {
+    const Point* p1 = this->point;
+    const Point* p2 = other.point;
+    const Segment* seg1 = this->segment;
+    const Segment* seg2 = other.segment;
+    const SegmentString* string1 = this->string;
+    const SegmentString* string2 = other.string;
+
+    bool stringLess = string1 < string2;
+    bool stringEqual = string1 == string2;
+    bool segLess = seg1 < seg2;
+    bool segEqual = seg1 == seg2;
+    bool pLess;
+    bool pEqual;
+
+    if(p1 != NULL && p2 != NULL) {
+      if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
+        pLess = p1 < p2;
+        pEqual = p1 == p2;
+      } else {
+        pLess = *p1 < *p2;
+        pEqual = *p1 == *p2;
+      }
+    } else {
+      pLess = p1 < p2;
+      pEqual = p1 == p2;
+    }
+
+    return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
+  }
+};
+
+struct VertexGeometry {
+  const Point* point;
+  size_t point_id;
+  const Segment* segment;
+  size_t segment_id;
+  const SegmentString* string;
+  size_t string_id;
+
+  VertexGeometry() : point(0), segment(0), string(0) {}
+  VertexGeometry(const Point* p, const Segment* seg,const SegmentString* string, double weight=0) : point(p), segment(seg), string(string) {}
+
+  const bool operator<(const VertexGeometry& other) const {
+    const Point* p1 = this->point;
+    const Point* p2 = other.point;
+    const Segment* seg1 = this->segment;
+    const Segment* seg2 = other.segment;
+    const SegmentString* string1 = this->string;
+    const SegmentString* string2 = other.string;
 
     bool stringLess = string1 < string2;
     bool stringEqual = string1 == string2;
@@ -317,11 +364,29 @@ inline std::ostream& operator<<(std::ostream &os, const SegmentString& segment) 
   return os;
 }
 
-inline std::ostream& operator<<(std::ostream &os, const GeometryMapping& map) {
+inline std::ostream& operator<<(std::ostream &os, const EdgeGeometry& map) {
 //  os << "{" << segment.first << "," << segment.second << "}";
   return os;
 }
 
+/*
+ * HACK: provide disfuncational >> operators for write_graphml which assumes properties must support lexical_cast for write AND read.
+ * we do support write only.
+ */
+inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const Point* point) {
+  assert(false);
+  return is;
+}
+
+inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const Segment* seg) {
+  assert(false);
+  return is;
+}
+
+inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const SegmentString* string) {
+  assert(false);
+  return is;
+}
 
 struct SegmentNode {
   SegmentList::iterator owner;
