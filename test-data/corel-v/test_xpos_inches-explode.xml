@@ -1,71 +1,172 @@
-<cut clipped="0">
-<polylines cnt="0" >
-</polylines>
-<mesh>
-<edges cnt="10" >
-<edge power="-1" id="0" >
-<vertex x="59" y="3659" id="1" key="59/3659" />
-<vertex x="59" y="3719" id="0" key="59/3719" />
-</edge>
-<edge power="-1" id="1" >
-<vertex x="119" y="3659" id="3" key="119/3659" />
-<vertex x="119" y="3719" id="2" key="119/3719" />
-</edge>
-<edge power="-1" id="2" >
-<vertex x="179" y="3659" id="5" key="179/3659" />
-<vertex x="179" y="3719" id="4" key="179/3719" />
-</edge>
-<edge power="-1" id="3" >
-<vertex x="239" y="3659" id="7" key="239/3659" />
-<vertex x="239" y="3719" id="6" key="239/3719" />
-</edge>
-<edge power="-1" id="4" >
-<vertex x="299" y="3659" id="9" key="299/3659" />
-<vertex x="299" y="3719" id="8" key="299/3719" />
-</edge>
-<edge power="-1" id="5" >
-<vertex x="359" y="3659" id="11" key="359/3659" />
-<vertex x="359" y="3719" id="10" key="359/3719" />
-</edge>
-<edge power="-1" id="6" >
-<vertex x="419" y="3659" id="13" key="419/3659" />
-<vertex x="419" y="3719" id="12" key="419/3719" />
-</edge>
-<edge power="-1" id="7" >
-<vertex x="479" y="3659" id="15" key="479/3659" />
-<vertex x="479" y="3719" id="14" key="479/3719" />
-</edge>
-<edge power="-1" id="8" >
-<vertex x="539" y="3659" id="17" key="539/3659" />
-<vertex x="539" y="3719" id="16" key="539/3719" />
-</edge>
-<edge power="-1" id="9" >
-<vertex x="599" y="3659" id="19" key="599/3659" />
-<vertex x="599" y="3719" id="18" key="599/3719" />
-</edge>
-</edges>
-<vertices cnt="20" >
-<vertex x="119" y="3659" id="3" key="119/3659" />
-<vertex x="119" y="3719" id="2" key="119/3719" />
-<vertex x="179" y="3659" id="5" key="179/3659" />
-<vertex x="179" y="3719" id="4" key="179/3719" />
-<vertex x="239" y="3659" id="7" key="239/3659" />
-<vertex x="239" y="3719" id="6" key="239/3719" />
-<vertex x="299" y="3659" id="9" key="299/3659" />
-<vertex x="299" y="3719" id="8" key="299/3719" />
-<vertex x="359" y="3659" id="11" key="359/3659" />
-<vertex x="359" y="3719" id="10" key="359/3719" />
-<vertex x="419" y="3659" id="13" key="419/3659" />
-<vertex x="419" y="3719" id="12" key="419/3719" />
-<vertex x="479" y="3659" id="15" key="479/3659" />
-<vertex x="479" y="3719" id="14" key="479/3719" />
-<vertex x="539" y="3659" id="17" key="539/3659" />
-<vertex x="539" y="3719" id="16" key="539/3719" />
-<vertex x="59" y="3659" id="1" key="59/3659" />
-<vertex x="59" y="3719" id="0" key="59/3719" />
-<vertex x="599" y="3659" id="19" key="599/3659" />
-<vertex x="599" y="3719" id="18" key="599/3719" />
-</vertices>
-</mesh>
-
-</cut>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="key0" for="edge" attr.name="edge_point" attr.type="string" />
+  <key id="key1" for="edge" attr.name="edge_segment" attr.type="string" />
+  <key id="key2" for="edge" attr.name="edge_string" attr.type="string" />
+  <key id="key3" for="node" attr.name="vertex_point" attr.type="string" />
+  <key id="key4" for="node" attr.name="vertex_segment" attr.type="string" />
+  <key id="key5" for="node" attr.name="vertex_string" attr.type="string" />
+  <key id="key6" for="edge" attr.name="weight" attr.type="double" />
+  <graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+    <node id="n0">
+      <data key="key3">0x85ee30</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n1">
+      <data key="key3">0x85ee10</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n2">
+      <data key="key3">0x68ed00</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n3">
+      <data key="key3">0x68ece0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n4">
+      <data key="key3">0x684b80</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n5">
+      <data key="key3">0x684b60</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n6">
+      <data key="key3">0x691f80</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n7">
+      <data key="key3">0x691f60</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n8">
+      <data key="key3">0x84bf50</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n9">
+      <data key="key3">0x84bf30</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n10">
+      <data key="key3">0x84c170</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n11">
+      <data key="key3">0x84c150</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n12">
+      <data key="key3">0xa461a0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n13">
+      <data key="key3">0xa46180</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n14">
+      <data key="key3">0xa463c0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n15">
+      <data key="key3">0xa463a0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n16">
+      <data key="key3">0x864400</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n17">
+      <data key="key3">0x8643e0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n18">
+      <data key="key3">0x864620</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n19">
+      <data key="key3">0x864600</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+      <data key="key0">0</data>
+      <data key="key1">0x684720</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e1" source="n2" target="n3">
+      <data key="key0">0</data>
+      <data key="key1">0x6848f0</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e2" source="n4" target="n5">
+      <data key="key0">0</data>
+      <data key="key1">0x684ba0</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e3" source="n6" target="n7">
+      <data key="key0">0</data>
+      <data key="key1">0x691fa0</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e4" source="n8" target="n9">
+      <data key="key0">0</data>
+      <data key="key1">0x84bf70</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e5" source="n10" target="n11">
+      <data key="key0">0</data>
+      <data key="key1">0x84c190</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e6" source="n12" target="n13">
+      <data key="key0">0</data>
+      <data key="key1">0xa461c0</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e7" source="n14" target="n15">
+      <data key="key0">0</data>
+      <data key="key1">0xa463e0</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e8" source="n16" target="n17">
+      <data key="key0">0</data>
+      <data key="key1">0x864420</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+    <edge id="e9" source="n18" target="n19">
+      <data key="key0">0</data>
+      <data key="key1">0x864640</data>
+      <data key="key2">0</data>
+      <data key="key6">60</data>
+    </edge>
+  </graph>
+</graphml>

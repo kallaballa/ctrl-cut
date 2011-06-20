@@ -1,23 +1,39 @@
-<cut clipped="0">
-<polylines cnt="0" >
-</polylines>
-<mesh>
-<edges cnt="2" >
-<edge power="-1" id="0" >
-<vertex x="0" y="13" id="1" key="0/13" />
-<vertex x="143" y="13" id="0" key="143/13" />
-</edge>
-<edge power="-1" id="1" >
-<vertex x="144" y="13" id="3" key="144/13" />
-<vertex x="188" y="13" id="2" key="188/13" />
-</edge>
-</edges>
-<vertices cnt="4" >
-<vertex x="0" y="13" id="1" key="0/13" />
-<vertex x="143" y="13" id="0" key="143/13" />
-<vertex x="144" y="13" id="3" key="144/13" />
-<vertex x="188" y="13" id="2" key="188/13" />
-</vertices>
-</mesh>
-
-</cut>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="key0" for="edge" attr.name="edge_point" attr.type="string" />
+  <key id="key1" for="edge" attr.name="edge_segment" attr.type="string" />
+  <key id="key2" for="edge" attr.name="edge_string" attr.type="string" />
+  <key id="key3" for="node" attr.name="vertex_point" attr.type="string" />
+  <key id="key4" for="node" attr.name="vertex_segment" attr.type="string" />
+  <key id="key5" for="node" attr.name="vertex_string" attr.type="string" />
+  <key id="key6" for="edge" attr.name="weight" attr.type="double" />
+  <graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+    <node id="n0">
+      <data key="key3">0x85edb0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n1">
+      <data key="key3">0x85f230</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n2">
+      <data key="key3">0x835080</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+      <data key="key0">0</data>
+      <data key="key1">0x6846f0</data>
+      <data key="key2">0</data>
+      <data key="key6">144</data>
+    </edge>
+    <edge id="e1" source="n1" target="n2">
+      <data key="key0">0</data>
+      <data key="key1">0x8350c0</data>
+      <data key="key2">0</data>
+      <data key="key6">44</data>
+    </edge>
+  </graph>
+</graphml>

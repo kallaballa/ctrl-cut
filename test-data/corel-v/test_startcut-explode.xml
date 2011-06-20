@@ -1,35 +1,76 @@
-<cut clipped="0">
-<polylines cnt="0" >
-</polylines>
-<mesh>
-<edges cnt="4" >
-<edge power="-1" id="0" >
-<vertex x="0" y="13" id="1" key="0/13" />
-<vertex x="234" y="13" id="0" key="234/13" />
-</edge>
-<edge power="-1" id="1" >
-<vertex x="0" y="37" id="3" key="0/37" />
-<vertex x="234" y="37" id="2" key="234/37" />
-</edge>
-<edge power="-1" id="2" >
-<vertex x="23" y="60" id="5" key="23/60" />
-<vertex x="259" y="60" id="4" key="259/60" />
-</edge>
-<edge power="-1" id="3" >
-<vertex x="23" y="84" id="7" key="23/84" />
-<vertex x="259" y="84" id="6" key="259/84" />
-</edge>
-</edges>
-<vertices cnt="8" >
-<vertex x="0" y="13" id="1" key="0/13" />
-<vertex x="0" y="37" id="3" key="0/37" />
-<vertex x="23" y="60" id="5" key="23/60" />
-<vertex x="23" y="84" id="7" key="23/84" />
-<vertex x="234" y="13" id="0" key="234/13" />
-<vertex x="234" y="37" id="2" key="234/37" />
-<vertex x="259" y="60" id="4" key="259/60" />
-<vertex x="259" y="84" id="6" key="259/84" />
-</vertices>
-</mesh>
-
-</cut>
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="key0" for="edge" attr.name="edge_point" attr.type="string" />
+  <key id="key1" for="edge" attr.name="edge_segment" attr.type="string" />
+  <key id="key2" for="edge" attr.name="edge_string" attr.type="string" />
+  <key id="key3" for="node" attr.name="vertex_point" attr.type="string" />
+  <key id="key4" for="node" attr.name="vertex_segment" attr.type="string" />
+  <key id="key5" for="node" attr.name="vertex_string" attr.type="string" />
+  <key id="key6" for="edge" attr.name="weight" attr.type="double" />
+  <graph id="G" edgedefault="undirected" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+    <node id="n0">
+      <data key="key3">0x85eed0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n1">
+      <data key="key3">0x85ee10</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n2">
+      <data key="key3">0x68ed00</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n3">
+      <data key="key3">0x835190</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n4">
+      <data key="key3">0x684bb0</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n5">
+      <data key="key3">0x684b90</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n6">
+      <data key="key3">0x691f90</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <node id="n7">
+      <data key="key3">0x691f70</data>
+      <data key="key4">0</data>
+      <data key="key5">0</data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+      <data key="key0">0</data>
+      <data key="key1">0x6846f0</data>
+      <data key="key2">0</data>
+      <data key="key6">235</data>
+    </edge>
+    <edge id="e1" source="n2" target="n3">
+      <data key="key0">0</data>
+      <data key="key1">0x68ed20</data>
+      <data key="key2">0</data>
+      <data key="key6">235</data>
+    </edge>
+    <edge id="e2" source="n4" target="n5">
+      <data key="key0">0</data>
+      <data key="key1">0x684bd0</data>
+      <data key="key2">0</data>
+      <data key="key6">236</data>
+    </edge>
+    <edge id="e3" source="n6" target="n7">
+      <data key="key0">0</data>
+      <data key="key1">0x691fb0</data>
+      <data key="key2">0</data>
+      <data key="key6">236</data>
+    </edge>
+  </graph>
+</graphml>
