@@ -60,8 +60,8 @@ public:
 
   static CutModel *load(const std::string &filename);
   static CutModel *load(std::istream &input);
-protected:
   LaserConfig& config;
+protected:
   bool clipped;
   SegmentList segmentIndex;
   SegmentTree segmentTree;

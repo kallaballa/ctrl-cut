@@ -23,13 +23,13 @@
 bool isShared(CutGraph& graph, const Point& p) {
   CutGraph::Vertex* v;
   if((v = graph.findVertex(VertexGeometry(&p, 0))) != NULL) {
-    boost::graph_traits<CutGraph>::out_edge_iterator e_it, e_end;
+    boost::graph_traits<CutGraph>::out_edge_iterator oe_it, oe_end;
     const SegmentString* last_owner = NULL;
-    for(boost::tie(e_it,e_end) = boost::out_edges(*v, graph); e_it != e_end; ++e_it) {
-      if(last_owner != NULL && last_owner != graph.getOwner(*e_it)) {
+    for(boost::tie(oe_it,oe_end) = boost::out_edges(*v, graph); oe_it != oe_end; ++oe_it) {
+      if(last_owner != NULL && last_owner != graph.getOwner(*oe_it)) {
         return true;
       } else
-        last_owner = graph.getOwner(*e_it);
+        last_owner = graph.getOwner(*oe_it);
     }
   }
   return false;
@@ -40,13 +40,13 @@ bool isShared(CutGraph& graph, const Point& p) {
  */
 void reduce_linestrings(CutModel &model, float epsilon)
 {
-  epsilon=1;
+  epsilon=3;
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
   CutGraph graph;
   StringList join;
   make_linestrings(join, model.begin(), model.end(), graph);
-  CutModel newModel = * new CutModel();
+  CutModel newModel;
 
   // Reduce each polyline separately
   for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
