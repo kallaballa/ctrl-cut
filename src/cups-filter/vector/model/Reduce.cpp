@@ -20,17 +20,32 @@
 #include "util/Logger.h"
 #include "vector/graph/Traverse.h"
 
+bool isShared(CutGraph& graph, const Point& p) {
+  CutGraph::Vertex* v;
+  if((v = graph.findVertex(VertexGeometry(&p, 0))) != NULL) {
+    boost::graph_traits<CutGraph>::out_edge_iterator e_it, e_end;
+    const SegmentString* last_owner = NULL;
+    for(boost::tie(e_it,e_end) = boost::out_edges(*v, graph); e_it != e_end; ++e_it) {
+      if(last_owner != NULL && last_owner != graph.getOwner(*e_it)) {
+        return true;
+      } else
+        last_owner = graph.getOwner(*e_it);
+    }
+  }
+  return false;
+}
+
 /*!
  * Reduce number of vertices in polylines by approximating the polylines with fewer line segments.
  */
 void reduce_linestrings(CutModel &model, float epsilon)
 {
-  epsilon = 100;
+  epsilon=1;
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
+  CutGraph graph;
   StringList join;
-  make_linestrings(join, model.begin(), model.end());
-
+  make_linestrings(join, model.begin(), model.end(), graph);
   CutModel newModel = * new CutModel();
 
   // Reduce each polyline separately
@@ -58,6 +73,12 @@ void reduce_linestrings(CutModel &model, float epsilon)
             largest = d;
             largestit = pit2;
           }
+
+          if(isShared(graph,(**pit2)[1])) {
+            largest = epsilon + 1;
+            largestit = pit2;
+            break;
+          }
         }
       }
       else {
@@ -71,13 +92,19 @@ void reduce_linestrings(CutModel &model, float epsilon)
             largest = d;
             largestit = pit2;
           }
+
+          if(isShared(graph,(**pit2)[1])) {
+            largest = epsilon + 1;
+            largestit = pit2;
+            break;
+          }
         }
       }
 
       // We exceeded the epsilon, split the edge and continue
       if (largest > epsilon) {
-        Segment *newe = new Segment(startSegment.first, (*largestit)->second, startSegment.settings);
-        newstring->addSegment(*newe);
+        Segment *newseg = new Segment(startSegment.first, (*largestit)->second, startSegment.settings);
+        newstring->addSegment(*newseg);
         startit = ++largestit;
       }
     }

@@ -18,6 +18,7 @@ using namespace boost;
 
 void dump_linestrings(const std::string &filename, StringList::iterator first, StringList::iterator last);
 void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::iterator last);
+void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last, CutGraph& graph);
 void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last);
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator last);
 bool build_planar_embedding(CutGraph::Embedding& embedding, CutGraph& graph);

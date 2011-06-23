@@ -90,10 +90,9 @@ void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::
   os << "</cut>" << std::endl;
 }
 
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last) {
+void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last, CutGraph& graph) {
   LOG_INFO_STR("make linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
-  CutGraph graph;
   create_segment_graph(graph, first, last);
   join_strings_visitor vis = *new join_strings_visitor(graph, strings);
   traverse_planar_faces(graph, vis);
@@ -101,6 +100,11 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
 #ifdef DEBUG
   check_linestrings(strings.begin(), strings.end());
 #endif
+}
+
+void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last) {
+  CutGraph graph;
+  make_linestrings(strings, first, last, graph);
 }
 
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator  last) {
