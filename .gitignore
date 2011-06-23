@@ -5,3 +5,5 @@ out.*
 tmp.*
 tmp-*
 Makefile
+/tmp/*
+test-data/*/*.xml

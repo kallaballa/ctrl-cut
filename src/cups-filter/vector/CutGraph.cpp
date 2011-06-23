@@ -3,8 +3,6 @@
 #include <iostream>
 #include <vector>
 
-using std::vector;
-
 void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end) {
     for (SegmentList::const_iterator it = start; it != end; ++it)
      graph.createEdge(*(*it));
