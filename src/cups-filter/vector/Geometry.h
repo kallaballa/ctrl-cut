@@ -63,6 +63,11 @@ public:
   double distance(const Point& other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
+
+  std::ostream& operator<<(std::ostream &os) const {
+    os << "<point x=\"" << this->x << "\" y=\"" << this->y << "\" />";
+    return os;
+  }
 };
 
 class Box {
@@ -122,6 +127,7 @@ public:
   const Sphere& getSphere() const {
     return *this->sphere;
   }
+
 private:
   Box* box;
   Sphere* sphere;
@@ -225,45 +231,50 @@ private:
 typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
 
-class GeometryMapping : public boost::tuple<const Point*, const Segment*, const SegmentString*> {
-public:
-  GeometryMapping() : boost::tuple<const Point*, const Segment*, const SegmentString*>(0,0,0){}
-  GeometryMapping(const Point* p, const Segment* seg, const SegmentString* string) : boost::tuple<const Point*, const Segment*, const SegmentString*>(p,seg,string){}
+struct EdgeGeometry {
+  const Segment* segment;
+  const SegmentString* owner;
+  double weight;
 
-  const bool operator<(const GeometryMapping& other) const {
-    const Point* p1 = this->get<0>();
-    const Point* p2 = other.get<0>();
-    const Segment* seg1 = this->get<1>();
-    const Segment* seg2 = other.get<1>();
-    const SegmentString* string1 = this->get<2>();
-    const SegmentString* string2 = other.get<2>();
+  EdgeGeometry() : segment(0), owner(0), weight(0) {}
+  EdgeGeometry(const Segment* seg, const SegmentString* string, double weight=0) : segment(seg), owner(string), weight(weight) {}
 
-    bool stringLess = string1 < string2;
-    bool stringEqual = string1 == string2;
-    bool segLess = seg1 < seg2;
-    bool segEqual = seg1 == seg2;
+  const bool operator<(const EdgeGeometry& other) const {
+    const Segment* seg1 = this->segment;
+    const Segment* seg2 = other.segment;
+    const SegmentString* string1 = this->owner;
+    const SegmentString* string2 = other.owner;
+
+    return string1 < string2 || (string1 == string2 && seg1 < seg2);
+  }
+};
+
+struct VertexGeometry {
+  const Point* point;
+  const SegmentString* owner;
+
+  VertexGeometry() : point(0), owner(0) {}
+  VertexGeometry(const Point* p, const SegmentString* string) : point(p), owner(string) {}
+
+  const bool operator<(const VertexGeometry& other) const {
+    const Point* p1 = this->point;
+    const Point* p2 = other.point;
+    const SegmentString* string1 = this->owner;
+    const SegmentString* string2 = other.owner;
+
     bool pLess;
-    bool pEqual;
 
     if(p1 != NULL && p2 != NULL) {
       if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
         pLess = p1 < p2;
-        pEqual = p1 == p2;
       } else {
         pLess = *p1 < *p2;
-        pEqual = *p1 == *p2;
       }
     } else {
       pLess = p1 < p2;
-      pEqual = p1 == p2;
     }
 
-    return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
-  }
-
-  std::ostream& operator<<(std::ostream &os) const {
-    os << this->get<0>() << "," << this->get<1>() << "," <<  this->get<2>();
-    return os;
+    return string1 < string2 || (string1 == string2 && pLess);
   }
 };
 
@@ -316,6 +327,17 @@ inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   os << "{" << segment.first << "," << segment.second << "}";
   return os;
 }
+
+inline std::ostream& operator<<(std::ostream &os, const SegmentString& segment) {
+//  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
+inline std::ostream& operator<<(std::ostream &os, const EdgeGeometry& map) {
+//  os << "{" << segment.first << "," << segment.second << "}";
+  return os;
+}
+
 
 struct SegmentNode {
   SegmentList::iterator owner;

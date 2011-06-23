@@ -31,12 +31,6 @@ Driver::Driver() : dumpxml(false)
 Driver::~Driver() {
 }
 
-void dump_segment_graph(const CutModel& model, const std::string& filename) {
-  CutGraph graph;
-  create_segment_graph(graph, model.begin(), model.end());
-  dump_graph(graph, filename);
-}
-
 /**
  * run the filter stack. additionally if dumpxml is set to true dump cut graph to xml.
  */
@@ -46,13 +40,7 @@ void Driver::filter(LaserJob *job) {
    list<CutModel*> cuts = job->getCuts();
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& model = *(*it);
-     if(this->dumpxml) {
-       dump_segment_graph(model, job->lconf->datadir + "/" + job->lconf->basename + "-load.xml");
-     }
      explode.filter(model);
-     if(this->dumpxml) {
-       dump_segment_graph(model, job->lconf->datadir + "/" + job->lconf->basename + "-explode.xml");
-     }
    }
 }
 

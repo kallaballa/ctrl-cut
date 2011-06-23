@@ -22,9 +22,16 @@ bool build_planar_embedding(CutGraph::Embedding& embedding, CutGraph& graph);
 
 template<typename Visitor>
 inline void traverse_planar_faces(CutGraph& graph, Visitor& visitor) {
+  std::map<CutGraph::Edge, graph_traits<CutGraph>::edges_size_type > e_index_map;
+  graph_traits<CutGraph>::edges_size_type edge_count = 0;
+  graph_traits<CutGraph>::edge_iterator ei, ei_end;
+
+  for(tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
+    e_index_map[*ei] = edge_count++;
+
   CutGraph::Embedding embedding(num_vertices(graph));
   assert(build_planar_embedding(embedding, graph));
-  planar_face_traversal(graph, &embedding[0], visitor);
+  planar_face_traversal(graph, &embedding[0], visitor,make_assoc_property_map(e_index_map));
 }
 
 #endif /* TRAVERSE_H_ */
