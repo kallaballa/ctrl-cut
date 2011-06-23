@@ -39,10 +39,6 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 
   void end_face() {
-    if (current != NULL)
-      strings.push_back(current);
-
-    current = NULL;
   }
 
   void next_edge(CutGraph::Edge e) {
@@ -52,6 +48,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
       if (current == NULL || !current->addSegment(*seg)) {
         current = new SegmentString();
         current->addSegment(*seg);
+        strings.push_back(current);
       }
 
       graph.setOwner(e, *current);
@@ -101,7 +98,9 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
   join_strings_visitor vis = *new join_strings_visitor(graph, strings);
   traverse_planar_faces(graph, vis);
   LOG_DEBUG_MSG("strings after", strings.size());
+#ifdef DEBUG
   check_linestrings(strings.begin(), strings.end());
+#endif
 }
 
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator  last) {
@@ -141,7 +140,9 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
 
   LOG_DEBUG_MSG("strings after", strings.size());
   LOG_INFO_MSG("Tour length", len);
+#ifdef DEBUG
   check_linestrings(strings.begin(), strings.end());
+#endif
 }
 
 // Test for planarity and compute the planar embedding as a side-effect
