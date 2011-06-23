@@ -17,9 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <set>
 #include "CutGraph.h"
 #include "Traverse.h"
 #include "util/Logger.h"
+#include "util/LaserConfig.h"
 #include <boost/graph/properties.hpp>
 #include <boost/graph/metric_tsp_approx.hpp>
 
@@ -57,6 +59,27 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 };
 
+void check_linestrings(StringList::iterator first, StringList::iterator last) {
+  std::set<Segment> segments;
+
+  for(StringList::iterator it = first; it != last; ++it) {
+    const SegmentString& string = **it;
+
+    for(SegmentString::SegmentConstIter it_s =  string.beginSegments(); it_s != string.endSegments(); ++it_s) {
+      const Segment& seg = **it_s;
+      // assert the segments are globally unique
+      assert(segments.find(seg) == segments.end() && segments.find(Segment(seg.second, seg.first, seg.settings)) == segments.end());
+      // assert coordinate clipping to laser bed
+      assert(seg.first.x >= 0 && seg.first.x < LaserConfig::inst().device_width
+          && seg.first.y >= 0 && seg.first.y < LaserConfig::inst().device_height
+          && seg.second.x >= 0 && seg.second.x < LaserConfig::inst().device_width
+          && seg.second.y >= 0 && seg.second.y < LaserConfig::inst().device_height
+      );
+      segments.insert(seg);
+    }
+  }
+}
+
 void dump_linestrings(const std::string &filename, StringList::iterator first, StringList::iterator last) {
   std::ofstream os(filename.c_str(), std::ios_base::out);
   dump_linestrings(os, first,last);
@@ -78,6 +101,7 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
   join_strings_visitor vis = *new join_strings_visitor(graph, strings);
   traverse_planar_faces(graph, vis);
   LOG_DEBUG_MSG("strings after", strings.size());
+  check_linestrings(strings.begin(), strings.end());
 }
 
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator  last) {
@@ -100,25 +124,24 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   double len = 0.0;
   boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
-  const CutGraph::Vertex* lastVertex = NULL;
   const CutGraph::Vertex* nextVertex = NULL;
-  const SegmentString* lastString = NULL;
   const SegmentString* nextString = NULL;
+  std::set<const SegmentString*> traversedStrings;
+
   for (vector<CutGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
     nextVertex = &(*it);
-    if (lastVertex != NULL) {
-      nextString = graph.getOwner(*it);
-      if (nextString != NULL && nextString != lastString) {
-        strings.push_back(nextString);
-        lastString = nextString;
-      }
+    nextString = graph.getOwner(*it);
+
+    if (nextString != NULL && traversedStrings.find(nextString) == traversedStrings.end()) {
+      strings.push_back(nextString);
+      traversedStrings.insert(nextString);
     }
-    lastVertex = nextVertex;
   }
 
   LOG_DEBUG_MSG("strings after", strings.size());
   LOG_INFO_MSG("Tour length", len);
+  check_linestrings(strings.begin(), strings.end());
 }
 
 // Test for planarity and compute the planar embedding as a side-effect

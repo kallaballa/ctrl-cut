@@ -35,9 +35,11 @@ HPGLEncoder::~HPGLEncoder() {
 void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   StringList join;
   make_linestrings(join,model.begin(), model.end());
+  dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-join.xml", join.begin(), join.end());
 
   StringList travel;
   travel_linestrings(travel, join.begin(), join.end());
+  dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-travel.xml", travel.begin(), travel.end());
 
   bool first = true;
   bool writingPolyline = false;

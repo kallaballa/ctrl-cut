@@ -35,8 +35,6 @@ Driver::~Driver() {
  * run the filter stack. additionally if dumpxml is set to true dump cut graph to xml.
  */
 void Driver::filter(LaserJob *job) {
-
-
    list<CutModel*> cuts = job->getCuts();
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& model = *(*it);
