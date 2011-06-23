@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <list>
 #include "util/LaserConfig.h"
-#include "Geometry.h"
-#include "CutGraph.h"
+#include "vector/geom/Geometry.h"
+#include "vector/graph/CutGraph.h"
 
 class CutModel {
 public:

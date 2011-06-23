@@ -30,7 +30,7 @@
 #include "util/Logger.h"
 #include "util/LaserConfig.h"
 #include "util/Eps.h"
-#include "vector/CutModel.h"
+#include "vector/model/CutModel.h"
 #include "LaserJob.h"
 #include "Driver.h"
 #include "Ctrl-Cut.h"

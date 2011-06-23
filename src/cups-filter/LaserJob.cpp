@@ -19,7 +19,7 @@
 #define PJL_PARAM
 #include <list>
 #include "LaserJob.h"
-#include "vector/CutModel.h"
+#include "vector/model/CutModel.h"
 
 using boost::format;
 using std::list;
@@ -124,10 +124,10 @@ void LaserJob::serializeTo(std::ostream &out) {
 
     /* We're going to perform a vector print. */
     for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
-      CutModel *cut = *it;
-      if (cut) {
+      CutModel *model = *it;
+      if (model) {
         HPGLEncoder r(this->lconf);
-        r.encode(*cut, out);
+        r.encode(*model, out);
       }
     }
   }

@@ -57,6 +57,18 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 };
 
+void dump_linestrings(const std::string &filename, StringList::iterator first, StringList::iterator last) {
+  std::ofstream os(filename.c_str(), std::ios_base::out);
+  dump_linestrings(os, first,last);
+  os.close();
+}
+
+void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::iterator last) {
+  os << "<cut>" << std::endl;
+  for(StringList::iterator it = first; it != last; ++it)
+    os << **it;
+  os << "</cut>" << std::endl;
+}
 
 void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last) {
   LOG_INFO_STR("make linestrings");
@@ -98,18 +110,7 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
     if (lastVertex != NULL) {
       nextString = graph.getOwner(*it);
       if (nextString != NULL && nextString != lastString) {
-
-        /*FIXME enable rotating of entry points for closed strings optionally
-        const Point& first = *graph.getPoint(*it);
-        if(nextString->isClosed()) {
-          if(*nextString->frontPoints() != first) {
-            SegmentString* rotated = new SegmentString(*nextString);
-            rotated->rotate(first);
-            strings.push_back(rotated);
-          }
-        } else */
         strings.push_back(nextString);
-
         lastString = nextString;
       }
     }

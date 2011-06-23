@@ -17,16 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <deque>
 #include "util/Logger.h"
 #include "Explode.h"
-
-using std::deque;
 
 /*
  * Split segments at intersection points.
  */
-void Explode::filter(CutModel& cut) {
+void explode_segments(CutModel& cut) {
   LOG_INFO_STR("Explode");
   vector<SegmentNode> in_range;
   Point intersection;

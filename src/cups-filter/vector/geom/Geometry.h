@@ -64,10 +64,7 @@ public:
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
 
-  std::ostream& operator<<(std::ostream &os) const {
-    os << "<point x=\"" << this->x << "\" y=\"" << this->y << "\" />";
-    return os;
-  }
+
 };
 
 class Box {
@@ -127,7 +124,6 @@ public:
   const Sphere& getSphere() const {
     return *this->sphere;
   }
-
 private:
   Box* box;
   Sphere* sphere;
@@ -223,6 +219,8 @@ public:
     }
     return false;
   }
+
+
 private:
   SegmentDeque segments;
   PointDeque points;
@@ -317,24 +315,28 @@ inline intersection_result intersects(const Segment& s1, const Segment &s2, Poin
 
   return ALIGN_NONE;
 }
-
-inline std::ostream& operator<<(std::ostream &os, const Point &p) {
-  os << "{" << p.x << "," << p.y << "}";
+inline std::ostream& operator<<(std::ostream &os, const Point &p)  {
+  os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" />";
   return os;
 }
 
 inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
-  os << "{" << segment.first << "," << segment.second << "}";
+  os << "<segment>" << std::endl;
+  os << segment.first << std::endl;
+  os << segment.second << std::endl;
+  os << "</segment>" << std::endl;
   return os;
 }
 
-inline std::ostream& operator<<(std::ostream &os, const SegmentString& segment) {
-//  os << "{" << segment.first << "," << segment.second << "}";
-  return os;
-}
+inline std::ostream& operator<<(std::ostream &os, const SegmentString& string) {
+  os << "<string>" << std::endl;
+  for(SegmentString::PointConstIter it=string.beginPoints(); it != string.endPoints(); ++it)
+    os << **it << std::endl;
 
-inline std::ostream& operator<<(std::ostream &os, const EdgeGeometry& map) {
-//  os << "{" << segment.first << "," << segment.second << "}";
+  for(SegmentString::SegmentConstIter it=string.beginSegments(); it != string.endSegments(); ++it)
+    os << **it << std::endl;
+
+  os << "</string>" << std::endl;
   return os;
 }
 

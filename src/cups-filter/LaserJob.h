@@ -13,7 +13,7 @@
 #include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
 #include "raster/PclEncoder.h"
-#include "vector/CutModel.h"
+#include "vector/model/CutModel.h"
 
 using std::string;
 

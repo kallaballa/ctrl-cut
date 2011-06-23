@@ -19,8 +19,8 @@
 
 #include "Driver.h"
 #include <list>
-#include "vector/CutModel.h"
-#include "vector/filters/Explode.h"
+#include "vector/model/CutModel.h"
+#include "vector/model/Explode.h"
 
 using std::list;
 
@@ -35,12 +35,12 @@ Driver::~Driver() {
  * run the filter stack. additionally if dumpxml is set to true dump cut graph to xml.
  */
 void Driver::filter(LaserJob *job) {
-  Explode explode;
+
 
    list<CutModel*> cuts = job->getCuts();
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& model = *(*it);
-     explode.filter(model);
+     explode_segments(model);
    }
 }
 

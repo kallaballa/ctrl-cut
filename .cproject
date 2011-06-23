@@ -59,14 +59,10 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="0.787130372.339128202" name="GeometryBuilder.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Traverse.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1257433860" name="CutGraph.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutGraph.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/Geometry.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1483698561" name="CutEdge.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutEdge.h" toolsToInvoke=""/>
-					<fileInfo id="0.787130372.1442715179" name="CutVertex.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/CutVertex.h" toolsToInvoke=""/>
+					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/geom/Geometry.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="SDL_draw-1.2.13/src|wykobi|libkdtree|test-code|boost-geometry|boost_1_46_1|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="vector/old|vector/new|vector/filters/old|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
+						<entry excluding="vector/old|vector/new|raster/filter|vector/filters/old" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
+						<entry excluding="libkdtree|test-code|wykobi|SDL_draw-1.2.13/src|boost_1_46_1|boost-geometry|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

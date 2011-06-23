@@ -12,9 +12,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
-#include "CutEdge.h"
-#include "CutVertex.h"
-#include "Geometry.h"
+#include "vector/geom/Geometry.h"
 
 using boost::adjacency_list;
 using boost::undirectedS;
