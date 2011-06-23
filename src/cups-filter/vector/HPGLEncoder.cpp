@@ -35,8 +35,8 @@ HPGLEncoder::~HPGLEncoder() {
 void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   StringList join;
   make_linestrings(join,model.begin(), model.end());
-  StringList travel;
-  travel_linestrings(travel, join.begin(), join.end());
+//  StringList travel;
+//  travel_linestrings(travel, join.begin(), join.end());
 
   bool first = true;
   bool writingPolyline = false;
@@ -50,7 +50,7 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
 
-  for (StringList::iterator it_ss = travel.begin(); it_ss != travel.end(); ++it_ss) {
+  for (StringList::iterator it_ss = join.begin(); it_ss != join.end(); ++it_ss) {
     const SegmentString& segString = *(*it_ss);
     for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); ++it_s) {
       const Segment &seg = **it_s;

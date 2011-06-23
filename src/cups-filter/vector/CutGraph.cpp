@@ -2,51 +2,18 @@
 
 #include <iostream>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/graph/graphml.hpp>
-#include <boost/property_map/dynamic_property_map.hpp>
 
 using std::vector;
-
-void dump_graph(CutGraph& graph, const std::string& filename) {
-  boost::dynamic_properties dp;
-  dp.property("vertex_point", get(&VertexGeometry::point, graph));
-  dp.property("vertex_segment", get(&VertexGeometry::segment, graph));
-  dp.property("vertex_string", get(&VertexGeometry::string, graph));
-  dp.property("edge_point", get(&EdgeGeometry::point, graph));
-  dp.property("edge_segment", get(&EdgeGeometry::segment, graph));
-  dp.property("edge_string",get(&EdgeGeometry::string, graph));
-  dp.property("weight", get(&EdgeGeometry::weight, graph));
-
-  std::ofstream os(filename.c_str(), std::ios_base::out);
-  boost::write_graphml(os, graph, dp, true);
-  os.close();
-}
 
 void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end) {
     for (SegmentList::const_iterator it = start; it != end; ++it)
      graph.createEdge(*(*it));
 }
 
-void create_complete_graph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end) {
-  const SegmentString* s_i = NULL;
-  const SegmentString* s_j = NULL;
-
-  for(StringList::const_iterator it_i = start; it_i != end; ++it_i) {
-    s_i = *it_i;
-    for (StringList::const_iterator it_j = start; it_j != end; ++it_j) {
-      s_j = *it_j;
-
-      graph.createEdges(*s_i, *s_j);
-    }
-  }
-}
-
 CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
   const SegmentString* s_i = NULL;
   const SegmentString* s_j = NULL;
-  CutGraph::Vertex v_origin = graph.addVertex(VertexGeometry(&origin, 0, 0));
+  CutGraph::Vertex v_origin = graph.addVertex(&origin);
 
   for(StringList::const_iterator it_si = start; it_si != end; ++it_si) {
     s_i = *it_si;
@@ -65,7 +32,7 @@ CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& 
               != sjVertices.end(); ++it_vj) {
             const CutGraph::Vertex vi = *it_vi;
             const CutGraph::Vertex vj = *it_vj;
-            graph.createMetricEdge(vi, vj, EdgeGeometry(0, 0, 0));
+            graph.createMoveEdge(vi, vj);
           }
         }
       }
@@ -75,14 +42,21 @@ CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& 
   return v_origin;
 }
 
-void CutGraph::createMetricEdge(const Vertex& in, const Vertex& out, EdgeGeometry map) {
+void CutGraph::createWorkEdge(const Vertex& in, const Vertex& out, const SegmentString* owner) {
+  if(in == out || hasEdge(in, out))
+    return;
+
+  std::cerr << in << " " << out << std::endl;
+  add_edge(in, out, EdgeGeometry(0, owner), *this);
+}
+
+void CutGraph::createMoveEdge(const Vertex& in, const Vertex& out) {
   if(in == out || hasEdge(in, out))
     return;
   const Point* p_in = this->getPoint(in);
   const Point* p_out = this->getPoint(out);
-
+  EdgeGeometry map(0,0, p_in->distance(*p_out));
   std::cerr << in << " " << out << std::endl;
-  map.weight = p_in->distance(*p_out);
   add_edge(in, out, map, *this);
 }
 
@@ -90,150 +64,37 @@ bool CutGraph::hasEdge(const Vertex& in, const Vertex& out) {
   return boost::edge(in, out, *this).second;
 }
 
-void CutGraph::permutateEdges(const SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices) {
+void CutGraph::permutateEdges(const SegmentString& string, Vertex v_origin,
+    vector<Vertex>& outVertices) {
   std::cerr << "permutate" << std::endl;
 
-  /*if(string.isClosed()) {
-    for(SegmentString::PointConstIter it = string.beginPoints(); it != string.endPoints(); ++it) {
-      CutGraph::Vertex nextV = addVertex(GeometryMapping(*it ,0 ,&string));
+  CutGraph::Vertex frontV = addVertex(string.frontPoints(), &string);
+  CutGraph::Vertex backV = addVertex(string.backPoints(), &string);
+  outVertices.push_back(frontV);
+  outVertices.push_back(backV);
 
-      if(!outVertices.empty()) {
-        CutGraph::Vertex lastV = outVertices.back();
+  createWorkEdge(frontV, backV, &string);
+  createMoveEdge(frontV, v_origin);
+  createMoveEdge(backV, v_origin);
 
-        if(!hasEdge(lastV, nextV)) {
-          std::cerr << lastV << " " << nextV << std::endl;
-          add_edge(lastV, nextV, EdgeGeomProperty(GeometryMapping(0, 0, &string), IndexProperty(edge_count++, WeightProperty(0))), *this);
-        }
-      }
-
-      outVertices.push_back(nextV);
-      createMetricEdge(nextV, v_origin, GeometryMapping(0, 0, 0));
-    }
-    CutGraph::Vertex frontV = outVertices.front();
-    CutGraph::Vertex backV = outVertices.back();
-    if(!hasEdge(frontV, backV))
-      add_edge(frontV, backV, EdgeGeomProperty(GeometryMapping(0, 0, &string), IndexProperty(edge_count++, WeightProperty(0))), *this);
-    std::cerr << frontV << " " << backV << std::endl;
-  } else {*/
-    CutGraph::Vertex frontV = addVertex(VertexGeometry(string.frontPoints(),0 ,&string));
-    CutGraph::Vertex backV = addVertex(VertexGeometry(string.backPoints(),0 ,&string));
-    outVertices.push_back(frontV);
-    outVertices.push_back(backV);
-
-    if(!hasEdge(frontV, backV)) {
-      add_edge(frontV, backV, EdgeGeometry(0, 0, &string), *this);
-      std::cerr << frontV << " " << backV << std::endl;
-    }
-    createMetricEdge(frontV, v_origin, EdgeGeometry(0, 0, 0));
-    createMetricEdge(backV, v_origin, EdgeGeometry(0, 0, 0));
-  //}
-
-  for(vector<Vertex>::iterator it_i = outVertices.begin(); it_i != outVertices.end(); ++it_i) {
-    for(vector<Vertex>::iterator it_j = outVertices.begin(); it_j != outVertices.end(); ++it_j) {
-      createMetricEdge(*it_i, *it_j, EdgeGeometry(0, 0, 0));
-    }
-  }
-}
-
-void CutGraph::createEdges(const SegmentString& string1, const SegmentString& string2) {
-  const Point& s1_inP = *string1.frontPoints();
-  const Point& s1_outP = *string1.backPoints();
-  const Point& s2_inP = *string2.frontPoints();
-  const Point& s2_outP = *string2.backPoints();
-
-  bool sameString = &string1 == &string2;
-
-  CutGraph::Vertex s1_inV = addVertex(VertexGeometry(&s1_inP  ,0 ,&string1));
-  CutGraph::Vertex s1_outV = addVertex(VertexGeometry(&s1_outP ,0 ,&string1));
-
-  if(!boost::edge(s1_inV, s1_outV, *this).second) {
-    add_edge(s1_inV, s1_outV, EdgeGeometry(0, 0, &string1), *this);
-  }
-
-  if(!sameString) {
-    VertexGeometry s2_inMap =  * new VertexGeometry(&s2_inP  ,0 ,&string2);
-    VertexGeometry s2_outMap = * new VertexGeometry(&s2_outP ,0 ,&string2);
-    CutGraph::Vertex s2_inV = addVertex(s2_inMap);
-    CutGraph::Vertex s2_outV = addVertex(s2_outMap);
-
-    if(!boost::edge(s2_inV, s2_outV, *this).second) {
-      add_edge(s2_inV, s2_outV, EdgeGeometry(0, 0, &string2), *this);
-    }
-
-    if(!boost::edge(s1_inV,s2_inV, *this).second) {
-      double w0 = s1_inP.distance(s2_inP);
-      double w1 = s1_inP.distance(s2_outP);
-      double w2 = s1_outP.distance(s2_inP);
-      double w3 = s1_outP.distance(s2_outP);
-
-      add_edge(s1_inV, s2_inV, EdgeGeometry(0, 0, 0,w0), *this);
-      add_edge(s1_inV, s2_outV, EdgeGeometry(0, 0, 0,w1), *this);
-      add_edge(s1_outV, s2_inV, EdgeGeometry(0, 0, 0,w2), *this);
-      add_edge(s1_outV, s2_outV, EdgeGeometry(0, 0, 0,w3), *this);
+  for (vector<Vertex>::iterator it_i = outVertices.begin(); it_i
+      != outVertices.end(); ++it_i) {
+    for (vector<Vertex>::iterator it_j = outVertices.begin(); it_j
+        != outVertices.end(); ++it_j) {
+      createMoveEdge(*it_i, *it_j);
     }
   }
 }
 
 void CutGraph::createEdge(const Segment& seg) {
-  CutGraph::Vertex inV = addVertex(VertexGeometry(&seg.first, 0, 0));
-  CutGraph::Vertex outV = addVertex(VertexGeometry(&seg.second, 0, 0));
+  CutGraph::Vertex inV = addVertex(&seg.first);
+  CutGraph::Vertex outV = addVertex(&seg.second);
 
   double weight = seg.first.distance(seg.second);
 
-  add_edge(inV, outV, EdgeGeometry(0, &seg, 0, weight), *this);
+  add_edge(inV, outV, EdgeGeometry(&seg, 0, weight), *this);
 }
 
-
-void CutGraph::createEdges(const SegmentString& string1, const SegmentString& string2, const CutGraph::Vertex& v_origin) {
-  const Point& s1_inP = *string1.frontPoints();
-  const Point& s1_outP = *string1.backPoints();
-  const Point& s2_inP = *string2.frontPoints();
-  const Point& s2_outP = *string2.backPoints();
-  const Point& p_origin = *this->getPoint(v_origin);
-
-  bool sameString = &string1 == &string2;
-
-  VertexGeometry s1_inMap  = * new VertexGeometry(&s1_inP  ,0 ,&string1);
-  VertexGeometry s1_outMap = * new VertexGeometry(&s1_outP ,0 ,&string1);
-  VertexGeometry s2_inMap  = * new VertexGeometry(&s2_inP  ,0 ,&string2);
-  VertexGeometry s2_outMap = * new VertexGeometry(&s2_outP ,0 ,&string2);
-
-  CutGraph::Vertex s1_inV = addVertex(s1_inMap);
-  CutGraph::Vertex s1_outV = addVertex(s1_outMap);
-
-  if(!boost::edge(s1_inV, v_origin, *this).second) {
-    double wo0 = p_origin.distance(s1_inP);
-    double wo1 = p_origin.distance(s1_outP);
-    add_edge(v_origin, s1_inV, EdgeGeometry(0, 0, 0, wo0), *this);
-    add_edge(v_origin, s1_outV, EdgeGeometry(0, 0, 0, wo1), *this);
-    add_edge(s1_inV, s1_outV, EdgeGeometry(0, 0, &string1), *this);
-  }
-
-  if(!sameString) {
-    CutGraph::Vertex s2_inV = addVertex(s2_inMap);
-    CutGraph::Vertex s2_outV = addVertex(s2_outMap);
-
-    if(!boost::edge(s2_inV, v_origin, *this).second) {
-      double wo2 = p_origin.distance(s2_inP);
-      double wo3 = p_origin.distance(s2_outP);
-      add_edge(v_origin, s2_inV, EdgeGeometry(0, 0, 0, wo2), *this);
-      add_edge(v_origin, s2_outV, EdgeGeometry(0, 0, 0, wo3), *this);
-      add_edge(s2_inV, s2_outV, EdgeGeometry(0, 0, &string2), *this);
-    }
-
-    if(!boost::edge(s1_inV,s2_inV, *this).second) {
-      double w0 = s1_inP.distance(s2_inP);
-      double w1 = s1_inP.distance(s2_outP);
-      double w2 = s1_outP.distance(s2_inP);
-      double w3 = s1_outP.distance(s2_outP);
-
-      add_edge(s1_inV, s2_inV, EdgeGeometry(0, 0, 0,w0), *this);
-      add_edge(s1_inV, s2_outV, EdgeGeometry(0, 0, 0,w1), *this);
-      add_edge(s1_outV, s2_inV, EdgeGeometry(0, 0, 0,w2), *this);
-      add_edge(s1_outV, s2_outV, EdgeGeometry(0, 0, 0,w3), *this);
-    }
-  }
-}
 
 CutGraph::Vertex* CutGraph::findVertex(const VertexGeometry &map) {
   GeomVertexMap::const_iterator it = geometries.find(map);
@@ -243,7 +104,8 @@ CutGraph::Vertex* CutGraph::findVertex(const VertexGeometry &map) {
     return (CutGraph::Vertex*)&(*it).second;
 }
 
-CutGraph::Vertex CutGraph::addVertex(const VertexGeometry &map) {
+CutGraph::Vertex CutGraph::addVertex(const Point* p, const SegmentString* owner) {
+  VertexGeometry map(p,owner);
   Vertex* v = findVertex(map);
   if (v == NULL) {
     Vertex new_vertex = add_vertex(map, *this);

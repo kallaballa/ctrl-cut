@@ -46,13 +46,13 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void next_edge(CutGraph::Edge e) {
     const Segment* seg = graph.getSegment(e);
 
-    if (graph.getSegmentString(e) == NULL) {
+    if (graph.getOwner(e) == NULL) {
       if (current == NULL || !current->addSegment(*seg)) {
         current = new SegmentString();
         current->addSegment(*seg);
       }
 
-      graph.setSegmentString(e, *current);
+      graph.setOwner(e, *current);
     }
   }
 };
@@ -71,17 +71,9 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator  last) {
   LOG_INFO_STR("travel linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
-  // if the tsp should mind the origin too
-  bool mindOrigin = true;
 
   CutGraph graph;
-  CutGraph::Vertex v_origin;
-
-  if(mindOrigin) {
-    v_origin = create_complete_graph_from_point(graph, * new Point(0,0),first, last);
-  } else {
-    create_complete_graph(graph, first, last);
-  }
+  CutGraph::Vertex v_origin = create_complete_graph_from_point(graph, * new Point(0,0),first, last);
 
   typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, double EdgeGeometry::*>::type WeightMap;
   typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, long unsigned int VertexGeometry::*>::type VertexIndexMap;
@@ -95,10 +87,7 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
 
   vector<CutGraph::Vertex> route;
   double len = 0.0;
-  if(mindOrigin)
-    boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
-  else
-    boost::metric_tsp_approx(graph, weight_map, make_assoc_property_map(v_index_map), boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
+  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
   const CutGraph::Vertex* lastVertex = NULL;
   const CutGraph::Vertex* nextVertex = NULL;
@@ -108,7 +97,7 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
       != route.end(); ++it) {
     nextVertex = &(*it);
     if (lastVertex != NULL) {
-      nextString = graph.getSegmentString(*it);
+      nextString = graph.getOwner(*it);
       if (nextString != NULL && nextString != lastString) {
 
         /*FIXME enable rotating of entry points for closed strings optionally

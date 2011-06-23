@@ -63,6 +63,11 @@ public:
   double distance(const Point& other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
+
+  std::ostream& operator<<(std::ostream &os) const {
+    os << "<point x=\"" << this->x << "\" y=\"" << this->y << "\" />";
+    return os;
+  }
 };
 
 class Box {
@@ -122,6 +127,7 @@ public:
   const Sphere& getSphere() const {
     return *this->sphere;
   }
+
 private:
   Box* box;
   Sphere* sphere;
@@ -226,86 +232,49 @@ typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
 
 struct EdgeGeometry {
-  const Point* point;
   const Segment* segment;
-  const SegmentString* string;
+  const SegmentString* owner;
   double weight;
 
-  EdgeGeometry() : point(0), segment(0), string(0), weight(0) {}
-  EdgeGeometry(const Point* p, const Segment* seg, const SegmentString* string, double weight=0) : point(p),segment(seg), string(string), weight(weight) {}
+  EdgeGeometry() : segment(0), owner(0), weight(0) {}
+  EdgeGeometry(const Segment* seg, const SegmentString* string, double weight=0) : segment(seg), owner(string), weight(weight) {}
 
   const bool operator<(const EdgeGeometry& other) const {
-    const Point* p1 = this->point;
-    const Point* p2 = other.point;
     const Segment* seg1 = this->segment;
     const Segment* seg2 = other.segment;
-    const SegmentString* string1 = this->string;
-    const SegmentString* string2 = other.string;
+    const SegmentString* string1 = this->owner;
+    const SegmentString* string2 = other.owner;
 
-    bool stringLess = string1 < string2;
-    bool stringEqual = string1 == string2;
-    bool segLess = seg1 < seg2;
-    bool segEqual = seg1 == seg2;
-    bool pLess;
-    bool pEqual;
-
-    if(p1 != NULL && p2 != NULL) {
-      if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
-        pLess = p1 < p2;
-        pEqual = p1 == p2;
-      } else {
-        pLess = *p1 < *p2;
-        pEqual = *p1 == *p2;
-      }
-    } else {
-      pLess = p1 < p2;
-      pEqual = p1 == p2;
-    }
-
-    return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
+    return string1 < string2 || (string1 == string2 && seg1 < seg2);
   }
 };
 
 struct VertexGeometry {
   const Point* point;
-  size_t point_id;
-  const Segment* segment;
-  size_t segment_id;
-  const SegmentString* string;
-  size_t string_id;
+  const SegmentString* owner;
 
-  VertexGeometry() : point(0), segment(0), string(0) {}
-  VertexGeometry(const Point* p, const Segment* seg,const SegmentString* string, double weight=0) : point(p), segment(seg), string(string) {}
+  VertexGeometry() : point(0), owner(0) {}
+  VertexGeometry(const Point* p, const SegmentString* string) : point(p), owner(string) {}
 
   const bool operator<(const VertexGeometry& other) const {
     const Point* p1 = this->point;
     const Point* p2 = other.point;
-    const Segment* seg1 = this->segment;
-    const Segment* seg2 = other.segment;
-    const SegmentString* string1 = this->string;
-    const SegmentString* string2 = other.string;
+    const SegmentString* string1 = this->owner;
+    const SegmentString* string2 = other.owner;
 
-    bool stringLess = string1 < string2;
-    bool stringEqual = string1 == string2;
-    bool segLess = seg1 < seg2;
-    bool segEqual = seg1 == seg2;
     bool pLess;
-    bool pEqual;
 
     if(p1 != NULL && p2 != NULL) {
       if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
         pLess = p1 < p2;
-        pEqual = p1 == p2;
       } else {
         pLess = *p1 < *p2;
-        pEqual = *p1 == *p2;
       }
     } else {
       pLess = p1 < p2;
-      pEqual = p1 == p2;
     }
 
-    return stringLess || (stringEqual && segLess) || (stringEqual && segEqual && pLess);
+    return string1 < string2 || (string1 == string2 && pLess);
   }
 };
 
@@ -369,24 +338,6 @@ inline std::ostream& operator<<(std::ostream &os, const EdgeGeometry& map) {
   return os;
 }
 
-/*
- * HACK: provide disfuncational >> operators for write_graphml which assumes properties must support lexical_cast for write AND read.
- * we do support write only.
- */
-inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const Point* point) {
-  assert(false);
-  return is;
-}
-
-inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const Segment* seg) {
-  assert(false);
-  return is;
-}
-
-inline std::basic_istream<char>& operator>>(std::basic_istream<char>& is, const SegmentString* string) {
-  assert(false);
-  return is;
-}
 
 struct SegmentNode {
   SegmentList::iterator owner;

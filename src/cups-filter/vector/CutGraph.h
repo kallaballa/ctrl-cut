@@ -47,36 +47,27 @@ public:
     return (*this)[v].point;
   }
 
-  inline const Segment* getSegment(const CutGraph::Vertex& v) {
-    return (*this)[v].segment;
-  }
-
-  inline const SegmentString* getSegmentString(const CutGraph::Vertex& v) {
-    return (*this)[v].string;
-  }
-
-  inline const Point* getPoint(const CutGraph::Edge& e) {
-    return (*this)[e].point;
+  inline const SegmentString* getOwner(const CutGraph::Vertex& v) {
+    return (*this)[v].owner;
   }
 
   inline const Segment* getSegment(const CutGraph::Edge& e) {
     return (*this)[e].segment;
   }
 
-  inline const SegmentString* getSegmentString(const CutGraph::Edge& e) {
-    return (*this)[e].string;
+  inline const SegmentString* getOwner(const CutGraph::Edge& e) {
+    return (*this)[e].owner;
   }
 
-  inline void setSegmentString(const CutGraph::Edge& e, const SegmentString& string) {
-    (*this)[e].string = &string;
+  inline void setOwner(const CutGraph::Edge& e, const SegmentString& string) {
+    (*this)[e].owner = &string;
   }
 
   CutGraph::Vertex* findVertex(const VertexGeometry &map);
-  CutGraph::Vertex addVertex(const VertexGeometry &map);
+  CutGraph::Vertex addVertex(const Point* p, const SegmentString* owner = 0);
   void createEdge(const Segment& seg);
-  void createEdges(const SegmentString& string1, const SegmentString& string2);
-  void createEdges(const SegmentString& string1, const SegmentString& string2, const CutGraph::Vertex& v_origin);
-  void createMetricEdge(const Vertex& in, const Vertex& out, EdgeGeometry map);
+  void createWorkEdge(const Vertex& in, const Vertex& out, const SegmentString* owner);
+  void createMoveEdge(const Vertex& in, const Vertex& out);
   bool hasEdge(const Vertex& in, const Vertex& out);
   void permutateEdges(const SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices);
 
@@ -84,7 +75,6 @@ private:
   GeomVertexMap geometries;
 };
 
-void dump_graph(CutGraph& graph, const std::string& filename);
 void create_segment_graph(CutGraph& graph, SegmentList::const_iterator start, SegmentList::const_iterator end);
 void create_complete_graph(CutGraph& graph, StringList::const_iterator start, StringList::const_iterator end);
 CutGraph::Vertex create_complete_graph_from_point(CutGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end);
