@@ -16,10 +16,10 @@ SOURCES += \
           util/Eps.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
-          vector/CutGraph.cpp \
-          vector/CutModel.cpp \
-	  vector/Traverse.cpp \
-	  vector/filters/Explode.cpp
+          vector/graph/CutGraph.cpp \
+	  vector/graph/Traverse.cpp \
+          vector/model/CutModel.cpp \
+	  vector/model/Explode.cpp
 
 HEADERS += \
           LaserJob.h \
@@ -31,14 +31,12 @@ HEADERS += \
           util/LaserConfig.h \
           Ctrl-Cut.h \
           Driver.h \
-          vector/CutEdge.h \
-          vector/CutVertex.h \
-          vector/Traverse.h \
-          vector/HPGLEncoder.h \
-          vector/Geometry.h \
-          vector/CutModel.h \
-          vector/CutGraph.h \
-          vector/filters/Explode.h
+          vector/graph/Traverse.h \
+          vector/graph/CutGraph.h \
+          vector/geom/Geometry.h \
+          vector/model/CutModel.h \
+          vector/model/Explode.h \
+          vector/HPGLEncoder.h
 
 SOURCES += \
           raster/DownSample.cpp \
