@@ -85,8 +85,12 @@ void CutGraph::permutateEdges(const SegmentString& string, Vertex v_origin,
 }
 
 void CutGraph::createEdge(const Segment& seg) {
+
   CutGraph::Vertex inV = addVertex(&seg.first);
   CutGraph::Vertex outV = addVertex(&seg.second);
+
+  if(hasEdge(inV,outV))
+    return;
 
   double weight = seg.first.distance(seg.second);
 
