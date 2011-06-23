@@ -5,6 +5,7 @@
 
 class CtrlCutScene : public QGraphicsScene
 {
+  Q_OBJECT;
 public:
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}
