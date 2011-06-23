@@ -63,8 +63,6 @@ public:
   double distance(const Point& other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
-
-
 };
 
 class Box {
@@ -88,6 +86,8 @@ public:
   const Point& first;
   const Point& second;
   CutSettings& settings;
+  Segment() :first(* new Point()), second(* new Point()), settings(* new CutSettings()){
+  }
 
   Segment(const Point& first, const Point& second, CutSettings& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
     if(first < second)
@@ -316,7 +316,7 @@ inline intersection_result intersects(const Segment& s1, const Segment &s2, Poin
   return ALIGN_NONE;
 }
 inline std::ostream& operator<<(std::ostream &os, const Point &p)  {
-  os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" />";
+  os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" key=\"" << p.x << "/" << p.y << "\" />";
   return os;
 }
 
@@ -324,7 +324,7 @@ inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   os << "<segment>" << std::endl;
   os << segment.first << std::endl;
   os << segment.second << std::endl;
-  os << "</segment>" << std::endl;
+  os << "</segment>";
   return os;
 }
 
