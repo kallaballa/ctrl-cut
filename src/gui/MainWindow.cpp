@@ -4,8 +4,8 @@
 #include "FileParser.h"
 #include "LaserJob.h"
 #include "Driver.h"
-#include "vector/CutModel.h"
-#include "vector/Geometry.h"
+#include "vector/model/CutModel.h"
+#include "vector/geom/Geometry.h"
 
 #include "LpdClient.h"
 #include "StreamUtils.h"
