@@ -47,20 +47,26 @@ public:
   iterator remove(iterator it_seg);
   void findWithinRange(iterator it_seg, std::vector<SegmentNode> v);
   SegmentTree::const_iterator findSegment(const Point& p);
-
-  static CutModel *load(const std::string &filename);
-  static CutModel *load(std::istream &input);
-
   bool wasClipped() const {
     return this->clipped;
   }
 
-private:
+  void operator=(const CutModel& other) {
+    this->config = other.config;
+    this->clipped = other.clipped;
+    this->segmentIndex = other.segmentIndex;
+    this->segmentTree = other.segmentTree;
+  }
+
+  static CutModel *load(const std::string &filename);
+  static CutModel *load(std::istream &input);
+protected:
   LaserConfig& config;
   bool clipped;
   SegmentList segmentIndex;
   SegmentTree segmentTree;
 
+private:
   Segment leftBedBorder;
   Segment bottomBedBorder;
   Segment rightBedBorder;

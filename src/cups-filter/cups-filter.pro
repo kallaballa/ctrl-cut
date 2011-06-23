@@ -19,7 +19,8 @@ SOURCES += \
           vector/graph/CutGraph.cpp \
 	  vector/graph/Traverse.cpp \
           vector/model/CutModel.cpp \
-	  vector/model/Explode.cpp
+	  vector/model/Explode.cpp \
+	  vector/model/Reduce.cpp
 
 HEADERS += \
           LaserJob.h \
@@ -36,6 +37,7 @@ HEADERS += \
           vector/geom/Geometry.h \
           vector/model/CutModel.h \
           vector/model/Explode.h \
+	  vector/model/Reduce.h \
           vector/HPGLEncoder.h
 
 SOURCES += \

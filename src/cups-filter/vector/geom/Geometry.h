@@ -124,6 +124,18 @@ public:
   const Sphere& getSphere() const {
     return *this->sphere;
   }
+
+  /*!
+    Calculates the distance from the Point to the infinite segment
+  */
+  float distance(const Point &p) const
+  {
+    return
+      fabs((this->first[1] - this->second[1]) * p.x + (this->second[0] - this->first[0]) * p.y +
+       this->first[0] * this->second[1] - this->second[0] * this->first[1]) /
+      sqrt((this->second[0] - this->first[0]) * (this->second[0] - this->first[0]) +
+           (this->second[1] - this->first[1]) * (this->second[1] - this->first[1]));
+  }
 private:
   Box* box;
   Sphere* sphere;
@@ -322,8 +334,8 @@ inline std::ostream& operator<<(std::ostream &os, const Point &p)  {
 
 inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {
   os << "<segment>" << std::endl;
-  os << segment.first << std::endl;
-  os << segment.second << std::endl;
+  os << "  " << segment.first << std::endl;
+  os << "  " << segment.second << std::endl;
   os << "</segment>";
   return os;
 }

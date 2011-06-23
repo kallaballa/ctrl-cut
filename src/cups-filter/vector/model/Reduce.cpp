@@ -18,33 +18,41 @@
  */
 #include "Reduce.h"
 #include "util/Logger.h"
+#include "vector/graph/Traverse.h"
 
 /*!
  * Reduce number of vertices in polylines by approximating the polylines with fewer line segments.
  */
-void Reduce::filter(CutModel& model)
+void reduce_linestrings(CutModel &model, float epsilon)
 {
+  epsilon = 100;
   LOG_INFO_STR("Reduce");
-/*
+  LOG_DEBUG_MSG("Segments before", model.size());
+  StringList join;
+  make_linestrings(join, model.begin(), model.end());
+
+  CutModel newModel = * new CutModel();
+
   // Reduce each polyline separately
-  for (CutModel::StringIter it = model.beginStrings(); it != model.endStrings(); it++) {
-    const SegmentString *pl = *it;
-    SegmentString *newpl = new SegmentString();
+  for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
+    const SegmentString *string = *it;
+    SegmentString *newstring = new SegmentString();
 
     // Select a start iterator
-    CutModel::SegmentConstIter startit = pl->beginSegments();
+    SegmentString::SegmentConstIter startit = string->beginSegments();
 
     // Walk the entire string
-    CutModel::SegmentConstIter pit;
-    for (pit = startit; ++pit != pl->endSegments(); ) {
+    SegmentString::SegmentConstIter  pit;
+    for (pit = startit; ++pit != string->endSegments(); ) {
+      const Segment& startSegment = **startit;
       float largest = 0;
-      CutModel::SegmentConstIter largestit;
-      if ((*startit)->first != (*pit)->second) {
+      SegmentString::SegmentConstIter  largestit;
+      if (!string->isClosed()) {
         // Span a segment to the current vertex for testing
-        Segment consider((*startit)->first, (*pit)->second, (*startit)->settings);
+        Segment consider(startSegment.first, (*pit)->second, startSegment.settings);
 
         // Check distance from every intermediate vertex
-        for (CutModel::SegmentConstIter pit2 = startit; pit2 != pit; pit2++) {
+        for (SegmentString::SegmentConstIter  pit2 = startit; pit2 != pit; pit2++) {
           float d = consider.distance((**pit2)[1]);
           if (d > largest) {
             largest = d;
@@ -57,8 +65,8 @@ void Reduce::filter(CutModel& model)
         // it to a line. FIXME: This might not be desirable in the end.
 
         // Check distance from every intermediate vertex to this vertex
-        for (CutModel::SegmentConstIter pit2 = startit; pit2 != pit; pit2++) {
-          float d = (*startit)->first.distance((*pit2)->second);
+        for (SegmentString::SegmentConstIter  pit2 = startit; pit2 != pit; pit2++) {
+          float d = startSegment.first.distance((*pit2)->second);
           if (d > largest) {
             largest = d;
             largestit = pit2;
@@ -67,17 +75,20 @@ void Reduce::filter(CutModel& model)
       }
 
       // We exceeded the epsilon, split the edge and continue
-      if (largest > this->epsilon) {
-        Segment *newe = new Segment((*startit)->first, (*largestit)->second, (*startit)->settings);
-        newpl->addSegment(*newe);
-        startit = largestit++;
+      if (largest > epsilon) {
+        Segment *newe = new Segment(startSegment.first, (*largestit)->second, startSegment.settings);
+        newstring->addSegment(*newe);
+        startit = ++largestit;
       }
     }
     // Add last line
-    Segment *newe = new Segment((*startit)->first, pl->backSegments()->second, (*startit)->settings);
-    newpl->addSegment(*newe);
-    model.replaceString(it,*newpl);
+    Segment *newe = new Segment((*startit)->first, string->backSegments()->second, (*startit)->settings);
+    newstring->addSegment(*newe);
+
+    for(SegmentString::SegmentConstIter it_s = newstring->beginSegments(); it_s != newstring->endSegments(); ++it_s)
+      newModel.add(**it_s);
   }
 
-  //  model.rebuildMesh();*/
+  model = newModel;
+  LOG_DEBUG_MSG("Segments after", model.size());
 }

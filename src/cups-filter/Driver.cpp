@@ -21,6 +21,7 @@
 #include <list>
 #include "vector/model/CutModel.h"
 #include "vector/model/Explode.h"
+#include "vector/model/Reduce.h"
 
 using std::list;
 
@@ -39,6 +40,7 @@ void Driver::filter(LaserJob *job) {
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& model = *(*it);
      explode_segments(model);
+     reduce_linestrings(model);
    }
 }
 

@@ -3,16 +3,6 @@
 
 #include "vector/model/CutModel.h"
 
-class Reduce
-{
-public:
-  Reduce(float epsilon = 10) : epsilon(epsilon) {}
-  virtual ~Reduce() {}
-
-  void filter(CutModel &cut);
-
-private:
-  float epsilon;
-};
+void reduce_linestrings(CutModel &cut, float epsilon = 10);
 
 #endif
