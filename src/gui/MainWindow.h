@@ -28,6 +28,7 @@ private:
 
   class CutModel *cutmodel;
   QPixmap rasterpixmap;
+  QPointF rasterpos;
 };
 
 #endif

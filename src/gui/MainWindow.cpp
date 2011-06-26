@@ -81,6 +81,8 @@ void MainWindow::on_fileOpenAction_triggered()
         return;
       }
 
+      this->rasterpixmap = QPixmap();
+      this->rasterpos = QPointF();
       if (psparser->hasBitmapData()) {
         AbstractImage *image = psparser->getImage();
         QImage *img;
@@ -93,6 +95,7 @@ void MainWindow::on_fileOpenAction_triggered()
           colortable.append(qRgba(0,0,0,0));
           img->setColorTable(colortable);
           this->rasterpixmap = QPixmap::fromImage(*img);
+          this->rasterpos = QPointF(image->xPos(), image->yPos());
         }
         else {
           GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
@@ -130,6 +133,7 @@ void MainWindow::on_fileOpenAction_triggered()
 
     if (!this->rasterpixmap.isNull()) {
       QGraphicsPixmapItem *imgitem = new QGraphicsPixmapItem(this->rasterpixmap, parentitem);
+      imgitem->setPos(this->rasterpos);
       parentitem->addToGroup(imgitem);
     }
   }

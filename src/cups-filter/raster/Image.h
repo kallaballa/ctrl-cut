@@ -26,13 +26,78 @@
 #include <iostream>
 #include <stdint.h>
 #include "util/Logger.h"
-#include "util/2D.h"
 #include <iostream>
+#include <assert.h>
 
 class BitmapImage : public AbstractImage {
 public:
   BitmapImage(uint32_t width, uint32_t height, uint8_t *buf = NULL) : AbstractImage(width, height, buf) {
     this->row_stride = width / 8; // Natural rowstride
+  }
+
+  /*!
+    Returns the given subrectangle of this image as a new image.
+  */
+  AbstractImage *copy(const Rectangle &rect) {
+    int w,h;
+    rect.getSize(w, h);
+    if (h == 0 || w == 0) return NULL;
+    assert(w % 8 == 0);
+    assert(rect.ul[0] % 8 == 0);
+    BitmapImage *bitmapcopy = new BitmapImage(w, h);
+    uint8_t *sourcedata = (uint8_t *)this->addr;
+    uint8_t *destdata = (uint8_t *)malloc(bitmapcopy->row_stride * bitmapcopy->h);
+    for (int j=0;j<h;j++) {
+      for (int i=0;i<w/8;i++) {
+        destdata[j*bitmapcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + rect.ul[0]/8];
+      }
+    }
+    bitmapcopy->addr = destdata;
+    bitmapcopy->xpos = rect.ul[0];
+    bitmapcopy->ypos = rect.ul[1];
+    return bitmapcopy;
+  }
+
+  Rectangle autocrop() {
+    uint8_t *gsaddr = (uint8_t *)this->addr;
+
+    int bytewidth = this->w / 8;
+    int i,j;
+    for (j=0;j<this->h;j++) {
+      for (i=0;i<bytewidth;i++) {
+        if (gsaddr[j * this->row_stride + i] != 0xff) break;
+      }
+      if (i != bytewidth) break;
+    }
+    int starty = j;
+    for (j=this->h-1;j>=starty;j--) {
+      for (i=0;i<bytewidth;i++) {
+        if (gsaddr[j * this->row_stride + i] != 0xff) break;
+      }
+      if (i != bytewidth) break;
+    }
+    int endy = j;
+    LOG_DEBUG(starty);
+    LOG_DEBUG(endy);
+
+    for (i=0;i<bytewidth;i++) {
+      for (j=starty;j<=endy;j++) {
+        if (gsaddr[j*this->row_stride + i] != 0xff) break;
+      }
+      if (j != endy+1) break;
+    }
+    int startx = i;
+    for (i=bytewidth-1;i>=startx;i--) {
+      for (j=starty;j<=endy;j++) {
+        if (gsaddr[j*this->row_stride + i] != 0xff) break;
+      }
+      if (j != endy+1) break;
+    }
+    int endx = i;
+    LOG_DEBUG(startx);
+    LOG_DEBUG(endx);
+
+    return Rectangle(startx*8, starty, (endx + 1) * 8, endy + 1);
   }
 
   bool saveAsPBM(const std::string &filename) {
@@ -83,6 +148,9 @@ public:
 
   virtual ~Image() {}
   
+  AbstractImage *copy(const Rectangle &rect) { return NULL; }
+  Rectangle autocrop() { }
+
   uint8_t components() const { return this->comp; }
   
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {

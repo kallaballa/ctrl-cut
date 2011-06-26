@@ -21,6 +21,7 @@
 #define ABSTRACTIMAGE_H_
 
 #include <stdint.h>
+#include "util/2D.h"
 
 class AbstractImage {
 public:
@@ -28,6 +29,8 @@ public:
     w(width), h(height), addr(addr), xpos(0), ypos(0) {
   }
   virtual ~AbstractImage() {}
+
+  virtual AbstractImage *copy(const Rectangle &rect) = 0;
 
   void setSize(uint32_t width, uint32_t height) {
     this->w = width;
@@ -41,6 +44,7 @@ public:
   void setRowstride(uint32_t stride) { this->row_stride = stride; }
   uint32_t rowstride() const { return this->row_stride; }
 
+  virtual Rectangle autocrop() = 0;
 
   void translate(uint32_t x, uint32_t y) {
     this->xpos += x;
@@ -58,7 +62,6 @@ protected:
   uint32_t xpos;
   uint32_t ypos;
   uint32_t row_stride;
-
 };
 
 #endif
