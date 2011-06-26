@@ -16,7 +16,6 @@ public:
   CutModel() :
     config(LaserConfig::inst()),
     clipped(false),
-    segmentTree(std::ptr_fun(segment_node_ac)),
     leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
     rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
@@ -37,7 +36,6 @@ public:
 
   void clear() {
     this->segmentIndex.clear();
-    this->segmentTree.clear();
   }
 
   void createSegment(const Point &p1, const Point &p2, CutSettings& settings);
@@ -45,8 +43,8 @@ public:
 
   void add(const Segment& seg);
   iterator remove(iterator it_seg);
-  void findWithinRange(iterator it_seg, std::vector<SegmentNode> v);
-  SegmentTree::const_iterator findSegment(const Point& p);
+  void remove(const Segment& seg);
+
   bool wasClipped() const {
     return this->clipped;
   }
@@ -55,7 +53,6 @@ public:
     this->config = other.config;
     this->clipped = other.clipped;
     this->segmentIndex = other.segmentIndex;
-    this->segmentTree = other.segmentTree;
   }
 
   static CutModel *load(const std::string &filename);
@@ -64,7 +61,7 @@ public:
 protected:
   bool clipped;
   SegmentList segmentIndex;
-  SegmentTree segmentTree;
+
 
 private:
   Segment leftBedBorder;
@@ -73,11 +70,6 @@ private:
   Segment topBedBorder;
 
   const Segment& clipSegmentToLaserBed(const Segment& seg);
-  std::pair<SegmentNode, SegmentNode>& createSegmentNodes(iterator it_seg);
 };
 
-/*inline std::ostream& operator<<(std::ostream &os, const CutModel::iterator it) {
-  os << *(*it);
-  return os;
-}*/
 #endif /* CUTMODEL_H_ */

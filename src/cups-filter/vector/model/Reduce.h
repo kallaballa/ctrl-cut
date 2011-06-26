@@ -3,6 +3,6 @@
 
 #include "vector/model/CutModel.h"
 
-void reduce_linestrings(CutModel &cut, float epsilon = 10);
+void reduce_linestrings(CutModel &cut, float epsilon = 3);
 
 #endif

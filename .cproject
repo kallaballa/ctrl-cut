@@ -22,13 +22,11 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1925872491" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.289689694" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/boost_1_46_1}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/c++/4.5"/>
+									<listOptionValue builtIn="false" value="/usr/local/include/"/>
+									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/Qt"/>
 									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/pclint}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/wykobi}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libkdtree}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cups-filter}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.420862760" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-std=c++98 -c -fmessage-length=0 -DETLOG -DDEBUG=4 -DUSE_GHOSTSCRIPT_API   -L/usr/X11R6/lib64 -lboost_thread-mt -lX11 -lpng -lXext -lX11 -lm  -Dcimg_use_png -D__cplusplus" valueType="string"/>
@@ -59,10 +57,13 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="0.787130372.981869350" name="Deonion.cpp" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/model/Deonion.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.584764092">
+						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.584764092" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
+					</fileInfo>
 					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/geom/Geometry.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="vector/old|vector/new|raster/filter|vector/filters/old" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
 						<entry excluding="libkdtree|test-code|wykobi|SDL_draw-1.2.13/src|boost_1_46_1|boost-geometry|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="vector/old|vector/new|raster/filter|vector/filters/old" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

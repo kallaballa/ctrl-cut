@@ -86,36 +86,11 @@ void CutModel::add(const Segment& seg) {
     return;
 
   CutModel::iterator it_clipped = segmentIndex.insert(end(), &clipped);
-  std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_clipped);
-  segmentTree.insert(items.first);
-  segmentTree.insert(items.second);
 }
 
 CutModel::iterator CutModel::remove(iterator it_seg) {
   assert(it_seg != end());
-  std::pair<SegmentNode, SegmentNode>& items = createSegmentNodes(it_seg);
-  segmentTree.erase_exact(items.first);
-  segmentTree.erase_exact(items.second);
   return segmentIndex.erase(it_seg);
-}
-
-
-void CutModel::findWithinRange(iterator it_seg, std::vector<SegmentNode> v) {
-  const Sphere& bsphere = (*it_seg)->getSphere();
-  SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
-  segmentTree.find_within_range(scenter, bsphere.radius, std::back_inserter(v));
-}
-
-SegmentTree::const_iterator CutModel::findSegment(const Point& p) {
-  return segmentTree.find(*new SegmentNode(segmentIndex.end(), p));
-}
-
-std::pair<SegmentNode, SegmentNode>& CutModel::createSegmentNodes(
-    iterator it_seg) {
-  const Segment& seg = *(*it_seg);
-  SegmentNode si_first = (*new SegmentNode(it_seg, seg.first));
-  SegmentNode si_second = (*new SegmentNode(it_seg, seg.second));
-  return *new std::pair<SegmentNode, SegmentNode>(si_first, si_second);
 }
 
 /*!

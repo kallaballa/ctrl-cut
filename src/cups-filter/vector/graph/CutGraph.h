@@ -61,8 +61,10 @@ public:
     (*this)[e].owner = &string;
   }
 
+  const CutGraph::Vertex getOther(const CutGraph::Edge edge, const CutGraph::Vertex one);
   CutGraph::Vertex* findVertex(const VertexGeometry &map);
   CutGraph::Vertex addVertex(const Point* p, const SegmentString* owner = 0);
+  const CutGraph::Edge findSteapest(const Vertex& v);
   void createEdge(const Segment& seg);
   void createWorkEdge(const Vertex& in, const Vertex& out, const SegmentString* owner);
   void createMoveEdge(const Vertex& in, const Vertex& out);

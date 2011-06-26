@@ -40,7 +40,6 @@ bool isShared(CutGraph& graph, const Point& p) {
  */
 void reduce_linestrings(CutModel &model, float epsilon)
 {
-  epsilon=3;
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
   CutGraph graph;

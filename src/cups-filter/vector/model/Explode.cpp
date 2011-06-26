@@ -25,6 +25,8 @@
  */
 void explode_segments(CutModel& cut) {
   LOG_INFO_STR("Explode");
+  LOG_DEBUG_MSG("Segments before", cut.size());
+  SegmentTree& segTree = SegmentTree::build(cut.begin(), cut.end());
   vector<SegmentNode> in_range;
   Point intersection;
 
@@ -35,7 +37,7 @@ void explode_segments(CutModel& cut) {
 
     if(!in_range.empty())
       in_range.clear();
-    cut.findWithinRange(it_s, in_range);
+    segTree.findWithinRange(it_s, in_range);
 
     for (vector<SegmentNode>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
       const Segment& candidate = *(*((*it_o).owner));
@@ -107,4 +109,5 @@ void explode_segments(CutModel& cut) {
       }
     }
   }
+  LOG_DEBUG_MSG("Segments after", cut.size());
 }
