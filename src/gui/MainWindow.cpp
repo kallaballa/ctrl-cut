@@ -76,7 +76,8 @@ void MainWindow::on_fileOpenAction_triggered()
       }
 
       this->cutmodel = CutModel::load(psparser->getVectorData());
-      if (!this->cutmodel) {
+
+      if (!this->cutmodel && !psparser->hasBitmapData()) {
         fprintf(stderr, "Error: Unable to open postscript file\n");
         return;
       }
