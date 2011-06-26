@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include "util/2D.h"
+#include "util/Logger.h"
 
 class AbstractImage {
 public:
@@ -30,7 +31,7 @@ public:
   }
   virtual ~AbstractImage() {}
 
-  virtual AbstractImage *copy(const Rectangle &rect) = 0;
+  virtual AbstractImage *copy(const Rectangle &rect) const = 0;
 
   void setSize(uint32_t width, uint32_t height) {
     this->w = width;
@@ -44,7 +45,48 @@ public:
   void setRowstride(uint32_t stride) { this->row_stride = stride; }
   uint32_t rowstride() const { return this->row_stride; }
 
-  virtual Rectangle autocrop() = 0;
+  virtual Rectangle autocrop(size_t bytewidth) const {
+    uint8_t *gsaddr = (uint8_t *)this->addr;
+
+    int i,j;
+    for (j=0;j<this->h;j++) {
+      for (i=0;i<bytewidth;i++) {
+        if (gsaddr[j * this->row_stride + i] != 0xff) break;
+      }
+      if (i != bytewidth) break;
+    }
+    int starty = j;
+    for (j=this->h-1;j>=starty;j--) {
+      for (i=0;i<bytewidth;i++) {
+        if (gsaddr[j * this->row_stride + i] != 0xff) break;
+      }
+      if (i != bytewidth) break;
+    }
+    int endy = j;
+    LOG_DEBUG(starty);
+    LOG_DEBUG(endy);
+
+    for (i=0;i<bytewidth;i++) {
+      for (j=starty;j<=endy;j++) {
+        if (gsaddr[j*this->row_stride + i] != 0xff) break;
+      }
+      if (j != endy+1) break;
+    }
+    int startx = i;
+    for (i=bytewidth-1;i>=startx;i--) {
+      for (j=starty;j<=endy;j++) {
+        if (gsaddr[j*this->row_stride + i] != 0xff) break;
+      }
+      if (j != endy+1) break;
+    }
+    int endx = i;
+    LOG_DEBUG(startx);
+    LOG_DEBUG(endx);
+
+    return Rectangle(startx, starty, (endx + 1), endy + 1);
+  }
+
+  virtual Rectangle autocrop() const = 0;
 
   void translate(uint32_t x, uint32_t y) {
     this->xpos += x;
@@ -55,6 +97,24 @@ public:
   void *data() { return this->addr; }
 
 protected:
+  /*!
+    Copy from this to dest. x coordinates are given in in bytes, not pixels
+  */
+  void performcopy(AbstractImage *dest,  
+                   int bytewidth, int height, int xoffset, int yoffset) const {
+    const uint8_t *sourcedata = (uint8_t *)this->addr;
+    uint8_t *destdata = (uint8_t *)malloc(bytewidth * height);
+    for (int j=0;j<height;j++) {
+      for (int i=0;i<bytewidth;i++) {
+        destdata[j*bytewidth + i] = sourcedata[(j + yoffset) * this->row_stride + 
+                                               i + xoffset];
+      }
+    }
+    dest->addr = destdata;
+    dest->xpos = xoffset;
+    dest->ypos = yoffset;
+  }
+
   uint32_t w;
   uint32_t h;
   void * addr;

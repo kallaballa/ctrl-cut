@@ -38,66 +38,32 @@ public:
   /*!
     Returns the given subrectangle of this image as a new image.
   */
-  AbstractImage *copy(const Rectangle &rect) {
+  AbstractImage *copy(const Rectangle &rect) const {
     int w,h;
     rect.getSize(w, h);
     if (h == 0 || w == 0) return NULL;
     assert(w % 8 == 0);
     assert(rect.ul[0] % 8 == 0);
     BitmapImage *bitmapcopy = new BitmapImage(w, h);
-    uint8_t *sourcedata = (uint8_t *)this->addr;
-    uint8_t *destdata = (uint8_t *)malloc(bitmapcopy->row_stride * bitmapcopy->h);
-    for (int j=0;j<h;j++) {
-      for (int i=0;i<w/8;i++) {
-        destdata[j*bitmapcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + rect.ul[0]/8];
-      }
-    }
-    bitmapcopy->addr = destdata;
-    bitmapcopy->xpos = rect.ul[0];
-    bitmapcopy->ypos = rect.ul[1];
+
+    this->performcopy(bitmapcopy, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
+    bitmapcopy->xpos *= 8;
+    // uint8_t *sourcedata = (uint8_t *)this->addr;
+    // uint8_t *destdata = (uint8_t *)malloc(bitmapcopy->row_stride * bitmapcopy->h);
+    // for (int j=0;j<h;j++) {
+    //   for (int i=0;i<bytewidth;i++) {
+    //     destdata[j*bitmapcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + xoffset];
+    //   }
+    // }
+    // bitmapcopy->addr = destdata;
+    // bitmapcopy->xpos = rect.ul[0];
+    // bitmapcopy->ypos = rect.ul[1];
     return bitmapcopy;
   }
 
-  Rectangle autocrop() {
-    uint8_t *gsaddr = (uint8_t *)this->addr;
-
-    int bytewidth = this->w / 8;
-    int i,j;
-    for (j=0;j<this->h;j++) {
-      for (i=0;i<bytewidth;i++) {
-        if (gsaddr[j * this->row_stride + i] != 0xff) break;
-      }
-      if (i != bytewidth) break;
-    }
-    int starty = j;
-    for (j=this->h-1;j>=starty;j--) {
-      for (i=0;i<bytewidth;i++) {
-        if (gsaddr[j * this->row_stride + i] != 0xff) break;
-      }
-      if (i != bytewidth) break;
-    }
-    int endy = j;
-    LOG_DEBUG(starty);
-    LOG_DEBUG(endy);
-
-    for (i=0;i<bytewidth;i++) {
-      for (j=starty;j<=endy;j++) {
-        if (gsaddr[j*this->row_stride + i] != 0xff) break;
-      }
-      if (j != endy+1) break;
-    }
-    int startx = i;
-    for (i=bytewidth-1;i>=startx;i--) {
-      for (j=starty;j<=endy;j++) {
-        if (gsaddr[j*this->row_stride + i] != 0xff) break;
-      }
-      if (j != endy+1) break;
-    }
-    int endx = i;
-    LOG_DEBUG(startx);
-    LOG_DEBUG(endx);
-
-    return Rectangle(startx*8, starty, (endx + 1) * 8, endy + 1);
+  Rectangle autocrop() const {
+    Rectangle byterect = AbstractImage::autocrop(this->w / 8);
+    return Rectangle(byterect.ul[0]*8, byterect.ul[1], byterect.lr[0] * 8, byterect.lr[1]);
   }
 
   bool saveAsPBM(const std::string &filename) {
@@ -117,7 +83,6 @@ public:
     delete invertedline;
     return true;
   }
-private:
 };
 
 
@@ -143,13 +108,43 @@ public:
     this->row_stride = parent->row_stride;
     this->comp = parent->components();
     this->bytes_per_pixel = sizeof(T) * components;
-    this->addr = (static_cast<T*>(parent->addr)) + (offsety * this->row_stride + offsetx) * this->comp;
+    this->addr = (static_cast<T*>(parent->addr)) + 
+      (offsety * this->row_stride + offsetx) * this->comp;
   }
 
   virtual ~Image() {}
   
-  AbstractImage *copy(const Rectangle &rect) { return NULL; }
-  Rectangle autocrop() { }
+  /*!
+    Returns the given subrectangle of this image as a new image.
+  */
+  AbstractImage *copy(const Rectangle &rect) const {
+    int w,h;
+    rect.getSize(w, h);
+    if (h == 0 || w == 0) return NULL;
+
+    Image<T> *imgcopy = new Image<T>(w, h);
+
+    this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
+    imgcopy->xpos /= sizeof(T);
+
+    // uint8_t *sourcedata = (uint8_t *)this->addr;
+    // uint8_t *destdata = (uint8_t *)malloc(imgcopy->row_stride * imgcopy->h);
+    // for (int j=0;j<h;j++) {
+    //   for (int i=0;i<bytewidth;i++) {
+    //     destdata[j*imgcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + xoffset];
+    //   }
+    // }
+    // imgcopy->addr = destdata;
+    // imgcopy->xpos = rect.ul[0];
+    // imgcopy->ypos = rect.ul[1];
+    return imgcopy;
+  }
+
+  Rectangle autocrop() const {
+    Rectangle byterect = AbstractImage::autocrop(this->w * sizeof(T));
+    return Rectangle(byterect.ul[0] / sizeof(T), byterect.ul[1], 
+                     byterect.lr[0] / sizeof(T), byterect.lr[1]);
+  }
 
   uint8_t components() const { return this->comp; }
   
