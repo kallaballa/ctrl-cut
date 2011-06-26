@@ -13,6 +13,7 @@ int main(int argc, char **argv)
 
   LaserConfig &conf = LaserConfig::inst();
   conf.enable_raster = true;
+  conf.raster_dithering = LaserConfig::DITHER_FLOYD_STEINBERG;
 
   MainWindow mainwin;
   mainwin.setGeometry(100, 100, 800, 500);

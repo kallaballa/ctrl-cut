@@ -94,17 +94,20 @@ void MainWindow::on_fileOpenAction_triggered()
           colortable.append(qRgba(0,0,0,255));
           colortable.append(qRgba(0,0,0,0));
           img->setColorTable(colortable);
-          this->rasterpixmap = QPixmap::fromImage(*img);
-          this->rasterpos = QPointF(image->xPos(), image->yPos());
         }
         else {
           GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
           if (gsimage) {
-            qDebug() << "grayscale images not implemented";
-            // img = new QImage(image->data(), image->width(), image->height(), 
-            //                  image->rowstride(), QImage::Format_Mono);
+            img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
+                             image->rowstride(), QImage::Format_Indexed8);
+            QVector<QRgb> colortable;
+            for(int i=0;i<255;i++) colortable.append(qRgba(i,i,i,255));
+            colortable.append(qRgba(255,255,255,0));
+            img->setColorTable(colortable);
           }
         }
+        this->rasterpixmap = QPixmap::fromImage(*img);
+        this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
     }
     else if (suffix == "vector") {
