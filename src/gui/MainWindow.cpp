@@ -107,6 +107,9 @@ void MainWindow::on_fileOpenAction_triggered()
             img->setColorTable(colortable);
           }
         }
+        // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
+        // of its buffer
+        img->bits();
         this->rasterpixmap = QPixmap::fromImage(*img);
         this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
