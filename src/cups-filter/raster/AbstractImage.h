@@ -27,9 +27,11 @@
 class AbstractImage {
 public:
   AbstractImage(uint32_t width, uint32_t height, void *addr = NULL) : 
-    w(width), h(height), addr(addr), xpos(0), ypos(0) {
+    w(width), h(height), shouldfree(false), addr(addr), xpos(0), ypos(0) {
   }
-  virtual ~AbstractImage() {}
+  virtual ~AbstractImage() {
+    if (this->addr && shouldfree) free(this->addr);
+  }
 
   virtual AbstractImage *copy(const Rectangle &rect) const = 0;
 
@@ -111,6 +113,7 @@ protected:
       }
     }
     dest->addr = destdata;
+    dest->shouldfree = true;
     dest->xpos = xoffset;
     dest->ypos = yoffset;
   }
@@ -118,6 +121,7 @@ protected:
   uint32_t w;
   uint32_t h;
   void * addr;
+  bool shouldfree;
 
   uint32_t xpos;
   uint32_t ypos;

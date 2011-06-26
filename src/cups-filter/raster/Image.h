@@ -48,16 +48,6 @@ public:
 
     this->performcopy(bitmapcopy, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
     bitmapcopy->xpos *= 8;
-    // uint8_t *sourcedata = (uint8_t *)this->addr;
-    // uint8_t *destdata = (uint8_t *)malloc(bitmapcopy->row_stride * bitmapcopy->h);
-    // for (int j=0;j<h;j++) {
-    //   for (int i=0;i<bytewidth;i++) {
-    //     destdata[j*bitmapcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + xoffset];
-    //   }
-    // }
-    // bitmapcopy->addr = destdata;
-    // bitmapcopy->xpos = rect.ul[0];
-    // bitmapcopy->ypos = rect.ul[1];
     return bitmapcopy;
   }
 
@@ -127,16 +117,6 @@ public:
     this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
     imgcopy->xpos /= sizeof(T);
 
-    // uint8_t *sourcedata = (uint8_t *)this->addr;
-    // uint8_t *destdata = (uint8_t *)malloc(imgcopy->row_stride * imgcopy->h);
-    // for (int j=0;j<h;j++) {
-    //   for (int i=0;i<bytewidth;i++) {
-    //     destdata[j*imgcopy->row_stride + i] = sourcedata[(j+rect.ul[1])*this->row_stride + i + xoffset];
-    //   }
-    // }
-    // imgcopy->addr = destdata;
-    // imgcopy->xpos = rect.ul[0];
-    // imgcopy->ypos = rect.ul[1];
     return imgcopy;
   }
 

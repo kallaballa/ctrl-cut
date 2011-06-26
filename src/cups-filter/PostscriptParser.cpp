@@ -384,13 +384,16 @@ void PostscriptParser::copyPage()
 {
   Rectangle cropbox = this->gsimage->autocrop();
   this->image = this->gsimage->copy(cropbox);
-  
-  // BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
-  // if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
-  // else {
-  //   GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
-  //   if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
-  // }
+
+  // For debugging, we can export the image here:
+#if 0
+  BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
+  if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
+  else {
+    GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
+    if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
+  }
+#endif
 }
 
 /*
