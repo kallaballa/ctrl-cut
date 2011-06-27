@@ -16,7 +16,7 @@
 
 #include <assert.h>
 
-MainWindow::MainWindow() : cutmodel(NULL), laserdialog(NULL)
+MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -43,11 +43,19 @@ void MainWindow::on_fileOpenAction_triggered()
       delete this->cutmodel;
       this->cutmodel = NULL;
     }
+    if (this->raster) {
+      delete this->raster;
+      this->raster = NULL;
+    }
+    if (this->psparser) {
+      delete this->psparser;
+      this->psparser = NULL;
+    }
 
     QFileInfo finfo(filename);
     QString suffix = finfo.suffix();
     if (suffix == "ps") {
-      PostscriptParser *psparser = new PostscriptParser(LaserConfig::inst());
+      this->psparser = new PostscriptParser(LaserConfig::inst());
       switch (LaserConfig::inst().raster_dithering) {
       case LaserConfig::DITHER_DEFAULT:
         psparser->setRasterFormat(PostscriptParser::BITMAP);
@@ -87,6 +95,7 @@ void MainWindow::on_fileOpenAction_triggered()
       this->rasterpos = QPointF();
       if (psparser->hasBitmapData()) {
         AbstractImage *image = psparser->getImage();
+        this->raster = new Raster(image);
         QImage *img;
         BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
         if (bitmap) {
@@ -174,7 +183,7 @@ void MainWindow::on_filePrintAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->cutmodel) {
+  if (!this->cutmodel && !this->raster) {
     fprintf(stderr, "No model loaded\n");
     return;
   }
@@ -193,7 +202,8 @@ void MainWindow::on_filePrintAction_triggered()
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-    job.addCut(this->cutmodel);
+    if (this->cutmodel) job.addCut(this->cutmodel);
+    if (this->raster) job.addRaster(this->raster);
     Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
