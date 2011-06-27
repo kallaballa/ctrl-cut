@@ -27,7 +27,7 @@
 class AbstractImage {
 public:
   AbstractImage(uint32_t width, uint32_t height, void *addr = NULL) : 
-    w(width), h(height), shouldfree(false), addr(addr), xpos(0), ypos(0) {
+    w(width), h(height), addr(addr), shouldfree(false), xpos(0), ypos(0) {
   }
   virtual ~AbstractImage() {
     if (this->addr && shouldfree) free(this->addr);
