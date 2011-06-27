@@ -19,95 +19,133 @@
 
 #include "util/Logger.h"
 #include "Explode.h"
+#include "vector/graph/Traverse.h"
+#include <list>
+
+void findWithinRange(const SegmentTree& segTree, CutModel::iterator it_s, std::list<SegmentNode>& in_range) {
+  if(!in_range.empty())
+    in_range.clear();
+  segTree.findWithinRange(it_s, in_range);
+}
 
 /*
  * Split segments at intersection points.
  */
-void explode_segments(CutModel& cut) {
+void explode_segments(CutModel& model) {
   LOG_INFO_STR("Explode");
-  LOG_DEBUG_MSG("Segments before", cut.size());
-  SegmentTree& segTree = SegmentTree::build(cut.begin(), cut.end());
-  vector<SegmentNode> in_range;
-  Point intersection;
+  LOG_DEBUG_MSG("Segments before", model.size());
+  const SegmentTree& segTree = model.getSegmentTree();
 
-  for (CutModel::iterator it_s = cut.begin(); it_s != cut.end(); ++it_s) {
-    if(it_s == cut.end())
-      continue;
+  std::list<SegmentNode> in_range;
+  Point intersection;
+  CutModel::iterator it_s = model.begin();
+
+  while (it_s != model.end()) {
     const Segment& pick = *(*it_s);
 
-    if(!in_range.empty())
-      in_range.clear();
-    segTree.findWithinRange(it_s, in_range);
+    bool remove_pick = false;
+    bool remove_candidate = false;
 
-    for (vector<SegmentNode>::iterator it_o = in_range.begin(); it_o != in_range.end(); ++it_o) {
-      const Segment& candidate = *(*((*it_o).owner));
-      if(&pick == &candidate)
+    findWithinRange(segTree, it_s, in_range);
+    std::list<SegmentNode>::iterator it_o = in_range.begin();
+
+    while(it_o != in_range.end()) {
+      remove_candidate = false;
+      const Segment& candidate = **(*it_o).getIterator();
+
+      if(&pick == &candidate) {
+        ++it_o;
         continue;
-
+      }
       intersection_result is_res = intersects(pick, candidate, intersection);
 
       // check if pick does intersect candidate
       if (is_res == ALIGN_INTERSECT) {
-        // if pick doesnt tip intersect remove it and split it in two
-        if (!(pick[0] == intersection) && !(pick[1] == intersection)) {
-         it_s = cut.remove(it_s);
-         cut.createSegment(pick[0], intersection, pick.settings);
-         cut.createSegment(pick[1], intersection, pick.settings);
+       if(pick[0] != intersection && pick[1] != intersection) {
+         remove_pick = true;
+         model.createSegment(pick[0], * new Point(intersection), pick.settings);
+         model.createSegment(pick[1], * new Point(intersection), pick.settings);
         }
 
-        // if candidate doesnt tip intersect remove it and split it in two
-        if (!(candidate[0] == intersection) && !(candidate[1] == intersection)) {
-         cut.remove((*it_o).owner);
-         cut.createSegment(candidate[0], intersection, candidate.settings);
-         cut.createSegment(candidate[1], intersection, candidate.settings);
+        if(candidate[0] != intersection && candidate[1] != intersection) {
+          remove_candidate = true;
+          model.createSegment(candidate[0], * new Point(intersection), candidate.settings);
+          model.createSegment(candidate[1], * new Point(intersection), candidate.settings);
         }
-      } else if(is_res == ALIGN_PARALLEL) {
-        Point pick_min;
-        Point pick_max;
-        Point candidate_min;
-        Point candidate_max;
-
-        if(pick.first < pick.second) {
-          pick_min = pick.first;
-          pick_max = pick.second;
+      } else if(is_res == ALIGN_COINCIDENCE) {
+        bool firstMatches = pick[0] == candidate[0] || pick[0] == candidate[1];
+        bool secondMatches = pick[1] == candidate[0] || pick[1] == candidate[1];
+        if(firstMatches || secondMatches) {
+          if(firstMatches && secondMatches) {
+            //eliminated duplicate segments
+            remove_pick = true;
+          }
         } else {
-          pick_min = pick.second;
-          pick_max = pick.first;
-        }
+          //coincidental but neither tip connected nor identical
+          const Point* pick_min;
+          const Point* pick_max;
+          const Point* candidate_min;
+          const Point* candidate_max;
 
-        if(candidate.first < candidate.second) {
-          candidate_min = candidate.first;
-          candidate_max = candidate.second;
-        } else {
-          candidate_min = candidate.second;
-          candidate_max = candidate.first;
-        }
+          if(pick.first < pick.second) {
+            pick_min = &pick.first;
+            pick_max = &pick.second;
+          } else {
+            pick_min = &pick.second;
+            pick_max = &pick.first;
+          }
 
-        // FIXME which gets which settings?
-        if(candidate_min < pick_max) {
-          if(pick_min < candidate_min) {
-            it_s = cut.remove(it_s);
-            cut.remove((*it_o).owner);
+          if(candidate.first < candidate.second) {
+            candidate_min = &candidate.first;
+            candidate_max = &candidate.second;
+          } else {
+            candidate_min = &candidate.second;
+            candidate_max = &candidate.first;
+          }
 
-            if(pick_max < candidate_max) {
-              cut.createSegment(pick_min, candidate_min, pick.settings);
-              cut.createSegment(candidate_min, pick_max, pick.settings);
-              cut.createSegment(pick_max, candidate_max, candidate.settings);
-            } else {
-              cut.createSegment(pick_min, candidate_min, pick.settings);
-              cut.createSegment(candidate_min, candidate_max, candidate.settings);
-              cut.createSegment(candidate_max, pick_max, pick.settings);
+          // FIXME which gets which settings?
+          if((*candidate_min) < (*pick_max)) {
+            if((*pick_min) < (*candidate_min)) {
+              remove_pick = true;
+              remove_candidate = true;
+              if((*pick_max) < (*candidate_max)) {
+                model.createSegment(*pick_min, *candidate_min, pick.settings);
+                model.createSegment(*candidate_min, *pick_max, pick.settings);
+                model.createSegment(*pick_max, *candidate_max, candidate.settings);
+              } else {
+                model.createSegment(*pick_min, *candidate_min, pick.settings);
+                model.createSegment(*candidate_min, *candidate_max, candidate.settings);
+                model.createSegment(*candidate_max, *pick_max, pick.settings);
+              }
+            } else if((*pick_min) < (*candidate_max)) {
+              remove_pick = true;
+              remove_candidate = true;
+              model.createSegment(*candidate_min, *pick_min, candidate.settings);
+              model.createSegment(*pick_min, *candidate_max, candidate.settings);
+              model.createSegment(*candidate_max, *pick_max, pick.settings);
             }
-          } else if(pick_min < candidate_max) {
-            it_s = cut.remove(it_s);
-            cut.remove((*it_o).owner);
-            cut.createSegment(candidate_min, pick_min, candidate.settings);
-            cut.createSegment(pick_min, candidate_max, candidate.settings);
-            cut.createSegment(candidate_max, pick_max, pick.settings);
           }
         }
       }
-    }
+
+      if(remove_candidate) {
+        model.remove((*it_o).getIterator());
+        if(!remove_pick) {
+          //don't search again if the loop is going to break*/
+          findWithinRange(segTree,it_s, in_range);
+          it_o = in_range.begin();
+        }
+      } else
+        ++it_o;
+
+      if(remove_pick) {
+        it_s = model.remove(it_s);
+        break;
+      }
+    };
+
+    if(!remove_pick)
+      ++it_s;
   }
-  LOG_DEBUG_MSG("Segments after", cut.size());
+  LOG_DEBUG_MSG("Segments after", model.size());
 }

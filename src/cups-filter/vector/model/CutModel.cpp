@@ -2,12 +2,13 @@
 #include "util/Logger.h"
 #include <fstream>
 
-void CutModel::createSegment(const Point &p1, const Point &p2,
+bool CutModel::createSegment(const Point &p1, const Point &p2,
     CutSettings& settings) {
   if (p1 == p2) // ignore zero length segments
-    return;
+    return false;
 
   add(*new Segment(p1, p2, settings));
+  return true;
 }
 
 const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
@@ -75,21 +76,23 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
   return *seg;
 }
 
-void CutModel::createSegment(int32_t inX, int32_t inY, int32_t outX,
+bool CutModel::createSegment(int32_t inX, int32_t inY, int32_t outX,
     int32_t outY, CutSettings& settings) {
-  createSegment(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
+  std::cerr << inX << "/" << inY << " " << outX << "/" << outY << std::endl;
+  return createSegment(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
 void CutModel::add(const Segment& seg) {
   const Segment& clipped = clipSegmentToLaserBed(seg);
   if (clipped.first == clipped.second) // ignore zero length segments
     return;
-
-  CutModel::iterator it_clipped = segmentIndex.insert(end(), &clipped);
+  iterator it_seg = segmentIndex.insert(end(),&clipped);
+  segmentTree.add(it_seg);
 }
 
 CutModel::iterator CutModel::remove(iterator it_seg) {
   assert(it_seg != end());
+  segmentTree.remove(it_seg);
   return segmentIndex.erase(it_seg);
 }
 

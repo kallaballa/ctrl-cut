@@ -16,6 +16,7 @@ public:
   CutModel() :
     config(LaserConfig::inst()),
     clipped(false),
+    segmentTree(),
     leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
     rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
@@ -34,12 +35,8 @@ public:
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
 
-  void clear() {
-    this->segmentIndex.clear();
-  }
-
-  void createSegment(const Point &p1, const Point &p2, CutSettings& settings);
-  void createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
+  bool createSegment(const Point &p1, const Point &p2, CutSettings& settings);
+  bool createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
 
   void add(const Segment& seg);
   iterator remove(iterator it_seg);
@@ -49,10 +46,15 @@ public:
     return this->clipped;
   }
 
-  void operator=(const CutModel& other) {
+  const SegmentTree& getSegmentTree() {
+    return segmentTree;
+  }
+
+  void operator=(CutModel& other) {
     this->config = other.config;
     this->clipped = other.clipped;
     this->segmentIndex = other.segmentIndex;
+    this->segmentTree = other.segmentTree;
   }
 
   static CutModel *load(const std::string &filename);
@@ -60,8 +62,8 @@ public:
   LaserConfig& config;
 protected:
   bool clipped;
+  SegmentTree segmentTree;
   SegmentList segmentIndex;
-
 
 private:
   Segment leftBedBorder;
