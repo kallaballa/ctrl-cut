@@ -26,8 +26,12 @@ private:
   class QGraphicsItem *firstitem;
   class CtrlCutScene *scene;
 
+  class PostscriptParser *psparser; // Only to retain data between loads, needed by Raster
   class CutModel *cutmodel;
+  class Raster *raster;
   QPixmap rasterpixmap;
+  QPointF rasterpos;
+  class LaserDialog *laserdialog;
 };
 
 #endif

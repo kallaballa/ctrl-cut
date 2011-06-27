@@ -30,28 +30,25 @@
 
 Dither& Dither::create(GrayscaleImage& img, LaserConfig::RasterDithering dithering){
   switch (dithering) {
-    case LaserConfig::DITHER_THRESHOLD:
-      return *(new DitherThreshold(img));
-      break;
     case LaserConfig::DITHER_BAYER:
       return *(new DitherBayer(img));
       break;
     case LaserConfig::DITHER_FLOYD_STEINBERG:
       return *(new DitherFloydSteinberg(img));
       break;
-    case LaserConfig::DITHER_FLOYD_JARVIS:
+    case LaserConfig::DITHER_JARVIS:
       return *(new DitherJarvis(img));
       break;
-    case LaserConfig::DITHER_FLOYD_BURKE:
+    case LaserConfig::DITHER_BURKE:
       return *(new DitherBurke(img));
       break;
-    case LaserConfig::DITHER_FLOYD_STUCKI:
+    case LaserConfig::DITHER_STUCKI:
       return *(new DitherStucki(img));
       break;
-    case LaserConfig::DITHER_FLOYD_SIERRA2:
+    case LaserConfig::DITHER_SIERRA2:
       return *(new DitherSierra2(img));
       break;
-    case LaserConfig::DITHER_FLOYD_SIERRA3:
+    case LaserConfig::DITHER_SIERRA3:
       return *(new DitherSierra3(img));
       break;
     default:

@@ -97,7 +97,7 @@ public:
             p[1] < (lr[1] + tol_y) && p[1] > (ul[1] - tol_y));
   }
   
-  void getSize(int &width, int &height) {
+  void getSize(int &width, int &height) const {
     width = lr[0] - ul[0];
     height = lr[1] - ul[1];
   }

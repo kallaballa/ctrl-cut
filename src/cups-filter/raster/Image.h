@@ -26,13 +26,34 @@
 #include <iostream>
 #include <stdint.h>
 #include "util/Logger.h"
-#include "util/2D.h"
 #include <iostream>
+#include <assert.h>
 
 class BitmapImage : public AbstractImage {
 public:
   BitmapImage(uint32_t width, uint32_t height, uint8_t *buf = NULL) : AbstractImage(width, height, buf) {
     this->row_stride = width / 8; // Natural rowstride
+  }
+
+  /*!
+    Returns the given subrectangle of this image as a new image.
+  */
+  AbstractImage *copy(const Rectangle &rect) const {
+    int w,h;
+    rect.getSize(w, h);
+    if (h == 0 || w == 0) return NULL;
+    assert(w % 8 == 0);
+    assert(rect.ul[0] % 8 == 0);
+    BitmapImage *bitmapcopy = new BitmapImage(w, h);
+
+    this->performcopy(bitmapcopy, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
+    bitmapcopy->xpos *= 8;
+    return bitmapcopy;
+  }
+
+  Rectangle autocrop() const {
+    Rectangle byterect = AbstractImage::autocrop(this->w / 8);
+    return Rectangle(byterect.ul[0]*8, byterect.ul[1], byterect.lr[0] * 8, byterect.lr[1]);
   }
 
   bool saveAsPBM(const std::string &filename) {
@@ -52,7 +73,6 @@ public:
     delete invertedline;
     return true;
   }
-private:
 };
 
 
@@ -78,11 +98,34 @@ public:
     this->row_stride = parent->row_stride;
     this->comp = parent->components();
     this->bytes_per_pixel = sizeof(T) * components;
-    this->addr = (static_cast<T*>(parent->addr)) + (offsety * this->row_stride + offsetx) * this->comp;
+    this->addr = (static_cast<T*>(parent->addr)) + 
+      (offsety * this->row_stride + offsetx) * this->comp;
   }
 
   virtual ~Image() {}
   
+  /*!
+    Returns the given subrectangle of this image as a new image.
+  */
+  AbstractImage *copy(const Rectangle &rect) const {
+    int w,h;
+    rect.getSize(w, h);
+    if (h == 0 || w == 0) return NULL;
+
+    Image<T> *imgcopy = new Image<T>(w, h);
+
+    this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
+    imgcopy->xpos /= sizeof(T);
+
+    return imgcopy;
+  }
+
+  Rectangle autocrop() const {
+    Rectangle byterect = AbstractImage::autocrop(this->w * sizeof(T));
+    return Rectangle(byterect.ul[0] / sizeof(T), byterect.ul[1], 
+                     byterect.lr[0] / sizeof(T), byterect.lr[1]);
+  }
+
   uint8_t components() const { return this->comp; }
   
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {

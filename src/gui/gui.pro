@@ -17,11 +17,12 @@ DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
 
 INCLUDEPATH += ../cups-filter ../lpd-epilog
 
-FORMS   += MainWindow.ui
+FORMS   += MainWindow.ui LaserDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += MainWindow.h \
+           LaserDialog.h \
            NavigationView.h \          
            LpdClient.h \
            StreamUtils.h \
@@ -46,6 +47,7 @@ HEADERS += MainWindow.h \
 
 SOURCES += gui.cpp \
            MainWindow.cpp \
+           LaserDialog.cpp \
            NavigationView.cpp \
            LpdClient.cpp \
            StreamUtils.cpp \

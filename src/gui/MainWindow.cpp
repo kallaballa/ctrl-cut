@@ -12,9 +12,11 @@
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
 
+#include "LaserDialog.h"
+
 #include <assert.h>
 
-MainWindow::MainWindow() : cutmodel(NULL)
+MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -41,23 +43,30 @@ void MainWindow::on_fileOpenAction_triggered()
       delete this->cutmodel;
       this->cutmodel = NULL;
     }
+    if (this->raster) {
+      delete this->raster;
+      this->raster = NULL;
+    }
+    if (this->psparser) {
+      delete this->psparser;
+      this->psparser = NULL;
+    }
 
     QFileInfo finfo(filename);
     QString suffix = finfo.suffix();
     if (suffix == "ps") {
-      PostscriptParser *psparser = new PostscriptParser(LaserConfig::inst());
+      this->psparser = new PostscriptParser(LaserConfig::inst());
       switch (LaserConfig::inst().raster_dithering) {
       case LaserConfig::DITHER_DEFAULT:
         psparser->setRasterFormat(PostscriptParser::BITMAP);
         break;
-      case LaserConfig::DITHER_THRESHOLD:
       case LaserConfig::DITHER_BAYER:
       case LaserConfig::DITHER_FLOYD_STEINBERG:
-      case LaserConfig::DITHER_FLOYD_JARVIS:
-      case LaserConfig::DITHER_FLOYD_BURKE:
-      case LaserConfig::DITHER_FLOYD_STUCKI:
-      case LaserConfig::DITHER_FLOYD_SIERRA2:
-      case LaserConfig::DITHER_FLOYD_SIERRA3:
+      case LaserConfig::DITHER_JARVIS:
+      case LaserConfig::DITHER_BURKE:
+      case LaserConfig::DITHER_STUCKI:
+      case LaserConfig::DITHER_SIERRA2:
+      case LaserConfig::DITHER_SIERRA3:
         psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
         break;
         
@@ -76,13 +85,17 @@ void MainWindow::on_fileOpenAction_triggered()
       }
 
       this->cutmodel = CutModel::load(psparser->getVectorData());
-      if (!this->cutmodel) {
+
+      if (!this->cutmodel && !psparser->hasBitmapData()) {
         fprintf(stderr, "Error: Unable to open postscript file\n");
         return;
       }
 
+      this->rasterpixmap = QPixmap();
+      this->rasterpos = QPointF();
       if (psparser->hasBitmapData()) {
         AbstractImage *image = psparser->getImage();
+        this->raster = new Raster(image);
         QImage *img;
         BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
         if (bitmap) {
@@ -92,16 +105,23 @@ void MainWindow::on_fileOpenAction_triggered()
           colortable.append(qRgba(0,0,0,255));
           colortable.append(qRgba(0,0,0,0));
           img->setColorTable(colortable);
-          this->rasterpixmap = QPixmap::fromImage(*img);
         }
         else {
           GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
           if (gsimage) {
-            qDebug() << "grayscale images not implemented";
-            // img = new QImage(image->data(), image->width(), image->height(), 
-            //                  image->rowstride(), QImage::Format_Mono);
+            img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
+                             image->rowstride(), QImage::Format_Indexed8);
+            QVector<QRgb> colortable;
+            for(int i=0;i<255;i++) colortable.append(qRgba(i,i,i,255));
+            colortable.append(qRgba(255,255,255,0));
+            img->setColorTable(colortable);
           }
         }
+        // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
+        // of its buffer
+        img->bits();
+        this->rasterpixmap = QPixmap::fromImage(*img);
+        this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
     }
     else if (suffix == "vector") {
@@ -130,6 +150,7 @@ void MainWindow::on_fileOpenAction_triggered()
 
     if (!this->rasterpixmap.isNull()) {
       QGraphicsPixmapItem *imgitem = new QGraphicsPixmapItem(this->rasterpixmap, parentitem);
+      imgitem->setPos(this->rasterpos);
       parentitem->addToGroup(imgitem);
     }
   }
@@ -162,10 +183,16 @@ void MainWindow::on_filePrintAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->cutmodel) {
+  if (!this->cutmodel && !this->raster) {
     fprintf(stderr, "No model loaded\n");
     return;
   }
+
+  if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
+  if (this->laserdialog->exec() != QDialog::Accepted) return;
+
+  this->laserdialog->updateLaserConfig(LaserConfig::inst());
+  LaserConfig::inst().dumpDebug();
 
   QStringList items;
   items << "Lazzzor" << "localhost";
@@ -175,7 +202,8 @@ void MainWindow::on_filePrintAction_triggered()
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-    job.addCut(this->cutmodel);
+    if (this->cutmodel) job.addCut(this->cutmodel);
+    if (this->raster) job.addRaster(this->raster);
     Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);

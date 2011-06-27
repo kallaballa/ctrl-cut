@@ -382,41 +382,18 @@ void PostscriptParser::printStatistics()
 
 void PostscriptParser::copyPage()
 {
-  size_t size = this->gsimage->rowstride() * this->image->height();
+  Rectangle cropbox = this->gsimage->autocrop();
+  this->image = this->gsimage->copy(cropbox);
 
-  // Quick and dirty scan for empty pixels to reduce size of initial malloc
-  uint64_t *gsaddr = (uint64_t *)this->gsimage->data();
-  int i;
-  for (i=0;i<size/8;i++) {
-    if (gsaddr[i] != 0xffffffffffffffffULL) break;
+  // For debugging, we can export the image here:
+#if 0
+  BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
+  if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
+  else {
+    GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
+    if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
   }
-  int startrow = i * 8 / this->gsimage->rowstride();
-  for (i=size/8-1;i>=0;i--) {
-    if (gsaddr[i] != 0xffffffffffffffffULL) break;
-  }
-  int endrow = i * 8 / this->gsimage->rowstride();
-
-  LOG_DEBUG(startrow);
-  LOG_DEBUG(endrow);
-
-  uint32_t newheight = endrow - startrow + 1;
-  size = newheight * this->gsimage->rowstride();
-  uint32_t offset = startrow * this->gsimage->rowstride();
-
-  void *dataptr = malloc(size);
-  assert(dataptr);
-  memcpy(dataptr, ((uint8_t *)this->gsimage->data()) + offset, size);
-  this->image->setSize(this->image->width(), newheight);
-  this->image->translate(0, startrow);
-  this->image->setData(dataptr);
-  this->image->setRowstride(this->gsimage->rowstride());
-  
-  // BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
-  // if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
-  // else {
-  //   GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
-  //   if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
-  // }
+#endif
 }
 
 /*
@@ -429,13 +406,10 @@ void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage
   if (this->rasterformat == BITMAP) {
     this->gsimage = new BitmapImage(width, height, (uint8_t *)pimage);
     if (rowstride != 0) this->gsimage->setRowstride(rowstride);
-    //FIXME allocate at construction?
-    this->image = new BitmapImage(width, height);
   }
   else if (this->rasterformat == GRAYSCALE) {
     this->gsimage = new GrayscaleImage(width, height, 1, (uint8_t *)pimage);
     if (rowstride != 0) this->gsimage->setRowstride(rowstride);
-    this->image = new GrayscaleImage(width, height, 1);
   }
   else {
     LOG_FATAL_MSG("Raster format not implemented", this->rasterformat);
