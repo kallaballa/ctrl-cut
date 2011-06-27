@@ -13,6 +13,7 @@ public:
   LaserDialog(QWidget *parent = NULL);
   ~LaserDialog();
   
+  void applyLaserConfig(LaserConfig &config);
   void updateLaserConfig(LaserConfig &config);
 
 private slots:

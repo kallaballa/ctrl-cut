@@ -21,17 +21,72 @@ LaserDialog::~LaserDialog()
 void LaserDialog::updateLaserConfig(LaserConfig &config)
 {
   config.focus = this->autoFocusBox->isChecked();
-  // FIXME: convert from index to value config.resolution = this->resolutionCombo->currentIndex();
+  QStringList res = this->resolutionCombo->currentText().split(" ");
+  if (res.length() > 0) config.resolution = res[0].toInt();
+
   config.enable_raster = !this->vectorRadio->isChecked();
   config.enable_vector = !this->rasterRadio->isChecked();
   config.raster_speed = this->rasterSpeedSlider->value();
   config.raster_power = this->rasterPowerSlider->value();
-  //  config.raster_direction = FIXME;
-  //  config.raster_dithering = FIXME;
+  config.raster_direction = (LaserConfig::RasterDirection)this->rasterDirection->currentIndex();
+
+  const QString &dither = this->rasterDithering->currentText();
+  if (dither == "Default") config.raster_dithering = LaserConfig::DITHER_DEFAULT;
+  else if (dither == "Bayer") config.raster_dithering = LaserConfig::DITHER_BAYER;
+  else if (dither == "Floyd-Steinberg") config.raster_dithering = LaserConfig::DITHER_FLOYD_STEINBERG;
+  else if (dither == "Jarvis") config.raster_dithering = LaserConfig::DITHER_JARVIS;
+  else if (dither == "Burke") config.raster_dithering = LaserConfig::DITHER_BURKE;
+  else if (dither == "Stucki") config.raster_dithering = LaserConfig::DITHER_STUCKI;
+  else if (dither == "Sierra2") config.raster_dithering = LaserConfig::DITHER_SIERRA2;
+  else if (dither == "Sierra3") config.raster_dithering = LaserConfig::DITHER_SIERRA3;
 
   config.vector_speed = this->vectorSpeedSlider->value();
   config.vector_power = this->vectorPowerSlider->value();
   config.vector_freq = this->vectorFreqSlider->value();
+}
+
+void LaserDialog::applyLaserConfig(LaserConfig &config)
+{
+  this->autoFocusBox->setChecked(config.focus);
+  this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(config.resolution) + " DPI"));
+
+  if (config.enable_raster && config.enable_vector) this->combinedRadio->setChecked(true);
+  else if (config.enable_raster) this->rasterRadio->setChecked(true);
+  else this->vectorRadio->setChecked(true);
+
+  this->rasterSpeedSlider->setValue(config.raster_speed);
+  this->rasterPowerSlider->setValue(config.raster_power);
+  this->rasterDirection->setCurrentIndex(config.raster_direction);
+
+  QString ditherstr = "Default";
+  switch (config.raster_dithering) {
+  case LaserConfig::DITHER_BAYER:
+    ditherstr = "Bayer";
+    break;
+  case LaserConfig::DITHER_FLOYD_STEINBERG:
+    ditherstr = "Floyd-Steinberg";
+    break;
+  case LaserConfig::DITHER_JARVIS:
+    ditherstr = "Jarvis";
+    break;
+  case LaserConfig::DITHER_BURKE:
+    ditherstr = "Burke";
+    break;
+  case LaserConfig::DITHER_STUCKI:
+    ditherstr = "Stucki";
+    break;
+  case LaserConfig::DITHER_SIERRA2:
+    ditherstr = "Sierra2";
+    break;
+  case LaserConfig::DITHER_SIERRA3:
+    ditherstr = "Sierra3";
+    break;
+  }
+  this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
+
+  this->vectorSpeedSlider->setValue(config.vector_speed);
+  this->vectorPowerSlider->setValue(config.vector_power);
+  this->vectorFreqSlider->setValue(config.vector_freq);
 }
 
 void LaserDialog::on_rasterPowerSlider_valueChanged(int val)
