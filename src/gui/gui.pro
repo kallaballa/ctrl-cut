@@ -32,6 +32,7 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/model/CutModel.h \
 	   ../cups-filter/vector/model/Explode.h \
            ../cups-filter/vector/model/Reduce.h \
+	   ../cups-filter/vector/model/Deonion.h \
 	   ../cups-filter/vector/graph/CutGraph.h \
            ../cups-filter/vector/graph/Traverse.h \
 	   ../cups-filter/vector/HPGLEncoder.h \
@@ -55,6 +56,7 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/model/CutModel.cpp \
            ../cups-filter/vector/model/Explode.cpp \
            ../cups-filter/vector/model/Reduce.cpp \
+	   ../cups-filter/vector/model/Deonion.cpp \
            ../cups-filter/vector/graph/CutGraph.cpp \
 	   ../cups-filter/vector/graph/Traverse.cpp \
            ../cups-filter/vector/HPGLEncoder.cpp \
