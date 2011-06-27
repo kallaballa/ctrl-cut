@@ -12,9 +12,11 @@
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
 
+#include "LaserDialog.h"
+
 #include <assert.h>
 
-MainWindow::MainWindow() : cutmodel(NULL)
+MainWindow::MainWindow() : cutmodel(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -177,6 +179,11 @@ void MainWindow::on_filePrintAction_triggered()
     fprintf(stderr, "No model loaded\n");
     return;
   }
+
+  if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
+  if (this->laserdialog->exec() != QDialog::Accepted) return;
+
+  this->laserdialog->updateLaserConfig(LaserConfig::inst());
 
   QStringList items;
   items << "Lazzzor" << "localhost";

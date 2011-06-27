@@ -3,7 +3,7 @@
 #include "util/Logger.h"
 #include "util/LaserConfig.h"
 
-LogLevel cc_loglevel = CC_WARNING;
+LogLevel cc_loglevel = CC_DEBUG;
 /** Temporary buffer for building our strings. */
 char buf[102400];
 

@@ -29,6 +29,7 @@ private:
   class CutModel *cutmodel;
   QPixmap rasterpixmap;
   QPointF rasterpos;
+  class LaserDialog *laserdialog;
 };
 
 #endif
