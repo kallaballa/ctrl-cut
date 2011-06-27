@@ -22,6 +22,7 @@
 #include "vector/model/CutModel.h"
 #include "vector/model/Explode.h"
 #include "vector/model/Reduce.h"
+#include "vector/graph/Traverse.h"
 
 using std::list;
 
