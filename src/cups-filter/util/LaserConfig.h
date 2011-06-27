@@ -30,6 +30,7 @@ public:
   void setCupsOptions(struct cups_option_s *options, int numOptions);
   void rangeCheck();
   static uint32_t calcDeviceDimension(uint32_t dim, double res);
+  void dumpDebug();
 
   /** Where to store temporary files */
   std::string tempdir;
@@ -58,15 +59,13 @@ public:
 
   enum RasterDithering {
     DITHER_DEFAULT,
-    DITHER_DARKEN,
-    DITHER_THRESHOLD,
     DITHER_BAYER,
     DITHER_FLOYD_STEINBERG,
-    DITHER_FLOYD_JARVIS,
-    DITHER_FLOYD_BURKE,
-    DITHER_FLOYD_STUCKI,
-    DITHER_FLOYD_SIERRA2,
-    DITHER_FLOYD_SIERRA3
+    DITHER_JARVIS,
+    DITHER_BURKE,
+    DITHER_STUCKI,
+    DITHER_SIERRA2,
+    DITHER_SIERRA3
   };
 
   RasterDithering raster_dithering;
