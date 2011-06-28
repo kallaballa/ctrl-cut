@@ -18,7 +18,6 @@
  */
 #include "HPGLEncoder.h"
 #include "vector/model/CutModel.h"
-#include "vector/graph/CutGraph.h"
 #include "vector/graph/Traverse.h"
 #include "vector/model/Deonion.h"
 #include "boost/format.hpp"

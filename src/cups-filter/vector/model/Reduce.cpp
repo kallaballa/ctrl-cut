@@ -20,10 +20,10 @@
 #include "util/Logger.h"
 #include "vector/graph/Traverse.h"
 
-bool isShared(CutGraph& graph, const Point& p) {
-  CutGraph::Vertex* v;
-  if((v = graph.findVertex(VertexGeometry(&p, 0))) != NULL) {
-    boost::graph_traits<CutGraph>::out_edge_iterator oe_it, oe_end;
+bool isShared(SegmentGraph& graph, const Point& p) {
+  SegmentGraph::Vertex* v;
+  if((v = graph.findVertex(p)) != NULL) {
+    boost::graph_traits<SegmentGraph>::out_edge_iterator oe_it, oe_end;
     const SegmentString* last_owner = NULL;
     for(boost::tie(oe_it,oe_end) = boost::out_edges(*v, graph); oe_it != oe_end; ++oe_it) {
       if(last_owner != NULL && last_owner != graph.getOwner(*oe_it)) {
@@ -42,7 +42,7 @@ void reduce_linestrings(CutModel &model, float epsilon)
 {
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
-  CutGraph graph;
+  SegmentGraph graph;
   StringList join;
   make_linestrings(join, model.begin(), model.end(), graph);
   CutModel newModel;

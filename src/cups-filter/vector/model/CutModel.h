@@ -6,7 +6,6 @@
 #include <list>
 #include "util/LaserConfig.h"
 #include "vector/geom/Geometry.h"
-#include "vector/graph/CutGraph.h"
 
 class CutModel {
 public:

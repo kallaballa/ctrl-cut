@@ -130,6 +130,7 @@ void explode_segments(CutModel& model) {
 
       if(remove_candidate) {
         model.remove((*it_o).getIterator());
+        //FIXME find out why maintaining the in_range list incrementally produces invalid iterators
         if(!remove_pick) {
           //don't search again if the loop is going to break*/
           findWithinRange(segTree,it_s, in_range);

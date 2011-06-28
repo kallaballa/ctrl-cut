@@ -78,7 +78,7 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
 
 bool CutModel::createSegment(int32_t inX, int32_t inY, int32_t outX,
     int32_t outY, CutSettings& settings) {
-  std::cerr << inX << "/" << inY << " " << outX << "/" << outY << std::endl;
+ // std::cerr << "#" << inX << "/" << inY << " " << outX << "/" << outY << std::endl;
   return createSegment(*(new Point(inX, inY)), *(new Point(outX, outY)), settings);
 }
 
@@ -109,6 +109,7 @@ CutModel *CutModel::load(std::istream &input) {
   LOG_INFO_STR("Load vector data");
   int segmentCnt = 0;
   while (std::getline(input, line)) {
+    std::cerr << line << std::endl;
     first = line[0];
 
     if (first == 'X') { // End of output

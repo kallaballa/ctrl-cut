@@ -16,7 +16,8 @@ SOURCES += \
           util/Eps.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
-          vector/graph/CutGraph.cpp \
+          vector/graph/SegmentGraph.cpp \
+          vector/graph/StringGraph.cpp \
 	  vector/graph/Traverse.cpp \
           vector/model/CutModel.cpp \
 	  vector/model/Explode.cpp \
@@ -35,6 +36,8 @@ HEADERS += \
           Driver.h \
           vector/graph/Traverse.h \
           vector/graph/CutGraph.h \
+	  vector/graph/SegmentGraph.h \
+	  vector/graph/StringGraph.h \
           vector/geom/Geometry.h \
           vector/model/CutModel.h \
           vector/model/Explode.h \

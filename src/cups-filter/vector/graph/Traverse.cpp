@@ -26,11 +26,11 @@
 #include <boost/graph/metric_tsp_approx.hpp>
 
 struct join_strings_visitor: public planar_face_traversal_visitor {
-  CutGraph& graph;
+  SegmentGraph& graph;
   StringList& strings;
   SegmentString* current;
 
-  join_strings_visitor(CutGraph& graph, StringList& strings) :
+  join_strings_visitor(SegmentGraph& graph, StringList& strings) :
     graph(graph), strings(strings), current(NULL) {
   }
 
@@ -41,7 +41,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void end_face() {
   }
 
-  void next_edge(CutGraph::Edge e) {
+  void next_edge(SegmentGraph::Edge e) {
     const Segment* seg = graph.getSegment(e);
 
     if (graph.getOwner(e) == NULL) {
@@ -90,12 +90,12 @@ void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::
   os << "</cut>" << std::endl;
 }
 
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last, CutGraph& graph) {
+void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last, SegmentGraph& segGraph) {
   LOG_INFO_STR("make linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
-  create_segment_graph(graph, first, last);
-  join_strings_visitor vis = *new join_strings_visitor(graph, strings);
-  traverse_planar_faces(graph, vis);
+  create_planar_graph(segGraph, first, last);
+  join_strings_visitor vis = *new join_strings_visitor(segGraph, strings);
+  traverse_planar_faces(segGraph, vis);
   LOG_DEBUG_MSG("strings after", strings.size());
 #ifdef DEBUG
   check_linestrings(strings.begin(), strings.end());
@@ -103,35 +103,35 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
 }
 
 void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last) {
-  CutGraph graph;
-  make_linestrings(strings, first, last, graph);
+  SegmentGraph segGraph;
+  make_linestrings(strings, first, last, segGraph);
 }
 
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator  last) {
   LOG_INFO_STR("travel linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
 
-  CutGraph graph;
-  CutGraph::Vertex v_origin = create_complete_graph_from_point(graph, * new Point(0,0),first, last);
+  StringGraph graph;
+  StringGraph::Vertex v_origin = create_complete_graph_from_point(graph, * new Point(0,0),first, last);
 
-  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, VertexGeometry, EdgeGeometry>, double EdgeGeometry::*>::type WeightMap;
-  WeightMap weight_map(get(&EdgeGeometry::weight, graph));
-  std::map<CutGraph::Vertex, graph_traits<CutGraph>::vertices_size_type > v_index_map;
-  graph_traits<CutGraph>::vertices_size_type vertex_count = 0;
-  graph_traits<CutGraph>::vertex_iterator vi, vi_end;
+  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, TieProperty, StringProperty>, double StringProperty::*>::type WeightMap;
+  WeightMap weight_map(get(&StringProperty::weight, graph));
+  std::map<StringGraph::Vertex, graph_traits<StringGraph>::vertices_size_type > v_index_map;
+  graph_traits<StringGraph>::vertices_size_type vertex_count = 0;
+  graph_traits<StringGraph>::vertex_iterator vi, vi_end;
 
   for(tie(vi, vi_end) = vertices(graph); vi != vi_end; ++vi)
     v_index_map[*vi] = vertex_count++;
 
-  vector<CutGraph::Vertex> route;
+  vector<StringGraph::Vertex> route;
   double len = 0.0;
   boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
-  const CutGraph::Vertex* nextVertex = NULL;
+  const StringGraph::Vertex* nextVertex = NULL;
   const SegmentString* nextString = NULL;
   std::set<const SegmentString*> traversedStrings;
 
-  for (vector<CutGraph::Vertex>::iterator it = route.begin(); it
+  for (vector<StringGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
     nextVertex = &(*it);
     nextString = graph.getOwner(*it);
@@ -149,12 +149,4 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
 #endif
 }
 
-// Test for planarity and compute the planar embedding as a side-effect
-bool build_planar_embedding(CutGraph::Embedding& embedding, CutGraph& graph) {
- // Test for planarity and compute the planar embedding as a side-effect
- if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
-     boyer_myrvold_params::embedding = &embedding[0]))
-   return true;
- else
-   return false;
-}
+

@@ -263,53 +263,6 @@ private:
 typedef std::list<const Segment*> SegmentList;
 typedef std::list<const SegmentString*> StringList;
 
-struct EdgeGeometry {
-  const Segment* segment;
-  const SegmentString* owner;
-  double weight;
-
-  EdgeGeometry() : segment(0), owner(0), weight(0) {}
-  EdgeGeometry(const Segment* seg, const SegmentString* string, double weight=0) : segment(seg), owner(string), weight(weight) {}
-
-  const bool operator<(const EdgeGeometry& other) const {
-    const Segment* seg1 = this->segment;
-    const Segment* seg2 = other.segment;
-    const SegmentString* string1 = this->owner;
-    const SegmentString* string2 = other.owner;
-
-    return string1 < string2 || (string1 == string2 && seg1 < seg2);
-  }
-};
-
-struct VertexGeometry {
-  const Point* point;
-  const SegmentString* owner;
-
-  VertexGeometry() : point(0), owner(0) {}
-  VertexGeometry(const Point* p, const SegmentString* string) : point(p), owner(string) {}
-
-  const bool operator<(const VertexGeometry& other) const {
-    const Point* p1 = this->point;
-    const Point* p2 = other.point;
-    const SegmentString* string1 = this->owner;
-    const SegmentString* string2 = other.owner;
-
-    bool pLess;
-
-    if(p1 != NULL && p2 != NULL) {
-      if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
-        pLess = p1 < p2;
-      } else {
-        pLess = *p1 < *p2;
-      }
-    } else {
-      pLess = p1 < p2;
-    }
-
-    return string1 < string2 || (string1 == string2 && pLess);
-  }
-};
-
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 
 /*!
@@ -423,6 +376,11 @@ public:
       this->erase(it_node);
     else
       assert(false);
+  }
+
+  const Point& findNearest(const Point& p) const {
+    SegmentNode pos = *new SegmentNode(p);
+    return *(*(this->find_nearest(pos).first)).end_point;
   }
 
   void findWithinRange(SegmentList::iterator& it_seg, std::list<SegmentNode>& v) const {
