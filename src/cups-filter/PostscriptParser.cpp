@@ -87,8 +87,9 @@ static int display_size(void *, void *, int width, int height,
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
   //  fprintf(stderr, "    pimage: %p\n", pimage);
 
-  int color = fmt & DISPLAY_COLORS_MASK;
-  int depth = fmt & DISPLAY_DEPTH_MASK;
+  //FIXME unused
+  //int color = fmt & DISPLAY_COLORS_MASK;
+  //int depth = fmt & DISPLAY_DEPTH_MASK;
 
   // FIXME: Verify format
 
