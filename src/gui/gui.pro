@@ -34,6 +34,8 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/model/Reduce.h \
 	   ../cups-filter/vector/model/Deonion.h \
 	   ../cups-filter/vector/graph/CutGraph.h \
+           ../cups-filter/vector/graph/SegmentGraph.h \
+           ../cups-filter/vector/graph/StringGraph.h \	   
            ../cups-filter/vector/graph/Traverse.h \
 	   ../cups-filter/vector/HPGLEncoder.h \
            ../cups-filter/raster/PclEncoder.h \
@@ -58,6 +60,8 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/model/Reduce.cpp \
 	   ../cups-filter/vector/model/Deonion.cpp \
            ../cups-filter/vector/graph/CutGraph.cpp \
+           ../cups-filter/vector/graph/SegmentGraph.cpp \
+           ../cups-filter/vector/graph/StringGraph.cpp \
 	   ../cups-filter/vector/graph/Traverse.cpp \
            ../cups-filter/vector/HPGLEncoder.cpp \
 	   ../cups-filter/raster/PclEncoder.cpp \
