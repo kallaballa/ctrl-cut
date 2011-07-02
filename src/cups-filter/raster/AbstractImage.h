@@ -50,21 +50,21 @@ public:
   virtual Rectangle autocrop(size_t bytewidth) const {
     uint8_t *gsaddr = (uint8_t *)this->addr;
 
-    int i,j;
+    unsigned int i,j;
     for (j=0;j<this->h;j++) {
       for (i=0;i<bytewidth;i++) {
         if (gsaddr[j * this->row_stride + i] != 0xff) break;
       }
       if (i != bytewidth) break;
     }
-    int starty = j;
+    unsigned int starty = j;
     for (j=this->h-1;j>=starty;j--) {
       for (i=0;i<bytewidth;i++) {
         if (gsaddr[j * this->row_stride + i] != 0xff) break;
       }
       if (i != bytewidth) break;
     }
-    int endy = j;
+    unsigned int endy = j;
     LOG_DEBUG(starty);
     LOG_DEBUG(endy);
 
@@ -74,7 +74,7 @@ public:
       }
       if (j != endy+1) break;
     }
-    int startx = i;
+    unsigned int startx = i;
     for (i=bytewidth-1;i>=startx;i--) {
       for (j=starty;j<=endy;j++) {
         if (gsaddr[j*this->row_stride + i] != 0xff) break;
