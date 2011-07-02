@@ -73,7 +73,7 @@ BitmapImage *loadpbm(std::string filename)
   LOG_DEBUG_MSG("loading PBM..", filename);
 
   char buf[PPMREADBUFLEN], *t;
-  unsigned int w, h, d;
+  unsigned int w, h;
   int r;
   int data_offset = 0;
   FILE* pf = fopen(filename.c_str(), "r");
