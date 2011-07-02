@@ -42,16 +42,16 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 
   void next_edge(SegmentGraph::Edge e) {
-    const Segment* seg = graph.getSegment(e);
+    const Segment* seg = graph[e].segment;
 
-    if (graph.getOwner(e) == NULL) {
+    if (graph[e].owner == NULL) {
       if (current == NULL || !current->addSegment(*seg)) {
         current = new SegmentString();
         current->addSegment(*seg);
         strings.push_back(current);
       }
 
-      graph.setOwner(e, *current);
+      graph[e].owner = current;
     }
   }
 };
@@ -134,7 +134,7 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   for (vector<StringGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
     nextVertex = &(*it);
-    nextString = graph.getOwner(*it);
+    nextString = graph[*it].owner;
 
     if (nextString != NULL && traversedStrings.find(nextString) == traversedStrings.end()) {
       strings.push_back(nextString);

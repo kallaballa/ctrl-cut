@@ -6,6 +6,7 @@
 #include <list>
 #include "util/LaserConfig.h"
 #include "vector/geom/Geometry.h"
+#include "vector/geom/SegmentTree.h"
 
 class CutModel {
 public:

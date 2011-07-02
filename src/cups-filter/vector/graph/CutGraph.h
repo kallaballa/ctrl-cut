@@ -3,16 +3,56 @@
 
 #include "StringGraph.h"
 #include "SegmentGraph.h"
+#include <boost/graph/filtered_graph.hpp>
+
+using boost::filtered_graph;
 
 template<typename Graph>
-bool filter_accept_all(const Graph& graph, typename Graph::Edge e) {
-  return true;
-}
+struct is_free_edge_predicate {
+  typedef typename Graph::Edge Edge;
+  const Graph* graph;
+
+  is_free_edge_predicate() {}
+  is_free_edge_predicate(const Graph& graph) : graph(&graph) {}
+
+  bool operator()(const Edge& e) const {
+    return (*graph)[e].owner == NULL;
+  }
+};
 
 template<typename Graph>
-const typename Graph::Vertex get_opposite(const Graph& graph, const typename Graph::Edge edge, const typename Graph::Vertex one) {
-  const typename Graph::Vertex source = boost::source(edge, graph);
-  const typename Graph::Vertex target = boost::target(edge, graph);
+struct is_free_vertex_predicate {
+  typedef typename Graph::Vertex Vertex;
+  typedef typename boost::graph_traits<Graph>::out_edge_iterator EdgeIterator;
+  const Graph* graph;
+
+  is_free_vertex_predicate() {}
+  is_free_vertex_predicate(const Graph& graph) : graph(&graph) {}
+
+  bool operator()(const Vertex& v) const {
+    EdgeIterator eit, eend;
+
+    for(boost::tie(eit,eend) = boost::out_edges(v, *graph); eit != eend; ++eit) {
+      if((*graph)[*eit].owner == NULL)
+        return true;
+    }
+    return false;
+  }
+};
+
+
+template<typename Graph>
+class FreeGeometryView : public filtered_graph<Graph, is_free_edge_predicate<Graph>, is_free_vertex_predicate<Graph> > {
+public:
+  FreeGeometryView(const Graph& g) :
+    filtered_graph<Graph, is_free_edge_predicate<Graph>, is_free_vertex_predicate<Graph> >(g, is_free_edge_predicate<Graph>(g), is_free_vertex_predicate<Graph>(g)) {}
+};
+
+
+template<typename Graph, typename Edge, typename Vertex>
+const Vertex get_opposite(const Graph& graph, const Edge edge, const Vertex one) {
+  Vertex source = boost::source(edge, graph);
+  Vertex target = boost::target(edge, graph);
   if (one == source)
     return target;
   else if (one == target)
@@ -21,30 +61,16 @@ const typename Graph::Vertex get_opposite(const Graph& graph, const typename Gra
     assert(false);
 }
 
-//FIXME doesn't work with directed graphs
-//FIXME explicitly require a binary function object
-template<typename Graph,typename _OutputIterator, typename FilterObject>
-void find_edges(const Graph& graph, const typename Graph::Vertex& v, _OutputIterator out, FilterObject filter = std::ptr_fun<const Graph&, typename Graph::Edge, bool>(filter_accept_all)) {
-  typename boost::graph_traits<Graph>::out_edge_iterator oe_it, oe_end;
-  typename Graph::Edge edge;
-
-  for (boost::tie(oe_it, oe_end) = boost::out_edges(v, graph); oe_it != oe_end; ++oe_it){
-    edge = *oe_it;
-    if(filter(graph,edge))
-      *out++ = edge;
-  }
-}
-
-template<typename Graph, typename _Iterator>
-const typename Graph::Edge find_steapest(const Graph& graph, _Iterator first, _Iterator last) {
+template<typename Graph, typename _EdgeIterator>
+const typename boost::graph_traits<Graph>::edge_descriptor find_steapest(const Graph& graph, _EdgeIterator first, _EdgeIterator last) {
   // Find next clockwise segment
-  typedef typename Graph::Edge Edge;
+  typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
   float steapest = 2 * M_PI;
   const Edge* found = NULL;
 
-  for (_Iterator it = first; it != last; ++it){
+  for (_EdgeIterator it = first; it != last; ++it){
     const Edge candidate = *it;
-    const Segment* seg = graph.getSegment(candidate);
+    const Segment* seg = graph[candidate].segment;
 
     float slope = seg->getSlope();
     if (slope < steapest) {

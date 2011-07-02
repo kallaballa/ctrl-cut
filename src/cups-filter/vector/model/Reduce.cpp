@@ -26,10 +26,10 @@ bool isShared(SegmentGraph& graph, const Point& p) {
     boost::graph_traits<SegmentGraph>::out_edge_iterator oe_it, oe_end;
     const SegmentString* last_owner = NULL;
     for(boost::tie(oe_it,oe_end) = boost::out_edges(*v, graph); oe_it != oe_end; ++oe_it) {
-      if(last_owner != NULL && last_owner != graph.getOwner(*oe_it)) {
+      if(last_owner != NULL && last_owner != graph[*oe_it].owner) {
         return true;
       } else
-        last_owner = graph.getOwner(*oe_it);
+        last_owner = graph[*oe_it].owner;
     }
   }
   return false;

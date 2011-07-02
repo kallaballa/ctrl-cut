@@ -58,13 +58,13 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="0.787130372.1395115452" name="Deonion.cpp" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/model/Deonion.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.686209542">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.686209542" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
+					<fileInfo id="0.787130372.160485291" name="Deonion.cpp" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/model/Deonion.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.1719262077">
+						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.1719262077" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
 					</fileInfo>
 					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/geom/Geometry.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="libkdtree|test-code|wykobi|SDL_draw-1.2.13/src|boost_1_46_1|boost-geometry|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="vector/model/Deonion.cpp|vector/graph/CutGraph.cpp|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
+						<entry excluding="vector/graph/CutGraph.cpp|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
