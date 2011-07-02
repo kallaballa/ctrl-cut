@@ -35,7 +35,7 @@ inline int32_t segment_node_ac( SegmentNode item, int k ) {
 
 class SegmentTree: public KDTree::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
 public:
-  SegmentTree(): KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
+  SegmentTree(): KDTree::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
   virtual ~SegmentTree() {};
 
   void add(SegmentList::iterator& it_seg) {
