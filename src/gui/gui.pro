@@ -55,7 +55,8 @@ SOURCES += gui.cpp \
            LpdClient.cpp \
            StreamUtils.cpp \
            CtrlCutScene.cpp \
-           ../cups-filter/vector/model/CutModel.cpp \
+	   ../cups-filter/vector/geom/Geometry.cpp \
+	   ../cups-filter/vector/model/CutModel.cpp \
            ../cups-filter/vector/model/Explode.cpp \
            ../cups-filter/vector/model/Reduce.cpp \
 	   ../cups-filter/vector/model/Deonion.cpp \

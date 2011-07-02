@@ -19,6 +19,7 @@ SOURCES += \
           vector/graph/SegmentGraph.cpp \
           vector/graph/StringGraph.cpp \
 	  vector/graph/Traverse.cpp \
+	  vector/geom/Geometry.cpp \
           vector/model/CutModel.cpp \
 	  vector/model/Explode.cpp \
           vector/model/Deonion.cpp \
