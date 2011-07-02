@@ -4,6 +4,8 @@
 #include <kdtree++/kdtree.hpp>
 #include "Geometry.h"
 
+namespace kdt = KDTree;
+
 struct SegmentNode {
   SegmentList::iterator* it;
   const Segment* owner;
@@ -33,9 +35,9 @@ inline int32_t segment_node_ac( SegmentNode item, int k ) {
   return (*item.end_point)[k];
 }
 
-class SegmentTree: public KDTree::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
+class SegmentTree: public kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
 public:
-  SegmentTree(): KDTree::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
+  SegmentTree(): kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
   virtual ~SegmentTree() {};
 
   void add(SegmentList::iterator& it_seg) {
