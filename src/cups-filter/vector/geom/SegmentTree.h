@@ -21,7 +21,7 @@ struct SegmentNode {
   SegmentNode(SegmentList::iterator& it, const Point& end_point) : it(new SegmentList::iterator(it)), owner(*it), end_point(&end_point) {
   }
 
-  const bool operator==(const SegmentNode& other) const {
+  bool operator==(const SegmentNode& other) const {
       return this->owner == other.owner && this->end_point == other.end_point;
   }
 

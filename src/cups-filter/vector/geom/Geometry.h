@@ -11,6 +11,8 @@
 #include <boost/tuple/tuple.hpp>
 #include "util/LaserConfig.h"
 
+static const float CC_PI = atan2(0,-1);
+
 struct CutSettings {
   int power;
   int speed;
@@ -37,15 +39,15 @@ public:
       return y;
   }
 
-  const bool operator<(const Point& other) const {
+  bool operator<(const Point& other) const {
       return  (this->x < other.x) || ((this->x == other.x) && (this->y < other.y));
   }
 
-  const bool operator==(const Point& other) const {
+  bool operator==(const Point& other) const {
     return this->x == other.x && this->y == other.y;
   }
 
-  const bool operator!=(const Point& other) const {
+  bool operator!=(const Point& other) const {
     return this->x != other.x || this->y != other.y;
   }
 
@@ -109,15 +111,15 @@ public:
       return second;
   }
 
-  const bool operator<(const Segment& other) const {
+  bool operator<(const Segment& other) const {
       return  (this->first < other.first) || ((this->first == other.first) && (this->second < other.second));
   }
 
-  const bool operator==(const Segment& other) const {
+  bool operator==(const Segment& other) const {
     return this->first == other.first && this->second == other.second;
   }
 
-  const bool operator!=(const Segment& other) const {
+  bool operator!=(const Segment& other) const {
     return ! (*this == other);
   }
 
@@ -306,5 +308,14 @@ inline std::ostream& operator<<(std::ostream &os, const SegmentString& string) {
   return os;
 }
 
+// explicit mixed sign comparison to prevent warnings
+inline bool greater_than(int32_t s, uint32_t us) {
+  return s > (int32_t)us;
+}
+
+// explicit mixed sign comparison to prevent warnings
+inline bool lesser_than(int32_t s, uint32_t us) {
+  return s < (int32_t)us;
+}
 
 #endif /* GEOMETRY_H_ */

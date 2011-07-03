@@ -29,6 +29,6 @@ float Segment::getSlope(bool invert) const
 
   // Swap x and y since we're measuring relative to the Y axis.
   // We also negate the Y axis since positive Y points downwards (left handed)
-  return atan2(d_x, -d_y);
+  return CC_PI - ((float)atan2(d_x, -d_y));
 }
 

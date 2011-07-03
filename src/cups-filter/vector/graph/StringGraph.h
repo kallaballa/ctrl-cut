@@ -30,7 +30,7 @@ struct StringProperty {
   StringProperty() : string(0), weight(0) {}
   StringProperty(const SegmentString* string, double weight=0) : string(string), weight(weight) {}
 
-  const bool operator<(const StringProperty& other) const {
+  bool operator<(const StringProperty& other) const {
     return this->string < other.string;
   }
 };
@@ -42,7 +42,7 @@ struct TieProperty {
   TieProperty() : point(0), owner(0) {}
   TieProperty(const Point* p, const SegmentString* string) : point(p), owner(string) {}
 
-  const bool operator<(const TieProperty& other) const {
+  bool operator<(const TieProperty& other) const {
     const Point* p1 = this->point;
     const Point* p2 = other.point;
     const SegmentString* string1 = this->owner;

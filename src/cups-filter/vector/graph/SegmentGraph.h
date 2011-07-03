@@ -30,7 +30,7 @@ struct SegmentProperty {
   SegmentProperty() : segment(0), owner(0) {}
   SegmentProperty(const Segment* seg, const SegmentString* string) : segment(seg), owner(string) {}
 
-  const bool operator<(const SegmentProperty& other) const {
+  bool operator<(const SegmentProperty& other) const {
     const Segment* seg1 = this->segment;
     const Segment* seg2 = other.segment;
     const SegmentString* string1 = this->owner;
@@ -46,7 +46,7 @@ struct PointProperty  {
   PointProperty () : point(0) {}
   PointProperty (const Point* p) : point(p) {}
 
-  const bool operator<(const PointProperty & other) const {
+  bool operator<(const PointProperty & other) const {
     return *this->point < *other.point;
   }
 };
@@ -70,7 +70,6 @@ public:
   SegmentGraph(const SegmentGraph& graph) : adjacency_list<vecS, vecS, undirectedS, PointProperty , SegmentProperty>(graph) , edge_count(0) {}
   SegmentGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, PointProperty , SegmentProperty>(size) , edge_count(0){}
 
-  const SegmentGraph::Vertex getOther(const SegmentGraph::Edge edge, const SegmentGraph::Vertex one);
   SegmentGraph::Vertex* findVertex(const Point& p);
   SegmentGraph::Vertex addVertex(const Point& p);
   const PointMap& getPointMap() {

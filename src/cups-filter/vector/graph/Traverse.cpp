@@ -67,10 +67,10 @@ void check_linestrings(StringList::iterator first, StringList::iterator last) {
       // assert the segments are globally unique
       assert(segments.find(seg) == segments.end() && segments.find(Segment(seg.second, seg.first, seg.settings)) == segments.end());
       // assert coordinate clipping to laser bed
-      assert(seg.first.x >= 0 && seg.first.x < LaserConfig::inst().device_width
-          && seg.first.y >= 0 && seg.first.y < LaserConfig::inst().device_height
-          && seg.second.x >= 0 && seg.second.x < LaserConfig::inst().device_width
-          && seg.second.y >= 0 && seg.second.y < LaserConfig::inst().device_height
+      assert(seg.first.x >= 0 && lesser_than(seg.first.x,LaserConfig::inst().device_width)
+          && seg.first.y >= 0 && lesser_than(seg.first.y,LaserConfig::inst().device_height)
+          && seg.second.x >= 0 && lesser_than(seg.second.x,LaserConfig::inst().device_width)
+          && seg.second.y >= 0 && lesser_than(seg.second.y,LaserConfig::inst().device_height)
       );
       segments.insert(seg);
     }
@@ -116,12 +116,6 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
 
   typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, TieProperty, StringProperty>, double StringProperty::*>::type WeightMap;
   WeightMap weight_map(get(&StringProperty::weight, graph));
-  std::map<StringGraph::Vertex, graph_traits<StringGraph>::vertices_size_type > v_index_map;
-  graph_traits<StringGraph>::vertices_size_type vertex_count = 0;
-  graph_traits<StringGraph>::vertex_iterator vi, vi_end;
-
-  for(tie(vi, vi_end) = vertices(graph); vi != vi_end; ++vi)
-    v_index_map[*vi] = vertex_count++;
 
   vector<StringGraph::Vertex> route;
   double len = 0.0;

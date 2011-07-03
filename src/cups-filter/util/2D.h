@@ -30,7 +30,7 @@ class Point2D
 public:
   Point2D(int x, int y) { v[0] = x; v[1] = y; }
   int &operator[](size_t idx) { return v[idx]; }
-  const int operator[](size_t idx) const { return v[idx]; }
+  int operator[](size_t idx) const { return v[idx]; }
   bool operator==(const Point2D &other) const {
     return this->v[0] == other.v[0] && this->v[1] == other.v[1];
   }
