@@ -4,7 +4,9 @@
 #include "vector/geom/Geometry.h"
 
 int main() {
+  std::cerr << "bla" << std::endl;
   CutModel planar;
+
   CutSettings settings(0,0,0);
   planar.createSegment(0, 0, 1, 0, settings);
   planar.createSegment(1, 0, 1, 1, settings);
@@ -17,6 +19,5 @@ int main() {
 */
   SegmentGraph graph;
   create_planar_graph(graph, planar.begin(), planar.end());
-  SegmentGraph::Embedding embedding(num_vertices(graph));
-  assert(build_planar_embedding(embedding, graph));
+  assert(boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph));
 }
