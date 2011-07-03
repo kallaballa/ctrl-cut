@@ -3,6 +3,7 @@ message("Root dir:" $$CTRLCUT_ROOT)
 
 isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
 DEFINES += CTRLCUT_VERSION=$$VERSION
+DEFINES += _GLIBCXX_DEBUG
 
 CONFIG -= qt
 OBJECTS_DIR = objects
