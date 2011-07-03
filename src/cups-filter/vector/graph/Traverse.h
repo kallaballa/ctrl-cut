@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 
+#include "Deonion.h"
 #include "vector/graph/CutGraph.h"
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>

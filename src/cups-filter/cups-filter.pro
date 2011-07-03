@@ -22,7 +22,7 @@ SOURCES += \
 	  vector/geom/Geometry.cpp \
           vector/model/CutModel.cpp \
 	  vector/model/Explode.cpp \
-          vector/model/Deonion.cpp \
+          vector/graph/Deonion.cpp \
 	  vector/model/Reduce.cpp
 
 HEADERS += \
@@ -43,7 +43,7 @@ HEADERS += \
           vector/model/CutModel.h \
           vector/model/Explode.h \
 	  vector/model/Reduce.h \
-          vector/model/Deonion.h \
+          vector/graph/Deonion.h \
           vector/HPGLEncoder.h
 
 SOURCES += \

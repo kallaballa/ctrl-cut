@@ -19,7 +19,6 @@
 #include "HPGLEncoder.h"
 #include "vector/model/CutModel.h"
 #include "vector/graph/Traverse.h"
-#include "vector/model/Deonion.h"
 #include "boost/format.hpp"
 
 using boost::format;
@@ -32,21 +31,8 @@ HPGLEncoder::~HPGLEncoder() {
   // TODO Auto-generated destructor stub
 }
 
-void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
- /* StringList join;
-  make_linestrings(join,model.begin(), model.end());
-  dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-join.xml", join.begin(), join.end());
-
-  StringList travel;
-  travel_linestrings(travel, join.begin(), join.end());
-  dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-travel.xml", travel.begin(), travel.end());
-
-*/
-  StringList onion;
-  traverse_onion(onion, model.begin(), model.end());
-  dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-onion.xml", onion.begin(), onion.end());
-
-  bool first = true;
+void HPGLEncoder::encode(StringList::const_iterator first, StringList::const_iterator last, std::ostream &out, const bool wasClipped) const {
+  bool firstOperation = true;
   bool writingPolyline = false;
 
   out << V_INIT << SEP;
@@ -58,7 +44,7 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
   int lastX = -1, lastY = -1;
   int lastPower = this->lconf->vector_power;
 
-  for (StringList::iterator it_ss = onion.begin(); it_ss != onion.end(); ++it_ss) {
+  for (StringList::const_iterator it_ss = first; it_ss != last; ++it_ss) {
     const SegmentString& segString = *(*it_ss);
     for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); ++it_s) {
       const Segment &seg = **it_s;
@@ -107,14 +93,14 @@ void HPGLEncoder::encode(CutModel& model, std::ostream &out) {
       // After a power change, always issue a PU, even if the current
       // coordinate doesn't change.
       if (lastX != startX || lastY != startY || lastPower != power) {
-        if (first) {
+        if (firstOperation) {
           // FIXME: This is to emulate the LT bug in the Epilog drivers:
           // Check if any clipping has been done in any of the passes, and
           // inject the stray "LT" string. This has no function, just for bug compatibility
           // of the output files. See corresponding FIXME in LaserJob.cpp.
-          if (!model.wasClipped())
+          if (!wasClipped)
             out << HPGL_LINE_TYPE;
-          first = false;
+          firstOperation = false;
         } else {
           out << SEP;
         }

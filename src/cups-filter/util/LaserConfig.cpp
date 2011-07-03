@@ -135,7 +135,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   if ((v = cupsGetOption("VectorOptimize", numOptions, options))) {
     if (!strcmp(v, "Simple")) this->vector_optimize = OPTIMIZE_SIMPLE;
     else if (!strcmp(v, "Inner-Outer")) this->vector_optimize = OPTIMIZE_INNER_OUTER;
-    else if (!strcmp(v, "Flat")) this->vector_optimize = OPTIMIZE_FLAT;
+    else if (!strcmp(v, "Shortest-Path")) this->vector_optimize = OPTIMIZE_SHORTEST_PATH;
     else {
       LOG_WARN_MSG("Illegal value for VectorOptimize", v);
     }

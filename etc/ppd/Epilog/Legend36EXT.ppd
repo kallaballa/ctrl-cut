@@ -1032,7 +1032,7 @@ restore
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
 	setpagedevice"
 *End
-*VectorOptimize Flat/Flat: "
+*VectorOptimize Shortest-Path/Shortest Path:"
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 2>> >>
 	setpagedevice"
 *End

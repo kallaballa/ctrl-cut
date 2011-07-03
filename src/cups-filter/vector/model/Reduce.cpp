@@ -40,6 +40,9 @@ bool isShared(SegmentGraph& graph, const Point& p) {
  */
 void reduce_linestrings(CutModel &model, float epsilon)
 {
+  if(epsilon == 0.0f)
+    return;
+
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
   SegmentGraph graph;

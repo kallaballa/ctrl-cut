@@ -102,7 +102,7 @@ public:
   enum VectorOptimize {
     OPTIMIZE_SIMPLE,
     OPTIMIZE_INNER_OUTER,
-    OPTIMIZE_FLAT
+    OPTIMIZE_SHORTEST_PATH
   };
   VectorOptimize vector_optimize;
 
