@@ -17,13 +17,6 @@ int main() {
 */
   SegmentGraph graph;
   create_planar_graph(graph, planar.begin(), planar.end());
-  std::map<SegmentGraph::Edge, graph_traits<SegmentGraph>::edges_size_type > e_index_map;
-  graph_traits<SegmentGraph>::edges_size_type edge_count = 0;
-  graph_traits<SegmentGraph>::edge_iterator ei, ei_end;
-
-  for(tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
-    e_index_map[*ei] = edge_count++;
-
   SegmentGraph::Embedding embedding(num_vertices(graph));
-  assert(build_planar_embedding(embedding, graph));
+  assert(boost::build_planar_embedding(embedding, graph));
 }
