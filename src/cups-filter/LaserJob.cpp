@@ -19,6 +19,7 @@
 #define PJL_PARAM
 #include <list>
 #include "LaserJob.h"
+#include "vector/graph/Traverse.h"
 #include "vector/model/CutModel.h"
 
 using boost::format;
@@ -125,9 +126,31 @@ void LaserJob::serializeTo(std::ostream &out) {
     /* We're going to perform a vector print. */
     for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
       CutModel *model = *it;
+      HPGLEncoder r(this->lconf);
       if (model) {
-        HPGLEncoder r(this->lconf);
-        r.encode(*model, out);
+        if(this->lconf->vector_optimize == LaserConfig::OPTIMIZE_SIMPLE) {
+          StringList join;
+          make_linestrings(join,model->begin(), model->end());
+          dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-join.xml", join.begin(), join.end());
+
+          r.encode(join.begin(), join.end(), out, model->wasClipped());
+        } else if(this->lconf->vector_optimize == LaserConfig::OPTIMIZE_SHORTEST_PATH) {
+          StringList join;
+          make_linestrings(join,model->begin(), model->end());
+          dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-join.xml", join.begin(), join.end());
+
+          StringList travel;
+          travel_linestrings(travel, join.begin(), join.end());
+          dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-travel.xml", travel.begin(), travel.end());
+
+          r.encode(travel.begin(), travel.end(), out, model->wasClipped());
+        } else if(this->lconf->vector_optimize == LaserConfig::OPTIMIZE_INNER_OUTER) {
+          StringList onion;
+          traverse_onion(onion, model->begin(), model->end());
+          dump_linestrings(this->lconf->datadir + "/" + this->lconf->basename + "-onion.xml", onion.begin(), onion.end());
+
+          r.encode(onion.begin(), onion.end(), out, model->wasClipped());
+        }
       }
     }
   }
