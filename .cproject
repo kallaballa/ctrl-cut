@@ -29,7 +29,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/cups-filter}&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.other.other.420862760" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-D_GLIBCXX_DEBUG -std=c++98 -c -fmessage-length=0 -DETLOG -DDEBUG=4 -DUSE_GHOSTSCRIPT_API   -L/usr/X11R6/lib64 -lboost_thread-mt -lX11 -lpng -lXext -lX11 -lm  -Dcimg_use_png -D__cplusplus" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.420862760" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-std=c++98 -c -fmessage-length=0 -DETLOG -DDEBUG=4 -DUSE_GHOSTSCRIPT_API   -L/usr/X11R6/lib64 -lboost_thread-mt -lX11 -lpng -lXext -lX11 -lm  -Dcimg_use_png -D__cplusplus" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.optimization.level.993590070" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.496567331" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -58,13 +58,20 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="0.787130372.160485291" name="Deonion.cpp" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/model/Deonion.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.1719262077">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267.1719262077" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
-					</fileInfo>
+					<folderInfo id="0.787130372.1719436138" name="/" resourcePath="src/cups-filter/test">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.1272061595" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1976219359" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1925872491"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2009725774" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.166581837" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.1036880613"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.2081779074" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.410345195"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1595711166" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.559921952"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1927023157" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.735576580"/>
+						</toolChain>
+					</folderInfo>
 					<fileInfo id="0.787130372.1538944858" name="Geometry.h" rcbsApplicability="disable" resourcePath="src/cups-filter/vector/geom/Geometry.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="libkdtree|test-code|wykobi|SDL_draw-1.2.13/src|boost_1_46_1|boost-geometry|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="vector/graph/CutGraph.cpp|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
+						<entry excluding="test|vector/graph/CutGraph.cpp|raster/filter" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/cups-filter"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -153,8 +160,8 @@
 						<parser enabled="true"/>
 					</scannerInfoProvider>
 				</profile>
-				<scannerConfigBuildInfo instanceId="0.787130372;0.787130372.;cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267;cdt.managedbuild.tool.gnu.cpp.compiler.input.496567331">
-					<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+				<scannerConfigBuildInfo instanceId="0.787130372;0.787130372.;cdt.managedbuild.tool.gnu.c.compiler.base.1036880613;cdt.managedbuild.tool.gnu.c.compiler.input.1641133122">
+					<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 					<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 						<buildOutputProvider>
 							<openAction enabled="true" filePath=""/>
@@ -236,8 +243,8 @@
 						</scannerInfoProvider>
 					</profile>
 				</scannerConfigBuildInfo>
-				<scannerConfigBuildInfo instanceId="0.787130372;0.787130372.;cdt.managedbuild.tool.gnu.c.compiler.base.1036880613;cdt.managedbuild.tool.gnu.c.compiler.input.1641133122">
-					<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+				<scannerConfigBuildInfo instanceId="0.787130372;0.787130372.;cdt.managedbuild.tool.gnu.cpp.compiler.base.2054194267;cdt.managedbuild.tool.gnu.cpp.compiler.input.496567331">
+					<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 					<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
 						<buildOutputProvider>
 							<openAction enabled="true" filePath=""/>
