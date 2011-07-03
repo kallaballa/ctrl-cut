@@ -18,5 +18,5 @@ int main() {
   SegmentGraph graph;
   create_planar_graph(graph, planar.begin(), planar.end());
   SegmentGraph::Embedding embedding(num_vertices(graph));
-  assert(boost::build_planar_embedding(embedding, graph));
+  assert(build_planar_embedding(embedding, graph));
 }
