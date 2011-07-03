@@ -65,16 +65,20 @@ template<typename Graph, typename _EdgeIterator>
 const typename boost::graph_traits<Graph>::edge_descriptor find_steapest(const Graph& graph, _EdgeIterator first, _EdgeIterator last) {
   // Find next clockwise segment
   typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
-  float steapest = 2 * M_PI;
+  float steapest = 2 * CC_PI;
   const Edge* found = NULL;
 
   for (_EdgeIterator it = first; it != last; ++it){
     const Edge candidate = *it;
     const Segment* seg = graph[candidate].segment;
 
-    float slope = seg->getSlope();
-    if (slope < steapest) {
-      steapest = slope;
+    float steapness = CC_PI - seg->getSlope();
+
+    if(steapness < 0)
+      steapness += (2 * CC_PI);
+
+    if (steapness < steapest) {
+      steapest = steapness;
       found = &candidate;
     }
   }
