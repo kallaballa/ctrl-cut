@@ -74,4 +74,5 @@ private:
   const Segment& clipSegmentToLaserBed(const Segment& seg);
 };
 
+void make_route(StringList& strings, CutModel& model);
 #endif /* CUTMODEL_H_ */

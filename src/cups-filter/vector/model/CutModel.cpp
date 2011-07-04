@@ -1,4 +1,5 @@
 #include "CutModel.h"
+#include "vector/graph/Traverse.h"
 #include "util/Logger.h"
 #include <fstream>
 
@@ -167,4 +168,22 @@ CutModel *CutModel::load(std::istream &input) {
 CutModel *CutModel::load(const std::string &filename) {
   std::ifstream infile(filename.c_str(), std::ios_base::in);
   return CutModel::load(infile);
+}
+
+void make_route(StringList& route, CutModel& model) {
+  if(model.config.vector_optimize == LaserConfig::OPTIMIZE_SIMPLE) {
+    make_linestrings(route,model.begin(), model.end());
+    dump_linestrings(model.config.datadir + "/" + model.config.basename + "-join.xml", route.begin(), route.end());
+  } else if(model.config.vector_optimize == LaserConfig::OPTIMIZE_SHORTEST_PATH) {
+    StringList join;
+    make_linestrings(join,model.begin(), model.end());
+    dump_linestrings(model.config.datadir + "/" + model.config.basename + "-join.xml", join.begin(), join.end());
+
+    travel_linestrings(route, join.begin(), join.end());
+    dump_linestrings(model.config.datadir + "/" + model.config.basename + "-travel.xml", route.begin(), route.end());
+  } else if(model.config.vector_optimize == LaserConfig::OPTIMIZE_INNER_OUTER) {
+    traverse_onion(route, model.begin(), model.end());
+    dump_linestrings(model.config.datadir + "/" + model.config.basename + "-onion.xml", route.begin(), route.end());
+  } else
+    assert(false);
 }

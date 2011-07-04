@@ -22,8 +22,8 @@ using namespace boost;
 
 void dump_linestrings(const std::string &filename, StringList::iterator first, StringList::iterator last);
 void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::iterator last);
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last, SegmentGraph& graph);
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last);
+void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
+void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);
 void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator last);
 
 template<typename Graph>

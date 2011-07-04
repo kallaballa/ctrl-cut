@@ -90,7 +90,7 @@ void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::
   os << "</cut>" << std::endl;
 }
 
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator  last, SegmentGraph& segGraph) {
+void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator  last, SegmentGraph& segGraph) {
   LOG_INFO_STR("make linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
   create_planar_graph(segGraph, first, last);
@@ -102,7 +102,7 @@ void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentL
 #endif
 }
 
-void make_linestrings(StringList& strings, SegmentList::iterator first, SegmentList::iterator last) {
+void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator last) {
   SegmentGraph segGraph;
   make_linestrings(strings, first, last, segGraph);
 }

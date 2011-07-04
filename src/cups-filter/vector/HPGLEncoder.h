@@ -11,7 +11,7 @@ class HPGLEncoder {
 
 public:
   LaserConfig *lconf;
-  void encode(StringList::const_iterator first, StringList::const_iterator last, std::ostream &out, const bool wasClipped) const;
+  void encode(CutModel& model, std::ostream &out) const;
   HPGLEncoder(LaserConfig *lconf);
   virtual ~HPGLEncoder();
 };
