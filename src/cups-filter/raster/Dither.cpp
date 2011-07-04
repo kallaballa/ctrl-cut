@@ -70,7 +70,7 @@ BitmapImage &Dither::dither() {
   uint8_t byteAlignOff = (8 - this->img.xPos() % 8) % 8;
   uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
-
+  scanlineBreak -= scanlineRem;
 
   uint32_t width = this->img.width() + (byteAlignOff ? 8 : 0);
   // Bitmaps width must be divisible by 8, so we pad to align it
@@ -98,7 +98,7 @@ BitmapImage &Dither::dither() {
       *(data++) = bitmap;
     }
 
-    for (unsigned int x = 0; x < scanlineBreak - scanlineRem; x+=8) {
+    for (unsigned int x = 0; x < scanlineBreak; x+=8) {
       bitmap = 0;
       for (uint8_t b = 0; b < 8; ++b) {
         this->ditherPixel(x + b + byteAlignOff, y, pix);
