@@ -82,7 +82,7 @@ public:
   uint8_t bytes_per_pixel;
   uint8_t comp;
 
-  Image(uint32_t width, uint32_t height, uint8_t components = 3, void *pixelbuffer = NULL) :
+  Image(uint32_t width, uint32_t height, uint8_t components, void *pixelbuffer = NULL) :
     AbstractImage(width, height, pixelbuffer), comp(components) {
     this->row_stride = width;
     this->bytes_per_pixel = sizeof(T) * components;
@@ -112,7 +112,7 @@ public:
     rect.getSize(w, h);
     if (h == 0 || w == 0) return NULL;
 
-    Image<T> *imgcopy = new Image<T>(w, h);
+    Image<T> *imgcopy = new Image<T>(w, h, this->comp);
 
     this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
     imgcopy->xpos /= sizeof(T);
@@ -129,12 +129,14 @@ public:
   uint8_t components() const { return this->comp; }
   
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
+    assert(x < this->w && y < this->h);
     T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
     if (this->comp == 1) pix.setGray(*sample);
     else pix.setRGB(sample);
   }
 
   virtual void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
+    assert(x < this->w && y < this->h);
     T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
     for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
