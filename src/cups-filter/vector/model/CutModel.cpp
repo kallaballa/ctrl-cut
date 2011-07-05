@@ -1,4 +1,5 @@
 #include "CutModel.h"
+#include "vector/geom/Geometry.h"
 #include "vector/graph/Traverse.h"
 #include "util/Logger.h"
 #include <fstream>
@@ -171,18 +172,32 @@ CutModel *CutModel::load(const std::string &filename) {
 }
 
 void make_route(StringList& route, CutModel& model) {
+  const std::pair<int32_t, int32_t>& translation = model.getTranslation();
+  SegmentList::iterator segmentsFirst;
+  SegmentList::iterator segmentsLast;
+  SegmentList translated;
+
+  if(translation.first != 0 || translation.second != 0) {
+    translate(translated, model.begin(), model.end(), translation);
+    segmentsFirst = translated.begin();
+    segmentsLast = translated.end();
+  } else{
+    segmentsFirst = model.begin();
+    segmentsLast = model.end();
+  }
+
   if(model.config.vector_optimize == LaserConfig::OPTIMIZE_SIMPLE) {
-    make_linestrings(route,model.begin(), model.end());
+    make_linestrings(route,segmentsFirst, segmentsLast);
     dump_linestrings(model.config.datadir + "/" + model.config.basename + "-join.xml", route.begin(), route.end());
   } else if(model.config.vector_optimize == LaserConfig::OPTIMIZE_SHORTEST_PATH) {
     StringList join;
-    make_linestrings(join,model.begin(), model.end());
+    make_linestrings(join,segmentsFirst, segmentsLast);
     dump_linestrings(model.config.datadir + "/" + model.config.basename + "-join.xml", join.begin(), join.end());
 
     travel_linestrings(route, join.begin(), join.end());
     dump_linestrings(model.config.datadir + "/" + model.config.basename + "-travel.xml", route.begin(), route.end());
   } else if(model.config.vector_optimize == LaserConfig::OPTIMIZE_INNER_OUTER) {
-    traverse_onion(route, model.begin(), model.end());
+    traverse_onion(route, segmentsFirst, segmentsLast);
     dump_linestrings(model.config.datadir + "/" + model.config.basename + "-onion.xml", route.begin(), route.end());
   } else
     assert(false);
