@@ -60,7 +60,6 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/model/Explode.cpp \
            ../cups-filter/vector/model/Reduce.cpp \
 	   ../cups-filter/vector/graph/Deonion.cpp \
-           ../cups-filter/vector/graph/CutGraph.cpp \
            ../cups-filter/vector/graph/SegmentGraph.cpp \
            ../cups-filter/vector/graph/StringGraph.cpp \
 	   ../cups-filter/vector/graph/Traverse.cpp \
