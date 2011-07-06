@@ -11,6 +11,7 @@ RCC_DIR = objects
 
 macx {
   LIBS += -framework CoreFoundation
+  QMAKE_INFO_PLIST = Info.plist
 }
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
@@ -22,6 +23,7 @@ FORMS   += CtrlCut.ui LaserDialog.ui
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += MainWindow.h \
+           EventFilter.h \
            LaserDialog.h \
            NavigationView.h \          
            LpdClient.h \

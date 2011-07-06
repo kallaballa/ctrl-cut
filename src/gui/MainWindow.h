@@ -9,9 +9,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 {
   Q_OBJECT
 public:
-  MainWindow();
   ~MainWindow();
 
+  static MainWindow *instance() { 
+    if (!MainWindow::inst) MainWindow::inst = new MainWindow(); return MainWindow::inst; 
+  }
 public slots:
   void on_fileOpenAction_triggered();
   void on_fileImportAction_triggered();
@@ -22,7 +24,12 @@ public slots:
 
   void sceneSelectionChanged();
 
+  void openFile(const QString &filename);
+
 private:
+  static MainWindow *inst;
+  MainWindow();
+
   class LpdClient *lpdclient;
   class QGraphicsItem *firstitem;
   class CtrlCutScene *scene;

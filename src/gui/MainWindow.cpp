@@ -16,6 +16,8 @@
 
 #include <assert.h>
 
+MainWindow *MainWindow::inst = NULL;
+
 MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
@@ -35,9 +37,8 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::on_fileOpenAction_triggered()
+void MainWindow::openFile(const QString &filename)
 {
-  QString filename = QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)");
   if (!filename.isEmpty()) {
     if (this->cutmodel) {
       delete this->cutmodel;
@@ -154,6 +155,11 @@ void MainWindow::on_fileOpenAction_triggered()
       this->documentitem->addToGroup(this->rasteritem);
     }
   }
+}
+
+void MainWindow::on_fileOpenAction_triggered()
+{
+  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)"));
 }
 
 void MainWindow::on_fileImportAction_triggered()
