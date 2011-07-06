@@ -29,6 +29,8 @@ private:
   class PostscriptParser *psparser; // Only to retain data between loads, needed by Raster
   class CutModel *cutmodel;
   class Raster *raster;
+  class QGraphicsItemGroup *documentitem;
+  class QGraphicsPixmapItem *rasteritem;
   QPixmap rasterpixmap;
   QPointF rasterpos;
   class LaserDialog *laserdialog;

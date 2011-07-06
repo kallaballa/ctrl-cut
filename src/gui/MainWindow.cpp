@@ -132,9 +132,9 @@ void MainWindow::on_fileOpenAction_triggered()
       }
     }
 
-    QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
-    parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-    this->scene->addItem(parentitem);
+    this->documentitem = new QGraphicsItemGroup();
+    this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+    this->scene->addItem(this->documentitem);
 
     if (this->cutmodel) {
       this->firstitem = NULL;
@@ -142,16 +142,16 @@ void MainWindow::on_fileOpenAction_triggered()
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
           new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
-                                parentitem);
-        parentitem->addToGroup(line);
+                                this->documentitem);
+        this->documentitem->addToGroup(line);
         if (!this->firstitem) this->firstitem = line;
       }
     }
 
     if (!this->rasterpixmap.isNull()) {
-      QGraphicsPixmapItem *imgitem = new QGraphicsPixmapItem(this->rasterpixmap, parentitem);
-      imgitem->setPos(this->rasterpos);
-      parentitem->addToGroup(imgitem);
+      this->rasteritem = new QGraphicsPixmapItem(this->rasterpixmap, this->documentitem);
+      this->rasteritem->setPos(this->rasterpos);
+      this->documentitem->addToGroup(this->rasteritem);
     }
   }
 }
@@ -160,26 +160,6 @@ void MainWindow::on_fileImportAction_triggered()
 {
   QMessageBox::information(this, "Not Implemented", "Not Implemented");
 }
-
-#if 0
-void MainWindow::on_filePrintAction_triggered()
-{
-  QString filename = QFileDialog::getOpenFileName(this, "Open RTL File", "", "Supported files (*.prn *.raw)");
-  if (!filename.isEmpty()) {
-    printf("RTL file: %s\n", filename.toLocal8Bit().data());
-
-    QFile rtlfile(filename);
-    if (!rtlfile.open(QIODevice::ReadOnly)) {
-      fprintf(stderr, "Unable to open RTL file\n");
-      return;
-    }
-
-    this->lpdclient->print("MyDocument", rtlfile.readAll());
-    rtlfile.close();
-
-  }
-}
-#endif
 
 void MainWindow::on_filePrintAction_triggered()
 {
@@ -202,8 +182,19 @@ void MainWindow::on_filePrintAction_triggered()
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-    if (this->cutmodel) job.addCut(this->cutmodel);
-    if (this->raster) job.addRaster(this->raster);
+
+    // Apply transformations and add to job
+    QPointF pos = this->documentitem->pos();
+    if (this->cutmodel) {
+      //      this->cutmodel->setTransformation(pos); // Assumes initial translation to be (0,0)
+      job.addCut(this->cutmodel);
+    }
+    QPointF rasterpos = this->rasteritem->pos() + pos;
+    if (this->raster) {
+      this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
+      job.addRaster(this->raster);
+    }
+
     Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
