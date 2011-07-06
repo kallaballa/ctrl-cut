@@ -17,7 +17,7 @@ DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
 
 INCLUDEPATH += ../cups-filter ../lpd-epilog
 
-FORMS   += MainWindow.ui LaserDialog.ui
+FORMS   += CtrlCut.ui LaserDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 

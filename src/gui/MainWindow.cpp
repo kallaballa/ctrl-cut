@@ -223,3 +223,11 @@ void MainWindow::sceneSelectionChanged()
     printf("item: %p\n", item);
   }
 }
+
+void MainWindow::on_toolsMoveToOriginAction_triggered()
+{
+  QRectF brect = this->documentitem->boundingRect();
+  qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();
+  QPointF topleft = brect.topLeft();
+  this->documentitem->setPos(-topleft);
+}
