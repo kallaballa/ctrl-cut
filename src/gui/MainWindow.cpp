@@ -31,6 +31,9 @@ MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdi
   connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(sceneSelectionChanged()));
   connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
           this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
+
+  connect(this->graphicsView, SIGNAL(fileDropped(const QString &)), 
+          this, SLOT(openFile(const QString &)));
 }
 
 MainWindow::~MainWindow()
@@ -236,4 +239,21 @@ void MainWindow::on_toolsMoveToOriginAction_triggered()
   qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();
   QPointF topleft = brect.topLeft();
   this->documentitem->setPos(-topleft);
+}
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+void
+MainWindow::on_helpAboutAction_triggered()
+{
+  qApp->setWindowIcon(QApplication::windowIcon());
+  QMessageBox::information(this, "About Ctrl-Cut", 
+                           QString("Ctrl-Cut " TOSTRING(CTRLCUT_VERSION) " (http://github.com/metalab/ctrl-cut)\n") +
+                           QString("Copyright (C) 2009-2011 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>\n"
+                                   "\n"
+                                   "This program is free software; you can redistribute it and/or modify"
+                                   "it under the terms of the GNU General Public License as published by"
+                                   "the Free Software Foundation; either version 2 of the License, or"
+                                   "(at your option) any later version."));
 }

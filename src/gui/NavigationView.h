@@ -1,5 +1,5 @@
-#ifndef MYGRAPHICSVIEW_H_
-#define MYGRAPHICSVIEW_H_
+#ifndef NAVIGATIONVIEW_H_
+#define NAVIGATIONVIEW_H_
  
 #include <QGraphicsView>
 #include <QGraphicsRectItem>

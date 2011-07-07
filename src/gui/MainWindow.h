@@ -15,6 +15,7 @@ public:
     if (!MainWindow::inst) MainWindow::inst = new MainWindow(); return MainWindow::inst; 
   }
 public slots:
+  void on_helpAboutAction_triggered();
   void on_fileOpenAction_triggered();
   void on_fileImportAction_triggered();
   void on_filePrintAction_triggered();

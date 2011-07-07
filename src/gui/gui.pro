@@ -10,8 +10,10 @@ UI_DIR = objects
 RCC_DIR = objects
 
 macx {
-  LIBS += -framework CoreFoundation
+  TARGET = Ctrl-Cut
+  ICON = icons/CtrlCut.icns
   QMAKE_INFO_PLIST = Info.plist
+  LIBS += -framework CoreFoundation
 }
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
@@ -26,6 +28,7 @@ HEADERS += MainWindow.h \
            EventFilter.h \
            LaserDialog.h \
            NavigationView.h \          
+           CtrlCutView.h \          
            LpdClient.h \
            StreamUtils.h \
            GroupItem.h \
@@ -54,6 +57,7 @@ SOURCES += gui.cpp \
            MainWindow.cpp \
            LaserDialog.cpp \
            NavigationView.cpp \
+           CtrlCutView.cpp \
            LpdClient.cpp \
            StreamUtils.cpp \
            CtrlCutScene.cpp \
