@@ -94,9 +94,14 @@ public:
     this->xpos += x;
     this->ypos += y;
   }
+  void setTranslation(uint32_t x, uint32_t y) {
+    this->xpos = x;
+    this->ypos = y;
+  }
   
   void setData(void *addr) { this->addr = addr; }
   void *data() { return this->addr; }
+  virtual void *allocData() = 0;
 
 protected:
   /*!
@@ -105,7 +110,7 @@ protected:
   void performcopy(AbstractImage *dest,  
                    int bytewidth, int height, int xoffset, int yoffset) const {
     const uint8_t *sourcedata = (uint8_t *)this->addr;
-    uint8_t *destdata = (uint8_t *)malloc(bytewidth * height);
+    uint8_t *destdata = (uint8_t *)dest->allocData();
     for (int j=0;j<height;j++) {
       for (int i=0;i<bytewidth;i++) {
         destdata[j*bytewidth + i] = sourcedata[(j + yoffset) * this->row_stride + 
@@ -113,7 +118,6 @@ protected:
       }
     }
     dest->addr = destdata;
-    dest->shouldfree = true;
     dest->xpos = xoffset;
     dest->ypos = yoffset;
   }

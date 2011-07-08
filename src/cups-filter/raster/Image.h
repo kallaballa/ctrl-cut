@@ -56,6 +56,12 @@ public:
     return Rectangle(byterect.ul[0]*8, byterect.ul[1], byterect.lr[0] * 8, byterect.lr[1]);
   }
 
+  void *allocData() {
+    this->setData(malloc(this->h * this->w / 8));
+    this->shouldfree = true;
+    return this->data();
+  }
+
   bool saveAsPBM(const std::string &filename) {
     // Note: In the PBM format, 1 is black, 0 is white
     // What we get from ghostscript, and use internally, is opposite
@@ -124,6 +130,12 @@ public:
     Rectangle byterect = AbstractImage::autocrop(this->w * sizeof(T));
     return Rectangle(byterect.ul[0] / sizeof(T), byterect.ul[1], 
                      byterect.lr[0] / sizeof(T), byterect.lr[1]);
+  }
+
+  void *allocData() {
+    this->setData(malloc(this->h * this->w * sizeof(T)));
+    this->shouldfree = true;
+    return this->data();
   }
 
   uint8_t components() const { return this->comp; }

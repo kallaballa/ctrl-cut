@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string>@ICON@</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleExecutable</key>
+	<string>ctrl-cut</string>
+	<key>CFBundleIdentifier</key>
+	<string>at.metalab.Ctrl-Cut</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ps</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/postscript</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PostScript</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<true/>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -16,6 +16,8 @@
 
 #include <assert.h>
 
+MainWindow *MainWindow::inst = NULL;
+
 MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
@@ -29,15 +31,17 @@ MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdi
   connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(sceneSelectionChanged()));
   connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
           this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
+
+  connect(this->graphicsView, SIGNAL(fileDropped(const QString &)), 
+          this, SLOT(openFile(const QString &)));
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::on_fileOpenAction_triggered()
+void MainWindow::openFile(const QString &filename)
 {
-  QString filename = QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)");
   if (!filename.isEmpty()) {
     if (this->cutmodel) {
       delete this->cutmodel;
@@ -132,9 +136,9 @@ void MainWindow::on_fileOpenAction_triggered()
       }
     }
 
-    QGraphicsItemGroup *parentitem = new QGraphicsItemGroup();
-    parentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-    this->scene->addItem(parentitem);
+    this->documentitem = new QGraphicsItemGroup();
+    this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+    this->scene->addItem(this->documentitem);
 
     if (this->cutmodel) {
       this->firstitem = NULL;
@@ -142,44 +146,29 @@ void MainWindow::on_fileOpenAction_triggered()
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
           new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
-                                parentitem);
-        parentitem->addToGroup(line);
+                                this->documentitem);
+        this->documentitem->addToGroup(line);
         if (!this->firstitem) this->firstitem = line;
       }
     }
 
     if (!this->rasterpixmap.isNull()) {
-      QGraphicsPixmapItem *imgitem = new QGraphicsPixmapItem(this->rasterpixmap, parentitem);
-      imgitem->setPos(this->rasterpos);
-      parentitem->addToGroup(imgitem);
+      this->rasteritem = new QGraphicsPixmapItem(this->rasterpixmap, this->documentitem);
+      this->rasteritem->setPos(this->rasterpos);
+      this->documentitem->addToGroup(this->rasteritem);
     }
   }
+}
+
+void MainWindow::on_fileOpenAction_triggered()
+{
+  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)"));
 }
 
 void MainWindow::on_fileImportAction_triggered()
 {
   QMessageBox::information(this, "Not Implemented", "Not Implemented");
 }
-
-#if 0
-void MainWindow::on_filePrintAction_triggered()
-{
-  QString filename = QFileDialog::getOpenFileName(this, "Open RTL File", "", "Supported files (*.prn *.raw)");
-  if (!filename.isEmpty()) {
-    printf("RTL file: %s\n", filename.toLocal8Bit().data());
-
-    QFile rtlfile(filename);
-    if (!rtlfile.open(QIODevice::ReadOnly)) {
-      fprintf(stderr, "Unable to open RTL file\n");
-      return;
-    }
-
-    this->lpdclient->print("MyDocument", rtlfile.readAll());
-    rtlfile.close();
-
-  }
-}
-#endif
 
 void MainWindow::on_filePrintAction_triggered()
 {
@@ -202,8 +191,19 @@ void MainWindow::on_filePrintAction_triggered()
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-    if (this->cutmodel) job.addCut(this->cutmodel);
-    if (this->raster) job.addRaster(this->raster);
+
+    // Apply transformations and add to job
+    QPointF pos = this->documentitem->pos();
+    if (this->cutmodel) {
+      //      this->cutmodel->setTransformation(pos); // Assumes initial translation to be (0,0)
+      job.addCut(this->cutmodel);
+    }
+    QPointF rasterpos = this->rasteritem->pos() + pos;
+    if (this->raster) {
+      this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
+      job.addRaster(this->raster);
+    }
+
     Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
@@ -231,4 +231,29 @@ void MainWindow::sceneSelectionChanged()
   foreach (QGraphicsItem *item, this->scene->selectedItems()) {
     printf("item: %p\n", item);
   }
+}
+
+void MainWindow::on_toolsMoveToOriginAction_triggered()
+{
+  QRectF brect = this->documentitem->boundingRect();
+  qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();
+  QPointF topleft = brect.topLeft();
+  this->documentitem->setPos(-topleft);
+}
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+void
+MainWindow::on_helpAboutAction_triggered()
+{
+  qApp->setWindowIcon(QApplication::windowIcon());
+  QMessageBox::information(this, "About Ctrl-Cut", 
+                           QString("Ctrl-Cut " TOSTRING(CTRLCUT_VERSION) " (http://github.com/metalab/ctrl-cut)\n") +
+                           QString("Copyright (C) 2009-2011 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>\n"
+                                   "\n"
+                                   "This program is free software; you can redistribute it and/or modify"
+                                   "it under the terms of the GNU General Public License as published by"
+                                   "the Free Software Foundation; either version 2 of the License, or"
+                                   "(at your option) any later version."));
 }
