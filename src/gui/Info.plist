@@ -9,7 +9,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>ctrl-cut</string>
+	<string>Ctrl-Cut</string>
 	<key>CFBundleIdentifier</key>
 	<string>at.metalab.Ctrl-Cut</string>
 	<key>CFBundleDocumentTypes</key>
@@ -27,7 +27,6 @@
 			<string>PostScript</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
-			<true/>
 		</dict>
 	</array>
 </dict>
