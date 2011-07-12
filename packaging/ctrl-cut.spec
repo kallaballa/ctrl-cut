@@ -28,7 +28,7 @@ BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libq
 PreReq: /bin/chmod cups cups-client ncurses-utils
 Requires: cups ghostscript-library
 %else
-BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11
+BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11 desktop-file-utils xdg-utils
 Requires: cups ghostscript ncurses
 %endif
 Source:       %{name}-%{version}.tar.bz2
