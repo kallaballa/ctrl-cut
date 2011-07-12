@@ -20,6 +20,8 @@ FILTER_PATH="$CUPS_SERVER_BIN/filter/"
 BACKEND_PATH="$CUPS_SERVER_BIN/backend/"
 MODELS_PATH="$CUPS_SERVER_DATA/model/"
 
+$CC_SCRIPTS/install-desktop.sh
+
 try "Install ppds $MODELS_PATH" "cp -r etc/ppd/Epilog $MODELS_PATH"
 try "Install filter binary $FILTER_PATH" "cp $CC_BINARY $FILTER_PATH/"
 try "Install lpd backend $BACKEND_PATH" "cp $CC_BASE/src/lpd-epilog/lpd-epilog $BACKEND_PATH/"
