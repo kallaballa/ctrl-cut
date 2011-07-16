@@ -32,7 +32,7 @@ float Segment::getSlope(bool invert) const
   return CC_PI - ((float)atan2(d_x, -d_y));
 }
 
-void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const std::pair<int32_t, int32_t>& translation) {
+void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point& translation) {
   const Segment* seg;
   int32_t fx;
   int32_t fy;
@@ -41,10 +41,10 @@ void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::
 
   for(SegmentList::iterator it = first; it != last; ++it) {
     seg = *it;
-    fx = seg->first[0] + translation.first;
-    fy = seg->first[1] + translation.second;
-    sx = seg->second[0] + translation.first;
-    sy = seg->second[1] + translation.second;
+    fx = seg->first[0] + translation.x;
+    fy = seg->first[1] + translation.y;
+    sx = seg->second[0] + translation.x;
+    sy = seg->second[1] + translation.y;
 
     segments.push_back(new Segment(*new Point(fx,fy),* new Point(sx,sy), seg->settings));
   }

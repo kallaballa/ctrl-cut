@@ -21,7 +21,7 @@ public:
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
     rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
     topBedBorder(*new Point(config.device_width-1, 0), *new Point(0, 0), *new CutSettings(0,0,0)),
-    translation(std::make_pair(0,0))
+    translation(Point(0,0))
   {}
 
   virtual ~CutModel() {
@@ -35,7 +35,8 @@ public:
   SegmentList::reference back() { return this->segmentIndex.back(); }
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
-  const std::pair<int32_t, int32_t>& getTranslation() { return translation; }
+  void setTranslation(const Point p) { this->translation = p; }
+  const Point& getTranslation() { return translation; }
   bool createSegment(const Point &p1, const Point &p2, CutSettings& settings);
   bool createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
 
@@ -71,7 +72,7 @@ private:
   Segment bottomBedBorder;
   Segment rightBedBorder;
   Segment topBedBorder;
-  std::pair<int32_t, int32_t> translation;
+  Point translation;
 
   const Segment& clipSegmentToLaserBed(const Segment& seg);
 };

@@ -172,12 +172,12 @@ CutModel *CutModel::load(const std::string &filename) {
 }
 
 void make_route(StringList& route, CutModel& model) {
-  const std::pair<int32_t, int32_t>& translation = model.getTranslation();
+  const Point& translation = model.getTranslation();
   SegmentList::iterator segmentsFirst;
   SegmentList::iterator segmentsLast;
   SegmentList translated;
 
-  if(translation.first != 0 || translation.second != 0) {
+  if(translation.x != 0 || translation.y != 0) {
     translate(translated, model.begin(), model.end(), translation);
     segmentsFirst = translated.begin();
     segmentsLast = translated.end();

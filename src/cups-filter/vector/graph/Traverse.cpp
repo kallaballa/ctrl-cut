@@ -95,7 +95,7 @@ void make_linestrings(StringList& strings, SegmentList::const_iterator first, Se
   LOG_DEBUG_MSG("strings before", strings.size());
   create_planar_graph(segGraph, first, last);
   join_strings_visitor vis = *new join_strings_visitor(segGraph, strings);
-  traverse_planar_faces(segGraph, vis);
+  traverse_planar_faces(segGraph , vis);
   LOG_DEBUG_MSG("strings after", strings.size());
 #ifdef DEBUG
   check_linestrings(strings.begin(), strings.end());

@@ -318,6 +318,6 @@ inline bool lesser_than(int32_t s, uint32_t us) {
   return s < (int32_t)us;
 }
 
-void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const std::pair<int32_t, int32_t>& translation);
+void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point &translation);
 
 #endif /* GEOMETRY_H_ */
