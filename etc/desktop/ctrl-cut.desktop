@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Ctrl-Cut
+GenericName=Laser Cutter Tool Chain
+Comment=Prepares and optimizes laser cutter jobs
+Exec=ctrl-cut %U
+TryExec=ctrl-cut
+Icon=ctrl-cut
+Terminal=false
+Categories=Education;Graphics;Engineering;Construction;2DGraphics;RasterGraphics;VectorGraphics;
+StartupNotify=true
+MimeType=application/postscript;application/pdf;
