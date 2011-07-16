@@ -11,7 +11,7 @@ RCC_DIR = objects
 
 macx {
   TARGET = Ctrl-Cut
-  ICON = icons/CtrlCut.icns
+  ICON = icons/Ctrl-Cut.icns
   QMAKE_INFO_PLIST = Info.plist
   LIBS += -framework CoreFoundation
 }
