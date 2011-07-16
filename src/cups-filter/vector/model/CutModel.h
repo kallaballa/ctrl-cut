@@ -36,7 +36,7 @@ public:
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
   void setTranslation(const Point p) { this->translation = p; }
-  const Point& getTranslation() { return translation; }
+  const Point& getTranslation() const { return translation; }
   bool createSegment(const Point &p1, const Point &p2, CutSettings& settings);
   bool createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, CutSettings& settings);
 
