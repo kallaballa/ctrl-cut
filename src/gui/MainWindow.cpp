@@ -15,10 +15,13 @@
 #include "LaserDialog.h"
 
 #include <assert.h>
+#include <boost/format.hpp>
+
+using boost::format;
 
 MainWindow *MainWindow::inst = NULL;
 
-MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
+MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), documentitem(NULL), rasteritem(NULL), vectoritem(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -141,15 +144,17 @@ void MainWindow::openFile(const QString &filename)
     this->scene->addItem(this->documentitem);
 
     if (this->cutmodel) {
+      this->vectoritem = new QGraphicsItemGroup(this->documentitem);
       this->firstitem = NULL;
       for (CutModel::iterator iter = this->cutmodel->begin(); iter != this->cutmodel->end(); iter++) {
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
           new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
-                                this->documentitem);
+                                this->vectoritem);
         this->documentitem->addToGroup(line);
         if (!this->firstitem) this->firstitem = line;
       }
+      this->documentitem->addToGroup(this->vectoritem);
     }
 
     if (!this->rasterpixmap.isNull()) {
@@ -184,23 +189,24 @@ void MainWindow::on_filePrintAction_triggered()
   LaserConfig::inst().dumpDebug();
 
   QStringList items;
-  items << "Lazzzor" << "localhost";
+  items << "Lazzzor" << "localhost" << "file";
   bool ok;
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
-    QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
-
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
 
     // Apply transformations and add to job
     QPointF pos = this->documentitem->pos();
     if (this->cutmodel) {
-      //      this->cutmodel->setTransformation(pos); // Assumes initial translation to be (0,0)
+      QPointF vectorpos = this->vectoritem->pos() + pos;
+      this->cutmodel->setTranslation(Point(vectorpos.x(), vectorpos.y()));
+      LOG_DEBUG(str(format("vector translation: (%d, %d)") % vectorpos.x() % vectorpos.y()));
       job.addCut(this->cutmodel);
     }
     QPointF rasterpos = this->rasteritem->pos() + pos;
     if (this->raster) {
       this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
+      LOG_DEBUG(str(format("raster translation: (%d, %d)") % rasterpos.x() % rasterpos.y()));
       job.addRaster(this->raster);
     }
 
@@ -210,7 +216,25 @@ void MainWindow::on_filePrintAction_triggered()
     std::ostream ostream(&streambuf);
     drv.process(&job, ostream);
     
-    this->lpdclient->print(host, "MyDocument", rtlbuffer);
+    if (item == "file") {
+      QString new_filename = QFileDialog::getSaveFileName(this, "Save RTL File",
+                                                          "ctrl-cut.rtl",
+                                                          "RTL Files (*.rtl)");
+      if (!new_filename.isEmpty()) {
+        QFile rtlfile(new_filename);
+        if (!rtlfile.open(QIODevice::WriteOnly)) {
+          LOG_ERR("Unable to open output file");
+          return;
+        }
+        if (rtlfile.write(rtlbuffer) != rtlbuffer.size()) {
+          LOG_ERR("RTL file write error");
+        }
+      }
+    }
+    else {
+      QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
+      this->lpdclient->print(host, "MyDocument", rtlbuffer);
+    }
   }
 }
 

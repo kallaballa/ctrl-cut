@@ -40,6 +40,7 @@ private:
   class Raster *raster;
   class QGraphicsItemGroup *documentitem;
   class QGraphicsPixmapItem *rasteritem;
+  class QGraphicsItemGroup *vectoritem;
   QPixmap rasterpixmap;
   QPointF rasterpos;
   class LaserDialog *laserdialog;
