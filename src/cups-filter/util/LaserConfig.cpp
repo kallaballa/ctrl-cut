@@ -82,6 +82,7 @@ uint32_t LaserConfig::calcDeviceDimension(uint32_t dim, double res) {
   return round(((double)(dim * res)  / POINTS_PER_INCH));
 }
 
+#ifdef USE_CUPS
 /*!
  Copy supported options into the supplied laser_configa
  */
@@ -151,6 +152,7 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   }
   dumpDebug();
 }
+#endif
 
 void LaserConfig::dumpDebug()
 {

@@ -19,16 +19,17 @@
 #include "HPGLEncoder.h"
 #include "vector/model/CutModel.h"
 #include "vector/graph/Traverse.h"
+#include "util/PJL.h"
+#include "util/LaserConfig.h"
 #include "boost/format.hpp"
 
 using boost::format;
 
-HPGLEncoder::HPGLEncoder(LaserConfig *lconf) {
-  this->lconf = lconf;
+HPGLEncoder::HPGLEncoder(LaserConfig *lconf) : Encoder(lconf)
+{
 }
 
 HPGLEncoder::~HPGLEncoder() {
-  // TODO Auto-generated destructor stub
 }
 
 void HPGLEncoder::encode(CutModel& model, std::ostream &out) const {

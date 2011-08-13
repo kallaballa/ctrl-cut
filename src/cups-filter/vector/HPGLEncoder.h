@@ -1,19 +1,15 @@
-#ifndef RENDERER_H_
-#define RENDERER_H_
+#ifndef HPGLENCODER_H_
+#define HPGLENCODER_H_
 
-#include <map>
+#include "Encoder.h"
 
-#include "util/LaserConfig.h"
-#include "LaserJob.h"
-#include "vector/model/CutModel.h"
-
-class HPGLEncoder {
-
+class HPGLEncoder : public Encoder
+{
 public:
-  LaserConfig *lconf;
-  void encode(CutModel& model, std::ostream &out) const;
   HPGLEncoder(LaserConfig *lconf);
-  virtual ~HPGLEncoder();
+  ~HPGLEncoder();
+
+  void encode(CutModel& model, std::ostream &out) const;
 };
 
 #endif /* RENDERER_H_ */
