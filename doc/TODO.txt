@@ -30,3 +30,4 @@ Goodies:
 --------
 o Automatically trace stencils from raster images
 o Estimate cutting time
+o Specialized dithering option that optimizes for plain filled areas.
