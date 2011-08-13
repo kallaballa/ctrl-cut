@@ -23,6 +23,8 @@
 
 using boost::format;
 
+#define CONVERT(p) trunc(55.92105557*72.0/this->lconf->resolution*p)
+
 void LaosEncoder::encode(CutModel& model, std::ostream &out) const {
   StringList route;
   make_route(route, model);
@@ -32,7 +34,7 @@ void LaosEncoder::encode(CutModel& model, std::ostream &out) const {
   for (StringList::const_iterator it_ss = route.begin(); it_ss != route.end(); ++it_ss) {
     const SegmentString& segString = *(*it_ss);
     const Point* segmentFront = segString.frontPoints();
-    out << format("0 %d %d ") % segmentFront->x % segmentFront->y;
+    out << format("0 %d %d ") % CONVERT(segmentFront->x) % CONVERT(segmentFront->y);
 
     for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); ++it_s) {
       const Segment &seg = **it_s;
@@ -41,7 +43,7 @@ void LaosEncoder::encode(CutModel& model, std::ostream &out) const {
       int endX = this->lconf->basex + seg[1][0];
       int endY = this->lconf->basey + seg[1][1];
 
-      out << format("1 %d %d ") % endX % endY;
+      out << format("1 %d %d ") % CONVERT(endX) % CONVERT(endY);
     }
   }
 }
