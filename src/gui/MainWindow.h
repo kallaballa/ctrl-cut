@@ -22,6 +22,8 @@ public slots:
   void on_toolsMoveToOriginAction_triggered();
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
+  void on_laosclient_done(bool error);
+  void on_laosclient_progress(int done, int total);
 
   void sceneSelectionChanged();
 

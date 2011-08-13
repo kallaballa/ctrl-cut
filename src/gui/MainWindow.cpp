@@ -27,6 +27,8 @@ MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), documen
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
+  this->laosclient = new LaosClient(this);
+  this->laosclient->setObjectName("laosclient");
 
   setupUi(this);
 
@@ -220,6 +222,7 @@ void MainWindow::on_filePrintAction_triggered()
     std::ostream ostream(&streambuf);
     drv.process(&job, ostream);
     
+    qDebug() << "rtlbuffer size:" << rtlbuffer.size();
     if (item == "file") {
       QString new_filename = QFileDialog::getSaveFileName(this, "Save RTL File",
                                                           "ctrl-cut.rtl",
@@ -257,6 +260,17 @@ void MainWindow::on_lpdclient_done(bool error)
 }
 
 void MainWindow::on_lpdclient_progress(int done, int total)
+{
+  printf("Progress: %.0f%%\n", 100.0f*done/total);
+}
+
+void MainWindow::on_laosclient_done(bool error)
+{
+  if (error) fprintf(stderr, "LAOS error\n");
+  else printf("LAOS done\n");
+}
+
+void MainWindow::on_laosclient_progress(int done, int total)
 {
   printf("Progress: %.0f%%\n", 100.0f*done/total);
 }

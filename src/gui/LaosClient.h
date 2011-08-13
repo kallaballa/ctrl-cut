@@ -11,7 +11,7 @@ public:
   LaosClient(QObject *parent = 0);
   ~LaosClient() {}
 
-  bool print(const QString &host, const QString &jobname, QByteArray data);
+  bool print(const QString &host, const QString &jobname, QByteArray laosdata);
 
 signals:
   void done(bool error);
@@ -28,7 +28,7 @@ private:
   enum LaosState { LAOS_IDLE, LAOS_DONE } laosstate;
 
   class QTcpSocket *socket;
-  QByteArray data;
+  QByteArray laosdata;
   
   qint64 totalprogress;
   qint64 totalsize;

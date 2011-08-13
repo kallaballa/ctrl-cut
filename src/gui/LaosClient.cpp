@@ -7,10 +7,10 @@ LaosClient::LaosClient(QObject *parent) : QObject(parent), laosstate(LAOS_IDLE)
   QMetaObject::connectSlotsByName(this);
 }
 
-bool LaosClient::print(const QString &host, const QString &jobname, QByteArray data)
+bool LaosClient::print(const QString &host, const QString &jobname, QByteArray laosdata)
 {
-  this->data = data;
-  this->totalsize = this->data.size();
+  this->laosdata = laosdata;
+  this->totalsize = this->laosdata.size();
   this->totalprogress = 0;
 
   this->socket->connectToHost(host, 4000);
@@ -44,8 +44,8 @@ void LaosClient::on_socket_bytesWritten(qint64 bytes)
 
 void LaosClient::handle_laos()
 {
-  this->socket->write(this->data);
+  this->socket->write(this->laosdata);
   this->socket->flush();
-  this->socket->disconnectFromHost();
   this->laosstate = LAOS_DONE;
+  this->socket->disconnectFromHost();
 }
