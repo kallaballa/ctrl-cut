@@ -9,6 +9,7 @@
 
 #include "LpdClient.h"
 #include "LaosClient.h"
+#include "vector/LaosEncoder.h"
 #include "StreamUtils.h"
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
@@ -195,7 +196,7 @@ void MainWindow::on_filePrintAction_triggered()
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
-    LAOSEncoder laosencoder(&LaserConfig::inst());
+    LaosEncoder laosencoder(&LaserConfig::inst());
     job.setVectorEncoder(&laosencoder);
 
     // Apply transformations and add to job

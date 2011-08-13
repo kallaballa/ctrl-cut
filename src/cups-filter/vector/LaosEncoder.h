@@ -1,19 +1,14 @@
-#ifndef RENDERER_H_
-#define RENDERER_H_
+#ifndef LAOSENCODER_H_
+#define LAOSENCODER_H_
 
-#include <map>
+#include "Encoder.h"
 
-#include "util/LaserConfig.h"
-#include "LaserJob.h"
-#include "vector/model/CutModel.h"
-
-class LaosEncoder {
-
+class LaosEncoder : public Encoder
+{
 public:
-  LaserConfig *lconf;
+  LaosEncoder(LaserConfig *lconf) : Encoder(lconf) {}
+  ~LaosEncoder() {}
   void encode(CutModel& model, std::ostream &out) const;
-  LaosEncoder(LaserConfig *lconf);
-  virtual ~LaosEncoder();
 };
 
-#endif /* RENDERER_H_ */
+#endif
