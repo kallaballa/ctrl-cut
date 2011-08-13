@@ -9,11 +9,13 @@
 /** Temporary directory to store files. */
 #define TMP_DIRECTORY "tmp"
 
+
+//FIXME LAOS HACK
 /** Default bed width (x-axis) in pts. */
-#define BED_WIDTH 2592
+#define BED_WIDTH 1152
 
 /** Default bed height (y-axis) in pts. */
-#define BED_HEIGHT 1728
+#define BED_HEIGHT 864
 
 /** Default points per inch for incoming data */
 #define POINTS_PER_INCH (72)
@@ -27,9 +29,7 @@ public:
     return *instance;
   }
 
-#ifdef USE_CUPS
   void setCupsOptions(struct cups_option_s *options, int numOptions);
-#endif
   void rangeCheck();
   static uint32_t calcDeviceDimension(uint32_t dim, double res);
   void dumpDebug();
