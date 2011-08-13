@@ -10,6 +10,7 @@
 
 #include "util/PJL.h"
 #include "util/LaserConfig.h"
+#include "vector/LaosEncoder.h"
 #include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
 #include "raster/PclEncoder.h"
