@@ -8,6 +8,7 @@
 #include "vector/geom/Geometry.h"
 
 #include "LpdClient.h"
+#include "LaosClient.h"
 #include "StreamUtils.h"
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
@@ -189,11 +190,13 @@ void MainWindow::on_filePrintAction_triggered()
   LaserConfig::inst().dumpDebug();
 
   QStringList items;
-  items << "Lazzzor" << "localhost" << "file";
+  items << "Lazzzor" << "LAOS" << "localhost" << "file";
   bool ok;
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
     LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
+    LAOSEncoder laosencoder(&LaserConfig::inst());
+    job.setVectorEncoder(&laosencoder);
 
     // Apply transformations and add to job
     QPointF pos = this->documentitem->pos();
@@ -232,8 +235,16 @@ void MainWindow::on_filePrintAction_triggered()
       }
     }
     else {
-      QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
-      this->lpdclient->print(host, "MyDocument", rtlbuffer);
+      QString host;
+      if (item == "LAOS") {
+        host = "x.x.x.x";
+        this->laosclient->print(host, "MyDocument", rtlbuffer);
+      }
+      else {
+        if (item == "Lazzzor") host = "10.20.30.27";
+        else host = "localhost";
+        this->lpdclient->print(host, "MyDocument", rtlbuffer);
+      }
     }
   }
 }

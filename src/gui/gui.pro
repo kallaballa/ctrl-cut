@@ -30,6 +30,7 @@ HEADERS += MainWindow.h \
            NavigationView.h \          
            CtrlCutView.h \          
            LpdClient.h \
+           LaosClient.h \
            StreamUtils.h \
            GroupItem.h \
            CtrlCutScene.h \
@@ -42,6 +43,7 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/graph/SegmentGraph.h \
            ../cups-filter/vector/graph/StringGraph.h \	   
            ../cups-filter/vector/graph/Traverse.h \
+	   ../cups-filter/vector/Encoder.h \
 	   ../cups-filter/vector/HPGLEncoder.h \
            ../cups-filter/raster/PclEncoder.h \
            ../cups-filter/raster/Dither.h \
@@ -59,6 +61,7 @@ SOURCES += gui.cpp \
            NavigationView.cpp \
            CtrlCutView.cpp \
            LpdClient.cpp \
+           LaosClient.cpp \
            StreamUtils.cpp \
            CtrlCutScene.cpp \
 	   ../cups-filter/vector/geom/Geometry.cpp \

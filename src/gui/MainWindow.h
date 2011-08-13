@@ -32,6 +32,7 @@ private:
   MainWindow();
 
   class LpdClient *lpdclient;
+  class LaosClient *laosclient;
   class QGraphicsItem *firstitem;
   class CtrlCutScene *scene;
 
