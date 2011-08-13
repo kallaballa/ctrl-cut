@@ -32,6 +32,7 @@
 #include "util/Eps.h"
 #include "vector/model/CutModel.h"
 #include "LaserJob.h"
+#include "vector/LaosEncoder.h"
 #include "Driver.h"
 #include "Ctrl-Cut.h"
 
@@ -155,6 +156,8 @@ int main(int argc, char *argv[]) {
   LaserConfig::inst().rangeCheck();
 
   LaserJob job(&LaserConfig::inst(), arg_user, arg_jobid, arg_title);
+  LaosEncoder laosencoder(&LaserConfig::inst());
+  job.setVectorEncoder(&laosencoder);
 
   string filename_vector;
   string filename_pbm;
