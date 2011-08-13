@@ -43,7 +43,8 @@ HEADERS += MainWindow.h \
            ../cups-filter/vector/graph/StringGraph.h \	   
            ../cups-filter/vector/graph/Traverse.h \
 	   ../cups-filter/vector/HPGLEncoder.h \
-           ../cups-filter/raster/PclEncoder.h \
+           ../cups-filter/vector/LaosEncoder.h \
+	   ../cups-filter/raster/PclEncoder.h \
            ../cups-filter/raster/Dither.h \
            ../cups-filter/util/LaserConfig.h \
            ../cups-filter/util/Eps.h \
@@ -70,6 +71,7 @@ SOURCES += gui.cpp \
            ../cups-filter/vector/graph/StringGraph.cpp \
 	   ../cups-filter/vector/graph/Traverse.cpp \
            ../cups-filter/vector/HPGLEncoder.cpp \
+           ../cups-filter/vector/LaosEncoder.cpp \
 	   ../cups-filter/raster/PclEncoder.cpp \
            ../cups-filter/raster/Dither.cpp \
            ../cups-filter/raster/DitherFloydSteinberg.cpp \
