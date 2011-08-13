@@ -136,7 +136,7 @@ void LaserJob::serializeTo(std::ostream &out) {
     /* We're going to perform a vector print. */
     for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
       CutModel *model = *it;
-      HPGLEncoder r(this->lconf);
+      LaosEncoder r(this->lconf);
       r.encode(*model,out);
     }
   }

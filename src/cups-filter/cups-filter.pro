@@ -23,7 +23,8 @@ SOURCES += \
           vector/model/CutModel.cpp \
 	  vector/model/Explode.cpp \
           vector/graph/Deonion.cpp \
-	  vector/model/Reduce.cpp
+	  vector/model/Reduce.cpp \
+      vector/LaosEncoder.cpp
 
 HEADERS += \
           LaserJob.h \
@@ -44,7 +45,8 @@ HEADERS += \
           vector/model/Explode.h \
 	  vector/model/Reduce.h \
           vector/graph/Deonion.h \
-          vector/HPGLEncoder.h
+          vector/HPGLEncoder.h \
+          vector/LaosEncoder.h
 
 SOURCES += \
           raster/DownSample.cpp \
