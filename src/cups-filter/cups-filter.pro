@@ -5,7 +5,7 @@ CONFIG += boost
 CONFIG += cups
 include(common.pri)
 
-DEFINES += ETLOG DEBUG=4
+DEFINES += ETLOG DEBUG=4 USECUPS
 
 SOURCES += \
 	  Driver.cpp \

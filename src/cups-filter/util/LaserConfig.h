@@ -9,13 +9,11 @@
 /** Temporary directory to store files. */
 #define TMP_DIRECTORY "tmp"
 
-
-//FIXME LAOS HACK
 /** Default bed width (x-axis) in pts. */
-#define BED_WIDTH 1152
+#define BED_WIDTH 2592
 
 /** Default bed height (y-axis) in pts. */
-#define BED_HEIGHT 864
+#define BED_HEIGHT 1728
 
 /** Default points per inch for incoming data */
 #define POINTS_PER_INCH (72)
