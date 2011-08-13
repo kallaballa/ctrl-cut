@@ -207,8 +207,8 @@ void MainWindow::on_filePrintAction_triggered()
       LOG_DEBUG(str(format("vector translation: (%d, %d)") % vectorpos.x() % vectorpos.y()));
       job.addCut(this->cutmodel);
     }
-    QPointF rasterpos = this->rasteritem->pos() + pos;
     if (this->raster) {
+      QPointF rasterpos = this->rasteritem->pos() + pos;
       this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
       LOG_DEBUG(str(format("raster translation: (%d, %d)") % rasterpos.x() % rasterpos.y()));
       job.addRaster(this->raster);
@@ -238,7 +238,7 @@ void MainWindow::on_filePrintAction_triggered()
     else {
       QString host;
       if (item == "LAOS") {
-        host = "x.x.x.x";
+        host = "192.168.12.10";
         this->laosclient->print(host, "MyDocument", rtlbuffer);
       }
       else {
