@@ -32,6 +32,7 @@ private:
   MainWindow();
 
   class LpdClient *lpdclient;
+  class LaosClient *laosclient;
   class QGraphicsItem *firstitem;
   class CtrlCutScene *scene;
 
@@ -40,6 +41,7 @@ private:
   class Raster *raster;
   class QGraphicsItemGroup *documentitem;
   class QGraphicsPixmapItem *rasteritem;
+  class QGraphicsItemGroup *vectoritem;
   QPixmap rasterpixmap;
   QPointF rasterpos;
   class LaserDialog *laserdialog;

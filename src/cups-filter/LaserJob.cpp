@@ -44,6 +44,17 @@ void LaserJob::addRaster(Raster* raster) {
   this->rasters.push_back(raster);
 }
 
+// FIXME: LAOS hack
+void LaserJob::serializeTo(std::ostream &out)
+{
+  /* We're going to perform a vector print. */
+  for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
+    CutModel *model = *it;
+    this->vectorencoder->encode(*model, out);
+  }
+}
+
+#if 0
 /**
  *
  */
@@ -139,3 +150,4 @@ void LaserJob::serializeTo(std::ostream &out) {
   }
   out << "Mini]";
 }
+#endif

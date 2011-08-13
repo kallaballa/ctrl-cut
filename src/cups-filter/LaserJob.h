@@ -10,8 +10,7 @@
 
 #include "util/PJL.h"
 #include "util/LaserConfig.h"
-#include "vector/LaosEncoder.h"
-#include "vector/HPGLEncoder.h"
+#include "vector/Encoder.h"
 #include "raster/Raster.h"
 #include "raster/PclEncoder.h"
 #include "vector/model/CutModel.h"
@@ -33,12 +32,17 @@ public:
            const string &user, const string &name, const string &title);
   virtual ~LaserJob();
 
+  void setVectorEncoder(Encoder *encoder) { vectorencoder = encoder; }
+
   void optimize();
   void addCut(CutModel* cut);
   void addRaster(Raster* raster);
   std::list<CutModel*> getCuts() { return cuts; }
 
   void serializeTo(std::ostream &out);
+
+private:
+  Encoder *vectorencoder;
 };
 
 #endif /* LASERJOB_H_ */

@@ -23,14 +23,6 @@
 
 using boost::format;
 
-LaosEncoder::LaosEncoder(LaserConfig *lconf) {
-  this->lconf = lconf;
-}
-
-LaosEncoder::~LaosEncoder() {
-  // TODO Auto-generated destructor stub
-}
-
 void LaosEncoder::encode(CutModel& model, std::ostream &out) const {
   StringList route;
   make_route(route, model);

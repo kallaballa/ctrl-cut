@@ -27,7 +27,9 @@ public:
     return *instance;
   }
 
+#ifdef USE_CUPS
   void setCupsOptions(struct cups_option_s *options, int numOptions);
+#endif
   void rangeCheck();
   static uint32_t calcDeviceDimension(uint32_t dim, double res);
   void dumpDebug();
