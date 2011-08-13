@@ -237,14 +237,14 @@ void MainWindow::on_filePrintAction_triggered()
     }
     else {
       QString host;
-      if (item == "LAOS") {
-        host = "192.168.12.10";
-        this->laosclient->print(host, "MyDocument", rtlbuffer);
+      if (item == "Lazzzor") {
+        host = "10.20.30.27";
+        this->lpdclient->print(host, "MyDocument", rtlbuffer);
       }
       else {
-        if (item == "Lazzzor") host = "10.20.30.27";
+        if (item == "LAOS") host = "192.168.12.10";
         else host = "localhost";
-        this->lpdclient->print(host, "MyDocument", rtlbuffer);
+        this->laosclient->print(host, "MyDocument", rtlbuffer);
       }
     }
   }
