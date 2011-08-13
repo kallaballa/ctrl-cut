@@ -55,7 +55,7 @@ LaserConfig::LaserConfig()
   this->height = BED_HEIGHT;
   this->width = BED_WIDTH;
   // FIXME: Temporary workaround for Laos
-  this->resolution = 4000;
+  this->resolution = 4026;
   // this->resolution = RESOLUTION_DEFAULT;
   this->device_width = calcDeviceDimension(this->width, this->resolution);
   this->device_height = calcDeviceDimension(this->height, this->resolution);
