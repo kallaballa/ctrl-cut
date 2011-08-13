@@ -54,7 +54,9 @@ LaserConfig::LaserConfig()
   this->focus = DEFAULT_AUTO_FOCUS;
   this->height = BED_HEIGHT;
   this->width = BED_WIDTH;
-  this->resolution = RESOLUTION_DEFAULT;
+  // FIXME: Temporary workaround for Laos
+  this->resolution = 4026;
+  // this->resolution = RESOLUTION_DEFAULT;
   this->device_width = calcDeviceDimension(this->width, this->resolution);
   this->device_height = calcDeviceDimension(this->height, this->resolution);
   this->raster_dithering = LaserConfig::DITHER_DEFAULT;
