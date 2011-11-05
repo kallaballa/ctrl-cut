@@ -5,7 +5,7 @@ PCL commands:                                                           GUI
 
 
 Epilog-specific:
-&y#A (#=1)            Autofocus                                       Autofocus
+&y#A (#=0,1)          Autofocus                                       Autofocus
 &y#C (#=0,1)          unknown
 &y0Z                  unknown
 &y#P (#=power)        Raster power
