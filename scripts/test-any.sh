@@ -9,10 +9,14 @@
 # ec test-any <dir>      - Runs all tests in the given dir
 # ec test-any <file.ps>  - Runs the specified test
 
-. $CC_FUNCTIONS
-
 # Makes unmatched globs return a zero list instead of literal glob characters
+
+COL_I=0
+COLUMNS=( "Test" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
+PADDING=(    15      5      7     20      6          14       10     10 )
+
 shopt -s nullglob
+
 
 pad()
 {
@@ -24,6 +28,24 @@ pad()
   s=$(printf "%$(($2-${#1}))s"); echo -n "${s// /.}"
 }
 
+printHeader() {
+  colcnt=${#COLUMNS[@]}
+  padcnt=${#PADDING[@]}
+  [ $colcnt -ne $padcnt ] && error "column/padding count mismatch"
+
+  for i in `seq 0 $[$colcnt - 1]`; do
+    printCol "${COLUMNS[$i]}"
+  done
+  echo
+}
+
+printCol() {
+  [ $COL_I -ge ${#COLUMNS[@]} ]\
+    && COL_I=0\
+    || COL_I=$[ $COL_I + 1 ];
+  pad "$1" ${PADDING[$I_COL]} $2
+}
+
 # Usage: runtest <testfile> <testtype>
 # Example: runtest test-data/corel/quad.ps corel
 runtest()
@@ -33,7 +55,7 @@ runtest()
   filename=`basename $1`
   testcase=${filename%.*} # basename without suffix
   prnfile=$srcdir/$testcase.prn
-  pad "$testcase" 22
+  printCol "$testcase"
   outfile=$srcdir/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
@@ -61,10 +83,10 @@ runtest()
   if [ $binary_ok == 1 ]; then
     echo -n OK
   else
-    pad "no" 5
+    printCol "no"
  
     if [ $has_prnfile == 0 ]; then
-      pad "No prn file found. Generating output.." 67
+      printCol "No prn file found. Generating output.."
     else
 
     color=red
@@ -95,9 +117,8 @@ runtest()
     else 
       pixelstr=$errorstr
     fi
-    pad "$pixelstr" 7 $color
+    printCol "$pixelstr" $color
 
-    
 
     if [ ! -f $prnfile-r.png ]; then
       pixelstr="N/A"
@@ -112,7 +133,7 @@ runtest()
         color=red
       fi
     fi
-    pad "$pixelstr" 20 $color
+    printCol "$pixelstr" $color
 
     # Compare bboxes, number of polylines and total cut length
     color=red
@@ -123,7 +144,7 @@ runtest()
         bboxstr="OK"
         color=green
     fi    
-    pad $bboxstr 6 $color
+    printCol $bboxstr $color
 
     color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
@@ -133,7 +154,7 @@ runtest()
         plstr="OK"
         color=green
     fi
-    pad $plstr 14 $color
+    printCol $plstr $color
 
     color=red
     length_diff=`echo $rtlcompare | awk '{print $2}'`
@@ -143,7 +164,7 @@ runtest()
         lenstr="OK"
         color=green
     fi
-    pad $lenstr 10 $color
+    printCol $lenstr $color
 
     color=red
     move_diff=`echo $rtlcompare | awk '{print $3}'`
@@ -153,7 +174,7 @@ runtest()
         lenstr="OK"
         color=green
     fi
-    pad $lenstr 10 $color
+    printCol $lenstr $color
   fi
 
   fi
@@ -168,7 +189,7 @@ runtest()
         xmlstr="OK"
         color=green
     fi
-    pad $xmlstr 2 $color
+    printCol $xmlstr $color
   fi
 
   echo
@@ -193,16 +214,11 @@ printUsage()
   echo "  -v        Verbose"
 }
 
-while getopts 'xy' c
+while getopts 'v' c
 do
     case $c in
-        x) 
-            XML=-x
-            XML_TEST=true
-            ;;
-        y)
-            XML=-x
-            XML_TEST=
+        v)
+            VERBOSEL=-v
             ;;
         \?) 
             echo "Invalid option: -$OPTARG" >&2
@@ -221,16 +237,7 @@ if test $VERBOSE; then
   set -x
 fi
 
-#Print header
-pad "Test case" 22
-pad "bin" 5
-pad "vimg" 7
-pad "rimg" 20
-pad "bbox" 6
-pad "polylines" 14
-pad "length" 10
-pad "move" 10
-if [ x$XML_TEST != "x" ]; then pad "XML" 3; fi
+printHeader
 echo
 
 # Run given test or all tests

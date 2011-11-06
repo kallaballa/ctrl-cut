@@ -6,6 +6,7 @@
 # alternatively you may also source it and call scripts directly
 
 # switch to bash 3.1 compatibility mode for mac osx
+
 shopt -s compat31
 
 cd `dirname $0` 
