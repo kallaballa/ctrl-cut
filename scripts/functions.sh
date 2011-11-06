@@ -26,3 +26,4 @@ function try {
     return $errcode; 
 }
 
+export -f green yellow red warn ok verbose error
