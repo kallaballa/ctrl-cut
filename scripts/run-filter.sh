@@ -2,32 +2,17 @@
 
 cd $CC_BASE
 
-. $CC_FUNCTIONS
-
-while getopts 'x' c
-do
-    case $c in
-        x) 
-            XML=-x
-            ;;
-        \?) 
-            echo "Invalid option: -$OPTARG" >&2
-            ;;
-    esac
-done
-
-# Get rid of processed arguments
-shift $(($OPTIND - 1))
-
 if test $VERBOSE; then
   set -x
 fi
 
-[ ! -d "./tmp" ] && mkdir "./tmp"
+[ ! -d "/tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
-[ $# != 1 ] && error "Usage: $0 ps-file" 1
-file=$1
+[ $# -ne 2 -a $# -ne 3 ] && error "Usage: $0 ps-file options-file commonoptions-file" 1
+file="$1"
+optionsfile="$2"
+commonoptionsfile="$3"
 
 try "locating cups-config" "type cups-config" 
 
@@ -45,22 +30,17 @@ export PPD="$CUPS_DATADIR/ppd/passthrough.ppd"
 export PRINTER=passthrough
 #export SOFTWARE=CUPS/1.4.3
 export USER=root
-
-filename=`basename $file`
-
-commonoptions=`dirname $file`/common.options
-if [ -f $commonoptions ]; then
-  read < $commonoptions commonoptions
+if [ -f $commonoptionsfile ]; then
+  read < $commonoptionsfile commonoptions
 fi
 
-optionsfile=`dirname $file`/${filename%.*}.options
 if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
 #echo ctrl-cut invocation into log
-echo "$CC_BINARY $XML 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" &> ${file%.ps}.run
+echo "$CC_BINARY 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" &> "`dirname $file`/${file%.ps}.run"
 
-# Don't run this with try since it produces stdout which is passed to our caller
-$CC_BINARY $XML 32 kintel $filename 1 "$commonoptions $options $CC_FILTER_OPTIONS" $file
+# using the new targetstdout option of try
+trycat "run ctrl-cut" "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
 exit $?
