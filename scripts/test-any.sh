@@ -69,7 +69,7 @@ runtest()
 
   testtype="`dirname $testdir`"
 
-  casedir="$testdir/cases/$testcase"
+  casedir="$testdir/$testcase"
   optionsfile="$casedir/.options"
   commonoptsfile="$testtype/common.options"
   logfile="$casedir/$testcase.log"
