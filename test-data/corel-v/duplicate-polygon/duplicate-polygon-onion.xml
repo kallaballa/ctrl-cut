@@ -1,0 +1,45 @@
+<cut>
+<string>
+<point x="406" y="657" key="406/657" />
+<point x="556" y="594" key="556/594" />
+<point x="619" y="444" key="619/444" />
+<point x="556" y="294" key="556/294" />
+<point x="406" y="231" key="406/231" />
+<point x="256" y="294" key="256/294" />
+<point x="194" y="444" key="194/444" />
+<point x="256" y="594" key="256/594" />
+<point x="406" y="657" key="406/657" />
+<segment>
+  <point x="406" y="657" key="406/657" />
+  <point x="556" y="594" key="556/594" />
+</segment>
+<segment>
+  <point x="556" y="594" key="556/594" />
+  <point x="619" y="444" key="619/444" />
+</segment>
+<segment>
+  <point x="619" y="444" key="619/444" />
+  <point x="556" y="294" key="556/294" />
+</segment>
+<segment>
+  <point x="556" y="294" key="556/294" />
+  <point x="406" y="231" key="406/231" />
+</segment>
+<segment>
+  <point x="406" y="231" key="406/231" />
+  <point x="256" y="294" key="256/294" />
+</segment>
+<segment>
+  <point x="256" y="294" key="256/294" />
+  <point x="194" y="444" key="194/444" />
+</segment>
+<segment>
+  <point x="194" y="444" key="194/444" />
+  <point x="256" y="594" key="256/594" />
+</segment>
+<segment>
+  <point x="256" y="594" key="256/594" />
+  <point x="406" y="657" key="406/657" />
+</segment>
+</string>
+</cut>

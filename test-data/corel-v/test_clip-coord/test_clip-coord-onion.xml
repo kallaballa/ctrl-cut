@@ -1,0 +1,15 @@
+<cut>
+<string>
+<point x="0" y="13" key="0/13" />
+<point x="144" y="13" key="144/13" />
+<point x="188" y="13" key="188/13" />
+<segment>
+  <point x="0" y="13" key="0/13" />
+  <point x="144" y="13" key="144/13" />
+</segment>
+<segment>
+  <point x="144" y="13" key="144/13" />
+  <point x="188" y="13" key="188/13" />
+</segment>
+</string>
+</cut>
