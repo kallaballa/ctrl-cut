@@ -6,9 +6,7 @@
 # alternatively you may also source it and call scripts directly
 
 # switch to bash 3.1 compatibility mode for mac osx
-
 shopt -s compat31
-
 cd `dirname $0` 
 
 VERBOSE=
@@ -21,9 +19,9 @@ do
     esac
 done
 
-[ ! $CUPS_SERVER_BIN ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
-[ ! $CUPS_SERVER_DATA ] && export CUPS_SERVER_DATA="`cups-config --databin`"
-[ ! $CC_BASE ] && export CC_BASE="`pwd`"
+[ -z "$CUPS_SERVER_BIN" ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
+[ -z "$CUPS_SERVER_DATA" ] && export CUPS_SERVER_DATA="`cups-config --databin`"
+[ -z "$CC_BASE" ] && export CC_BASE="`pwd`"
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
@@ -67,8 +65,12 @@ verbose "CC_PCLINT=$CC_PCLINT"
 SCRIPTNAME=$1
 shift
 
-if [ ${SCRIPTNAME##*.} != "sh" ]; then SCRIPTNAME=$SCRIPTNAME.sh; fi
+[ ${SCRIPTNAME##*.} != "sh" ]\
+  && SCRIPTNAME=$SCRIPTNAME.sh;
 
-if [ ! -f $SCRIPTNAME ];then SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME; fi
+[ ! -f "$SCRIPTNAME" -a ! -f "CC_SCRIPTS/$SCRIPTNAME" ]\
+  && SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME;
 
-[ $SCRIPTNAME ] && "$SCRIPTNAME" "$@" || echo "No script to run"
+[ ! -z $SCRIPTNAME ] && "$SCRIPTNAME" "$@" || echo "No script to run";
+
+
