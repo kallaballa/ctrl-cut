@@ -11,12 +11,17 @@
 
 # Makes unmatched globs return a zero list instead of literal glob characters
 
+#killall all child processes on SIGINT
+trap "kill -0" SIGINT
+
+. $CC_FUNCTIONS
 COL_I=0
-COLUMNS=( "Test" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
-PADDING=(    15      5      7     20      6          14       10     10 )
+COLUMNS=( "case" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
+PADDING=( "20"   "5"    "7"   "20"    "6"        "14"     "10"   "10" )
+
+LEVELS=( "quick" "normal" "more" "all" )
 
 shopt -s nullglob
-
 
 pad()
 {
@@ -33,6 +38,7 @@ printHeader() {
   padcnt=${#PADDING[@]}
   [ $colcnt -ne $padcnt ] && error "column/padding count mismatch"
 
+  COL_I=0
   for i in `seq 0 $[$colcnt - 1]`; do
     printCol "${COLUMNS[$i]}"
   done
@@ -41,25 +47,41 @@ printHeader() {
 
 printCol() {
   [ $COL_I -ge ${#COLUMNS[@]} ]\
-    && COL_I=0\
-    || COL_I=$[ $COL_I + 1 ];
-  pad "$1" ${PADDING[$I_COL]} $2
+    && COL_I=0;
+
+  pad "$1" ${PADDING[${COL_I}]} $2
+  COL_I=$[ $COL_I + 1 ]
+}
+
+readCases() {
+ casesfile="$1"
+ testlevel="$2"
+ grep "^$testlevel " $casesfile | cut -d" " -f2-
 }
 
 # Usage: runtest <testfile> <testtype>
 # Example: runtest test-data/corel/quad.ps corel
 runtest()
 {
-  testtype=$2
-  srcdir=`dirname $1`
-  filename=`basename $1`
-  testcase=${filename%.*} # basename without suffix
-  prnfile=$srcdir/$testcase.prn
+  testdir="$1"
+  testname="`basename $1`"
+  testcase="$2"
+
+  testtype="`dirname $testdir`"
+
+  casedir="$testdir/cases/$testcase"
+  optionsfile="$casedir/.options"
+  commonoptsfile="$testtype/common.options"
+  logfile="$casedir/$testcase.log"
+  psfile="$testdir/$testname.ps"
+
+  prnfile="$casedir/$testcase.prn"
+  outfile="$casedir/$tescase.raw"
+
   printCol "$testcase"
-  outfile=$srcdir/$testcase.raw
 
   # Generate a PCL/RTL file using our filter
-  scripts/run-filter.sh $VERBOSE $XML $1 > $outfile 2> $testcase.log
+  scripts/run-filter.sh $psfile $optionsfile $commonoptsfile > $outfile 2> $logfile
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -74,16 +96,16 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    cmp $prnfile $outfile >> $testcase.log
+    cmp $prnfile $outfile &>> $logfile
     if [ $? == 0 ]; then
       binary_ok=1
     fi
   fi
 
   if [ $binary_ok == 1 ]; then
-    echo -n OK
+    printCol "ok" green
   else
-    printCol "no"
+    printCol "no" red
  
     if [ $has_prnfile == 0 ]; then
       printCol "No prn file found. Generating output.."
@@ -92,7 +114,8 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh $VERBOSE $prnfile $outfile 2>> $testcase.log`
+    rtlcompare=`scripts/rtlcompare.sh $VERBOSE $prnfile $outfile 2>> $logfile`
+
     if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
       errorstr="Err"
       rawtopbmfailed=1
@@ -106,7 +129,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $srcdir/$testcase.prn-v.png $outfile-v.png 2>> $testcase.log`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $prnfile-v.png $outfile-v.png 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -124,7 +147,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $VERBOSE $srcdir/$testcase.prn-r.png $outfile-r.png 2>> $testcase.log`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $prnfile-r.png $outfile-r.png 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -179,82 +202,44 @@ runtest()
 
   fi
 
-  if [ x$XML_TEST != "x" ]; then
-    color=red
-    $CC_SCRIPTS/xml-test-filter.sh $srcdir/$testcase-*.xml >> $testcase.log
-    xmlstatus="$?"
-    if [ $xmlstatus != "0" ]; then
-        xmlstr="Err"
-    else
-        xmlstr="OK"
-        color=green
-    fi
-    printCol $xmlstr $color
-  fi
-
   echo
-}
-
-rundir()
-{
-  for testdir in $@
-  do
-    testtype=`basename $testdir`
-    echo "[$testtype]"
-    for f in $testdir/*.ps $testdir/*.vector; do
-      runtest $f $testtype
-    done
-  done
 }
 
 printUsage()
 {
-  echo "Usage: $0 [-v] [<testcase>]"
+  echo "Usage: $0 [-l] [<testcase>]"
   echo "Options:"
   echo "  -v        Verbose"
+  echo "  -l        Test level"
 }
 
-while getopts 'v' c
+TEST_LEVEL=1
+
+while getopts 'vl:' c
 do
     case $c in
-        v)
-            VERBOSEL=-v
-            ;;
-        \?) 
-            echo "Invalid option: -$OPTARG" >&2
-            ;;
+        v) VERBOSE=-v;;
+        l) TEST_LEVEL="$2";;
+        \?) echo "Invalid option: -$OPTARG" >&2;;
     esac
 done
-
 shift $(($OPTIND - 1))
-
-#if [ $# -gt 1 ]; then
-#  printUsage
-#  exit 1
-#fi
-
 if test $VERBOSE; then
   set -x
 fi
 
 printHeader
-echo
 
 # Run given test or all tests
 if [ $# -gt 0 ]; then
-  for case in $@; do
-    if [ -d $case ]; then
-      rundir $case
-    else
-      runtest $case `basename $(dirname $case)`
-    fi
+  find $@ -name ".cases" | while read casefile; do
+    testdir="`dirname $casefile`"
+    cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
+    echo -n "["
+    yellow "`dirname $testdir`/`basename $testdir`"
+    echo "]"
+    for c in $cases; do          
+      runtest $testdir $c
+    done
   done
-else
- testdirs="corel-v corel-r corel-b qcad inkscape"
- testpaths=""
- for testdir in $testdirs
- do
-   testpaths="$testpaths $CC_TEST_DATA/$testdir"
- done
- rundir $testpaths
 fi
