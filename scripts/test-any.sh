@@ -12,7 +12,7 @@
 # Makes unmatched globs return a zero list instead of literal glob characters
 
 #killall all child processes on SIGINT
-trap "kill -0" SIGINT
+trap "kill 0" SIGINT
 
 . $CC_FUNCTIONS
 COL_I=0
