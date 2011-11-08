@@ -1,8 +1,9 @@
 #!/bin/bash
 
-function green { echo -ne "\033[32;1m$1\033[0m" 1>&2; tput sgr0 1>&2; }
-function yellow { echo -ne "\033[33;1m$1\033[0m" 1>&2; tput sgr0 1>&2; }
-function red { echo -ne "\033[31;1m$1\033[0m" 1>&2; tput sgr0 1>&2; }
+function green { echo -ne "\033[32;1m$1\033[0m"; tput sgr0; }
+function blue { echo -ne "\033[34;1m$1\033[0m"; tput sgr0; }
+function yellow { echo -ne "\033[33;1m$1\033[0m"; tput sgr0; }
+function red { echo -ne "\033[31;1m$1\033[0m"; tput sgr0; }
 function warn { red "$1\n"; }
 function ok { green "ok\n"; }
 function failed { red "failed\n"; }
@@ -37,9 +38,9 @@ function try {
   bash -c "$@ 1>&$targetfd"
   errcode=$?; 
   if [ $errcode != 0 ]; then 
-    [ "$fatal" != "true" ] && failed || error;
+    [ "$fatal" != "true" ] && failed 1>&2 || error 1>&2;
   else 
-    ok; 
+    ok 1>&2; 
   fi
   return $errcode; 
 }
@@ -51,6 +52,7 @@ function check {
 function checkcat {
   try -n -o "1" "$1" "$2"
 }
+
 
 function trycat { 
   try -o "1" "$1" "$2"

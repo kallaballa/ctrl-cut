@@ -20,6 +20,7 @@ COLUMNS=( "case" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
 PADDING=( "20"   "5"    "7"   "20"    "6"        "14"     "10"   "10" )
 
 LEVELS=( "quick" "normal" "more" "all" )
+REPORT=
 
 shopt -s nullglob
 
@@ -50,13 +51,15 @@ printCol() {
     && COL_I=0;
 
   pad "$1" ${PADDING[${COL_I}]} $2
-  COL_I=$[ $COL_I + 1 ]
+  REPORT="$REPORT\n`blue \"${COLUMNS[${COL_I}]} $1\"`"
+  COL_I=$[ $COL_I + 1 ]  
 }
 
 # Usage: runtest <testfile> <testtype>
 # Example: runtest test-data/corel/quad.ps corel
 runtest()
 {
+  REPORT=
   testdir="$1"
   testname="`basename $1`"
   testcase="$2"
@@ -80,7 +83,7 @@ runtest()
   outr="$outdir/$testcase.raw-r.png"
 
   green "### Commencing $casedir ###\n" &>> $logfile
-  printCol "$testcase"
+  printCol "$testcase" 2>> $logfile
 
   # Generate a PCL/RTL file using our filter
   checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
@@ -105,12 +108,12 @@ runtest()
   fi
 
   if [ $binary_ok == 1 ]; then
-    printCol "ok" green
+    printCol "ok" green 2>> $logfile
   else
-    printCol "no" red
+    printCol "no" red 2>> $logfile
  
     if [ $has_prnfile == 0 ]; then
-      printCol "No prn file found. Generating output.."
+      printCol "No prn file found. Generating output.." 2>> $logfile
     else
 
     color=red
@@ -142,8 +145,7 @@ runtest()
     else 
       pixelstr=$errorstr
     fi
-    printCol "$pixelstr" $color
-
+    printCol "$pixelstr" $color 2>> $logfile
 
     if [ ! -f $prnr ]; then
       pixelstr="N/A"
@@ -158,7 +160,7 @@ runtest()
         color=red
       fi
     fi
-    printCol "$pixelstr" $color
+    printCol "$pixelstr" $color 2>> $logfile
 
     # Compare bboxes, number of polylines and total cut length
     color=red
@@ -169,7 +171,8 @@ runtest()
         bboxstr="OK"
         color=green
     fi    
-    printCol $bboxstr $color
+    printCol $bboxstr $color 2>> $logfile
+    
 
     color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
@@ -179,7 +182,7 @@ runtest()
         plstr="OK"
         color=green
     fi
-    printCol $plstr $color
+    printCol $plstr $color 2>> $logfile
 
     color=red
     length_diff=`echo $rtlcompare | awk '{print $2}'`
@@ -189,7 +192,7 @@ runtest()
         lenstr="OK"
         color=green
     fi
-    printCol $lenstr $color
+    printCol $lenstr $color 2>> $logfile
 
     color=red
     move_diff=`echo $rtlcompare | awk '{print $3}'`
@@ -199,12 +202,14 @@ runtest()
         lenstr="OK"
         color=green
     fi
-    printCol $lenstr $color
+    printCol $lenstr $color 2>> $logfile 
   fi
 
   fi
 
   echo
+  echo -e $REPORT >> $logfile
+  green "### End of $casedir ###\n\n" &>> $logfile
 }
 
 printUsage()
