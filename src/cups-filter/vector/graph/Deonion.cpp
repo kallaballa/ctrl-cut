@@ -69,8 +69,8 @@ void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Se
     if(slopeDiff < 0.01)
       slopeDiff += CC_PI * 2;
 
-    std::cerr << *segment << std::endl;
-    std::cerr << candidateSlope << std::endl;
+    /*std::cerr << *segment << std::endl;
+    std::cerr << candidateSlope << std::endl;*/
 
     //save the edge with the least clockwise angle (= least slop_diff)
     if (slopeDiff < minSlopeDiff) {

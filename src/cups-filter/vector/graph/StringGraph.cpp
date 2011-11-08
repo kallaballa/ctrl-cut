@@ -39,7 +39,7 @@ void StringGraph::createWorkEdge(const Vertex& in, const Vertex& out, const Segm
   if(in == out || hasEdge(in, out))
     return;
 
-  std::cerr << in << " " << out << std::endl;
+//  std::cerr << in << " " << out << std::endl;
   add_edge(in, out, StringProperty(owner), *this);
 }
 
@@ -49,7 +49,7 @@ void StringGraph::createMoveEdge(const Vertex& in, const Vertex& out) {
   const Point* p_in = (*this)[in].point;
   const Point* p_out = (*this)[out].point;
   StringProperty map(0, p_in->distance(*p_out));
-  std::cerr << in << " " << out << std::endl;
+//  std::cerr << in << " " << out << std::endl;
   add_edge(in, out, map, *this);
 }
 
@@ -59,7 +59,7 @@ bool StringGraph::hasEdge(const Vertex& in, const Vertex& out) {
 
 void StringGraph::permutateEdges(const SegmentString& string, Vertex v_origin,
     vector<Vertex>& outVertices) {
-  std::cerr << "permutate" << std::endl;
+//  std::cerr << "permutate" << std::endl;
 
   StringGraph::Vertex frontV = addVertex(string.frontPoints(), &string);
   StringGraph::Vertex backV = addVertex(string.backPoints(), &string);
