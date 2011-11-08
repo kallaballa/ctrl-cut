@@ -38,9 +38,6 @@ if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
-#echo ctrl-cut invocation into log
-echo "$CC_BINARY 32 kintel $filename 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" &> "`dirname $file`/${file%.ps}.run"
-
 # using the new targetstdout option of try
 trycat "run ctrl-cut" "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
 exit $?

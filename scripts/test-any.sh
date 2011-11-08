@@ -72,10 +72,13 @@ runtest()
   casedir="$testdir/$testcase"
   optionsfile="$casedir/.options"
   commonoptsfile="$testtype/common.options"
-  logfile="$casedir/$testcase.log"
-  psfile="$testdir/$testname.ps"
-
+  psfile="$casedir/$testcase.ps"
   prnfile="$casedir/$testcase.prn"
+
+  outdir="$testdir/out/$testcase"
+  [ ! -d "$outdir" ]  && mkdir "$outdir"
+
+  logfile="$outdir/$testcase.log"
   outfile="$casedir/$tescase.raw"
 
   printCol "$testcase"
@@ -114,7 +117,7 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh $VERBOSE $prnfile $outfile 2>> $logfile`
+    rtlcompare=`scripts/rtlcompare.sh -o "$outdir" $VERBOSE $prnfile $outfile 2>> $logfile`
 
     if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
       errorstr="Err"

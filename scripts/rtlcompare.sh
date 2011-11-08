@@ -1,9 +1,12 @@
 #!/bin/bash
 
-while getopts 'v' c
+OUTDIR=
+
+while getopts 'vo:' c
 do
   case $c in
     v) set -x ;;
+    o) OUTDIR="$2";;
   esac
 done
 
@@ -13,6 +16,10 @@ shift $(($OPTIND - 1))
 
 F1="$1"
 F2="$2"
+
+if [ -z "$OUTDIR" ]; then
+  OUTDIR="`dirname $F1`"  
+fi
 
 function filter(){
     echo "$1" | grep "$2"
@@ -157,11 +164,14 @@ function fitCanvas() {
   convert "$IMG2" -extent ${ew}x${eh}-${rpx2}-${rpy2} "$IMG2"
 }
 
-# Remove any existing output to catch pclint failing to output images
-rm -f "$F1-r.png" "$F1-v.png" "$F2-r.png" "$F2-v.png"
+FO1="$OUTDIR/`basename $F1`"
+FO2="$OUTDIR/`basename $F2`"
 
-RES1=`$CC_PCLINT -dinfo -a -r "$F1-r.png" -v "$F1-v.png" "$F1" | grep "|"`
-RES2=`$CC_PCLINT -dinfo -a -r "$F2-r.png" -v "$F2-v.png" "$F2" | grep "|"`
+# Remove any existing output to catch pclint failing to output images
+rm -f "$FO1-r.png" "$FO1-v.png" "$FO2-r.png" "$FO2-v.png"
+
+RES1=`$CC_PCLINT -dinfo -a -r "$FO1-r.png" -v "$FO1-v.png" "$F1" | grep "|"`
+RES2=`$CC_PCLINT -dinfo -a -r "$FO2-r.png" -v "$FO2-v.png" "$F2" | grep "|"`
 
 R_RES1=`filter "$RES1" "RASTER"`
 R_RES2=`filter "$RES2" "RASTER"`
@@ -219,18 +229,18 @@ R_BBOX2=`filter "$R_RES2" "bounding" | cut -d"=" -f2`
 
 R_BBOXDIFF=`diffBBox "$R_BBOX1" "$R_BBOX2"`
 
-if [ -f "$F1-r.png" -a -f "$F2-r.png" -a "$R_BBOX1" != "$R_BBOX2" ]; then
-    fitCanvas "$F1-r.png" "$F2-r.png" "$R_BBOX1" "$R_BBOX2"
+if [ -f "$FO1-r.png" -a -f "$FO2-r.png" -a "$R_BBOX1" != "$R_BBOX2" ]; then
+    fitCanvas "$FO1-r.png" "$FO2-r.png" "$R_BBOX1" "$R_BBOX2"
 fi
 
-if [ -f "$F1-v.png" -a -f "$F2-v.png" -a "$V_BBOX1" != "$V_BBOX2" ]; then
-    fitCanvas "$F1-v.png" "$F2-v.png" "$V_BBOX1" "$V_BBOX2"
+if [ -f "$FO1-v.png" -a -f "$FO2-v.png" -a "$V_BBOX1" != "$V_BBOX2" ]; then
+    fitCanvas "$FO1-v.png" "$FO2-v.png" "$V_BBOX1" "$V_BBOX2"
 fi
 
-echo "$R_RES1" > "$F1-r.info"
-echo "$R_RES2" > "$F2-r.info"
-echo "$V_RES1" > "$F1-v.info"
-echo "$V_RES2" > "$F2-v.info"
+echo "$R_RES1" > "$FO1-r.info"
+echo "$R_RES2" > "$FO2-r.info"
+echo "$V_RES1" > "$FO1-v.info"
+echo "$V_RES2" > "$FO2-v.info"
 
 
 echo "$V_PDDIFF $V_WORKDIFF $V_MOVEDIFF $V_SEGDIFF $V_BBOXDIFF $R_PDDIFF $R_WORKDIFF $R_MOVEDIFF $R_SEGDIFF $R_BBOXDIFF"
