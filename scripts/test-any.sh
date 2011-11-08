@@ -224,7 +224,7 @@ TEST_LEVEL=1
 while getopts 'l:' c
 do
     case $c in
-        l) TEST_LEVEL="$2";;
+        l) TEST_LEVEL="$OPTARG";;
         \?) echo "Invalid option: -$OPTARG" >&2;;
     esac
 done
