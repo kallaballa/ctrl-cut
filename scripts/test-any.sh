@@ -86,7 +86,7 @@ runtest()
   printCol "$testcase" 2>> $logfile
 
   # Generate a PCL/RTL file using our filter
-  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
+ dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -101,7 +101,7 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    check "compare binary" "cmp $prnfile $outfile" &>> $logfile
+    dotimeout check "compare binary" "cmp $prnfile $outfile" &>> $logfile
     if [ $? == 0 ]; then
       binary_ok=1
     fi
@@ -119,7 +119,7 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`checkcat "compare rtl/pcl" "scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile" 2>> $logfile`
+    rtlcompare=`dotimeout checkcat "compare rtl/pcl" "scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile" 2>> $logfile`
 
     if [ $? -ne 0 -o ! -f $outv ]; then
       errorstr="Err"
@@ -134,7 +134,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`checkcat "compare vector bitmaps" "scripts/compare-bitmaps.sh $VERBOSE $prnv $outv" 2>> $logfile`
+      errorstr=`dotimeout checkcat "compare vector bitmaps" "scripts/compare-bitmaps.sh $VERBOSE $prnv $outv" 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -151,7 +151,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`checkcat "compare raster bitmaps" "scripts/compare-raster.sh $VERBOSE $prnr $outr" 2>> $logfile`
+      errorstr=`dotimeout checkcat "compare raster bitmaps" "scripts/compare-raster.sh $VERBOSE $prnr $outr" 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green

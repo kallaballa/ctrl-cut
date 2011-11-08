@@ -17,6 +17,21 @@ function error {
     exit $errcode; 
 }
 
+function dotimeout {
+  timeout=30
+  OPTIND=0
+  while getopts 't:' c
+  do
+    case $c in
+      t)timeout="$OPTARG";;
+      \?)echo "Invalid option: -$OPTARG" >&2;;
+    esac
+  done
+  shift $((OPTIND-1));
+
+   $CC_SCRIPTS/timeout.sh -t$timeout "$1" "$2" "$3"
+}
+
 function try {
   fatal=true
   targetfd=2
@@ -78,4 +93,4 @@ function findcases {
   done | sed '/^$/d'
 }
 
-export -f verbose verboseexec green yellow red warn ok failed  error try trycat check checkcat findtests findcases readCases
+export -f verbose verboseexec green yellow red warn ok failed  error try trycat check checkcat findtests findcases readCases dotimeout
