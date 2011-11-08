@@ -16,5 +16,5 @@ dir="$1"
 [ -z "$dir" ] && dir="$CC_TEST_DATA"
 [ -z "$OUTARCHIVE" ] && OUTARCHIVE="$dir.tar.gz"
 
-findcases "$dir" | xargs tar -czf "$OUTARCHIVE"
+findtests "$dir" | xargs tar -czf "$OUTARCHIVE"
 

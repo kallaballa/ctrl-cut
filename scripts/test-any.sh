@@ -53,12 +53,6 @@ printCol() {
   COL_I=$[ $COL_I + 1 ]
 }
 
-readCases() {
- casesfile="$1"
- testlevel="$2"
- grep "^$testlevel " $casesfile | cut -d" " -f2-
-}
-
 # Usage: runtest <testfile> <testtype>
 # Example: runtest test-data/corel/quad.ps corel
 runtest()
@@ -85,6 +79,7 @@ runtest()
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
 
+  green "### Commencing $testcase ###" &>> $logfile
   printCol "$testcase"
 
   # Generate a PCL/RTL file using our filter

@@ -6,7 +6,5 @@ dir="$1"
 
 [ -z "$dir" ] && dir="$CC_TEST_DATA"
 
-findcases $dir | while read c; do
-  rm -rf $c/out/*;
-done
+findtests $dir | xargs  -I'[cc_test_dir]' rm " -I[cc_test_dir]/out/*"
 
