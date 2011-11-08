@@ -56,8 +56,20 @@ function trycat {
   try -o "1" "$1" "$2"
 }
 
-function findcases {
+readCases() {
+  casesfile="$1"
+  testlevel="$2"
+  grep "^$testlevel " $casesfile | cut -d" " -f2-
+}
+
+function findtests {
   find "$1" -name ".cases" -exec dirname '{}' \;
 }
 
-export -f verbose green yellow red warn ok failed  error try trycat check checkcat findcases
+function findcases {
+  findtests "$1" |  while read line; do
+    readCases "$line/.cases" "all" | xargs -d" " -I'[cc_casename]' echo "$line/[cc_casename]"
+  done | sed '/^$/d'
+}
+
+export -f verbose green yellow red warn ok failed  error try trycat check checkcat findtests findcases readCases
