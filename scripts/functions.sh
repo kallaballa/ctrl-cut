@@ -6,7 +6,8 @@ function red { echo -ne "\033[31;1m$1\033[0m" 1>&2; tput sgr0 1>&2; }
 function warn { red "$1\n"; }
 function ok { green "ok\n"; }
 function failed { red "failed\n"; }
-function verbose { [ ! -z $VERBOSE ] && echo "$@ " 1>&2; }
+function verbose { [ ! -z $CC_VERBOSE ] && echo "$@ " 1>&2; }
+function verboseexec { verbose $@; bash -c "$@"; }
 function error { 
     msg=$1; 
     errcode=$2; 
@@ -23,19 +24,18 @@ function try {
   do
     case $c in
       n)fatal="false";;
-      o)targetfd="$2";;
+      o)targetfd="$OPTARG";;
       \?)echo "Invalid option: -$OPTARG" >&2;;
     esac
   done
   shift $((OPTIND-1));
   errcode=0; 
-  echo -n "$1... " 1>&2; 
+  yellow "$1... " 1>&2; 
   shift;
 
   verbose $@;
   bash -c "$@ 1>&$targetfd"
   errcode=$?; 
-  
   if [ $errcode != 0 ]; then 
     [ "$fatal" != "true" ] && failed || error;
   else 
@@ -67,9 +67,13 @@ function findtests {
 }
 
 function findcases {
+  searchpath="$1"
+  level="$2"
+  [ -z $level ] && level="all"
+
   findtests "$1" |  while read line; do
-    readCases "$line/.cases" "all" | xargs -d" " -I'[cc_casename]' echo "$line/[cc_casename]"
+    readCases "$line/.cases" "$level" | xargs -d" " -I'[cc_casename]' echo "$line/[cc_casename]"
   done | sed '/^$/d'
 }
 
-export -f verbose green yellow red warn ok failed  error try trycat check checkcat findtests findcases readCases
+export -f verbose verboseexec green yellow red warn ok failed  error try trycat check checkcat findtests findcases readCases

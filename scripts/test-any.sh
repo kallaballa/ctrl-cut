@@ -79,11 +79,11 @@ runtest()
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
 
-  green "### Commencing $testcase ###" &>> $logfile
+  green "### Commencing $casedir ###\n" &>> $logfile
   printCol "$testcase"
 
   # Generate a PCL/RTL file using our filter
-  scripts/run-filter.sh $psfile $optionsfile $commonoptsfile > $outfile 2> $logfile
+  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -98,7 +98,7 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    cmp $prnfile $outfile &>> $logfile
+    check "compare binary" "cmp $prnfile $outfile" &>> $logfile
     if [ $? == 0 ]; then
       binary_ok=1
     fi
@@ -116,7 +116,7 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh -o "$outdir" $VERBOSE $prnfile $outfile 2>> $logfile`
+    rtlcompare=`checkcat "compare rtl/pcl" "scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile" 2>> $logfile`
 
     if [ $? -ne 0 -o ! -f $outv ]; then
       errorstr="Err"
@@ -131,7 +131,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $prnv $outv 2>> $logfile`
+      errorstr=`checkcat "compare vector bitmaps" "scripts/compare-bitmaps.sh $VERBOSE $prnv $outv" 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -149,7 +149,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $VERBOSE $prnr $outr 2>> $logfile`
+      errorstr=`checkcat "compare raster bitmaps" "scripts/compare-raster.sh $VERBOSE $prnr $outr" 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -211,24 +211,21 @@ printUsage()
 {
   echo "Usage: $0 [-l] [<testcase>]"
   echo "Options:"
-  echo "  -v        Verbose"
   echo "  -l        Test level"
 }
 
 TEST_LEVEL=1
 
-while getopts 'vl:' c
+while getopts 'l:' c
 do
     case $c in
-        v) VERBOSE=-v;;
         l) TEST_LEVEL="$2";;
         \?) echo "Invalid option: -$OPTARG" >&2;;
     esac
 done
 shift $(($OPTIND - 1))
-if test $VERBOSE; then
-  set -x
-fi
+
+[ $CC_DEBUG ] && set -x
 
 printHeader
 

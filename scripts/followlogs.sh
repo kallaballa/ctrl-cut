@@ -9,5 +9,5 @@ dir="$1"
 findcases $dir | while read casedir; do
   casename="`basename $casedir`"
   echo "`dirname $casedir`/out/$casename/$casename.log"
-done | xargs -I'[cc_caselog]' tail -n0 -q --retry -f -s0.3 "[cc_caselog]" 2> /dev/null
+done | xargs bash -c 'tail -n0 -q --retry -f $@ 2>/dev/null'
 

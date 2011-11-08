@@ -11,17 +11,22 @@ cd `dirname $0`
 
 VERBOSE=
 
-while getopts 'v' c
+while getopts 'vd' c
 do
     case $c in
-        v) export VERBOSE=-v; shift; break ;;
-	--) shift; break;;
+        v) export CC_VERBOSE=-v;;
+        d) export CC_DEBUG=-d;;
+        --) shift; break;;
     esac
 done
+
+shift $(($OPTIND - 1))
+
 
 [ -z "$CUPS_SERVER_BIN" ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
 [ -z "$CUPS_SERVER_DATA" ] && export CUPS_SERVER_DATA="`cups-config --databin`"
 [ -z "$CC_BASE" ] && export CC_BASE="`pwd`"
+
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
@@ -61,6 +66,7 @@ verbose "CC_ETC=$CC_ETC"
 verbose "CC_BINARY=$CC_BINARY"
 verbose "CC_VERSION=$CC_VERSION"
 verbose "CC_PCLINT=$CC_PCLINT"
+verbose "CC_DEBUG=$CC_DEBUG"
 
 SCRIPTNAME=$1
 shift

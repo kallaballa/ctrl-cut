@@ -2,9 +2,7 @@
 
 cd $CC_BASE
 
-if test $VERBOSE; then
-  set -x
-fi
+[ $CC_DEBUG ] && set -x
 
 [ ! -d "/tmp" ] && mkdir "./tmp"
 
@@ -13,8 +11,6 @@ export RASTER_OFF="y"
 file="$1"
 optionsfile="$2"
 commonoptionsfile="$3"
-
-try "locating cups-config" "type cups-config" 
 
 export CHARSET=utf-8
 export CONTENT_TYPE=application/pdf
@@ -39,5 +35,5 @@ if [ -f $optionsfile ]; then
 fi
 
 # using the new targetstdout option of try
-trycat "run ctrl-cut" "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
+verboseexec "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
 exit $?
