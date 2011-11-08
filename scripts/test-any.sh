@@ -40,7 +40,7 @@ printHeader() {
   [ $colcnt -ne $padcnt ] && error "column/padding count mismatch"
 
   COL_I=0
-  for i in `seq 0 $[$colcnt - 1]`; do
+  for ((i=0; i<$colcnt; i++)); do
     printCol "${COLUMNS[$i]}"
   done
   echo
@@ -82,7 +82,7 @@ runtest()
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
 
-  green "### Commencing $casedir ###\n" &>> $logfile
+  green "### Commencing $casedir ###\n" 2>> $logfile
   printCol "$testcase" 2>> $logfile
 
   # Generate a PCL/RTL file using our filter
@@ -101,7 +101,7 @@ runtest()
   # Binary compare with the validated output (e.g. from the Windows drivers)
   binary_ok=0
   if [ $has_prnfile == 1 ]; then
-    dotimeout check "compare binary" "cmp $prnfile $outfile" &>> $logfile
+    dotimeout check "compare binary" "cmp $prnfile $outfile" 2>> $logfile
     if [ $? == 0 ]; then
       binary_ok=1
     fi
@@ -209,7 +209,7 @@ runtest()
 
   echo
   echo -e $REPORT >> $logfile
-  green "### End of $casedir ###\n\n" &>> $logfile
+  green "### End of $casedir ###\n\n" 2>> $logfile
 }
 
 printUsage()
