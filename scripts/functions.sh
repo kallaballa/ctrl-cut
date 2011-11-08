@@ -56,4 +56,8 @@ function trycat {
   try -o "1" "$1" "$2"
 }
 
-export -f verbose green yellow red warn ok failed  error try trycat check checkcat
+function findcases {
+  find "$1" -name ".cases" -exec dirname '{}' \;
+}
+
+export -f verbose green yellow red warn ok failed  error try trycat check checkcat findcases

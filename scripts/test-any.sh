@@ -76,7 +76,7 @@ runtest()
   prnfile="$casedir/$testcase.prn"
 
   outdir="$testdir/out/$testcase"
-  [ ! -d "$outdir" ]  && mkdir "$outdir"
+  [ ! -d "$outdir" ]  && mkdir -p "$outdir"
 
   logfile="$outdir/$testcase.log"
   outfile="$outdir/$testcase.raw"
