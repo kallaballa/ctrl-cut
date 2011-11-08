@@ -11,3 +11,5 @@ vector/*.png
 Gimp/*.png
 *.info
 *.run
+*/*/out
+*.xml
