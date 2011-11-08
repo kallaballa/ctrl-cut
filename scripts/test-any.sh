@@ -79,7 +79,11 @@ runtest()
   [ ! -d "$outdir" ]  && mkdir "$outdir"
 
   logfile="$outdir/$testcase.log"
-  outfile="$casedir/$tescase.raw"
+  outfile="$outdir/$testcase.raw"
+  prnv="$outdir/$testcase.prn-v.png"
+  outv="$outdir/$testcase.raw-v.png"
+  prnr="$outdir/$testcase.prn-r.png"
+  outr="$outdir/$testcase.raw-r.png"
 
   printCol "$testcase"
 
@@ -119,7 +123,7 @@ runtest()
     errorstr=""
     rtlcompare=`scripts/rtlcompare.sh -o "$outdir" $VERBOSE $prnfile $outfile 2>> $logfile`
 
-    if [ $? -ne 0 -o ! -f $outfile-v.png ]; then
+    if [ $? -ne 0 -o ! -f $outv ]; then
       errorstr="Err"
       rawtopbmfailed=1
     fi
@@ -127,12 +131,12 @@ runtest()
     if [ $? -ne 0 ]; then
       errorstr="Err"
       color=red
-    elif [ ! -f $prnfile-v.png ]; then
+    elif [ ! -f $prnv ]; then
       errorstr="N/A"
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $prnfile-v.png $outfile-v.png 2>> $logfile`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $prnv $outv 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -146,11 +150,11 @@ runtest()
     printCol "$pixelstr" $color
 
 
-    if [ ! -f $prnfile-r.png ]; then
+    if [ ! -f $prnr ]; then
       pixelstr="N/A"
       color=green
     else
-      errorstr=`scripts/compare-raster.sh $VERBOSE $prnfile-r.png $outfile-r.png 2>> $logfile`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $prnr $outr 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
