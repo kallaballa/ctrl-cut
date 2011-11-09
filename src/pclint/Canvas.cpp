@@ -5,6 +5,7 @@ Canvas::Canvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight,
   screen(NULL), bedWidth(bedWidth), bedHeight(bedHeight),
       screenWidth(screenWidth), screenHeight(screenHeight), clip(clip),
       offscreen(bedWidth, bedHeight, 1, 1, 255), scale(1) {
+#ifdef PCLINT_USE_SDL
   if (screenWidth > 0 && screenHeight > 0) {
     if (SDL_Init(SDL_INIT_VIDEO) == -1) {
       printf("Can't init SDL:  %s\n", SDL_GetError());
@@ -17,7 +18,7 @@ Canvas::Canvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight,
       exit(1);
     }
   }
-
+#endif
   if (clip != NULL) {
     bedWidth = clip->min(bedWidth, clip->lr.x - clip->ul.x);
     bedWidth = clip->min(bedWidth, clip->lr.y - clip->ul.y);
@@ -31,15 +32,18 @@ Canvas::Canvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight,
 }
 
 void Canvas::drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b) {
+#ifdef PCLINT_USE_SDL
   if(screen != NULL) {
     scaleCoordinate(x0);
     scaleCoordinate(y0);
 
     pixelRGBA(screen, x0, y0, r, g, b, 128);
   }
+#endif
 }
 
 void Canvas::drawMove(coord x0, coord y0, coord x1, coord y1) {
+#ifdef PCLINT_USE_SDL
   if(screen != NULL) {
     scaleCoordinate(x0);
     scaleCoordinate(y0);
@@ -47,10 +51,12 @@ void Canvas::drawMove(coord x0, coord y0, coord x1, coord y1) {
     scaleCoordinate(y1);
     lineRGBA(screen, x0, y0, x1, y1, 255, 255, 255, 128);
   }
+#endif
 }
 
 void Canvas::drawCut(coord x0, coord y0, coord x1, coord y1) {
   offscreen.draw_line(x0, y0, x1, y1, this->intensity);
+#ifdef PCLINT_USE_SDL
   if(screen != NULL) {
     scaleCoordinate(x0);
     scaleCoordinate(y0);
@@ -58,12 +64,15 @@ void Canvas::drawCut(coord x0, coord y0, coord x1, coord y1) {
     scaleCoordinate(y1);
     lineRGBA(screen, x0, y0, x1, y1, 255, 0, 0, 128);
   }
+#endif
 }
 
 void Canvas::update() {
+#ifdef PCLINT_USE_SDL
   if(screen != NULL) {
     SDL_Flip(screen);
   }
+#endif
 }
 
 void Canvas::dump(const string& filename, BoundingBox* crop) {
