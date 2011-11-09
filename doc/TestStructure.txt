@@ -1,0 +1,71 @@
+- Test Structure
+  - Test
+    - Every test resides in a distinct directory and has at least one case associated with it
+    - The directory name denotes the test name.
+    - It contains a mandatory ".cases" file which configures which case should be run at which test level
+    - It contains the source file from which all reference jobs of all cases have been generated from
+  - Cases 
+    - Every case is a sub directory in a test directory.
+    - The directory name denotes the case name.
+    - It contains a postscript file (the source model) and a prn file (the reference job).
+    - Optionally it may contain a ".options" file which controls the ctrl-cut processing options of the test case.
+  - Test Levels
+    - Test levels are configured in the tests ".cases" file. 
+    - There are 4 levels (quick, normal, more and all) which map to a space delimited list of cases to run at that level.
+  - Test output
+    - All test output will be put into the out directory in the test directory.
+    - For every case that has been run there is a directory generated that contains corresponding test results and logs.
+
+- Example:
+sometest
+  sometest.cdr
+
+  .cases
+      <code>
+      quick 75
+      normal 300
+      more 300 600
+      all 75 300 600
+      </code>
+
+  quickcase
+    quickcase.ps
+    quickcase.prn
+    .options
+      <code>
+      Resolution=75 VectorOptimize=Inner-Outer
+      </code>
+
+  slowcase
+    slowcase.ps
+    slowcase.prn
+    .options
+      <code>
+      Resolution=600 VectorOptimize=Inner-Outer
+      </code>
+
+  slowercase
+    slowercase.ps
+    slowercase.prn
+    .options
+      <code>
+      Resolution=1200 VectorOptimize=Inner-Outer
+      </code>
+
+  out
+    quickcase
+      quickcase.log
+      quickcase.raw
+      ...
+
+    slowcase
+      quickcase.log
+      quickcase.raw
+      ...
+
+    slowercase
+      quickcase.log
+      quickcase.raw
+      ...
+
+
