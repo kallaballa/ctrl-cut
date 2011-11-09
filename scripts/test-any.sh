@@ -82,11 +82,11 @@ runtest()
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
 
-  green "### Commencing $casedir ###\n" 2>> $logfile
+  green "### Commencing $casedir ###\n" 2>1 >> $logfile
   printCol "$testcase" 2>> $logfile
 
   # Generate a PCL/RTL file using our filter
- dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
+  dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
   if [ $? != 0 ]; then
     error "filter failed with return code $?"
     return
@@ -172,7 +172,6 @@ runtest()
         color=green
     fi    
     printCol $bboxstr $color 2>> $logfile
-    
 
     color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
