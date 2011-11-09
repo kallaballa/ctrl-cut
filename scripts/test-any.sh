@@ -233,17 +233,16 @@ shift $(($OPTIND - 1))
 
 printHeader
 
-seearchpath="test-data"
+searchpath="test-data"
 # Run given test or all tests
 [ $# -gt 0 ] && searchpath=$@;
-
-find $@ -name ".cases" | while read casefile; do
-  testdir="`dirname $casefile`"
-  cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
-  echo -n "["
-  yellow "`dirname $testdir`/`basename $testdir`"
-  echo "]"
-  for c in $cases; do          
-    runtest $testdir $c
+  find $searchpath -name ".cases" | while read casefile; do
+    testdir="`dirname $casefile`"
+    cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
+    echo -n "["
+    yellow "`dirname $testdir`/`basename $testdir`"
+    echo "]"
+    for c in $cases; do          
+      runtest $testdir $c
+    done
   done
-done

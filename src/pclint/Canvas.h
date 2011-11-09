@@ -2,9 +2,11 @@
 #define CANVAS_H_
 
 #include <algorithm>
+#ifdef SDLINT_USE_SDL
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
+#endif
 #include "2D.h"
 #include <string>
 #include "CImg.h"
@@ -22,7 +24,7 @@ public:
   void update();
   void dump(const string& filename, BoundingBox* clip = NULL);
 private:
-  SDL_Surface *screen;
+  class SDL_Surface *screen;
   dim bedWidth;
   dim bedHeight;
 

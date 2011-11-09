@@ -28,7 +28,9 @@
 #include "PclIntConfig.h"
 #include "Plotter.h"
 #include <stdlib.h>
+#ifdef PCLINT_USE_SDL
 #include <SDL.h>
+#endif
 
 using std::ofstream;
 using std::ifstream;

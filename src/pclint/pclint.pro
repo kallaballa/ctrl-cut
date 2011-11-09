@@ -5,7 +5,7 @@ CONFIG += boost_thread
 CONFIG += X11
 #CONFIG += ImageMagick
 CONFIG += libpng
-CONFIG += SDL
+!macx:CONFIG += SDL
 
 include(common.pri)
 
