@@ -5,7 +5,7 @@ cd $CC_BASE
 while getopts 'o:' c
 do
   case $c in
-    o) OUTARCHIVE="$2";;
+    o) OUTARCHIVE="$OPTARG";;
     \?) echo "Invalid option: -$OPTARG" >&2;;
   esac
 done

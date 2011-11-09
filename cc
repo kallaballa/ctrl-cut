@@ -50,6 +50,8 @@ export CC_PCLINT="src/pclint/pclint"
 
 . $CC_FUNCTIONS
 
+[ ! -x "$CC_PCLINT" -o ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
+
 verbose "CC_BASE=$CC_BASE"
 verbose "CC_PRINTERNAME=$CC_PRINTERNAME"
 verbose "CC_PRINTERPPD=$CC_PRINTERPPD"
