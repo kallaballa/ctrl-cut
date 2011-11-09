@@ -234,8 +234,10 @@ shift $(($OPTIND - 1))
 
 printHeader
 
+seearchpath="test-data"
 # Run given test or all tests
-if [ $# -gt 0 ]; then
+[ $# -gt 0 ] && searchpath=$@;
+
   find $@ -name ".cases" | while read casefile; do
     testdir="`dirname $casefile`"
     cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
@@ -246,4 +248,3 @@ if [ $# -gt 0 ]; then
       runtest $testdir $c
     done
   done
-fi
