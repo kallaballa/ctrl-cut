@@ -208,7 +208,7 @@ runtest()
 
   echo
   echo -e $REPORT >> $logfile
-  green "### End of $casedir ###\n\n" 2>> $logfile
+  green "### End of $casedir ###\n\n" 2>1 >> $logfile
 }
 
 printUsage()

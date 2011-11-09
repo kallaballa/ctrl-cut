@@ -73,12 +73,15 @@ verbose "CC_DEBUG=$CC_DEBUG"
 SCRIPTNAME=$1
 shift
 
-[ ${SCRIPTNAME##*.} != "sh" ]\
-  && SCRIPTNAME=$SCRIPTNAME.sh;
+if [ -z $SCRIPTNAME ]; then
+  echo "No script to run";
+  exit 0;
+else
+  [ "${SCRIPTNAME##*.}" != "sh" ]\
+    && SCRIPTNAME=$SCRIPTNAME.sh;
 
-[ ! -f "$SCRIPTNAME" -a ! -f "CC_SCRIPTS/$SCRIPTNAME" ]\
-  && SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME;
+  [ ! -f "$SCRIPTNAME" -a ! -f "CC_SCRIPTS/$SCRIPTNAME" ]\
+    && SCRIPTNAME=$CC_SCRIPTS/$SCRIPTNAME;
 
-[ ! -z $SCRIPTNAME ] && "$SCRIPTNAME" "$@" || echo "No script to run";
-
-
+  "$SCRIPTNAME" "$@"
+fi
