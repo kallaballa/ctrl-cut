@@ -89,7 +89,7 @@ function findcases {
   [ -z $level ] && level="all"
 
   findtests "$1" |  while read line; do
-    readCases "$line/.cases" "$level" | xargs -d" " -I'[cc_casename]' echo "$line/[cc_casename]"
+    for case in `readCases "$line/.cases" "$level"`; do echo $line/$case; done
   done | sed '/^$/d'
 }
 
