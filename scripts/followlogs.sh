@@ -9,10 +9,12 @@ dir="$1"
 function tailcases {
   findcases $dir | while read casedir; do
     casename="`basename $casedir`"
-    echo "`dirname $casedir`/out/$casename/$casename.log"
-  done | xargs tail -n0 -q --retry -f 
+    casedir="`dirname $casedir`/out/$casename"
+    casepath="$casedir/$casename.log"
+    mkdir -p "$casedir"
+    touch "$casepath"
+    echo "$casepath"
+  done | xargs tail -n0 -F | egrep -v "^(==> .* <==)?$"
 }
 
-tailcases 2> /dev/null
-
-
+tailcases
