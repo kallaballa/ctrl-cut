@@ -10,7 +10,7 @@ function tailcases {
   findcases $dir | while read casedir; do
     casename="`basename $casedir`"
     echo "`dirname $casedir`/out/$casename/$casename.log"
-  done | xargs tail -n0 -q --retry -f 
+  done | xargs tail -n0 -q --retry --follow=name 
 }
 
 tailcases 2> /dev/null
