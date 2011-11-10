@@ -2,7 +2,7 @@
 #define CANVAS_H_
 
 #include <algorithm>
-#ifdef SDLINT_USE_SDL
+#ifdef PCLINT_USE_SDL
 #include <SDL.h>
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>

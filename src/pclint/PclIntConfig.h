@@ -49,7 +49,7 @@ public:
     int c;
     opterr = 0;
     while (optind < argc) {
-      while ((c = getopt(argc, argv, "iac:r:v:b:d:s:")) != -1) {
+      while ((c = getopt(argc, argv, "iac:r:v:d:s:")) != -1) {
         switch (c) {
         case 'i':
           this->interactive = true;
@@ -115,13 +115,14 @@ public:
         "Usage: pclint [options] <PCL file> [<output file>]\n\n");
 
     fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -i            Enter interactive mode\n");
-    fprintf(stderr, "  -a            Automatically crop the output image to the detected bounding box\n");
-    fprintf(stderr, "  -c <bbox>     Clip to given bounding box\n");
-    fprintf(stderr, "  -b <filename> Output the combined job to the given filename\n");
-    fprintf(stderr, "  -v <filename> Output the vector pass to the given filename\n");
-    fprintf(stderr, "  -r <filename> Output the raster pass to the given filename\n");
-    fprintf(stderr, "  -d <level>    Set the verbosity level (quiet/info/warn/debug)\n");
+    fprintf(stderr, "  -i                Enter interactive mode\n");
+    fprintf(stderr, "  -a                Automatically crop the output image to the detected bounding box\n");
+    fprintf(stderr, "  -c <bbox>         Clip to given bounding box\n");
+//    fprintf(stderr, "  -b <filename>     Output the combined job to the given filename\n");
+    fprintf(stderr, "  -v <filename>     Output the vector pass to the given filename\n");
+    fprintf(stderr, "  -r <filename>     Output the raster pass to the given filename\n");
+    fprintf(stderr, "  -d <level>        Set the verbosity level (quiet/info/warn/debug)\n");
+    fprintf(stderr, "  -s <dimension>    Configure the size of the live rendering window. e.g. 1024x768\n");
     exit(1);
   }
 };

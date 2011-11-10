@@ -2,6 +2,12 @@
 
 cd $CC_BASE
 
+function printUsage() {
+  echo "find and live print changes to test case log files"
+  echo
+  echo "followlogs <searchpath>"
+}
+
 dir="$1"
 
 [ -z "$dir" ] && dir="$CC_TEST_DATA"

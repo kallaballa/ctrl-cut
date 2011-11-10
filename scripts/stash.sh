@@ -2,14 +2,24 @@
 
 cd $CC_BASE
 
+function printUsage() {
+  echo "collects and saves test results in a tar archive"
+  echo
+  echo "stash [-o<archive>] searchpath"
+  echo "    -o<archive>    The path of the output archive"
+  exit 1
+}
+
 while getopts 'o:' c
 do
   case $c in
     o) OUTARCHIVE="$OPTARG";;
-    \?) echo "Invalid option: -$OPTARG" >&2;;
+    \?) printUsage;;
   esac
 done
 shift $(($OPTIND - 1))
+
+[ $# -ne 1 ] && printUsage;
 
 dir="$1"
 
