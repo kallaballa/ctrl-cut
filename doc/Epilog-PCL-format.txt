@@ -6,11 +6,13 @@ PCL commands:                                                           GUI
 
 Epilog-specific:
 &y#A (#=0,1)          Autofocus                                       Autofocus
-&y#C (#=0,1)          unknown
+&y#C (#=0,1)          Global air assist (0=global, 1=local)
 &y0Z                  unknown
 &y#P (#=power)        Raster power
 &z#S (#=speed)        Raster speed
-&z#A (#=1,2)          Start raster operation at current position
+&z#A (#=0,1,2)        0 - Raster air assist off
+                        1 - Raster air assist on
+                        2 - Global air assist on
 &y#O (#=0,1)          Raster direction (0=top-down, 1=bottom-up)      Engrave Direction
 
 PCL standard:
@@ -37,18 +39,16 @@ where the origin is the upper left corner of the lazzzor, as well as the
 document. Coordinates are 600 DPI integers.
 
 Epilog-specific:
-YP [power]       (e.g. YP080)                                           Vector power
-ZS [speed]       (e.g. ZS033)                                           Vector speed
-XR [freq]        (e.g. XR5000)                                          Vector freq.
+YP [power]       (e.g. YP080)     Vector power
+ZS [speed]       (e.g. ZS033)     Vector speed
+XR [freq]        (e.g. XR5000)    Vector freq.
+WA [enabled]     (e.g. WA0)       Air assist (0=off, 1=on)
 
 Standard commands:
 IN              Initialize
 PU              Pen Up
 PD              Pen Down
 LT              Line Type
-
-Unknown:
-WA [???]         (e.g. WA1)
 
 Misc structural notes:
 
