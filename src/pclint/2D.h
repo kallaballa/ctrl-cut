@@ -26,6 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdint.h>
 
 using std::numeric_limits;
 using std::string;
