@@ -82,7 +82,7 @@ runtest()
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
 
-  green "### Commencing $casedir ###\n" 2>1 >> $logfile
+  green "### Commencing $casedir ###\n" 2>&1 >> $logfile
   printCol "$testcase" 2>> $logfile
 
   # Generate a PCL/RTL file using our filter
@@ -208,7 +208,7 @@ runtest()
 
   echo
   echo -e $REPORT >> $logfile
-  green "### End of $casedir ###\n\n" 2>1 >> $logfile
+  green "### End of $casedir ###\n\n" 2>&1 >> $logfile
 }
 
 printUsage()
