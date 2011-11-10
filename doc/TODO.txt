@@ -2,7 +2,6 @@ Zing support:
 -------------
 
 o Manage coordinates and bed size correctly
-o Refactor test framework to be able to deal with Zing-specific tests
 o Test Zing raster
 
 CUPS:
