@@ -213,9 +213,13 @@ runtest()
 
 printUsage()
 {
-  echo "Usage: $0 [-l] [<testcase>]"
+  echo "Find test cases and select which ones to execute"
+  echo "see also: stash, cleanup, followlogs"
+  echo
+  echo "$0 [-l<num>] [<testcase>]"
   echo "Options:"
-  echo "  -l        Test level"
+  echo "  -l<num>    Test level"
+  exit 1
 }
 
 TEST_LEVEL=1
@@ -224,7 +228,7 @@ while getopts 'l:' c
 do
     case $c in
         l) TEST_LEVEL="$OPTARG";;
-        \?) echo "Invalid option: -$OPTARG" >&2;;
+        \?) echo "Invalid option: -$OPTARG" >&2; printUsage;;
     esac
 done
 shift $(($OPTIND - 1))
