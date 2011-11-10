@@ -1,15 +1,13 @@
 Zing support:
 -------------
 
-o Test how DPI setting in the Windows driver dialog affects PCL (HPGL) vector output
-o Create Zing PPD (generate PPDs and maintain source files)
 o Manage coordinates and bed size correctly
 o Refactor test framework to be able to deal with Zing-specific tests
 o Test Zing raster
 
 CUPS:
 -----
-o Generate EpilogLegend36EXT.ppd with ppdc
+o Generate PPDs with ppdc
   This should open up for easy generation of PPD's for any Epilog other laser
 
 Postscript:
