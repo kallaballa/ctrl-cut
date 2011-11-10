@@ -240,7 +240,7 @@ printHeader
 searchpath="test-data"
 # Run given test or all tests
 [ $# -gt 0 ] && searchpath=$@;
-  $CC_SCRIPTS/cleanup $searchpath;
+  $CC_SCRIPTS/cleanup.sh $searchpath;
 
   find $searchpath -name ".cases" | while read casefile; do
     testdir="`dirname $casefile`"
