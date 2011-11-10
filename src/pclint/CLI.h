@@ -53,7 +53,16 @@ private:
   boost::barrier step_barrier;
 
   void exec(string cmd, string param) {
-    if (cmd.compare("run") == 0) {
+    if (cmd.compare("help") == 0) {
+     cerr << "run               continue processing the plot" << endl\
+          << "break <hexoff>    set a breakpoint at the given address" << endl\
+          << "step  <num>       process the given number of operations" << endl\
+          << "find <instr>      find the next occurence of the given instruction" << endl\
+          << "update <on/off>   without parameter just update the screen with the current plot stat" << endl\
+          << "                  passing 'on' enables live updating the screen" << endl\
+          << "                  passing 'off' disables live updating the screen" << endl\
+          << "dump <filename>   dump the current state of the plot rendering to file" << endl;
+    } else if (cmd.compare("run") == 0) {
       this->consume();
     } else {
       if (cmd.compare("break") == 0) {
@@ -91,6 +100,7 @@ private:
     lastCliCmd[0] = cmd;
     lastCliCmd[1] = param;
   }
+
   void consume() {
     this->setInteractive(false);
     while (!isInteractive())
