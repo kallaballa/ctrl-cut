@@ -207,7 +207,7 @@ runtest()
   fi
 
   echo
-  echo -e $REPORT >> $logfile
+#  echo -e $REPORT >> $logfile
   green "### End of $casedir ###\n\n" 2>&1 >> $logfile
 }
 
@@ -242,8 +242,10 @@ searchpath="test-data"
 [ $# -gt 0 ] && searchpath=$@;
   $CC_SCRIPTS/cleanup.sh $searchpath;
 
-  find $searchpath -name ".cases" | while read casefile; do
-    testdir="`dirname $casefile`"
+  findtests $searchpath | while read testdir; do
+
+    echo $testdir
+    casefile="$testdir/.cases"
     cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
     echo -n "["
     yellow "`dirname $testdir`/`basename $testdir`"
