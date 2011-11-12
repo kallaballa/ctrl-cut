@@ -1,4 +1,5 @@
 #include "LaserDialog.h"
+#include <assert.h>
 
 LaserDialog::LaserDialog(QWidget *parent) : QDialog(parent)
 {
@@ -58,7 +59,7 @@ void LaserDialog::applyLaserConfig(LaserConfig &config)
   this->rasterPowerSlider->setValue(config.raster_power);
   this->rasterDirection->setCurrentIndex(config.raster_direction);
 
-  QString ditherstr = "Default";
+  QString ditherstr;
   switch (config.raster_dithering) {
   case LaserConfig::DITHER_BAYER:
     ditherstr = "Bayer";
@@ -81,6 +82,11 @@ void LaserDialog::applyLaserConfig(LaserConfig &config)
   case LaserConfig::DITHER_SIERRA3:
     ditherstr = "Sierra3";
     break;
+  case LaserConfig::DITHER_DEFAULT:
+    ditherstr = "Default";
+    break;
+  default:
+    assert(false && "Unhandled raster dithering setting");
   }
   this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
 
