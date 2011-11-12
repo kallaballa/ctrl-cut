@@ -167,11 +167,14 @@ function fitCanvas() {
 FO1="$OUTDIR/`basename $F1`"
 FO2="$OUTDIR/`basename $F2`"
 
-# Remove any existing output to catch pclint failing to output images
-rm -f "$FO1-r.png" "$FO1-v.png" "$FO2-r.png" "$FO2-v.png"
-
 RES1=`$CC_PCLINT -dinfo -a -r "$FO1-r.png" -v "$FO1-v.png" "$F1" | grep "|"`
 RES2=`$CC_PCLINT -dinfo -a -r "$FO2-r.png" -v "$FO2-v.png" "$F2" | grep "|"`
+
+[ -f "$FO1-r.png" -a ! -f "$FO2-r.png" ] && error 1>&2;
+[ -f "$FO1-v.png" -a ! -f "$FO2-v.png" ] && error 1>&2;
+[ -f "$FO2-r.png" -a ! -f "$FO1-r.png" ] && error 1>&2;
+[ -f "$FO2-v.png" -a ! -f "$FO1-v.png" ] && error 1>&2;
+
 
 R_RES1=`filter "$RES1" "RASTER"`
 R_RES2=`filter "$RES2" "RASTER"`

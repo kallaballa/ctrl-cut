@@ -165,7 +165,7 @@ runtest()
     # Compare bboxes, number of polylines and total cut length
     color=red
     bbox_diff=`echo $rtlcompare | awk '{print $5}'`
-    if [ $bbox_diff != "0" ]; then
+    if [ "$bbox_diff" != "0" ]; then
         bboxstr="Err"
     else
         bboxstr="OK"
@@ -175,7 +175,7 @@ runtest()
 
     color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
-    if [ $polyline_diff != "0" ]; then
+    if [ "$polyline_diff" != "0" ]; then
         plstr=$polyline_diff
     else
         plstr="OK"
@@ -185,7 +185,7 @@ runtest()
 
     color=red
     length_diff=`echo $rtlcompare | awk '{print $2}'`
-    if [ $length_diff != "0" ]; then
+    if [ "$length_diff" != "0" ]; then
         lenstr="$length_diff"
     else
         lenstr="OK"
@@ -195,7 +195,7 @@ runtest()
 
     color=red
     move_diff=`echo $rtlcompare | awk '{print $3}'`
-    if [ $move_diff != "0" ]; then
+    if [ "$move_diff" != "0" ]; then
         lenstr="$move_diff"
     else
         lenstr="OK"

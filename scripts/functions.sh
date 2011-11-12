@@ -14,6 +14,7 @@ function error {
     errcode=$2; 
     [ -z "$errcode" ] && errcode=1; 
     [ -z "$msg" ] && failed || red "$msg\n"; 
+    kill 0
     exit $errcode; 
 }
 
