@@ -242,7 +242,7 @@ searchpath="test-data"
 [ $# -gt 0 ] && searchpath=$@;
   $CC_SCRIPTS/cleanup.sh $searchpath;
 
-  findtests $searchpath | while read testdir; do
+  findtests "$searchpath" | while read testdir; do
 
     echo $testdir
     casefile="$testdir/.cases"
