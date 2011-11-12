@@ -1,9 +1,9 @@
 *PPD-Adobe: "4.3"
 *FormatVersion: "4.3"
-*FileVersion: "1.0"
+*FileVersion: "1.1"
 *LanguageEncoding: ISOLatin1
 *LanguageVersion: English
-*PCFileName: "EPCAPT.PPD"
+*PCFileName: "CLEG36EX.PPD"
 *PSVersion:	"(3010.000) 651"
 *PSVersion:	"(3010.000) 652"
 *PSVersion:	"(3010.000) 653"
@@ -14,10 +14,10 @@
 *PSVersion:	"(3010.000) 815"
 *PSVersion:	"(3010.000) 850"
 *PSVersion:	"(3010.000) 81501"
-*Product: "(Epilog Capture)"
-*ModelName: "Epilog Capture"
-*ShortNickName: "Epilog Capture"
-*NickName: "Epilog Capture"
+*Product: "(Epilog Legend 36EXT)"
+*ModelName: "Epilog Legend 36EXT"
+*ShortNickName: "Epilog Legend 36EXT"
+*NickName: "Epilog Legend 36EXT"
 *Manufacturer: "Epilog"
 *DriverType: "custom"
 *cupsFilter: "application/vnd.cups-postscript          0       -"
@@ -169,15 +169,36 @@ restore
 	<</DeviceRenderingInfo <</Type 29 /RasterDithering 1>> >>
 	setpagedevice"
 *End
-*RasterDithering Darken/Darken: "
+*RasterDithering FloydSteinberg/FloydSteinberg: "
 	<</DeviceRenderingInfo <</Type 29 /RasterDithering 2>> >>
 	setpagedevice"
 *End
+*RasterDithering Jarvis/Jarvis: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 3>> >>
+	setpagedevice"
+*End
+*RasterDithering Burke/Burke: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 4>> >>
+	setpagedevice"
+*End
+*RasterDithering Stucki/Stucki: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 5>> >>
+	setpagedevice"
+*End
+*RasterDithering Sierra2/Sierra2: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 6>> >>
+	setpagedevice"
+*End
+*RasterDithering Sierra3/Sierra3: "
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 7>> >>
+	setpagedevice"
+*End
+
 *?RasterDithering: "
 	save
-	[/Default /Darken]
+	[/Default /FloydSteinberg /Jarvis /Burke /Stucki /Sierra2 /Sierra3]
 	currentpagedevice /DeviceRenderingInfo get /RasterDithering get dup 0 gt
-	{dup 3 lt {get}{pop pop (Default)}ifelse} {pop pop (Default)} ifelse = flush
+	{dup 8 lt {get}{pop pop (Default)}ifelse} {pop pop (Default)} ifelse = flush
 	restore
 "
 *End
@@ -1001,17 +1022,17 @@ restore
 
 *%******** VectorOptimize ********
 *OpenUI *VectorOptimize/VectorOptimize: PickOne
-*DefaultVectorOptimize: 1
+*DefaultVectorOptimize: Inner-Outer
 *OrderDependency: 140 AnySetup *VectorOptimize
-*VectorOptimize 0/Simple: "
+*VectorOptimize Simple/Simple: "
         <</DeviceRenderingInfo <</Type 29 /VectorOptimize 0>> >>
                 setpagedevice"
 *End
-*VectorOptimize 1/Inner-Outer: "
+*VectorOptimize Inner-Outer/Inner-Outer: "
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
 	setpagedevice"
 *End
-*VectorOptimize 2/Flat: "
+*VectorOptimize Shortest-Path/Shortest Path:"
 	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 2>> >>
 	setpagedevice"
 *End
@@ -1842,403 +1863,403 @@ restore
 *OpenUI *VectorFrequency/VectorFrequency: PickOne
 *DefaultVectorFrequency: 5000
 *OrderDependency: 140 AnySetup *VectorFrequency
-*VectorFrequency 50/50hz: "
+*VectorFrequency 50/50Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 50>> >>
     setpagedevice"
 *End
-*VectorFrequency 100/100hz: "
+*VectorFrequency 100/100Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 100>> >>
     setpagedevice"
 *End
-*VectorFrequency 150/150hz: "
+*VectorFrequency 150/150Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 150>> >>
     setpagedevice"
 *End
-*VectorFrequency 200/200hz: "
+*VectorFrequency 200/200Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 200>> >>
     setpagedevice"
 *End
-*VectorFrequency 250/250hz: "
+*VectorFrequency 250/250Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 250>> >>
     setpagedevice"
 *End
-*VectorFrequency 300/300hz: "
+*VectorFrequency 300/300Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 300>> >>
     setpagedevice"
 *End
-*VectorFrequency 350/350hz: "
+*VectorFrequency 350/350Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 350>> >>
     setpagedevice"
 *End
-*VectorFrequency 400/400hz: "
+*VectorFrequency 400/400Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 400>> >>
     setpagedevice"
 *End
-*VectorFrequency 450/450hz: "
+*VectorFrequency 450/450Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 450>> >>
     setpagedevice"
 *End
-*VectorFrequency 500/500hz: "
+*VectorFrequency 500/500Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 500>> >>
     setpagedevice"
 *End
-*VectorFrequency 550/550hz: "
+*VectorFrequency 550/550Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 550>> >>
     setpagedevice"
 *End
-*VectorFrequency 600/600hz: "
+*VectorFrequency 600/600Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 600>> >>
     setpagedevice"
 *End
-*VectorFrequency 650/650hz: "
+*VectorFrequency 650/650Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 650>> >>
     setpagedevice"
 *End
-*VectorFrequency 700/700hz: "
+*VectorFrequency 700/700Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 700>> >>
     setpagedevice"
 *End
-*VectorFrequency 750/750hz: "
+*VectorFrequency 750/750Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 750>> >>
     setpagedevice"
 *End
-*VectorFrequency 800/800hz: "
+*VectorFrequency 800/800Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 800>> >>
     setpagedevice"
 *End
-*VectorFrequency 850/850hz: "
+*VectorFrequency 850/850Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 850>> >>
     setpagedevice"
 *End
-*VectorFrequency 900/900hz: "
+*VectorFrequency 900/900Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 900>> >>
     setpagedevice"
 *End
-*VectorFrequency 950/950hz: "
+*VectorFrequency 950/950Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 950>> >>
     setpagedevice"
 *End
-*VectorFrequency 1000/1000hz: "
+*VectorFrequency 1000/1000Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1000>> >>
     setpagedevice"
 *End
-*VectorFrequency 1050/1050hz: "
+*VectorFrequency 1050/1050Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1050>> >>
     setpagedevice"
 *End
-*VectorFrequency 1100/1100hz: "
+*VectorFrequency 1100/1100Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1100>> >>
     setpagedevice"
 *End
-*VectorFrequency 1150/1150hz: "
+*VectorFrequency 1150/1150Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1150>> >>
     setpagedevice"
 *End
-*VectorFrequency 1200/1200hz: "
+*VectorFrequency 1200/1200Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1200>> >>
     setpagedevice"
 *End
-*VectorFrequency 1250/1250hz: "
+*VectorFrequency 1250/1250Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1250>> >>
     setpagedevice"
 *End
-*VectorFrequency 1300/1300hz: "
+*VectorFrequency 1300/1300Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1300>> >>
     setpagedevice"
 *End
-*VectorFrequency 1350/1350hz: "
+*VectorFrequency 1350/1350Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1350>> >>
     setpagedevice"
 *End
-*VectorFrequency 1400/1400hz: "
+*VectorFrequency 1400/1400Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1400>> >>
     setpagedevice"
 *End
-*VectorFrequency 1450/1450hz: "
+*VectorFrequency 1450/1450Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1450>> >>
     setpagedevice"
 *End
-*VectorFrequency 1500/1500hz: "
+*VectorFrequency 1500/1500Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1500>> >>
     setpagedevice"
 *End
-*VectorFrequency 1550/1550hz: "
+*VectorFrequency 1550/1550Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1550>> >>
     setpagedevice"
 *End
-*VectorFrequency 1600/1600hz: "
+*VectorFrequency 1600/1600Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1600>> >>
     setpagedevice"
 *End
-*VectorFrequency 1650/1650hz: "
+*VectorFrequency 1650/1650Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1650>> >>
     setpagedevice"
 *End
-*VectorFrequency 1700/1700hz: "
+*VectorFrequency 1700/1700Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1700>> >>
     setpagedevice"
 *End
-*VectorFrequency 1750/1750hz: "
+*VectorFrequency 1750/1750Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1750>> >>
     setpagedevice"
 *End
-*VectorFrequency 1800/1800hz: "
+*VectorFrequency 1800/1800Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1800>> >>
     setpagedevice"
 *End
-*VectorFrequency 1850/1850hz: "
+*VectorFrequency 1850/1850Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1850>> >>
     setpagedevice"
 *End
-*VectorFrequency 1900/1900hz: "
+*VectorFrequency 1900/1900Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1900>> >>
     setpagedevice"
 *End
-*VectorFrequency 1950/1950hz: "
+*VectorFrequency 1950/1950Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 1950>> >>
     setpagedevice"
 *End
-*VectorFrequency 2000/2000hz: "
+*VectorFrequency 2000/2000Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2000>> >>
     setpagedevice"
 *End
-*VectorFrequency 2050/2050hz: "
+*VectorFrequency 2050/2050Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2050>> >>
     setpagedevice"
 *End
-*VectorFrequency 2100/2100hz: "
+*VectorFrequency 2100/2100Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2100>> >>
     setpagedevice"
 *End
-*VectorFrequency 2150/2150hz: "
+*VectorFrequency 2150/2150Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2150>> >>
     setpagedevice"
 *End
-*VectorFrequency 2200/2200hz: "
+*VectorFrequency 2200/2200Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2200>> >>
     setpagedevice"
 *End
-*VectorFrequency 2250/2250hz: "
+*VectorFrequency 2250/2250Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2250>> >>
     setpagedevice"
 *End
-*VectorFrequency 2300/2300hz: "
+*VectorFrequency 2300/2300Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2300>> >>
     setpagedevice"
 *End
-*VectorFrequency 2350/2350hz: "
+*VectorFrequency 2350/2350Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2350>> >>
     setpagedevice"
 *End
-*VectorFrequency 2400/2400hz: "
+*VectorFrequency 2400/2400Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2400>> >>
     setpagedevice"
 *End
-*VectorFrequency 2450/2450hz: "
+*VectorFrequency 2450/2450Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2450>> >>
     setpagedevice"
 *End
-*VectorFrequency 2500/2500hz: "
+*VectorFrequency 2500/2500Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2500>> >>
     setpagedevice"
 *End
-*VectorFrequency 2550/2550hz: "
+*VectorFrequency 2550/2550Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2550>> >>
     setpagedevice"
 *End
-*VectorFrequency 2600/2600hz: "
+*VectorFrequency 2600/2600Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2600>> >>
     setpagedevice"
 *End
-*VectorFrequency 2650/2650hz: "
+*VectorFrequency 2650/2650Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2650>> >>
     setpagedevice"
 *End
-*VectorFrequency 2700/2700hz: "
+*VectorFrequency 2700/2700Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2700>> >>
     setpagedevice"
 *End
-*VectorFrequency 2750/2750hz: "
+*VectorFrequency 2750/2750Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2750>> >>
     setpagedevice"
 *End
-*VectorFrequency 2800/2800hz: "
+*VectorFrequency 2800/2800Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2800>> >>
     setpagedevice"
 *End
-*VectorFrequency 2850/2850hz: "
+*VectorFrequency 2850/2850Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2850>> >>
     setpagedevice"
 *End
-*VectorFrequency 2900/2900hz: "
+*VectorFrequency 2900/2900Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2900>> >>
     setpagedevice"
 *End
-*VectorFrequency 2950/2950hz: "
+*VectorFrequency 2950/2950Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 2950>> >>
     setpagedevice"
 *End
-*VectorFrequency 3000/3000hz: "
+*VectorFrequency 3000/3000Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3000>> >>
     setpagedevice"
 *End
-*VectorFrequency 3050/3050hz: "
+*VectorFrequency 3050/3050Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3050>> >>
     setpagedevice"
 *End
-*VectorFrequency 3100/3100hz: "
+*VectorFrequency 3100/3100Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3100>> >>
     setpagedevice"
 *End
-*VectorFrequency 3150/3150hz: "
+*VectorFrequency 3150/3150Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3150>> >>
     setpagedevice"
 *End
-*VectorFrequency 3200/3200hz: "
+*VectorFrequency 3200/3200Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3200>> >>
     setpagedevice"
 *End
-*VectorFrequency 3250/3250hz: "
+*VectorFrequency 3250/3250Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3250>> >>
     setpagedevice"
 *End
-*VectorFrequency 3300/3300hz: "
+*VectorFrequency 3300/3300Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3300>> >>
     setpagedevice"
 *End
-*VectorFrequency 3350/3350hz: "
+*VectorFrequency 3350/3350Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3350>> >>
     setpagedevice"
 *End
-*VectorFrequency 3400/3400hz: "
+*VectorFrequency 3400/3400Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3400>> >>
     setpagedevice"
 *End
-*VectorFrequency 3450/3450hz: "
+*VectorFrequency 3450/3450Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3450>> >>
     setpagedevice"
 *End
-*VectorFrequency 3500/3500hz: "
+*VectorFrequency 3500/3500Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3500>> >>
     setpagedevice"
 *End
-*VectorFrequency 3550/3550hz: "
+*VectorFrequency 3550/3550Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3550>> >>
     setpagedevice"
 *End
-*VectorFrequency 3600/3600hz: "
+*VectorFrequency 3600/3600Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3600>> >>
     setpagedevice"
 *End
-*VectorFrequency 3650/3650hz: "
+*VectorFrequency 3650/3650Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3650>> >>
     setpagedevice"
 *End
-*VectorFrequency 3700/3700hz: "
+*VectorFrequency 3700/3700Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3700>> >>
     setpagedevice"
 *End
-*VectorFrequency 3750/3750hz: "
+*VectorFrequency 3750/3750Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3750>> >>
     setpagedevice"
 *End
-*VectorFrequency 3800/3800hz: "
+*VectorFrequency 3800/3800Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3800>> >>
     setpagedevice"
 *End
-*VectorFrequency 3850/3850hz: "
+*VectorFrequency 3850/3850Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3850>> >>
     setpagedevice"
 *End
-*VectorFrequency 3900/3900hz: "
+*VectorFrequency 3900/3900Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3900>> >>
     setpagedevice"
 *End
-*VectorFrequency 3950/3950hz: "
+*VectorFrequency 3950/3950Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 3950>> >>
     setpagedevice"
 *End
-*VectorFrequency 4000/4000hz: "
+*VectorFrequency 4000/4000Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4000>> >>
     setpagedevice"
 *End
-*VectorFrequency 4050/4050hz: "
+*VectorFrequency 4050/4050Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4050>> >>
     setpagedevice"
 *End
-*VectorFrequency 4100/4100hz: "
+*VectorFrequency 4100/4100Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4100>> >>
     setpagedevice"
 *End
-*VectorFrequency 4150/4150hz: "
+*VectorFrequency 4150/4150Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4150>> >>
     setpagedevice"
 *End
-*VectorFrequency 4200/4200hz: "
+*VectorFrequency 4200/4200Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4200>> >>
     setpagedevice"
 *End
-*VectorFrequency 4250/4250hz: "
+*VectorFrequency 4250/4250Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4250>> >>
     setpagedevice"
 *End
-*VectorFrequency 4300/4300hz: "
+*VectorFrequency 4300/4300Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4300>> >>
     setpagedevice"
 *End
-*VectorFrequency 4350/4350hz: "
+*VectorFrequency 4350/4350Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4350>> >>
     setpagedevice"
 *End
-*VectorFrequency 4400/4400hz: "
+*VectorFrequency 4400/4400Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4400>> >>
     setpagedevice"
 *End
-*VectorFrequency 4450/4450hz: "
+*VectorFrequency 4450/4450Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4450>> >>
     setpagedevice"
 *End
-*VectorFrequency 4500/4500hz: "
+*VectorFrequency 4500/4500Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4500>> >>
     setpagedevice"
 *End
-*VectorFrequency 4550/4550hz: "
+*VectorFrequency 4550/4550Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4550>> >>
     setpagedevice"
 *End
-*VectorFrequency 4600/4600hz: "
+*VectorFrequency 4600/4600Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4600>> >>
     setpagedevice"
 *End
-*VectorFrequency 4650/4650hz: "
+*VectorFrequency 4650/4650Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4650>> >>
     setpagedevice"
 *End
-*VectorFrequency 4700/4700hz: "
+*VectorFrequency 4700/4700Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4700>> >>
     setpagedevice"
 *End
-*VectorFrequency 4750/4750hz: "
+*VectorFrequency 4750/4750Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4750>> >>
     setpagedevice"
 *End
-*VectorFrequency 4800/4800hz: "
+*VectorFrequency 4800/4800Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4800>> >>
     setpagedevice"
 *End
-*VectorFrequency 4850/4850hz: "
+*VectorFrequency 4850/4850Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4850>> >>
     setpagedevice"
 *End
-*VectorFrequency 4900/4900hz: "
+*VectorFrequency 4900/4900Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4900>> >>
     setpagedevice"
 *End
-*VectorFrequency 4950/4950hz: "
+*VectorFrequency 4950/4950Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 4950>> >>
     setpagedevice"
 *End
-*VectorFrequency 5000/5000hz: "
+*VectorFrequency 5000/5000Hz: "
     <</DeviceRenderingInfo <</Type 29 /VectorFrequency 5000>> >>
     setpagedevice"
 *End

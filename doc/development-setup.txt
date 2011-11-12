@@ -62,8 +62,8 @@ lpadmin -p lazzzor-file -E -v file:///tmp/out.prn -P etc/ppd/Epilog/Legend36EXT.
 
 install_name_tool -change libgs.9.01.dylib /Library/Printers/Ctrl-Cut/lib/libgs.9.01.dylib src/cups-filter/ctrl-cut
 sudo chown root src/cups-filter/ctrl-cut
-sudo ln -sf /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/src/cups-filter/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
+sudo ln -sf $HOME/code/Ctrl-Cut/ctrl-cut/src/cups-filter/ctrl-cut /usr/libexec/cups/filter/ctrl-cut
 sudo chown root src/lpd-epilog/lpd-epilog
 sudo chmod 700 src/lpd-epilog/lpd-epilog
-sudo ln -sf /Users/kintel/code/metalab/checkout/Ctrl-Cut/ctrl-cut/src/lpd-epilog/lpd-epilog /usr/libexec/cups/backend/lpd-epilog
+sudo ln -sf $HOME/code/Ctrl-Cut/ctrl-cut/src/lpd-epilog/lpd-epilog /usr/libexec/cups/backend/lpd-epilog
 lpadmin -p lazzzor -E -v lpd-epilog://10.20.30.27 -P etc/ppd/Epilog/Legend36EXT.ppd
