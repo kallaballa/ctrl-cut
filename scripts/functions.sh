@@ -14,7 +14,6 @@ function error {
     errcode=$2; 
     [ -z "$errcode" ] && errcode=1; 
     [ -z "$msg" ] && failed || red "$msg\n"; 
-    kill 0
     exit $errcode; 
 }
 
@@ -30,7 +29,8 @@ function dotimeout {
   done
   shift $((OPTIND-1));
 
-   $CC_SCRIPTS/timeout.sh -t$timeout "$1" "$2" "$3"
+  # $CC_SCRIPTS/timeout.sh -t$timeout "$1" "$2" "$3"
+   "$1" "$2" "$3"
 }
 
 function try {
