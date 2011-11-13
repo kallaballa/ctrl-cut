@@ -55,20 +55,19 @@ printCol() {
   COL_I=$[ $COL_I + 1 ]  
 }
 
-# Usage: runtest <testfile> <testtype>
-# Example: runtest test-data/corel/quad.ps corel
+# Usage: runtest <testpath>/<testcase>
+# Example: runtest test-data/corel/quad/default
 runtest()
 {
   REPORT=
-  testdir="$1"
-  testname="`basename $1`"
-  testcase="$2"
+  casedir="$1"
+  testdir="`dirname $casedir`"
+  testname="`basename $testdir`"
+  testcase="`basename $casedir`"
+  testapp="`dirname $testdir`"
 
-  testtype="`dirname $testdir`"
-
-  casedir="$testdir/$testcase"
   optionsfile="$casedir/.options"
-  commonoptsfile="$testtype/common.options"
+  commonoptsfile="$testapp/common.options"
   psfile="$casedir/$testcase.ps"
   prnfile="$casedir/$testcase.prn"
 
@@ -216,18 +215,20 @@ printUsage()
   echo "Find test cases and select which ones to execute"
   echo "see also: stash, cleanup, followlogs"
   echo
-  echo "$0 [-l<num>] [<testcase>]"
+  echo "$0 [-l <num>] [-R <regex>] [<testcase glob>]"
   echo "Options:"
-  echo "  -l<num>    Test level"
+  echo "  -l <num>     Test level"
+  echo "  -R <regex>   Only run tests matching the regex"
   exit 1
 }
 
 TEST_LEVEL=1
 
-while getopts 'l:' c
+while getopts 'l:R:' c
 do
     case $c in
         l) TEST_LEVEL="$OPTARG";;
+        R) TEST_REGEX="$OPTARG";;
         \?) echo "Invalid option: -$OPTARG" >&2; printUsage;;
     esac
 done
@@ -244,13 +245,15 @@ searchpath="test-data"
 
   findtests "$searchpath" | while read testdir; do
 
-    echo $testdir
     casefile="$testdir/.cases"
     cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
-    echo -n "["
-    yellow "`dirname $testdir`/`basename $testdir`"
-    echo "]"
     for c in $cases; do          
-      runtest $testdir $c
+      fullname="$testdir/$c"
+      if [[ $fullname =~ $TEST_REGEX ]]; then
+        echo -n "["
+        yellow "`dirname $testdir`/`basename $testdir`"
+        echo "]"
+        runtest "$fullname"
+      fi
     done
   done
