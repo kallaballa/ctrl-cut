@@ -28,6 +28,14 @@ public:
   std::string datadir;
   std::string basename;
 
+  enum Driver {
+    UNINITIALIZED,
+    EPILOG_LEGEND,
+    EPILOG_ZING
+  };
+
+  Driver driver;
+
   /** Variable to track auto-focus. */
   bool focus;
 

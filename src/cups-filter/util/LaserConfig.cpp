@@ -48,6 +48,7 @@ LaserConfig *LaserConfig::instance = NULL;
 LaserConfig::LaserConfig()
 {
   this->tempdir = TMP_DIRECTORY;
+  this->driver = LaserConfig::UNINITIALIZED;
   this->focus = DEFAULT_AUTO_FOCUS;
   this->height = -1;
   this->width = -1;
@@ -82,6 +83,17 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
 {
   const char *v;
 
+  if ((v = cupsGetOption("Driver", numOptions, options))) {
+    if (!strcmp(v, "EpilogLegend")) {
+      this->driver = LaserConfig::EPILOG_LEGEND;
+    }
+    else if (!strcmp(v, "EpilogZing")) {
+      this->driver = LaserConfig::EPILOG_ZING;
+    }
+    else {
+      LOG_WARN_MSG("Illegal value for Driver", v);
+    }
+  }
   if ((v = cupsGetOption("BedSize", numOptions, options))) {
     if (!strcmp(v, "16x12")) {
       this->width = 16*72;
@@ -94,6 +106,9 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     else if (!strcmp(v, "36x24")) {
       this->width = 36*72;
       this->height = 24*72;
+    }
+    else {
+      LOG_WARN_MSG("Illegal value for BedSize", v);
     }
   }
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
@@ -158,6 +173,9 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
     this->enable_vector = strcmp(v, "false");
   }
 
+  if (this->driver == LaserConfig::UNINITIALIZED) {
+    LOG_FATAL_STR("Driver not specified.");
+  }
   if (this->width <= 0 || this->height <= 0) {
     LOG_FATAL_STR("Bed Size not specified.");
   }
