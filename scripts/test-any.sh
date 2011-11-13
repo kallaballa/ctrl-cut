@@ -118,7 +118,7 @@ runtest()
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`dotimeout checkcat "compare rtl/pcl" "scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile" 2>> $logfile`
+    rtlcompare=`scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile 2>> $logfile`
 
     if [ $? -ne 0 -o ! -f $outv ]; then
       errorstr="Err"
@@ -133,7 +133,7 @@ runtest()
       color=green
     fi
     if [ -z $errorstr ]; then
-      errorstr=`dotimeout checkcat "compare vector bitmaps" "scripts/compare-bitmaps.sh $VERBOSE $prnv $outv" 2>> $logfile`
+      errorstr=`scripts/compare-bitmaps.sh $VERBOSE $prnv $outv 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
@@ -150,7 +150,7 @@ runtest()
       pixelstr="N/A"
       color=green
     else
-      errorstr=`dotimeout checkcat "compare raster bitmaps" "scripts/compare-raster.sh $VERBOSE $prnr $outr" 2>> $logfile`
+      errorstr=`scripts/compare-raster.sh $VERBOSE $prnr $outr 2>> $logfile`
       if [ $? == 0 ]; then
         pixelstr="OK"
         color=green
