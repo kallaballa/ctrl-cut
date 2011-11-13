@@ -27,9 +27,6 @@
 /** Default speed for raster engraving */
 #define RASTER_SPEED_DEFAULT (100)
 
-/** Default resolution in DPI */
-#define RESOLUTION_DEFAULT (600)
-
 /** Pixel size of screen (0 is threshold).
  * FIXME - add more details
  */
@@ -52,11 +49,11 @@ LaserConfig::LaserConfig()
 {
   this->tempdir = TMP_DIRECTORY;
   this->focus = DEFAULT_AUTO_FOCUS;
-  this->height = BED_HEIGHT;
-  this->width = BED_WIDTH;
-  this->resolution = RESOLUTION_DEFAULT;
-  this->device_width = calcDeviceDimension(this->width, this->resolution);
-  this->device_height = calcDeviceDimension(this->height, this->resolution);
+  this->height = -1;
+  this->width = -1;
+  this->resolution = -1;
+  this->device_width = 0;
+  this->device_height = 0;
   this->raster_dithering = LaserConfig::DITHER_DEFAULT;
   this->raster_direction = LaserConfig::DIRECTION_TOPDOWN;
   this->raster_speed = RASTER_SPEED_DEFAULT;
@@ -78,16 +75,27 @@ LaserConfig::LaserConfig()
   calculate_base_position();
 }
 
-uint32_t LaserConfig::calcDeviceDimension(uint32_t dim, double res) {
-  return round(((double)(dim * res)  / POINTS_PER_INCH));
-}
-
 /*!
  Copy supported options into the supplied laser_configa
  */
 void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
 {
   const char *v;
+
+  if ((v = cupsGetOption("BedSize", numOptions, options))) {
+    if (!strcmp(v, "16x12")) {
+      this->width = 16*72;
+      this->height = 12*72;
+    }
+    else if (!strcmp(v, "24x12")) {
+      this->width = 24*72;
+      this->height = 12*72;
+    }
+    else if (!strcmp(v, "36x24")) {
+      this->width = 36*72;
+      this->height = 24*72;
+    }
+  }
   if ((v = cupsGetOption("AutoFocus", numOptions, options))) {
     this->focus = strcmp(v, "false") != 0;
   }
@@ -149,13 +157,26 @@ void LaserConfig::setCupsOptions(cups_option_s *options, int numOptions)
   if ((v = cupsGetOption("EnableVector", numOptions, options))) {
     this->enable_vector = strcmp(v, "false");
   }
+
+  if (this->width <= 0 || this->height <= 0) {
+    LOG_FATAL_STR("Bed Size not specified.");
+  }
+  if (this->resolution <= 0) {
+    LOG_FATAL_STR("Resolution not specified.");
+  }
+
+  this->device_width = this->width * this->resolution / 72;
+  this->device_height = this->height * this->resolution / 72;
+
   dumpDebug();
 }
 
 void LaserConfig::dumpDebug()
 {
-  LOG_DEBUG(this->focus);
+  LOG_DEBUG(this->width);
+  LOG_DEBUG(this->height);
   LOG_DEBUG(this->resolution);
+  LOG_DEBUG(this->focus);
   LOG_DEBUG(this->raster_speed);
   LOG_DEBUG(this->raster_power);
   LOG_DEBUG(this->raster_dithering);
@@ -239,7 +260,7 @@ void LaserConfig::calculate_base_position()
     this->basey = 0;
   }
   // rasterises
-  this->basex = LaserConfig::calcDeviceDimension(this->basex, this->resolution);
-  this->basey = LaserConfig::calcDeviceDimension(this->basey, this->resolution);
+  this->basex = this->basex * this->resolution / 72;
+  this->basey = this->basey * this->resolution / 72;
 }
 

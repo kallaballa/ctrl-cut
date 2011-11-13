@@ -82,7 +82,7 @@ static int display_presize(void *, void *, int width, int height,
   fmt is the same bitmask sent as the -dDisplayFormat parameter.
 */   
 static int display_size(void *, void *, int width, int height, 
-                        int rowstride, unsigned int fmt, unsigned char *pimage)
+                        int rowstride, unsigned int /*fmt*/, unsigned char *pimage)
 {
   LOG_DEBUG(str(format("display_size(%d,%d)") % width % height));
   //  fprintf(stderr, "    pimage: %p\n", pimage);
@@ -259,7 +259,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
 
   argstrings.push_back(str(format("-r%d") % this->conf.resolution));
   argstrings.push_back(str(format("-g%dx%d")
-      % LaserConfig::calcDeviceDimension(this->conf.width,this->conf.resolution) % LaserConfig::calcDeviceDimension(this->conf.height,this->conf.resolution)));
+                           % (this->conf.device_width, this->conf.device_height, this->conf.resolution)));
 
   if (!this->conf.enable_raster) {
     argstrings.push_back("-sDEVICE=nullpage");
