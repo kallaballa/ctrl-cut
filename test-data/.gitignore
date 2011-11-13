@@ -9,7 +9,5 @@ inkscape/*.png
 qcad/*.png
 vector/*.png
 Gimp/*.png
-*.info
-*.run
 */*/out
 *.xml
