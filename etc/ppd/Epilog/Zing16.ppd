@@ -157,6 +157,13 @@ restore
 *BedSize 36x24/36" x 24":
 *CloseUI: *Debug
 
+*%******** Driver ********
+*OpenUI *Driver/Driver: PickOne
+*DefaultDriver: EpilogZing
+*Driver EpilogLegend/Epilog Legend:
+*Driver EpilogZing/Epilog Zing:
+*CloseUI: *Driver
+
 *CloseGroup: *General
 
 *OpenGroup: Raster
