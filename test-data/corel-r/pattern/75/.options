@@ -1,1 +1,1 @@
-EnableRaster RasterDithering=FloydSteinberg Resolution=75
+RasterDithering=FloydSteinberg Resolution=75

@@ -157,6 +157,21 @@ restore
 *Debug False: " "
 *CloseUI: *Debug
 
+*%******** BedSize ********
+*OpenUI *BedSize/BedSize: PickOne
+*DefaultBedSize: 36x24
+*BedSize 16x12/16" x 12":
+*BedSize 24x12/24" x 12":
+*BedSize 36x24/36" x 24":
+*CloseUI: *Debug
+
+*%******** Driver ********
+*OpenUI *Driver/Driver: PickOne
+*DefaultDriver: EpilogLegend
+*Driver EpilogLegend/Epilog Legend:
+*Driver EpilogZing/Epilog Zing:
+*CloseUI: *Driver
+
 *CloseGroup: *General
 
 *OpenGroup: Raster

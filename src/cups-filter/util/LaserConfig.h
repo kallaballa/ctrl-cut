@@ -9,15 +9,6 @@
 /** Temporary directory to store files. */
 #define TMP_DIRECTORY "tmp"
 
-/** Default bed width (x-axis) in pts. */
-#define BED_WIDTH 2592
-
-/** Default bed height (y-axis) in pts. */
-#define BED_HEIGHT 1728
-
-/** Default points per inch for incoming data */
-#define POINTS_PER_INCH (72)
-
 class LaserConfig
 {
 public:
@@ -29,7 +20,6 @@ public:
 
   void setCupsOptions(struct cups_option_s *options, int numOptions);
   void rangeCheck();
-  static uint32_t calcDeviceDimension(uint32_t dim, double res);
   void dumpDebug();
 
   /** Where to store temporary files */
@@ -37,6 +27,14 @@ public:
   /** Folder where input file lives, /tmp if stdin */
   std::string datadir;
   std::string basename;
+
+  enum Driver {
+    UNINITIALIZED,
+    EPILOG_LEGEND,
+    EPILOG_ZING
+  };
+
+  Driver driver;
 
   /** Variable to track auto-focus. */
   bool focus;
