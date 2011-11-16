@@ -44,7 +44,7 @@ function testimg() {
     convert -resize 300 -filter box -unsharp 0x5 -contrast-stretch 0 "$origimgpath" "$thumbimgpath"
     echo "<a href="$origimgpath"><img width="100%" src=\"$thumbimgpath\" alt=\"`dirname $testcasedir`/`basename $testcasedir`\"></img></a>"
   else
-    echo "<span width="100%">missing: $testcase.$testtype.png</span>"
+    echo "<span width="1">missing: $testcase.$testtype.png</span>"
   fi
   echo "</td>"
 }
