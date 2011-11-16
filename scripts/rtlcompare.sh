@@ -43,11 +43,10 @@ function calc() {
 }
 
 function abs() {
-    if [[ "$1" < "-" ]] ; then
-        calc "0 - $1" $2 
-    else
-        calc "$1" $2 #make sure scale is applied
-    fi           
+    # abs
+    abs_val=`echo "$1" | awk ' { if($1>=0) { print $1} else {print $1*-1 }}'`
+    # scale
+    calc "$abs_val" $2 #make sure scale is applied
 }
 
 function diff() {
