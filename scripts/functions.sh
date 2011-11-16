@@ -53,6 +53,7 @@ function try {
 
   if echo "$CC_IGNORE_TEST" | grep "$msg"; then
       yellow "ignored\n" 1>&2;
+      return 0
   fi
 
   verbose $@;
@@ -87,7 +88,7 @@ readCases() {
 }
 
 readIgnores() {
-  [ -f "$1" ] && export CC_IGNORE_TEST="`cat \"$1\"`";
+  [ -f "$1" ] && export CC_IGNORE_TEST="`cat \"$1\"`" || export CC_IGNORE_TEST="";
 }
 
 function findtests {
