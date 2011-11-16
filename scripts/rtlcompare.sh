@@ -51,7 +51,7 @@ function abs() {
 
 function diff() {
     d=`calc "$1 - $2"`
-    if [ `abs "$d"` ==  "0" ]; then
+    if [ "`abs \"$d\"`" ==  "0" ]; then
         echo 0;
     else
         echo "$1->$2";
