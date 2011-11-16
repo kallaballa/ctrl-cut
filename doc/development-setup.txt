@@ -15,7 +15,7 @@ This is just for testing/debugging and not really necessary.
 
 This is to be able to generate postscript test cases
 
-  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/Epilog/CaptureL36EXT.ppd
+  lpadmin -p EpilogCapture -E -v file:///tmp/epilogcapture.ps -P etc/ppd/Epilog/CaptureLegend36EXT.ppd
 
 2) Set up a local shared printer for capturing raw data from the Windows driver
 
