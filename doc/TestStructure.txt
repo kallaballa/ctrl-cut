@@ -9,6 +9,7 @@
     - The directory name denotes the case name.
     - It contains a postscript file (the source model) and a prn file (the reference job).
     - Optionally it may contain a ".options" file which controls the ctrl-cut processing options of the test case.
+    - Optionally it may contain a ".ignores" file which contains a list of checks that are skipped for that particular case.
   - Test Levels
     - Test levels are configured in the tests ".cases" file. 
     - There are 4 levels (quick, normal, more and all) which map to a space delimited list of cases to run at that level.
@@ -35,7 +36,10 @@ sometest
       <code>
       Resolution=75 VectorOptimize=Inner-Outer
       </code>
-
+    .ignores
+      <code>
+      fuzzy image compare
+      </code>
   slowcase
     slowcase.ps
     slowcase.prn
