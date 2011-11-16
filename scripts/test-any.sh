@@ -251,12 +251,16 @@ searchpath="test-data"
 
     casefile="$testdir/.cases"
     cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
+    echodir=1
     for c in $cases; do          
       fullname="$testdir/$c"
       if [[ -z "$TEST_REGEX" || $fullname =~ $TEST_REGEX ]]; then
-        echo -n "["
-        yellow "`dirname $testdir`/`basename $testdir`"
-        echo "]"
+        if [ $echodir == 1 ]; then
+          echo -n "["
+          yellow "`dirname $testdir`/`basename $testdir`"
+          echo "]"
+          echodir=0
+        fi
         runtest "$fullname"
       fi
     done
