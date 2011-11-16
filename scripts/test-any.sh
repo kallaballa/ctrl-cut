@@ -89,8 +89,9 @@ runtest()
 
   # Generate a PCL/RTL file using our filter
   dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
-  if [ $? != 0 ]; then
-    error "filter failed with return code $?"
+  errcode=$?
+  if [ $errcode != 0 ]; then
+    error "filter failed with return code $errcode"
     return
   fi
 
