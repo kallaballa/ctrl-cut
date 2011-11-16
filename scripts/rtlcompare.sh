@@ -2,10 +2,11 @@
 
 OUTDIR=
 
-while getopts 'vo:' c
+[ $CC_DEBUG ] && set -x;
+
+while getopts 'o:' c
 do
   case $c in
-    v) set -x ;;
     o) OUTDIR="$2";;
   esac
 done
@@ -42,7 +43,7 @@ function calc() {
 }
 
 function abs() {
-    if [ -z "`echo $1 | grep '-'`" ] ; then
+    if [[ "$1" < "-" ]] ; then
         calc "0 - $1" $2 
     else
         calc "$1" $2 #make sure scale is applied
