@@ -42,12 +42,14 @@ install_name_tool -change libgs.9.01.dylib ${INSTALL_CTRLCUT_DIR}/lib/libgs.9.01
 # Copy files to folder structure
 rm -rf root
 mkdir -p root/Ctrl-Cut/Icons
-cp images/EpilogLegend36EXT.icns root/Ctrl-Cut/Icons
+cp images/*.icns root/Ctrl-Cut/Icons
 mkdir -p root/Ctrl-Cut/lib
 cp ${MACOSX_DEPLOY_DIR}/lib/libgs.9.01.dylib root/Ctrl-Cut/lib
 mkdir -p root/ppd
 cp etc/ppd/Epilog/Legend36EXT.ppd "root/ppd/Epilog Legend 36EXT"
-gzip "root/ppd/Epilog Legend 36EXT"
+cp etc/ppd/Epilog/Zing16.ppd "root/ppd/Epilog Zing 16"
+cp etc/ppd/Epilog/Zing24.ppd "root/ppd/Epilog Zing 24"
+gzip root/ppd/*
 
 # Build package
 /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker --doc packaging/Ctrl-Cut.pmdoc --out Ctrl-Cut-$VERSION.pkg

@@ -1,1 +1,1 @@
-EnableRaster RasterDithering=Threshold
+RasterDithering=Default

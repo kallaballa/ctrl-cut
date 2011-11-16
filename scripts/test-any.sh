@@ -252,7 +252,7 @@ searchpath="test-data"
     cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
     for c in $cases; do          
       fullname="$testdir/$c"
-      if [[ $fullname =~ $TEST_REGEX ]]; then
+      if [[ -z "$TEST_REGEX" || $fullname =~ $TEST_REGEX ]]; then
         echo -n "["
         yellow "`dirname $testdir`/`basename $testdir`"
         echo "]"

@@ -85,10 +85,8 @@ void LaserJob::serializeTo(std::ostream &out) {
   out << format(R_SPEED) % lconf->raster_speed;
 
   out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % ((lconf->height * lconf->resolution)
-      / POINTS_PER_INCH);
-  out << format(R_WIDTH) % ((lconf->width * lconf->resolution)
-      / POINTS_PER_INCH);
+  out << format(R_HEIGHT) % lconf->device_height;
+  out << format(R_WIDTH) % lconf->device_width;
   // Raster compression
   int compressionLevel = 2;
 
