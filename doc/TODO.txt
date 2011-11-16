@@ -13,6 +13,7 @@ Postscript:
 -----------
 o Make sure the line width which distinguishes cutting and engraving is well-defined.
   See test-data/corel-r/12233.cdr for an example where this is a problem.
+o Inkscape-0.48.2 on Mac prints to PDF instead of Postscript (as in 0.48.0). This breaks our Inkscape bug detection.
 
 Installer:
 ----------
