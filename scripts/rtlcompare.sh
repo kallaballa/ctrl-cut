@@ -165,7 +165,8 @@ function fitCanvas() {
 }
 
 function pclintFail() {
-  red "`echo -e \"pclint failed.\n$1\n\n$2\n\"`" 1>&2;
+  red "`echo -e \"\n$1\n\n$2\n\"`\n" 1>&2;
+  failed  1>&2;
 }
 
 FO1="$OUTDIR/`basename $F1`"
