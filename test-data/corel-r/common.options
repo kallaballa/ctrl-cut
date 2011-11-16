@@ -1,1 +1,1 @@
-Driver=EpilogLegend BedSize=36x24 Resolution=600
+EnableRaster Driver=EpilogLegend BedSize=36x24 Resolution=600
