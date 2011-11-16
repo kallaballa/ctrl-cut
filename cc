@@ -69,6 +69,7 @@ verbose "CC_BINARY=$CC_BINARY"
 verbose "CC_VERSION=$CC_VERSION"
 verbose "CC_PCLINT=$CC_PCLINT"
 verbose "CC_DEBUG=$CC_DEBUG"
+verbose "CC_IGNORE_TEST=$CC_IGNORE_TEST"
 
 SCRIPTNAME=$1
 shift
