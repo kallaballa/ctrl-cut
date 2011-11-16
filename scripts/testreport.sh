@@ -5,17 +5,17 @@ cd $CC_BASE
 function printUsage() {
   echo "generates a report of test case images"
   echo
-  echo "testreport [-l] [-o<outputfile>] searchpath"
-  echo "    -l             Include a navigational index of cases"
+  echo "testreport [-i] [-o<outputfile>] searchpath"
+  echo "    -i             Include a navigational index of cases"
   echo "    -o<outputfile>    The path of the output file"
   exit 1
 }
 
-while getopts 'lo:' c
+while getopts 'io:' c
 do
   case $c in
     o) OUTHTML="$OPTARG";;
-    l) GENLIST="-l";;
+    l) GENLIST="-i";;
     \?) printUsage;;
   esac
 done
@@ -29,14 +29,20 @@ dir="$1"
 [ -z "$OUTHTML" ] && OUTHTML="$dir.tar.gz"
 
 function testimg() {
+
   testcasedir="$1"
+  testdir="`dirname \"$1\"`"
   testtype="$2"
   testcase="`basename $testcasedir`"
-  imgpath="$testcasedir/../out/$testcase/$testcase.$testtype.png"
-#  echo "<td style=\"border:1px solid gray;\">"
+  origimgpath="$testcasedir/../out/$testcase/$testcase.$testtype.png"
+  thumbimgpath="tmp/$testdir/$testcase/$testcase.$testtype.png"
+
   echo "<td>"
-  if [ -f "$imgpath" ]; then
-    echo "<a href="$imgpath"><img width="100%" src=\"$imgpath\" alt=\"`dirname $testcasedir`/`basename $testcasedir`\"></img></a>"
+  if [ -f "$origimgpath" ]; then
+    thumbdir="`dirname $thumbimgpath`"
+    [ ! -d "$thumbdir" ] && mkdir -p  "$thumbdir" || rm -f "$thumbdir/*";
+    convert -resize 300 -filter box -unsharp 0x5 -contrast-stretch 0 "$origimgpath" "$thumbimgpath"
+    echo "<a href="$origimgpath"><img width="100%" src=\"$thumbimgpath\" alt=\"`dirname $testcasedir`/`basename $testcasedir`\"></img></a>"
   else
     echo "<span width="100%">missing: $testcase.$testtype.png</span>"
   fi
