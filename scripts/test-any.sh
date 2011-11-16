@@ -66,6 +66,7 @@ runtest()
   testcase="`basename $casedir`"
   testapp="`dirname $testdir`"
 
+  ignorefile="$casedir/.ignores"
   optionsfile="$casedir/.options"
   commonoptsfile="$testapp/common.options"
   psfile="$casedir/$testcase.ps"
@@ -80,6 +81,8 @@ runtest()
   outv="$outdir/$testcase.raw-v.png"
   prnr="$outdir/$testcase.prn-r.png"
   outr="$outdir/$testcase.raw-r.png"
+
+  readIgnores "$ignorefile"
 
   green "### Commencing $casedir ###\n" 2>&1 >> $logfile
   printCol "$testcase" 2>> $logfile

@@ -47,10 +47,16 @@ function try {
   done
   shift $((OPTIND-1));
   errcode=0; 
-  yellow "$1... " 1>&2; 
+  msg="$1"
+  yellow "$msg... " 1>&2; 
   shift;
 
+  if echo "$CC_IGNORE_TEST" | grep "$msg"; then
+      yellow "ignored\n" 1>&2;
+  fi
+
   verbose $@;
+
   bash -c "$@ 1>&$targetfd"
   errcode=$?; 
   if [ $errcode != 0 ]; then 
@@ -78,6 +84,10 @@ readCases() {
   casesfile="$1"
   testlevel="$2"
   grep "^$testlevel " $casesfile | cut -d" " -f2-
+}
+
+readIgnores() {
+  [ -f "$1" ] && export CC_IGNORE_TEST="`cat \"$1\"`";
 }
 
 function findtests {
