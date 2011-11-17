@@ -39,7 +39,8 @@
 #include <cups/file.h>
 
 #include "FileParser.h"
-
+#include <boost/thread.hpp>
+#include "util/Svg2Pdf.h"
 
 /** The laser cutter configuration **/
 LogLevel cc_loglevel = CC_WARNING;
@@ -70,6 +71,10 @@ void printUsage(const char *name) {
   exit(1);
 }
 
+int lower_case ( int c )
+{
+  return tolower ( c );
+}
 
 /**
  * Main entry point for the program.
@@ -173,6 +178,8 @@ int main(int argc, char *argv[]) {
     string base = basename(strdup(arg_filename));
     
     string suffix = base.substr(base.rfind(".") + 1);
+    transform ( suffix.begin(), suffix.end(), suffix.begin(), lower_case );
+
     LaserConfig::inst().basename = base.erase(base.rfind("."));
     
     if (suffix == "vector") {
@@ -183,7 +190,25 @@ int main(int argc, char *argv[]) {
       inputformat = FORMAT_PBM;
       filename_pbm = arg_filename;
     }
-    else {
+    else if (suffix == "svg") {
+      // Try to open the print file...
+      int mypipe[2];
+      FILE *svgIn = fopen(arg_filename, "r");
+      int svgFd = fileno (svgIn);
+
+      if (pipe(mypipe)) {
+        fprintf(stderr, "Pipe failed.\n");
+        return EXIT_FAILURE;
+      }
+
+      Svg2Pdf converter(svgFd, mypipe[1]);
+      boost::thread svg_converter_thread(&Svg2Pdf::convert, converter);
+
+      if ((input_file = cupsFileOpenFd(mypipe[0], "r")) == NULL) {
+        LOG_FATAL_MSG("unable to open print file", arg_filename);
+        return 1;
+      }
+    } else {
       // Try to open the print file...
       if ((input_file = cupsFileOpen(arg_filename, "r")) == NULL) {
         LOG_FATAL_MSG("unable to open print file", arg_filename);
