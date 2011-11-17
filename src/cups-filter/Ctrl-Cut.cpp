@@ -40,7 +40,7 @@
 
 #include "FileParser.h"
 #include <boost/thread.hpp>
-#include "util/Svg2Pdf.h"
+#include "util/Svg2Ps.h"
 
 /** The laser cutter configuration **/
 LogLevel cc_loglevel = CC_WARNING;
