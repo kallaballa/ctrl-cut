@@ -3,6 +3,11 @@ TARGET = ctrl-cut
 CONFIG += gsapi
 CONFIG += boost
 CONFIG += cups
+CONFIG += rsvg
+CONFIG += cairo-ps
+CONFIG += gio
+CONFIG += boost_thread
+
 include(common.pri)
 
 DEFINES += ETLOG DEBUG=4
@@ -14,6 +19,7 @@ SOURCES += \
           PostscriptParser.cpp \
           util/LaserConfig.cpp \
           util/Eps.cpp \
+	  util/Svg2Ps.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
           vector/graph/SegmentGraph.cpp \
@@ -33,7 +39,8 @@ HEADERS += \
           util/Eps.h \
           util/Logger.h \
           util/LaserConfig.h \
-          Ctrl-Cut.h \
+          util/Svg2Ps.h \
+	  Ctrl-Cut.h \
           Driver.h \
           vector/graph/Traverse.h \
           vector/graph/CutGraph.h \

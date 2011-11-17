@@ -29,4 +29,7 @@ include(ImageMagick.pri)
 include(png.pri)
 include(cups.pri)
 include(SDL.pri)
+include(rsvg.pri)
+include(cairo-ps.pri)
+include(gio.pri)
 
