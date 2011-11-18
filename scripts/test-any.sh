@@ -70,30 +70,68 @@ runtest()
   optionsfile="$casedir/.options"
   commonoptsfile="$testapp/common.options"
   psfile="$casedir/$testcase.ps"
+  svgfile="$casedir/$testcase.svg"
   prnfile="$casedir/$testcase.prn"
 
   outdir="$testdir/out/$testcase"
   [ ! -d "$outdir" ]  && mkdir -p "$outdir"
 
   logfile="$outdir/$testcase.log"
-  outfile="$outdir/$testcase.raw"
-  prnv="$outdir/$testcase.prn-v.png"
-  outv="$outdir/$testcase.raw-v.png"
-  prnr="$outdir/$testcase.prn-r.png"
-  outr="$outdir/$testcase.raw-r.png"
 
   readIgnores "$ignorefile"
-
   green "### Commencing $casedir ###\n" 2>&1 >> $logfile
-  printCol "$testcase" 2>> $logfile
 
-  # Generate a PCL/RTL file using our filter
-  dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
-  errcode=$?
-  if [ $errcode != 0 ]; then
-    error "filter failed with return code $errcode"
-    return
+  if [ -f "$psfile" ]; then 
+    outfile="$outdir/$testcase-ps.raw"
+    prnv="$outdir/$testcase.prn-ps-v.png"
+    outv="$outdir/$testcase.raw-ps-v.png"
+    prnr="$outdir/$testcase.prn-ps-r.png"
+    outr="$outdir/$testcase.raw-ps-r.png"
+
+    printCol "$testcase(ps)" 2>> $logfile
+
+    # Generate a PCL/RTL file using our filter
+    dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
+    errcode=$?
+    if [ $errcode != 0 ]; then
+      error "filter failed with return code $errcode"
+      return
+    fi
+
+    compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
+
   fi
+
+  if [ -f "$svgfile" ]; then
+    outfile="$outdir/$testcase-svg.raw"
+    prnv="$outdir/$testcase.prn-svg-v.png"
+    outv="$outdir/$testcase.raw-svg-v.png"
+    prnr="$outdir/$testcase.prn-svg-r.png"
+    outr="$outdir/$testcase.raw-svg-r.png"
+
+    printCol "$testcase(svg)" 2>> $logfile
+
+    # Generate a PCL/RTL file using our filter
+    dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
+    errcode=$?
+    if [ $errcode != 0 ]; then
+      error "filter failed with return code $errcode"
+    return
+    fi
+    compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
+
+    green "### End of $casedir ###\n\n" 2>&1 >> $logfile
+  fi
+}
+
+function compareResults() {
+  prnfile="$1"
+  outfile="$2"
+  prnv="$3"
+  outv="$4"
+  prnr="$5"
+  outr="$6"
+  logfile="$7"
 
   if [ -f $prnfile ]; then 
       has_prnfile=1
@@ -210,8 +248,6 @@ runtest()
   fi
 
   echo
-#  echo -e $REPORT >> $logfile
-  green "### End of $casedir ###\n\n" 2>&1 >> $logfile
 }
 
 printUsage()
