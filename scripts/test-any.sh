@@ -79,7 +79,7 @@ runtest()
   logfile="$outdir/$testcase.log"
 
   readIgnores "$ignorefile"
-  green "### Commencing $casedir ###\n" 2>&1 >> $logfile
+  green "### Commencing $casedir ###\n\n" 2>&1 >> $logfile
 
   if [ -f "$psfile" ]; then 
     outfile="$outdir/$testcase-ps.raw"
@@ -95,7 +95,6 @@ runtest()
     errcode=$?
     if [ $errcode != 0 ]; then
       error "filter failed with return code $errcode"
-      return
     fi
 
     compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
@@ -112,11 +111,10 @@ runtest()
     printCol "$testcase(svg)" 2>> $logfile
 
     # Generate a PCL/RTL file using our filter
-    dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
+    dotimeout  checkcat "run filter" "scripts/run-filter.sh $svgfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
     if [ $errcode != 0 ]; then
       error "filter failed with return code $errcode"
-    return
     fi
     compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
 
