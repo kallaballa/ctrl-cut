@@ -34,6 +34,8 @@ if [ -f $optionsfile ]; then
   read < $optionsfile options
 fi
 
+[ $CC_VERBOSE ] && options="$options Debug"
+
 # using the new targetstdout option of try
 verboseexec "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
 exit $?
