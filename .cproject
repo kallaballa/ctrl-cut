@@ -26,7 +26,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1607083553" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1025040037" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.698641465" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -m64 -pipe -pthread -I/usr/local/include/cairo -I/usr/include/librsvg-2.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pixman-1 -I/usr/include/freetype2   -pthread -I/usr/local/include/cairo -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12   -pthread -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -DCTRLCUT_VERSION=2011.11.20 -DUSE_GHOSTSCRIPT_API -DETLOG -DDEBUG=4 -I/home/elchaschab/devel/ctrl-cut/src/cups-filter -lcups -lgs -lboost_thread-mt" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.1326985679" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.1326985679" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/cairo"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2094513617" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -49,8 +49,18 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518.2014542557" name="/" resourcePath="src/cups-filter/raster">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.2008124277" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.665020350" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1483022190"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.859504742" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1850151030" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.965524635"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.281554615" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1113801678"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2070097498" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.953127411"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.206808215" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1482307099"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/cups-filter/test|src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/objects|src/cups-filter/test|src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -513,7 +523,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/objects|src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
