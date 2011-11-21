@@ -34,8 +34,8 @@ function testimg() {
   testdir="`dirname \"$1\"`"
   testtype="$2"
   testcase="`basename $testcasedir`"
-  origimgpath="$testcasedir/../out/$testcase/$testcase.$testtype.png"
-  thumbimgpath="tmp/$testdir/$testcase/$testcase.$testtype.png"
+  origimgpath="$testcasedir/../out/$testcase/$testcase$testtype.png"
+  thumbimgpath="tmp/$testdir/$testcase/$testcase$testtype.png"
 
   echo "<td>"
   if [ -f "$origimgpath" ]; then
@@ -66,10 +66,10 @@ function generateReport() {
     echo "<a name=\"$testname/$testcase\"></a>"
     echo "<table padding=\"0\" margin=\"0\"><tr>"
     echo "<h1>$testname/$testcase</h1>"
-    testimg "$testcasedir" "prn-v"
-    testimg "$testcasedir" "raw-v"
-    testimg "$testcasedir" "prn-r"
-    testimg "$testcasedir" "raw-r"
+    testimg "$testcasedir" ".prn-v"
+    testimg "$testcasedir" "-ps.raw-v"
+    testimg "$testcasedir" ".prn-r"
+    testimg "$testcasedir" "-ps.raw-r"
     echo "</tr></table>"
   done
 }
