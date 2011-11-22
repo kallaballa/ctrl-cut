@@ -94,11 +94,10 @@ runtest()
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
     if [ $errcode != 0 ]; then
-      error "filter failed with return code $errcode"
+	 failed "ctrl-cut failed with return code $errcode"
+    else
+         compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
-
-    compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
-
   fi
 
   if [ -f "$svgfile" ]; then
@@ -113,11 +112,12 @@ runtest()
     # Generate a PCL/RTL file using our filter
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $svgfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
-    if [ $errcode != 0 ]; then
-      error "filter failed with return code $errcode"
-    fi
-    compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
 
+    if [ $errcode != 0 ]; then
+      failed "ctrl-cut failed with return code $errcode"
+    else
+      compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
+    fi
     green "### End of $casedir ###\n\n" 2>&1 >> $logfile
   fi
 }
@@ -282,9 +282,14 @@ searchpath="test-data"
   $CC_SCRIPTS/cleanup.sh $searchpath;
 
   findtests "$searchpath" | while read testdir; do
-
+    #lookup numerical values in the LEVELS array or directly search for the test level key
+    printf "%d" "$TEST_LEVEL" > /dev/null 2>&1 \
+      && testlevel="${LEVELS[$TEST_LEVEL]}" \
+      || testlevel="$TEST_LEVEL";
+   
+       
     casefile="$testdir/.cases"
-    cases="`readCases $casefile ${LEVELS[$TEST_LEVEL]}`"
+    cases="`readCases $casefile $testlevel`"
     echodir=1
     for c in $cases; do          
       fullname="$testdir/$c"
