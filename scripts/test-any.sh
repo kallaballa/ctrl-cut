@@ -83,10 +83,10 @@ runtest()
 
   if [ -f "$psfile" ]; then 
     outfile="$outdir/$testcase-ps.raw"
-    prnv="$outdir/$testcase.prn-ps-v.png"
-    outv="$outdir/$testcase.raw-ps-v.png"
-    prnr="$outdir/$testcase.prn-ps-r.png"
-    outr="$outdir/$testcase.raw-ps-r.png"
+    prnv="$outdir/$testcase.prn-v.png"
+    outv="$outdir/$testcase-ps.raw-v.png"
+    prnr="$outdir/$testcase.prn-r.png"
+    outr="$outdir/$testcase-ps.raw-r.png"
 
     printCol "$testcase(ps)" 2>> $logfile
 
@@ -102,10 +102,10 @@ runtest()
 
   if [ -f "$svgfile" ]; then
     outfile="$outdir/$testcase-svg.raw"
-    prnv="$outdir/$testcase.prn-svg-v.png"
-    outv="$outdir/$testcase.raw-svg-v.png"
-    prnr="$outdir/$testcase.prn-svg-r.png"
-    outr="$outdir/$testcase.raw-svg-r.png"
+    prnv="$outdir/$testcase.prn-v.png"
+    outv="$outdir/$testcase-svg.raw-v.png"
+    prnr="$outdir/$testcase.prn-r.png"
+    outr="$outdir/$testcase-svg.raw-r.png"
 
     printCol "$testcase(svg)" 2>> $logfile
 
@@ -159,13 +159,13 @@ function compareResults() {
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
     rtlcompare=`scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile 2>> $logfile`
-
-    if [ $? -ne 0 -o ! -f $outv ]; then
-      errorstr="Err"
+    errcode="$?"
+    if [ $errcode -ne 0 -o ! -f "$outv" ]; then
+       errorstr="Err"
       rawtopbmfailed=1
     fi
 
-    if [ $? -ne 0 ]; then
+    if [ $errcode -ne 0 ]; then
       errorstr="Err"
       color=red
     elif [ ! -f $prnv ]; then
