@@ -21,6 +21,7 @@ PADDING=( "20"   "5"    "7"   "20"    "6"        "14"     "10"   "10" )
 
 LEVELS=( "quick" "normal" "more" "all" )
 REPORT=
+CSV_OUT=
 
 shopt -s nullglob
 
@@ -48,11 +49,21 @@ printHeader() {
 
 printCol() {
   [ $COL_I -ge ${#COLUMNS[@]} ]\
-    && COL_I=0;
-
+    && endCol;
+  printCSV "$1"
   pad "$1" ${PADDING[${COL_I}]} $2
   REPORT="$REPORT\n`blue \"${COLUMNS[${COL_I}]} $1\"`"
   COL_I=$[ $COL_I + 1 ]  
+}
+
+printCSV() {
+  [ -n "$CSV_OUT" ] && echo -en "${1};" >> $CSV_OUT;
+}
+
+endCol() {
+  COL_I=0;
+  echo
+  [ -n "$CSV_OUT" ] && echo >> $CSV_OUT;
 }
 
 # Usage: runtest <testpath>/<testcase>
@@ -95,6 +106,7 @@ runtest()
     errcode=$?
     if [ $errcode != 0 ]; then
 	 failed "ctrl-cut failed with return code $errcode"
+         endCol
     else
          compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
@@ -115,6 +127,7 @@ runtest()
 
     if [ $errcode != 0 ]; then
       failed "ctrl-cut failed with return code $errcode"
+      endCol
     else
       compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
@@ -149,12 +162,10 @@ function compareResults() {
   if [ $binary_ok == 1 ]; then
     printCol "ok" green 2>> $logfile
   else
-    printCol "no" red 2>> $logfile
- 
     if [ $has_prnfile == 0 ]; then
-      printCol "No prn file found. Generating output.." 2>> $logfile
+      printCol "N/A" red 2>> $logfile
     else
-
+    printCol "no" red 2>> $logfile
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
@@ -245,7 +256,7 @@ function compareResults() {
 
   fi
 
-  echo
+  endCol
 }
 
 printUsage()
@@ -253,18 +264,20 @@ printUsage()
   echo "Find test cases and select which ones to execute"
   echo "see also: stash, cleanup, followlogs"
   echo
-  echo "$0 [-l <num>] [-R <regex>] [<testcase glob>]"
+  echo "$0 [-l <num/label>] [-R <regex>] [<testcase glob>]"
   echo "Options:"
-  echo "  -l <num>     Test level"
+  echo "  -l <num/label>     Test level or label "
   echo "  -R <regex>   Only run tests matching the regex"
+  echo "  -o <file>   Dump test results to a csv file"
   exit 1
 }
 
 TEST_LEVEL=1
 
-while getopts 'l:R:' c
+while getopts 'l:R:o:' c
 do
     case $c in
+	o) CSV_OUT="$OPTARG";;
         l) TEST_LEVEL="$OPTARG";;
         R) TEST_REGEX="$OPTARG";;
         \?) echo "Invalid option: -$OPTARG" >&2; printUsage;;
