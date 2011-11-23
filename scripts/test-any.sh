@@ -44,7 +44,7 @@ printHeader() {
   for ((i=0; i<$colcnt; i++)); do
     printCol "${COLUMNS[$i]}"
   done
-  echo
+  endCol
 }
 
 printCol() {
@@ -99,6 +99,7 @@ runtest()
     prnr="$outdir/$testcase.prn-r.png"
     outr="$outdir/$testcase-ps.raw-r.png"
 
+    printCSV "$testdir"
     printCol "$testcase(ps)" 2>> $logfile
 
     # Generate a PCL/RTL file using our filter
@@ -119,6 +120,7 @@ runtest()
     prnr="$outdir/$testcase.prn-r.png"
     outr="$outdir/$testcase-svg.raw-r.png"
 
+    printCSV "$testdir"
     printCol "$testcase(svg)" 2>> $logfile
 
     # Generate a PCL/RTL file using our filter
@@ -286,6 +288,7 @@ done
 shift $(($OPTIND - 1))
 
 [ $CC_DEBUG ] && set -x
+[ -f "$CSV_OUT" ] && echo > "$CSV_OUT"
 
 printHeader
 
