@@ -184,7 +184,7 @@ function testimg() {
 report_print_HTML() {
   [ $COL_I -eq 0 ] && HTML_CASE=$1;
   [ $COL_I -eq 1 ] && HTML_TEST_TYPE=$1;
-  echo "<td style=\"color:$2;\">$1</td>" >> "`findDestinationFile "HTML"`"
+  echo "<td title="${COLUMNS[${COL_I}]}" style=\"color:$2;\">$1</td>" >> "`findDestinationFile "HTML"`"
 }
 
 report_term_HTML() {
