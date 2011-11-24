@@ -1,7 +1,7 @@
-DESTINATIONS=( "CONSOLE" "CSV" "SVG" )
+DESTINATIONS=( "CONSOLE" "CSV" "HTML" )
 DESTINATION_FILES=( "" "" "" )
 ACTIONS=( "open" "begin" "print" "term" "close" )
-REPORT_TITLE=
+
 # local functions
 findAction() {
   action="$1"
@@ -50,7 +50,6 @@ report_init() {
 }
 
 report_open() {
-  REPORT_TITLE=$1
   report_do "open" "$1"
 }
 
@@ -136,3 +135,76 @@ report_close_CSV() {
  true
 }
 
+### START HTML REPORTING
+HTML_TEST_DIR=
+HTML_CASE=
+HTML_TEST_TYPE=
+
+report_open_HTML() {
+  javascript="\
+function timedRefresh(timeoutPeriod) { \
+setTimeout(\"location.reload(true);\",timeoutPeriod); \
+}"
+
+  style="\
+body { background-color:#fff; } \
+a { font-size:12px; } \
+table { width:100%; } \
+td { margin:10px; padding:5px; border-left:3px solid #000; } \
+span { color:#f00; }"
+
+  intro="<html><head><script type=\"text/javascript\">$javascript</script><style type=\"text/css\">$style</style></head><body onload=\"timedRefresh(1000)\"><table padding=\"0\" margin=\"0\">"
+  echo "$intro" >> "`findDestinationFile "HTML"`"
+ 
+}
+
+report_begin_HTML() {
+  echo "<tr>"  >> "`findDestinationFile "HTML"`"
+  if [ -n "$1" -a "$1" != "$HTML_TEST_DIR" ]; then
+    echo "<td nowrap width=1%><b>$1</b></td>" >> "`findDestinationFile "HTML"`"
+    HTML_TEST_DIR="$1"
+  else
+    echo "<td style=\"border: 0;\"></td>" >> "`findDestinationFile "HTML"`"
+  fi
+}
+
+function testimg() {
+  origimgpath="$1"
+  thumbimgpath="tmp/$1"
+
+  if [ -f "$origimgpath" ]; then
+    thumbdir="`dirname $thumbimgpath`"
+    [ ! -d "$thumbdir" ] && mkdir -p  "$thumbdir" || rm -f "$thumbdir/*";
+    convert -resize 300 -filter box -unsharp 0x5 -contrast-stretch 0 "$origimgpath" "$thumbimgpath"
+    echo "<a href="$origimgpath"><img width=\"300\" src=\"$thumbimgpath\" alt=\"`dirname $origimgpath`\"></img></a>"
+  else
+    echo "<span width="1">missing: $origimgpath</span>"
+  fi
+
+}
+
+
+report_print_HTML() {
+  [ $COL_I -eq 0 ] && HTML_CASE=$1;
+  [ $COL_I -eq 1 ] && HTML_TEST_TYPE=$1;
+  echo "<td style=\"color:$2;\">$1</td>" >> "`findDestinationFile "HTML"`"
+}
+
+report_term_HTML() {
+  echo "</tr>" >> "`findDestinationFile "HTML"`";
+  if [ -n "$HTML_TEST_DIR" ]; then
+    images=`ls $HTML_TEST_DIR/out/$HTML_CASE/*$HTML_TEST_TYPE*.png $HTML_TEST_DIR/out/$HTML_CASE/*prn*.png`
+    if [ -n "$images" ]; then
+      echo "<tr><td style=\"border:0; background-color:#eee; padding:5px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\"" >> "`findDestinationFile "HTML"`";
+      for img in $images; do
+	testimg "$img" >> "`findDestinationFile "HTML"`"
+      done
+
+      echo "</td></tr>" >> "`findDestinationFile "HTML"`";
+    fi
+  fi
+}
+
+report_close_HTML() {
+  echo "</table></body></html>" >> "`findDestinationFile "HTML"`"
+}

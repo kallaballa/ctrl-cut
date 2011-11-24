@@ -18,8 +18,8 @@ trap "kill 0" SIGINT
 . scripts/reports.sh
 
 COL_I=0
-COLUMNS=( "case" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
-PADDING=( "20"   "5"    "7"   "20"    "6"        "14"     "10"   "10" )
+COLUMNS=( "case" "type" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
+PADDING=( "20"   "4"      "5"    "7"   "20"    "6"        "14"     "10"   "10" )
 
 LEVELS=( "quick" "normal" "more" "all" )
 REPORT=
@@ -71,13 +71,14 @@ runtest()
     outr="$outdir/$testcase-ps.raw-r.png"
 
     report_begin "$testdir"
-    report_print "$testcase(ps)" 2>> $logfile
+    report_print "$testcase" 2>> $logfile
+    report_print "ps"  2>> $logfile
 
     # Generate a PCL/RTL file using our filter
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
     if [ $errcode != 0 ]; then
-	 report_print "ctrl-cut failed with return code $errcode" red
+	 report_print "N/A" red
          report_term
     else
          compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
@@ -92,14 +93,14 @@ runtest()
     outr="$outdir/$testcase-svg.raw-r.png"
 
     report_begin "$testdir"
-    report_print "$testcase(svg)" 2>> $logfile
-
+    report_print "$testcase" 2>> $logfile
+    report_print "svg" 2>> $logfile
     # Generate a PCL/RTL file using our filter
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $svgfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
 
     if [ $errcode != 0 ]; then
-      report_print "ctrl-cut failed with return code $errcode" red
+      report_print "N/A" red
       report_term
     else
       compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
@@ -266,6 +267,7 @@ shift $(($OPTIND - 1))
 
 report_init "CONSOLE" "$CONSOLE_OUT"
 [ -n "$CSV_OUT" ] && report_init "CSV" "$CSV_OUT"
+report_init "HTML" "out.html"
 
 report_open "test-any `date`"
 printHeader
