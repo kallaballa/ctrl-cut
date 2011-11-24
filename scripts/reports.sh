@@ -149,8 +149,8 @@ setTimeout(\"location.reload(true);\",timeoutPeriod); \
   style="\
 body { background-color:#fff;} \
 a { font-size:10px; } \
-table { width:100%; } \
-td { margin:10px; padding:5px; border-left:3px solid #000; font-size:12px;} \
+table { width:100%; padding:0px; } \
+td { margin:0px; padding:5px; border:2px solid #000; font-size:12px;} \
 span { color:#000; }"
 
   intro="<html><head><script type=\"text/javascript\">$javascript</script><style type=\"text/css\">$style</style></head><body onload=\"timedRefresh(3000)\"><table padding=\"0\" margin=\"0\">"
@@ -184,14 +184,17 @@ function testimg() {
 report_print_HTML() {
   [ $COL_I -eq 0 ] && HTML_CASE=$1;
   [ $COL_I -eq 1 ] && HTML_TEST_TYPE=$1;
-  echo "<td title="${COLUMNS[${COL_I}]}" style=\"color:$2;\">$1</td>" >> "`findDestinationFile "HTML"`"
+  color=black
+  [ -n "$2" ] && color="$2"
+
+  echo "<td title="${COLUMNS[${COL_I}]}" style=\"color:$color;\">$1</td>" >> "`findDestinationFile "HTML"`"
 }
 
 report_term_HTML() {
   echo "</tr>" >> "`findDestinationFile "HTML"`";
   if [ -n "$HTML_TEST_DIR" -a -n "$HTML_CASE" -a -n "$HTML_TEST_TYPE" ]; then
     images=`find "$HTML_TEST_DIR/out/$HTML_CASE/" -name "$HTML_CASE*$HTML_TEST_TYPE*raw*.png" -or -name "$HTML_CASE*prn*.png"`
-    echo "<tr><td style=\"text-align:center; font-size:16px; font-style:bold; color:red; background-color:#eee; border:0; padding:0px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\">" >> "`findDestinationFile "HTML"`";
+    echo "<tr><td style=\"text-align:center; font-size:16px; font-weight:bold; color:red; background-color:#eee; border:0; padding:0px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\">" >> "`findDestinationFile "HTML"`";
     if [ -n "$images" ]; then
       echo "<table width=0% style=\"background-color:#eee; padding: 0px; margin: 0px;\"><tr>" >> "`findDestinationFile "HTML"`";
    
