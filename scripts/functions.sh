@@ -1,9 +1,18 @@
 #!/bin/bash
-
-function green { echo -ne "\033[32;1m$1\033[0m"; tput sgr0; }
-function blue { echo -ne "\033[34;1m$1\033[0m"; tput sgr0; }
-function yellow { echo -ne "\033[33;1m$1\033[0m"; tput sgr0; }
-function red { echo -ne "\033[31;1m$1\033[0m"; tput sgr0; }
+function black { echo -ne "\033[0;30m$1\033[0m"; tput sgr0; }
+function blue { echo -ne "\033[0;34m$1\033[0m"; tput sgr0; }
+function green { echo -ne "\033[0;32m$1\033[0m"; tput sgr0; }
+function cyan { echo -ne "\033[0;36m$1\033[0m"; tput sgr0; }
+function red { echo -ne "\033[1;31m$1\033[0m"; tput sgr0; }
+function purple { echo -ne "\033[0;35m$1\033[0m"; tput sgr0; }
+function brown { echo -ne "\033[0;33m$1\033[0m"; tput sgr0; }
+function lightgray { echo -ne "\033[0;37m$1\033[0m"; tput sgr0; }
+function lightgreen { echo -ne "\033[1;32m$1\033[0m"; tput sgr0; }
+function lightcyan { echo -ne "\033[1;36m$1\033[0m"; tput sgr0; }
+function lightred { echo -ne "\033[1;31m$1\033[0m"; tput sgr0; }
+function lightpurple { echo -ne "\033[1;35m$1\033[0m"; tput sgr0; }
+function yellow { echo -ne "\033[1;33m$1\033[0m"; tput sgr0; }
+function white { echo -ne "\033[1;37m$1\033[0m"; tput sgr0; }
 function warn { red "$1\n"; }
 function ok { green "ok\n"; }
 function failed { red "failed\n"; }
