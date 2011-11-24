@@ -144,16 +144,16 @@ report_open_HTML() {
   javascript="\
 function timedRefresh(timeoutPeriod) { \
 setTimeout(\"location.reload(true);\",timeoutPeriod); \
-}"
+}"
 
   style="\
 body { background-color:#fff;} \
 a { font-size:10px; } \
 table { width:100%; } \
 td { margin:10px; padding:5px; border-left:3px solid #000; font-size:12px;} \
-span { color:#f00; }"
+span { color:#000; }"
 
-  intro="<html><head><script type=\"text/javascript\">$javascript</script><style type=\"text/css\">$style</style></head><body onload=\"timedRefresh(1000)\"><table padding=\"0\" margin=\"0\">"
+  intro="<html><head><script type=\"text/javascript\">$javascript</script><style type=\"text/css\">$style</style></head><body onload=\"timedRefresh(3000)\"><table padding=\"0\" margin=\"0\">"
   echo "$intro" >> "`findDestinationFile "HTML"`"
  
 }
@@ -175,12 +175,9 @@ function testimg() {
   if [ -f "$origimgpath" ]; then
     thumbdir="`dirname $thumbimgpath`"
     [ ! -d "$thumbdir" ] && mkdir -p  "$thumbdir" || rm -f "$thumbdir/*";
-    convert -resize 300 -filter box -unsharp 0x5 -contrast-stretch 0 "$origimgpath" "$thumbimgpath"
-    echo "<a href="$origimgpath"><img width=\"300\" src=\"$thumbimgpath\" alt=\"`dirname $origimgpath`\"></img></a>"
-  else
-    echo "<span width="1">missing: $origimgpath</span>"
+    convert -resize 300 -filter box -unsharp 0x5 -contrast-stretch 0 "$origimgpath" "$thumbimgpath" &> /dev/null
+    echo "<div><a href="$origimgpath"><span style=\"font-size: 11px\">`basename $origimgpath`</span><br><img width=\"300\" src=\"$thumbimgpath\" alt=\"`dirname $origimgpath`\"></img></a></div>"
   fi
-
 }
 
 
@@ -192,19 +189,28 @@ report_print_HTML() {
 
 report_term_HTML() {
   echo "</tr>" >> "`findDestinationFile "HTML"`";
-  if [ -n "$HTML_TEST_DIR" ]; then
-    images=`ls $HTML_TEST_DIR/out/$HTML_CASE/*$HTML_TEST_TYPE*raw*.png $HTML_TEST_DIR/out/$HTML_CASE/*prn*.png`
+  if [ -n "$HTML_TEST_DIR" -a -n "$HTML_CASE" -a -n "$HTML_TEST_TYPE" ]; then
+    images=`find "$HTML_TEST_DIR/out/$HTML_CASE/" -name "$HTML_CASE*$HTML_TEST_TYPE*raw*.png" -or -name "$HTML_CASE*prn*.png"`
+    echo "<tr><td style=\"text-align:center; font-size:16px; font-style:bold; color:red; background-color:#eee; border:0; padding:0px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\">" >> "`findDestinationFile "HTML"`";
     if [ -n "$images" ]; then
-      echo "<tr><td style=\"border:0; background-color:#eee; padding:5px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\"" >> "`findDestinationFile "HTML"`";
-      for img in $images; do
-	testimg "$img" >> "`findDestinationFile "HTML"`"
-      done
+      echo "<table width=0% style=\"background-color:#eee; padding: 0px; margin: 0px;\"><tr>" >> "`findDestinationFile "HTML"`";
+   
+      if [ `echo "$images" | wc -l` -gt 0 ]; then
+        echo "$images" | while read img; do
+          echo "<td style=\"border:0; padding:5px\">" >> "`findDestinationFile "HTML"`";
+  	  testimg "$img" >> "`findDestinationFile "HTML"`"
+	  echo "</td>" >> "`findDestinationFile "HTML"`";
+        done
 
-      echo "</td></tr>" >> "`findDestinationFile "HTML"`";
-    fi
+        echo "<td width=100%>" >> "`findDestinationFile "HTML"`";
+        echo "</tr></table></td></tr>" >> "`findDestinationFile "HTML"`";
+      fi
+    else
+      echo "<br>NO IMAGES<br>&nbsp;</td></tr>" >> "`findDestinationFile "HTML"`";
+    fi 
   fi
 }
 
 report_close_HTML() {
-  echo "</table></body></html>" >> "`findDestinationFile "HTML"`"
+  echo "</table><div width=100% style=\" text-align: center; font-size: 18px; color: white; background-color: black; font-style:bolder;\">End of test</span></body></html>" >> "`findDestinationFile "HTML"`"
 }

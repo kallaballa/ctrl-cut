@@ -304,3 +304,5 @@ searchpath="test-data"
       fi
     done
   done
+
+report_close
