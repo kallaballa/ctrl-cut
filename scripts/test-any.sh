@@ -238,21 +238,25 @@ printUsage()
   echo "Find test cases and select which ones to execute"
   echo "see also: stash, cleanup, followlogs"
   echo
-  echo "$0 [-l <num/label>] [-R <regex>] [<testcase glob>]"
+  echo "$0 [-c <file> -t <file> -o <file> -l <num/label>] [-R <regex>] [<testcase glob>]"
   echo "Options:"
   echo "  -l <num/label>     Test level or label "
   echo "  -R <regex>   Only run tests matching the regex"
-  echo "  -o <file>   Dump test results to a csv file"
+  echo "  -c <file>   Dump test results to a csv file"
+  echo "  -t <file>   Dump test results to a html file"
+  echo "  -o <file>   Redirect console output to a file"
   exit 1
 }
 
 TEST_LEVEL=1
 CONSOLE_OUT="-"
 CSV_OUT=
+HTML_OUT=
 
-while getopts 'l:R:o:c:' c
+while getopts 'l:R:o:c:t:' c
 do
     case $c in
+        t) HTML_OUT="$OPTARG";;
         c) CSV_OUT="$OPTARG";;
         o) CONSOLE_OUT="$OPTARG";;
         l) TEST_LEVEL="$OPTARG";;
@@ -267,7 +271,7 @@ shift $(($OPTIND - 1))
 
 report_init "CONSOLE" "$CONSOLE_OUT"
 [ -n "$CSV_OUT" ] && report_init "CSV" "$CSV_OUT"
-report_init "HTML" "out.html"
+[ -n "$HTML_OUT" ] && report_init "HTML" "$HTML_OUT"
 
 report_open "test-any `date`"
 printHeader
