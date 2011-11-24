@@ -147,10 +147,10 @@ setTimeout(\"location.reload(true);\",timeoutPeriod); \
 }"
 
   style="\
-body { background-color:#fff; } \
-a { font-size:12px; } \
+body { background-color:#fff;} \
+a { font-size:10px; } \
 table { width:100%; } \
-td { margin:10px; padding:5px; border-left:3px solid #000; } \
+td { margin:10px; padding:5px; border-left:3px solid #000; font-size:12px;} \
 span { color:#f00; }"
 
   intro="<html><head><script type=\"text/javascript\">$javascript</script><style type=\"text/css\">$style</style></head><body onload=\"timedRefresh(1000)\"><table padding=\"0\" margin=\"0\">"
@@ -161,10 +161,10 @@ span { color:#f00; }"
 report_begin_HTML() {
   echo "<tr>"  >> "`findDestinationFile "HTML"`"
   if [ -n "$1" -a "$1" != "$HTML_TEST_DIR" ]; then
-    echo "<td nowrap width=1%><b>$1</b></td>" >> "`findDestinationFile "HTML"`"
+    echo "<td style=\"background-color: yellow\" nowrap width=0%><b>$1</b></td>" >> "`findDestinationFile "HTML"`"
     HTML_TEST_DIR="$1"
   else
-    echo "<td style=\"border: 0;\"></td>" >> "`findDestinationFile "HTML"`"
+    echo "<td width=0% style=\"border: 0;\"></td>" >> "`findDestinationFile "HTML"`"
   fi
 }
 
@@ -193,7 +193,7 @@ report_print_HTML() {
 report_term_HTML() {
   echo "</tr>" >> "`findDestinationFile "HTML"`";
   if [ -n "$HTML_TEST_DIR" ]; then
-    images=`ls $HTML_TEST_DIR/out/$HTML_CASE/*$HTML_TEST_TYPE*.png $HTML_TEST_DIR/out/$HTML_CASE/*prn*.png`
+    images=`ls $HTML_TEST_DIR/out/$HTML_CASE/*$HTML_TEST_TYPE*raw*.png $HTML_TEST_DIR/out/$HTML_CASE/*prn*.png`
     if [ -n "$images" ]; then
       echo "<tr><td style=\"border:0; background-color:#eee; padding:5px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\"" >> "`findDestinationFile "HTML"`";
       for img in $images; do
