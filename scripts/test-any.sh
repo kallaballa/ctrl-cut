@@ -15,62 +15,33 @@
 trap "kill 0" SIGINT
 
 . $CC_FUNCTIONS
+. scripts/reports.sh
+
 COL_I=0
 COLUMNS=( "case" "bin" "vimg" "rimg" "bbox" "polylines" "length" "move" )
 PADDING=( "20"   "5"    "7"   "20"    "6"        "14"     "10"   "10" )
 
 LEVELS=( "quick" "normal" "more" "all" )
 REPORT=
-CSV_OUT=
 
 shopt -s nullglob
-
-pad()
-{
-  if [ $# -ge 3 ]; then
-      $3 $1
-  else
-    echo -n $1
-  fi
-  s=$(printf "%$(($2-${#1}))s"); echo -n "${s// /.}"
-}
 
 printHeader() {
   colcnt=${#COLUMNS[@]}
   padcnt=${#PADDING[@]}
   [ $colcnt -ne $padcnt ] && error "column/padding count mismatch"
-
+  report_begin
   COL_I=0
-  for ((i=0; i<$colcnt; i++)); do
-    printCol "${COLUMNS[$i]}"
+  for ((iheader=0; iheader<$colcnt; iheader++)); do
+    report_print "${COLUMNS[$iheader]}"
   done
-  endCol
-}
-
-printCol() {
-  [ $COL_I -ge ${#COLUMNS[@]} ]\
-    && endCol;
-  printCSV "$1"
-  pad "$1" ${PADDING[${COL_I}]} $2
-  REPORT="$REPORT\n`blue \"${COLUMNS[${COL_I}]} $1\"`"
-  COL_I=$[ $COL_I + 1 ]  
-}
-
-printCSV() {
-  [ -n "$CSV_OUT" ] && echo -en "${1};" >> $CSV_OUT;
-}
-
-endCol() {
-  COL_I=0;
-  echo
-  [ -n "$CSV_OUT" ] && echo >> $CSV_OUT;
+  report_term
 }
 
 # Usage: runtest <testpath>/<testcase>
 # Example: runtest test-data/corel/quad/default
 runtest()
 {
-  REPORT=
   casedir="$1"
   testdir="`dirname $casedir`"
   testname="`basename $testdir`"
@@ -99,15 +70,15 @@ runtest()
     prnr="$outdir/$testcase.prn-r.png"
     outr="$outdir/$testcase-ps.raw-r.png"
 
-    printCSV "$testdir"
-    printCol "$testcase(ps)" 2>> $logfile
+    report_begin "$testdir"
+    report_print "$testcase(ps)" 2>> $logfile
 
     # Generate a PCL/RTL file using our filter
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $psfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
     if [ $errcode != 0 ]; then
-	 failed "ctrl-cut failed with return code $errcode"
-         endCol
+	 report_print "ctrl-cut failed with return code $errcode" red
+         report_term
     else
          compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
@@ -120,16 +91,16 @@ runtest()
     prnr="$outdir/$testcase.prn-r.png"
     outr="$outdir/$testcase-svg.raw-r.png"
 
-    printCSV "$testdir"
-    printCol "$testcase(svg)" 2>> $logfile
+    report_begin "$testdir"
+    report_print "$testcase(svg)" 2>> $logfile
 
     # Generate a PCL/RTL file using our filter
     dotimeout  checkcat "run filter" "scripts/run-filter.sh $svgfile $optionsfile $commonoptsfile"  > $outfile 2> $logfile
     errcode=$?
 
     if [ $errcode != 0 ]; then
-      failed "ctrl-cut failed with return code $errcode"
-      endCol
+      report_print "ctrl-cut failed with return code $errcode" red
+      report_term
     else
       compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
@@ -162,12 +133,12 @@ function compareResults() {
   fi
 
   if [ $binary_ok == 1 ]; then
-    printCol "ok" green 2>> $logfile
+    report_print "ok" green 2>> $logfile
   else
     if [ $has_prnfile == 0 ]; then
-      printCol "N/A" red 2>> $logfile
+      report_print "N/A" red 2>> $logfile
     else
-    printCol "no" red 2>> $logfile
+    report_print "no" red 2>> $logfile
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
@@ -197,7 +168,7 @@ function compareResults() {
     else 
       pixelstr=$errorstr
     fi
-    printCol "$pixelstr" $color 2>> $logfile
+    report_print "$pixelstr" $color 2>> $logfile
 
     if [ ! -f $prnr ]; then
       pixelstr="N/A"
@@ -212,7 +183,7 @@ function compareResults() {
         color=red
       fi
     fi
-    printCol "$pixelstr" $color 2>> $logfile
+    report_print "$pixelstr" $color 2>> $logfile
 
     # Compare bboxes, number of polylines and total cut length
     color=red
@@ -223,7 +194,7 @@ function compareResults() {
         bboxstr="OK"
         color=green
     fi    
-    printCol $bboxstr $color 2>> $logfile
+    report_print $bboxstr $color 2>> $logfile
 
     color=red
     polyline_diff=`echo $rtlcompare | awk '{ print $1 }'`
@@ -233,7 +204,7 @@ function compareResults() {
         plstr="OK"
         color=green
     fi
-    printCol $plstr $color 2>> $logfile
+    report_print $plstr $color 2>> $logfile
 
     color=red
     length_diff=`echo $rtlcompare | awk '{print $2}'`
@@ -243,7 +214,7 @@ function compareResults() {
         lenstr="OK"
         color=green
     fi
-    printCol $lenstr $color 2>> $logfile
+    report_print $lenstr $color 2>> $logfile
 
     color=red
     move_diff=`echo $rtlcompare | awk '{print $3}'`
@@ -253,12 +224,12 @@ function compareResults() {
         lenstr="OK"
         color=green
     fi
-    printCol $lenstr $color 2>> $logfile 
+    report_print $lenstr $color 2>> $logfile 
   fi
 
   fi
 
-  endCol
+  report_term
 }
 
 printUsage()
@@ -275,11 +246,14 @@ printUsage()
 }
 
 TEST_LEVEL=1
+CONSOLE_OUT="-"
+CSV_OUT=
 
-while getopts 'l:R:o:' c
+while getopts 'l:R:o:c:' c
 do
     case $c in
-	o) CSV_OUT="$OPTARG";;
+        c) CSV_OUT="$OPTARG";;
+        o) CONSOLE_OUT="$OPTARG";;
         l) TEST_LEVEL="$OPTARG";;
         R) TEST_REGEX="$OPTARG";;
         \?) echo "Invalid option: -$OPTARG" >&2; printUsage;;
@@ -290,6 +264,10 @@ shift $(($OPTIND - 1))
 [ $CC_DEBUG ] && set -x
 [ -f "$CSV_OUT" ] && echo > "$CSV_OUT"
 
+report_init "CONSOLE" "$CONSOLE_OUT"
+[ -n "$CSV_OUT" ] && report_init "CSV" "$CSV_OUT"
+
+report_open "test-any `date`"
 printHeader
 
 searchpath="test-data"
