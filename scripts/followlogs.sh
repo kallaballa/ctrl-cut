@@ -17,10 +17,10 @@ function tailcases {
     casename="`basename $casedir`"
     casedir="`dirname $casedir`/out/$casename"
     casepath="$casedir/$casename.log"
-#    mkdir -p "$casedir"
-#    touch "$casepath"
+    mkdir -p "$casedir"
+    touch "$casepath"
     echo "$casepath"
-  done |  xargs tail -n0 -f --follow=name --retry
+  done | xargs tail -n0 -F | egrep -v "^(==> .* <==)?$"
 }
 
 tailcases
