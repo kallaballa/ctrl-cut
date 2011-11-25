@@ -249,8 +249,10 @@ printUsage()
 }
 
 TEST_LEVEL=1
-CONSOLE_OUT="-"
-CSV_OUT=
+CONSOLE_OUT=/dev/null
+[ $CC_VERBOSE ] && CONSOLE_OUT="/dev/stdout"
+
+CSV_OUT=tmp/current.csv
 HTML_OUT=
 
 while getopts 'l:R:o:c:t:' c
@@ -267,9 +269,8 @@ done
 shift $(($OPTIND - 1))
 
 [ $CC_DEBUG ] && set -x
-[ -f "$CSV_OUT" ] && echo > "$CSV_OUT"
 
-report_init "CONSOLE" "$CONSOLE_OUT"
+[ -n "$CONSOLE_OUT" ] && report_init "CONSOLE" "$CONSOLE_OUT"
 [ -n "$CSV_OUT" ] && report_init "CSV" "$CSV_OUT"
 [ -n "$HTML_OUT" ] && report_init "HTML" "$HTML_OUT"
 
@@ -306,3 +307,21 @@ searchpath="test-data"
   done
 
 report_close
+
+casesruntmp="`mktemp`"
+casessavedtmp="`mktemp`"
+
+#get collected test cases from csv
+caseskeys="`cut -d";" -f1,2,3 "$CSV_OUT"`"
+
+#search corresponding test case from the reference csv
+echo -e "$caseskeys" | grep --file="/dev/stdin" test-data/test-any.csv > $casessavedtmp
+
+#diff selected cases but only show changes from the just generated csv
+casesfailed="`diff "$CSV_OUT" "$casessavedtmp" | grep "^< " | sed 's/^..//g'`"
+[ -n "$casesfailed" ] \
+  && error "\n### TESTS FAILED (`echo -e $casesfailed | wc -l`) ###\n$casesfailed\n" \
+  || green "All tests passed\n"
+
+
+
