@@ -1,4 +1,3 @@
-
 case;type;bin;vimg;rimg;bbox;polylines;length;move;
 test-data/template/sometest;75;ps;no;9820;19.0|24.1|2.2|6.7;Err;507.00->567.00;3140.43->3779.99;1272.51->15433.73;
 test-data/template/sometest;600;ps;no;N/A;20.7|34.8|2.3|5.0;Err;0->192.00;0->1444.32;0->1764.47;
