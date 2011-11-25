@@ -47,7 +47,7 @@ test-data/corel-r/palette;600;svg;N/A;
 test-data/corel-r/palette;1200;ps;no;N/A;109.7|62.6|.2|-.8;OK;OK;OK;OK;
 test-data/corel-r/palette;1200;svg;N/A;
 test-data/corel-r/gradient;75;ps;no;N/A;82.4|47.4|0|-.9;OK;OK;OK;OK;
-test-data/corel-r/gradient;75;svg;no;N/A;79.2|45.6|.4|-.7;OK;OK;OK;OK;
+test-data/corel-r/gradient;75;svg;no;N/A;82.6|47.6|.2|-.9;OK;OK;OK;OK;
 test-data/corel-r/gradient;600;ps;no;N/A;29.5|43.2|1.6|1.3;OK;OK;OK;OK;
 test-data/corel-r/gradient;600;svg;no;N/A;29.9|44.3|1.6|1.4;OK;OK;OK;OK;
 test-data/corel-r/RGB-raster;75;ps;no;N/A;28.1|24.6|3.8|16.9;OK;OK;OK;OK;
