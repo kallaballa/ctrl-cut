@@ -338,6 +338,6 @@ casesfailed="`diffResult "$cases" "$reference"`"
 
 [ -n "$casesfailed" ] \
   && error "\n### TEST RESULTS CHANGED (`echo -e $casesfailed | wc -l`) ###\n$casesfailed\n" \
-  || green "\nAll tests ok\n"
+  || green "\nall tests ok\n"
 
 
