@@ -233,6 +233,17 @@ function compareResults() {
   report_term
 }
 
+function diffResult() {
+  first="`mktemp`"
+  second="`mktemp`"
+
+  echo "$1" > "$first"
+  echo "$2" > "$second"
+
+  diff "$first" "$second" | grep "^< " | sed 's/^..//g'
+  rm "$first" "$second"
+}
+
 printUsage()
 {
   echo "Find test cases and select which ones to execute"
@@ -293,6 +304,7 @@ searchpath="test-data"
     cases="`readCases $casefile $testlevel`"
     echodir=1
     for c in $cases; do          
+      case=$c
       fullname="$testdir/$c"
       if [[ -z "$TEST_REGEX" || $fullname =~ $TEST_REGEX ]]; then
         if [ $echodir == 1 ]; then
@@ -302,26 +314,32 @@ searchpath="test-data"
           echodir=0
         fi
         runtest "$fullname"
+	casekey="$testdir;$case;"
+	caselines="`grep "$casekey" "$CSV_OUT"`"
+	reference="`grep "$casekey" test-data/test-any.csv`"
+	casesfailed="`diffResult "$caselines" "$reference"`"
+
+	[ -n "$casesfailed" ] \
+	  && red "`echo "$casesfailed" | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g'`\n"
       fi
     done
   done
 
 report_close
 
-casesruntmp="`mktemp`"
-casessavedtmp="`mktemp`"
-
 #get collected test cases from csv
+cases="`cat "$CSV_OUT"`"
 caseskeys="`cut -d";" -f1,2,3 "$CSV_OUT"`"
 
 #search corresponding test case from the reference csv
-echo -e "$caseskeys" | grep --file="/dev/stdin" test-data/test-any.csv > $casessavedtmp
+reference="`echo -e "$caseskeys" | grep --file="/dev/stdin" test-data/test-any.csv`"
 
 #diff selected cases but only show changes from the just generated csv
-casesfailed="`diff "$CSV_OUT" "$casessavedtmp" | grep "^< " | sed 's/^..//g'`"
+casesfailed="`diffResult "$cases" "$reference"`"
+
 [ -n "$casesfailed" ] \
-  && error "\n### TESTS FAILED (`echo -e $casesfailed | wc -l`) ###\n$casesfailed\n" \
-  || green "All tests passed\n"
+  && error "\n### TEST RESULTS CHANGED (`echo -e $casesfailed | wc -l`) ###\n$casesfailed\n" \
+  || green "\nAll tests ok\n"
 
 
 
