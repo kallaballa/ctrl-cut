@@ -240,7 +240,7 @@ function diffResult() {
   echo "$1" > "$first"
   echo "$2" > "$second"
 
-  diff "$first" "$second" | grep "^< " | sed 's/^..//g'
+  diff --suppress-common-lines "$first" "$second" | grep -v "^[a-z0-9-]" | sed '/^$/d'
   rm "$first" "$second"
 }
 
@@ -318,9 +318,8 @@ searchpath="test-data"
 	caselines="`grep "$casekey" "$CSV_OUT"`"
 	reference="`grep "$casekey" test-data/test-any.csv`"
 	casesfailed="`diffResult "$caselines" "$reference"`"
-
 	[ -n "$casesfailed" ] \
-	  && red "`echo "$casesfailed" | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g'`\n"
+	  && red "`echo -en "$casesfailed" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' `\n"
       fi
     done
   done
@@ -340,6 +339,5 @@ casesfailed="`diffResult "$cases" "$reference"`"
 [ -n "$casesfailed" ] \
   && error "\n### TEST RESULTS CHANGED (`echo -e $casesfailed | wc -l`) ###\n$casesfailed\n" \
   || green "\nAll tests ok\n"
-
 
 
