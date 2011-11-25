@@ -43,10 +43,8 @@ report_init() {
   destfile="$2"
   destidx=`findDestination "$dest"`
   [ $destidx -lt 0 ] && error "destination not found: $dest";
-  if [ "$destfile" != "-" ]; then
-    echo > $destfile || error "destination file not writeable: $destfile";
-  fi
   DESTINATION_FILES[$destidx]=$destfile;
+  [ "$destfile" != "-" -a ! -b "$destfile" -a ! -c "$destfile" ] && truncate --size 0 "$destfile"
 }
 
 report_open() {
@@ -80,7 +78,10 @@ report_do() {
   destcnt=${#DESTINATIONS[@]}
 
   for ((i=0; i<$destcnt; i++)); do
-    [ -n "${DESTINATION_FILES[$i]}" ] &&  report_${action}_${DESTINATIONS[$i]} "$1" $2
+    if [ -n "${DESTINATION_FILES[$i]}" ]; then
+        report_${action}_${DESTINATIONS[$i]} "$1" $2
+
+    fi
   done
 }
 
@@ -97,16 +98,17 @@ report_begin_CONSOLE() {
 report_print_CONSOLE()
 {
   if [ $# -ge 2 ]; then
-      $2 $1
+      $2 $1  >> "`findDestinationFile "CONSOLE"`"
   else
-    echo -n $1
+    echo -n $1  >> "`findDestinationFile "CONSOLE"`"
   fi
-  s=$(printf "%$((${PADDING[${COL_I}]}-${#1}))s"); echo -n "${s// /.}"
+
+  s=$(printf "%$((${PADDING[${COL_I}]}-${#1}))s"); echo -n "${s// /.}"  >> "`findDestinationFile "CONSOLE"`"
 }
 
 report_term_CONSOLE() {
   COL_I=0;
-  echo
+  echo  >> "`findDestinationFile "CONSOLE"`"
 }
 
 report_close_CONSOLE() {
