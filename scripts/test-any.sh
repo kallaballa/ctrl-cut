@@ -234,8 +234,9 @@ function compareResults() {
 }
 
 function diffResult() {
-  first="`mktemp`"
-  second="`mktemp`"
+  tmp="/tmp/ctrl-cut.XXXXXX"
+  first="`mktemp $tmp`" || error "can't create temporary file: $tmp"
+  second="`mktemp $tmp`" || error "can't create temporary file $tmp"
 
   echo "$1" > "$first"
   echo "$2" > "$second"
@@ -319,7 +320,7 @@ searchpath="test-data"
 	reference="`grep "$casekey" test-data/test-any.csv`"
 	casesfailed="`diffResult "$caselines" "$reference"`"
 	[ -n "$casesfailed" ] \
-	  && red "`echo -en "$casesfailed" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' `\n"
+	  && red "`echo -en "$casesfailed" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' | sort | uniq `\n"
       fi
     done
   done
