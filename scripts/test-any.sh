@@ -180,7 +180,7 @@ function compareResults() {
         pixelstr="OK"
         color=green
       else
-        pixelstr=`echo $errorstr | awk '{ print $3 }'`
+        pixelstr="$errorstr"
         color=red
       fi
     fi

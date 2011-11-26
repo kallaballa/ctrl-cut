@@ -16,27 +16,17 @@ function scale() {
 }
 
 diff="`echo ${1%.prn-r.png}`_diff.png"
-try "generating difference mask" "convert $1 $2 -depth 24 -scale 10% -scale 1000% -scale 10% -scale 1000% -depth 8 -compose difference -composite \"$diff\""
-statistic=`trycat "generating difference statistics" "identify -verbose -unique \"$diff\""`
+mean=`trycat "generating difference mask" "convert $1 -blur 8x8 $2 -blur 8x8 -compose difference -composite -threshold 30% -blur 8x8 -threshold 55% -format %[fx:w*h*mean] info:"`
 
-mean=`echo "$statistic" | grep "mean:" | awk '{ print $2 }'`
-deviation=`echo "$statistic" | grep "standard deviation:" | awk '{ print $3 }'`
-skew=`echo "$statistic" | grep "skewness:" | awk '{ print $2 }'`
-kurtosis=`echo "$statistic" | grep "kurtosis:" | awk '{ print $2 }'`
-
-mean=`scale $mean`
-deviation=`scale $deviation`
-skew=`scale $skew`
-kurtosis=`scale $kurtosis`
 
 if [ $? -ne 0 ]; then
     echo "General error: Ouch"
     exit 1 # Compare failed to read image
 else
-    if [ "$pixelerror" == 0 ]; then 
+    if [ "$mean" == 0 ]; then 
       exit 0
     fi
-    echo "Pixel error: $mean|$deviation|$skew|$kurtosis"
+    echo "$mean"
   exit 1
 fi
 exit 0
