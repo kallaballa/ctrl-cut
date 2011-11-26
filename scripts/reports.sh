@@ -197,14 +197,23 @@ report_print_HTML() {
 report_term_HTML() {
   echo "</tr>" >> "`findDestinationFile "HTML"`";
   if [ -n "$HTML_TEST_DIR" -a -n "$HTML_CASE" -a -n "$HTML_TEST_TYPE" ]; then
-    images=`find "$HTML_TEST_DIR/out/$HTML_CASE/" -name "$HTML_CASE*$HTML_TEST_TYPE*raw*.png" -or -name "$HTML_CASE*prn*.png"`
+    prnr="$HTML_TEST_DIR/$HTML_CASE/$HTML_TEST_TYPE.prn-r.png"
+    prnv="$HTML_TEST_DIR/$HTML_CASE/$HTML_TEST_TYPE.prn-v.png"
+    rawr="$HTML_TEST_DIR/$HTML_CASE/$HTML_TEST_TYPE.raw-r.png"
+    rawv="$HTML_TEST_DIR/$HTML_CASE/$HTML_TEST_TYPE.raw-v.png"
+    images=""
+    [ -f "$prnr" ] && images="$images $prnr";
+    [ -f "$rawr" ] && images="$images $rawr";
+    [ -f "$prnv" ] && images="$images $prnv";
+    [ -f "$rawv" ] && images="$images $rawv";
+
     echo "<tr><td style=\"text-align:center; font-size:16px; font-weight:bold; color:red; background-color:#eee; border:0; padding:0px\" colspan=\"$[ ${#COLUMNS[@]} + 1]\">" >> "`findDestinationFile "HTML"`";
     if [ -n "$images" ]; then
       echo "<table width=0% style=\"background-color:#eee; padding: 0px; margin: 0px;\"><tr>" >> "`findDestinationFile "HTML"`";
    
       if [ `echo "$images" | wc -l` -gt 0 ]; then
-        echo "$images" | while read img; do
-          echo "<td style=\"border:0; padding:5px\">" >> "`findDestinationFile "HTML"`";
+        for img in $images; do
+          echo "<td height="400" style=\"border:0; padding:5px\">" >> "`findDestinationFile "HTML"`";
   	  testimg "$img" >> "`findDestinationFile "HTML"`"
 	  echo "</td>" >> "`findDestinationFile "HTML"`";
         done
