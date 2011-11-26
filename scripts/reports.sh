@@ -44,7 +44,9 @@ report_init() {
   destidx=`findDestination "$dest"`
   [ $destidx -lt 0 ] && error "destination not found: $dest";
   DESTINATION_FILES[$destidx]=$destfile;
-  [ "$destfile" != "-" -a ! -b "$destfile" -a ! -c "$destfile" ] && truncate --size 0 "$destfile"
+  if [ "$destfile" != "-" -a ! -b "$destfile" -a ! -c "$destfile" ]; then
+    dd count=0 of="$destfile" &> /dev/null || error "can't truncate destination file: $destfile"
+  fi
 }
 
 report_open() {
