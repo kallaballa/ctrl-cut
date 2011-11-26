@@ -51,24 +51,24 @@ runtest()
   ignorefile="$casedir/.ignores"
   optionsfile="$casedir/.options"
   commonoptsfile="$testapp/common.options"
-  psfile="$casedir/$testcase.ps"
-  svgfile="$casedir/$testcase.svg"
-  prnfile="$casedir/$testcase.prn"
+  psfile="$testdir/$testname.ps"
+  svgfile="$testdir/$testname.svg"
+  prnfile="$testdir/$testcase.prn"
 
-  outdir="$testdir/out/$testcase"
+  outdir="$testdir/$testcase"
   [ ! -d "$outdir" ]  && mkdir -p "$outdir"
 
   logfile="$outdir/$testcase.log"
 
   readIgnores "$ignorefile"
-  green "### Commencing $casedir ###\n\n" 2>&1 >> $logfile
 
   if [ -f "$psfile" ]; then 
-    outfile="$outdir/$testcase-ps.raw"
-    prnv="$outdir/$testcase.prn-v.png"
-    outv="$outdir/$testcase-ps.raw-v.png"
-    prnr="$outdir/$testcase.prn-r.png"
-    outr="$outdir/$testcase-ps.raw-r.png"
+    logfile="$outdir/ps.raw.log"
+    outfile="$outdir/ps.raw"
+    prnv="$outdir/ps.prn-v.png"
+    outv="$outdir/ps.raw-v.png"
+    prnr="$outdir/ps.prn-r.png"
+    outr="$outdir/ps.raw-r.png"
 
     report_begin "$testdir"
     report_print "$testcase" 2>> $logfile
@@ -86,11 +86,12 @@ runtest()
   fi
 
   if [ -f "$svgfile" ]; then
-    outfile="$outdir/$testcase-svg.raw"
-    prnv="$outdir/$testcase.prn-v.png"
-    outv="$outdir/$testcase-svg.raw-v.png"
-    prnr="$outdir/$testcase.prn-r.png"
-    outr="$outdir/$testcase-svg.raw-r.png"
+    logfile="$outdir/svg.raw.log"
+    outfile="$outdir/svg.raw"
+    prnv="$outdir/svg.prn-v.png"
+    outv="$outdir/svg.raw-v.png"
+    prnr="$outdir/svg.prn-r.png"
+    outr="$outdir/svg.raw-r.png"
 
     report_begin "$testdir"
     report_print "$testcase" 2>> $logfile
@@ -105,7 +106,6 @@ runtest()
     else
       compareResults "$prnfile" "$outfile" "$prnv" "$outv" "$prnr" "$outr" "$logfile"
     fi
-    green "### End of $casedir ###\n\n" 2>&1 >> $logfile
   fi
 }
 
@@ -143,7 +143,7 @@ function compareResults() {
     color=red
     # Convert cut vectors to bitmaps and compare them
     errorstr=""
-    rtlcompare=`scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile 2>> $logfile`
+    rtlcompare=`scripts/rtlcompare.sh -o $outdir $VERBOSE $prnfile $outfile "$prnv" "$outv" "$prnr" "$outr" 2>> $logfile`
     errcode="$?"
     if [ $errcode -ne 0 -o ! -f "$outv" ]; then
        errorstr="Err"

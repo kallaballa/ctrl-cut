@@ -1,1 +1,1 @@
-RasterDithering=FloydSteinberg Resolution=600
+RasterDithering=FloydSteinberg Resolution=600 EnableVector EnableRaster

@@ -3,7 +3,6 @@
 OUTDIR=
 
 [ $CC_DEBUG ] && set -x;
-
 while getopts 'o:' c
 do
   case $c in
@@ -17,6 +16,10 @@ shift $(($OPTIND - 1))
 
 F1="$1"
 F2="$2"
+F1V="$3"
+F2V="$4"
+F1R="$5"
+F2R="$6"
 
 if [ -z "$OUTDIR" ]; then
   OUTDIR="`dirname $F1`"  
@@ -169,16 +172,13 @@ function pclintFail() {
   failed  1>&2;
 }
 
-FO1="$OUTDIR/`basename $F1`"
-FO2="$OUTDIR/`basename $F2`"
+RES1=`trycat "rendering $F1" "$CC_PCLINT -dinfo -a -r \"$F1R\" -v \"$F1V\" \"$F1\" | grep \"|\""`
+RES2=`trycat "rendering $F2" "$CC_PCLINT -dinfo -a -r \"$F2R\" -v \"$F2V\" \"$F2\" | grep \"|\""`
 
-RES1=`trycat "rendering $F1" "$CC_PCLINT -dinfo -a -r \"$FO1-r.png\" -v \"$FO1-v.png\" \"$F1\" | grep \"|\""`
-RES2=`trycat "rendering $F2" "$CC_PCLINT -dinfo -a -r \"$FO2-r.png\" -v \"$FO2-v.png\" \"$F2\" | grep \"|\""`
-
-[ -f "$FO1-r.png" -a ! -f "$FO2-r.png" ] && pclintFail "$RES1" "$RES2";
-[ -f "$FO1-v.png" -a ! -f "$FO2-v.png" ] && pclintFail "$RES1" "$RES2";
-[ -f "$FO2-r.png" -a ! -f "$FO1-r.png" ] && pclintFail "$RES1" "$RES2";
-[ -f "$FO2-v.png" -a ! -f "$FO1-v.png" ] && pclintFail "$RES1" "$RES2";
+[ -f "$F1R" -a ! -f "$F2R" ] && pclintFail "$RES1" "$RES2";
+[ -f "$F1V" -a ! -f "$FO2" ] && pclintFail "$RES1" "$RES2";
+[ -f "$F2R" -a ! -f "$F1R" ] && pclintFail "$RES1" "$RES2";
+[ -f "$F2V" -a ! -f "$F1V" ] && pclintFail "$RES1" "$RES2";
 
 
 R_RES1=`filter "$RES1" "RASTER"`
@@ -237,18 +237,18 @@ R_BBOX2=`filter "$R_RES2" "bounding" | cut -d"=" -f2`
 
 R_BBOXDIFF=`diffBBox "$R_BBOX1" "$R_BBOX2"`
 
-if [ -f "$FO1-r.png" -a -f "$FO2-r.png" -a "$R_BBOX1" != "$R_BBOX2" ]; then
-    fitCanvas "$FO1-r.png" "$FO2-r.png" "$R_BBOX1" "$R_BBOX2"
+if [ -f "$F1R" -a -f "$F2R" -a "$R_BBOX1" != "$R_BBOX2" ]; then
+    fitCanvas "$F1R" "$F2R" "$R_BBOX1" "$R_BBOX2"
 fi
 
-if [ -f "$FO1-v.png" -a -f "$FO2-v.png" -a "$V_BBOX1" != "$V_BBOX2" ]; then
-    fitCanvas "$FO1-v.png" "$FO2-v.png" "$V_BBOX1" "$V_BBOX2"
+if [ -f "$F1V" -a -f "$F2V" -a "$V_BBOX1" != "$V_BBOX2" ]; then
+    fitCanvas "$F1V" "$F2V" "$V_BBOX1" "$V_BBOX2"
 fi
 
-echo "$R_RES1" > "$FO1-r.info"
-echo "$R_RES2" > "$FO2-r.info"
-echo "$V_RES1" > "$FO1-v.info"
-echo "$V_RES2" > "$FO2-v.info"
+echo "$R_RES1" > "$F1R.info"
+echo "$R_RES2" > "$F2R.info"
+echo "$V_RES1" > "$F1V.info"
+echo "$V_RES2" > "$F2V.info"
 
 
 echo "$V_PDDIFF $V_WORKDIFF $V_MOVEDIFF $V_SEGDIFF $V_BBOXDIFF $R_PDDIFF $R_WORKDIFF $R_MOVEDIFF $R_SEGDIFF $R_BBOXDIFF"
