@@ -6,9 +6,11 @@
 
 bool CutModel::createSegment(const Point &p1, const Point &p2,
     CutSettings& settings) {
-  if (p1 == p2) // ignore zero length segments
+  // ignore zero length segments
+  if (p1 == p2) {
+    this->zerolength++;
     return false;
-
+  }
   add(*new Segment(p1, p2, settings));
   return true;
 }
@@ -18,9 +20,11 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
   Point* intersection = new Point();
 
   if(seg->first.x < 0 || seg->second.x < 0) {
-    if(seg->first.x < 0 && seg->second.x < 0) // out of bounds;
+    // out of bounds;
+    if(seg->first.x < 0 && seg->second.x < 0) {
+      this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings));
-
+    }
     if(intersects(*seg, this->leftBedBorder, *intersection) == ALIGN_INTERSECT) {
       if(seg->first.x < seg->second.x)
         seg = new Segment(*intersection, seg->second, seg->settings);
@@ -28,13 +32,15 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
         seg = new Segment(*intersection, seg->first, seg->settings);
 
       intersection = new Point();
-      this->clipped = true;
+      this->clipped++;
     }
   }
 
   if(seg->first.y < 0 || seg->second.y < 0) {
-    if(seg->first.y < 0 && seg->second.y < 0)
+    if(seg->first.y < 0 && seg->second.y < 0) {
+      this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings)); // out of bounds;
+    }
 
     if(intersects(*seg, this->topBedBorder, *intersection) == ALIGN_INTERSECT) {
       if(seg->first.y < seg->second.y)
@@ -43,13 +49,15 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
         seg = new Segment(*intersection, seg->first, seg->settings);
 
       intersection = new Point();
-      this->clipped = true;
+      this->clipped++;
     }
   }
 
   if(greater_than(seg->first.x,this->config.device_width - 1) || greater_than(seg->second.x,this->config.device_width - 1)) {
-    if(greater_than(seg->first.x, this->config.device_width - 1) && greater_than(seg->second.x,this->config.device_width - 1))
+    if(greater_than(seg->first.x, this->config.device_width - 1) && greater_than(seg->second.x,this->config.device_width - 1)) {
+      this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings)); // out of bounds;
+    }
 
     if(intersects(*seg, this->rightBedBorder, *intersection) == ALIGN_INTERSECT) {
       if(seg->first.x > seg->second.x)
@@ -58,21 +66,22 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
         seg = new Segment(*intersection, seg->first, seg->settings);
 
       intersection = new Point();
-      this->clipped = true;
+      this->clipped++;
     }
   }
 
   if(greater_than(seg->first.y, this->config.device_height - 1) || greater_than(seg->second.y,this->config.device_height - 1)) {
-    if(greater_than(seg->first.y, this->config.device_height - 1) && greater_than(seg->second.y,this->config.device_height - 1))
+    if(greater_than(seg->first.y, this->config.device_height - 1) && greater_than(seg->second.y,this->config.device_height - 1)) {
+      this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings)); // out of bounds;
-
+    }
     if(intersects(*seg, this->bottomBedBorder, *intersection) == ALIGN_INTERSECT) {
       if(seg->first.y > seg->second.y)
         seg = new Segment(*intersection, seg->second, seg->settings);
       else
         seg = new Segment(*intersection, seg->first, seg->settings);
     }
-    this->clipped = true;
+    this->clipped++;
   }
 
   return *seg;
@@ -153,12 +162,14 @@ CutModel *CutModel::load(std::istream &input) {
     }
   }
 
+  LOG_DEBUG_MSG("zero length segments", model->zerolength);
+  LOG_DEBUG_MSG("clipped segments", model->clipped);
+  LOG_DEBUG_MSG("loaded segments", segmentCnt);
+
   if (model->empty()) {
     delete model;
     model = NULL;
   }
-
-  LOG_DEBUG_MSG("loaded segments", segmentCnt);
 
   return model;
 }

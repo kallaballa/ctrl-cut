@@ -15,7 +15,8 @@ public:
 
   CutModel() :
     config(LaserConfig::inst()),
-    clipped(false),
+    clipped(0),
+    zerolength(0),
     segmentTree(),
     leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
     bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
@@ -45,7 +46,7 @@ public:
   void remove(const Segment& seg);
 
   bool wasClipped() const {
-    return this->clipped;
+    return this->clipped > 0;
   }
 
   const SegmentTree& getSegmentTree() {
@@ -63,7 +64,8 @@ public:
   static CutModel *load(std::istream &input);
   LaserConfig& config;
 protected:
-  bool clipped;
+  uint64_t clipped;
+  uint64_t zerolength;
   SegmentTree segmentTree;
   SegmentList segmentIndex;
 
