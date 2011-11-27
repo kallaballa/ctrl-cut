@@ -9,7 +9,7 @@ function brown { echo -ne "\033[0;33m$1\033[0m"; tput sgr0; }
 function lightgray { echo -ne "\033[0;37m$1\033[0m"; tput sgr0; }
 function lightgreen { echo -ne "\033[1;32m$1\033[0m"; tput sgr0; }
 function lightcyan { echo -ne "\033[1;36m$1\033[0m"; tput sgr0; }
-function lightred { echo -ne "\033[1;31m$1\033[0m"; tput sgr0; }
+function lightred { echo -ne "\033[0;31m$1\033[0m"; tput sgr0; }
 function lightpurple { echo -ne "\033[1;35m$1\033[0m"; tput sgr0; }
 function yellow { echo -ne "\033[1;33m$1\033[0m"; tput sgr0; }
 function white { echo -ne "\033[1;37m$1\033[0m"; tput sgr0; }

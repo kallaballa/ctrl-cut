@@ -47,7 +47,7 @@ function diffResult() {
   echo "$1" > "$first"
   echo "$2" > "$second"
 
-  diff --suppress-common-lines "$first" "$second" | grep -v "^[a-z0-9-]" | sed '/^$/d'
+  diff "$first" "$second" | sed '/^$/d'
   rm "$first" "$second"
 }
 
@@ -126,7 +126,7 @@ searchpath="test-data"
 	reference="`grep "$casekey" test-data/test-any.csv`"
 	casesfailed="`diffResult "$caselines" "$reference"`"
 	[ -n "$casesfailed" ] \
-	  && red "`echo -en "$casesfailed" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' | sort | uniq `\n"
+	  && red "`echo -en "$casesfailed" | grep -v "^[a-z0-9-]" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' | sort | uniq `\n"
       fi
     done
   done
@@ -143,8 +143,24 @@ reference="`echo -e "$caseskeys" | grep --file="/dev/stdin" test-data/test-any.c
 #diff selected cases but only show changes from the just generated csv
 casesfailed="`diffResult "$cases" "$reference"`"
 
-[ -n "$casesfailed" ] \
-  && error "\n### TEST RESULTS CHANGED (`echo -e "$casesfailed" | wc -l`) ###\n$casesfailed\n" \
-  || green "\nall tests ok\n"
+if [ -n "$casesfailed" ]; then
+  red "\n### TEST RESULTS CHANGED (`echo -e "$casesfailed" | wc -l`) ###\n\n"
+  color=lightred
+  echo -e "$casesfailed" | while read line; do
+    left="^<"
+    right="^>"
+    if [[ $line =~ $left ]]; then
+      color=red;
+    elif [[ $line =~ $right ]]; then
+      color=lightred;
+    else
+      color=white
+    fi
+
+    $color "$line\n"
+  done
+else
+  green "\nall tests ok\n"
+fi
 
 
