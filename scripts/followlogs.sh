@@ -15,7 +15,7 @@ dir="$1"
 function tailcases {
   findcases $dir | while read casedir; do
     casename="`basename $casedir`"
-    casedir="`dirname $casedir`/out/$casename"
+    casedir="`dirname $casedir`/$casename"
     casepath="$casedir/$casename.log"
     mkdir -p "$casedir"
     touch "$casepath"
