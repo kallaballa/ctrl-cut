@@ -25,9 +25,14 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1607083553" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1025040037" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.698641465" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -m64 -pipe -pthread -I/usr/local/include/cairo -I/usr/include/librsvg-2.0 -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pixman-1 -I/usr/include/freetype2   -pthread -I/usr/local/include/cairo -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12   -pthread -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -DCTRLCUT_VERSION=2011.11.20 -DUSE_GHOSTSCRIPT_API -DETLOG -DDEBUG=4 -I/home/elchaschab/devel/ctrl-cut/src/cups-filter -lcups -lgs -lboost_thread-mt" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.698641465" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-DBOOST_IOSTREAMS_USE_DEPRECATED -c -fmessage-length=0 -m64 -pipe -pthread -I/usr/local/include/cairo  -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/libpng12 -I/usr/include/pixman-1 -I/usr/include/freetype2   -pthread -I/usr/local/include/cairo -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12   -pthread -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include -DCTRLCUT_VERSION=2011.11.20 -DUSE_GHOSTSCRIPT_API -DETLOG -DDEBUG=4 -I/home/elchaschab/devel/ctrl-cut/src/cups-filter -lcups -lgs -lboost_thread-mt -pthread -I/usr/include/libxml++-2.6 -I/usr/lib64/libxml++-2.6/include -I/usr/include/libxml2 -I/usr/include/glibmm-2.4 -I/usr/lib64/glibmm-2.4/include -I/usr/include/sigc++-2.0 -I/usr/lib64/sigc++-2.0/include -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  -pthread -lxml++-2.6 -lxml2 -lglibmm-2.4 -lgobject-2.0 -lsigc-2.0 -lgthread-2.0 -lrt -lglib-2.0" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1326985679" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/include/libxml++-2.6"/>
+									<listOptionValue builtIn="false" value="/usr/include/boost"/>
+									<listOptionValue builtIn="false" value="/usr/include/librsvg-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/cairo"/>
+									<listOptionValue builtIn="false" value="/usr/include/pango-1.0"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2094513617" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -39,6 +44,14 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1113801678" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.953127411" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.flags.1408387142" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-lcups -lgs -lboost_thread-mt -pthread -L/usr/local/lib -lrsvg-2 -lgio-2.0 -lgdk_pixbuf-2.0 -lm -lcairo -lgobject-2.0 -lgmodule-2.0 -lpng12 -lgthread-2.0 -lrt -lglib-2.0" valueType="string"/>
+								<option id="gnu.cpp.link.option.paths.548494469" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/librsvg}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/lib64"/>
+								</option>
+								<option id="gnu.cpp.link.option.libs.548370981" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="boost_iostreams-mt"/>
+									<listOptionValue builtIn="false" value="xml++-2.6"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1413399530" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -49,18 +62,8 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518.2014542557" name="/" resourcePath="src/cups-filter/raster">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.2008124277" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.665020350" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1483022190"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.859504742" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1850151030" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.965524635"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.281554615" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1113801678"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2070097498" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.953127411"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.206808215" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1482307099"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/objects|src/cups-filter/test|src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="tmp|src/svg2pdf|src/gui|src/lpd-epilog|test-code|src/librsvg|src/pclint|src/objects|src/cups-filter/test|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -480,6 +483,9 @@
 				</scannerConfigBuildInfo>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 		</cconfiguration>
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.release.195001357">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.release.195001357" moduleId="org.eclipse.cdt.core.settings" name="Release">
@@ -523,7 +529,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/objects|src/cups-filter/raster/filter|test-code|src/svg2pdf|src/pclint|src/lpd-epilog|src/imgtools|src/gui|tmp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="tmp|src/svg2pdf|src/gui|src/lpd-epilog|test-code|src/librsvg|src/pclint|src/objects|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -943,6 +949,9 @@
 				</scannerConfigBuildInfo>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
+			<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+			<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">

@@ -1,9 +1,10 @@
 %!PS-Adobe-3.0
-%%Creator: cairo 1.8.10 (http://cairographics.org)
-%%CreationDate: Sat Jan 15 04:24:26 2011
+%%Creator: cairo 1.10.2 (http://cairographics.org)
+%%CreationDate: Sun Nov 27 20:40:53 2011
 %%DocumentData: Clean7Bit
 %%LanguageLevel: 2
-%%For: (kintel)
+%%DocumentMedia: 610x914mm 1728 2592 0 () ()
+%%For: (elchaschab)
 %%Title: (Print concentric-polygons.svg)
 %RBINumCopies: 1
 %%Pages: (atend)
@@ -32,8 +33,6 @@
 /S { stroke } bind def
 /f { fill } bind def
 /f* { eofill } bind def
-/B { fill stroke } bind def
-/B* { eofill stroke } bind def
 /n { newpath } bind def
 /W { clip } bind def
 /W* { eoclip } bind def
@@ -71,16 +70,9 @@
 % Disable CTRL-D as an end-of-file marker...
 userdict dup(\004)cvn{}put (\004\004)cvn{}put
 [{
-%%BeginFeature: *RasterRepeat 0
-
-	<</DeviceRenderingInfo <</Type 29 /RasterRepeat 0>> >>
-	setpagedevice
-%%EndFeature
-} stopped cleartomark
-[{
-%%BeginFeature: *Resolution 75
+%%BeginFeature: *Resolution 600
 mark {
-	<</HWResolution [75.0 75.0]
+	<</HWResolution [600.0 600.0]
 	  /DeviceRenderingInfo <</Type 29 /ValuesPerColorComponent 2>> 
 	>> setpagedevice
 	} stopped cleartomark
@@ -92,7 +84,12 @@ mark {
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *FlipX False
+%%BeginFeature: *EnableRaster False
+ 
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *EnableVector True
  
 %%EndFeature
 } stopped cleartomark
@@ -102,16 +99,16 @@ mark {
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *RasterMode GreyScale
+%%BeginFeature: *RasterDithering Default
 
-	<</DeviceRenderingInfo <</Type 29 /RasterMode 2>> >>
+	<</DeviceRenderingInfo <</Type 29 /RasterDithering 1>> >>
 	setpagedevice
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *RasterPower 10
+%%BeginFeature: *RasterPower 20
 
-	<</DeviceRenderingInfo <</Type 29 /RasterPower 10>> >>
+	<</DeviceRenderingInfo <</Type 29 /RasterPower 20>> >>
 	setpagedevice
 %%EndFeature
 } stopped cleartomark
@@ -123,28 +120,35 @@ mark {
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *Debug True
+%%BeginFeature: *Debug False
  
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *VectorMode Cut
+%%BeginFeature: *VectorFrequency 5000
 
-	<</DeviceRenderingInfo <</Type 29 /VectorMode 1>> >>
+    <</DeviceRenderingInfo <</Type 29 /VectorFrequency 5000>> >>
+    setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *VectorOptimize Inner-Outer
+
+	<</DeviceRenderingInfo <</Type 29 /VectorOptimize 1>> >>
 	setpagedevice
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *VectorPower 10
+%%BeginFeature: *VectorPower 80
 
-	<</DeviceRenderingInfo <</Type 29 /VectorPower 10>> >>
+	<</DeviceRenderingInfo <</Type 29 /VectorPower 80>> >>
 	setpagedevice
 %%EndFeature
 } stopped cleartomark
 [{
-%%BeginFeature: *VectorSpeed 100
+%%BeginFeature: *VectorSpeed 33
 
-	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 100>> >>
+	<</DeviceRenderingInfo <</Type 29 /VectorSpeed 33>> >>
 	setpagedevice
 %%EndFeature
 } stopped cleartomark
@@ -166,9 +170,10 @@ userdict/ESPwl{}bind put
 %%PageBoundingBox: 0 0 1728 2592
 %%BeginPageSetup
 %%PageOrientation: Landscape
+%%PageMedia: 610x914mm
 %%PageBoundingBox: 0 0 1728 2592
 %%EndPageSetup
-q
+q 0 0 1728 2592 rectclip q
 0 g
 0.0708661 w
 1 J
@@ -258,7 +263,7 @@ q 0 1 1 0 0 2592 cm
 -2484.883 164.516 m -2499.051 139.969 l S Q
 q 0 1 1 0 0 2592 cm
 -2513.223 164.516 m -2484.883 164.516 l S Q
-Q
+Q Q
 showpage
 %%Trailer
 %%Pages: 1

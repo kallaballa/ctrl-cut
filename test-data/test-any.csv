@@ -28,7 +28,7 @@ test-data/inkscape/duplicate-line;default;ps;no;OK;N/A;OK;OK;158.30->79.15;OK;
 test-data/inkscape/duplicate-line;default;svg;no;3640;N/A;Err;OK;158.30->98.95;41.14->51.45;
 test-data/inkscape/duplicate-line;inkscape-0.46;ps;no;OK;N/A;OK;OK;158.30->79.15;OK;
 test-data/inkscape/duplicate-line;inkscape-0.46;svg;no;3640;N/A;Err;OK;158.30->98.95;41.14->51.45;
-test-data/qcad/concentric-polygons;default;ps;no;14;N/A;OK;OK;OK;650.23->628.22;
+test-data/qcad/concentric-polygons;default;ps;no;;N/A;OK;OK;OK;650.23->628.22;
 test-data/qcad/concentric-polygons;linux;ps;N/A;
 test-data/qcad/polygon-lowerleft;default;ps;no;OK;N/A;OK;OK;OK;601.88->571.79;
 test-data/qcad/polygon-lowerleft;linux;ps;N/A;

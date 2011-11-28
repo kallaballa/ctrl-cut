@@ -7,6 +7,7 @@ CONFIG += rsvg
 CONFIG += cairo-ps
 CONFIG += gio
 CONFIG += boost_thread
+INCLUDEPATH += ../librsvg/
 
 include(common.pri)
 
