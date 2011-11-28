@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef CLI_H_
+#define CLI_H_
 
 #include <string>
 #include <sstream>
@@ -35,13 +37,10 @@ using boost::lexical_cast;
 
 using namespace cimg_library;
 
-#ifndef CLI_H_
-#define CLI_H_
-
 class Debugger {
-private:
+public:
   boost::mutex ia_mutex;
-  VectorPlotter* vplotter;
+  void* vplotter;
   volatile bool interactive;
   CImgDisplay* canvas_disp;
   bool autoupdate;
@@ -89,12 +88,13 @@ private:
           this->autoupdate = false;
           cerr << "=== auto update off" << endl;
         }
-        else if(vplotter != NULL)
-          vplotter->getCanvas()->update();
-      } else if (cmd.compare("dump") == 0 && vplotter != NULL) {
-        vplotter->getCanvas()->dump(param.c_str());
-        cerr << "=== dumped: " << param << endl;
       }
+      //   else if(vplotter != NULL)
+      //     vplotter->getCanvas()->update();
+      // } else if (cmd.compare("dump") == 0 && vplotter != NULL) {
+      //   vplotter->getCanvas()->dump(param.c_str());
+      //   cerr << "=== dumped: " << param << endl;
+      // }
     }
 
     lastCliCmd[0] = cmd;
@@ -139,8 +139,8 @@ private:
         if (instr->file_off >= bp) {
           cerr << (format("=== breakpoint (%08X)") % bp) << endl;
           setInteractive(true);
-          if(vplotter != NULL)
-            vplotter->getCanvas()->update();
+          // if(vplotter != NULL)
+          //   vplotter->getCanvas()->update();
           this->step_barrier.wait();
           it = breakpoints.erase(it);
           break;
@@ -160,8 +160,8 @@ private:
   void checkSignatures(HpglInstr *instr) {
     if (find.length() > 0 && instr && instr->matches(find)) {
       cerr << "=== found " << instr->operation << endl;
-      if(vplotter != NULL)
-        vplotter->getCanvas()->update();
+      // if(vplotter != NULL)
+      //   vplotter->getCanvas()->update();
       setInteractive(true);
       this->step_barrier.wait();
     }
@@ -170,16 +170,16 @@ private:
   void checkStepBarrier() {
     if (isInteractive())
       this->step_barrier.wait();
-    if(this->autoupdate && vplotter != NULL)
-      vplotter->getCanvas()->update();
+    // if(this->autoupdate && vplotter != NULL)
+    //   vplotter->getCanvas()->update();
   }
 
 
 public:
-  static void create(VectorPlotter *vplotter = NULL);
+  static void create(void *vplotter = NULL);
   static Debugger* getInstance();
 
-  Debugger(VectorPlotter* vplotter) :
+  Debugger(void* vplotter) :
     vplotter(vplotter), interactive(false), canvas_disp(NULL), autoupdate(false), cli_thrd(NULL), step_barrier(2) {
   }
 
@@ -228,10 +228,10 @@ public:
 };
 
 Debugger* Debugger::instance = NULL;
-
-void Debugger::create(VectorPlotter *vplotter) {
+class VectorPlotter;
+void Debugger::create(void *vplotter) {
   if(instance == NULL)
-    instance = new Debugger(vplotter);
+    instance = new Debugger((void *)vplotter);
 }
 
 Debugger* Debugger::getInstance() {
