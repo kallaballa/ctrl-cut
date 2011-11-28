@@ -168,7 +168,10 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
               "0 get mul 5 lt " // Check linewidth (hackish; only checks the matrix x axis scale)
-              // If linewidth < 5, this will be cut:
+              // If linewidth < 5 points, this will be cut.
+              // FIXME: We should decide which threshold to use.
+              // 5 points is ca. 1.75 mm which is way too much.
+              // e.g. 0.025 mm would amount to 0.07 points.
               // Print "P" followed by a number for the amount of red (0-100)
               "{(P)=== currentrgbcolor pop pop 100 mul round cvi = "
               "flattenpath " // Convert all graphics to lines

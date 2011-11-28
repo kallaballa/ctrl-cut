@@ -32,6 +32,7 @@
 #include "HPGL.h"
 #include "Statistic.h"
 #include "Canvas.h"
+#include "CLI.h"
 
 using std::cin;
 using std::cerr;
@@ -202,7 +203,10 @@ public:
     Point from = pos;
     from.x *= 8;
     Point to = from;
-    to.x += len * 8 - 1 * dir;
+    int delta = len * 8 - 1 * dir;
+    if (delta < 0) Debugger::getInstance()->waitSteps();
+    if (!Debugger::getInstance()->isInteractive()) assert(false);
+    to.x += delta;
 
     Statistic::singleton()->announcePenDown(SLOT_RASTER);
     Statistic::singleton()->announceWork(from, to, SLOT_RASTER);
