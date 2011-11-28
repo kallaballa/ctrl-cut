@@ -204,8 +204,10 @@ public:
     from.x *= 8;
     Point to = from;
     int delta = len * 8 - 1 * dir;
-    if (delta < 0) Debugger::getInstance()->waitSteps();
-    if (!Debugger::getInstance()->isInteractive()) assert(false);
+    if (int(from.x) + delta < 0) {
+      Debugger::getInstance()->waitSteps();
+      if (!Debugger::getInstance()->isInteractive()) assert(false);
+    }
     to.x += delta;
 
     Statistic::singleton()->announcePenDown(SLOT_RASTER);
