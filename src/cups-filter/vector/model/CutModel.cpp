@@ -131,7 +131,6 @@ CutModel *CutModel::load(std::istream &input) {
       switch (first) {
       case 'M': // move to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-       //   if(y < 0) y*=-1;
           lx = x;
           ly = y;
           mx = x;
@@ -153,8 +152,6 @@ CutModel *CutModel::load(std::istream &input) {
         break;
       case 'L': // line to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-//          if(y < 0) y*=-1;
-
           segmentCnt++;
           model->createSegment(lx, ly, x, y, (*new CutSettings(power, 0, 0)));
           lx = x;
