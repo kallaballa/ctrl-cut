@@ -72,7 +72,7 @@ BitmapImage &Dither::dither() {
   uint8_t scanlineRem = scanlineBreak % 8;
   scanlineBreak -= scanlineRem;
 
-  uint32_t width = this->img.width() + (byteAlignOff ? 8 : 0);
+  uint32_t width = this->img.width() + (byteAlignOff ? 8 - byteAlignOff: 0);
   // Bitmaps width must be divisible by 8, so we pad to align it
   if (width % 8 != 0) width += (8 - width % 8);
   BitmapImage& result = *(new BitmapImage(width, this->img.height()));
