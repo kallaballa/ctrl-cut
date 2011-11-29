@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 GHOSTPDL=$HOME/Desktop/Lazzzor/CUPS/ghostpdl-8.71/main/debugobj/pcl6

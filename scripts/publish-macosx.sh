@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #VERSION=0.2
 VERSION=`date "+%Y.%m.%d"`

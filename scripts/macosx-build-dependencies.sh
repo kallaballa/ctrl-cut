@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script builds all library dependencies of Ctrl-Cut for Mac OS X.
 # The libraries will be build in 32- and 64-bit mode and backwards compatible with 
