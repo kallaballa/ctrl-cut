@@ -5,6 +5,8 @@ boost_thread {
     LIBS += -L/opt/local/lib
   }
   LIBS += -lboost_thread-mt
+  LIBS += -lboost_iostreams-mt
+  QMAKE_CXXFLAGS += -DBOOST_IOSTREAMS_USE_DEPRECATED
 }
 
 boost {

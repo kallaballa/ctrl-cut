@@ -32,4 +32,4 @@ include(SDL.pri)
 include(rsvg.pri)
 include(cairo-ps.pri)
 include(gio.pri)
-
+include(libxml++.pri)

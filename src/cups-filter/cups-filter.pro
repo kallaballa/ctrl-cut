@@ -7,6 +7,7 @@ CONFIG += rsvg
 CONFIG += cairo-ps
 CONFIG += gio
 CONFIG += boost_thread
+CONFIG += libxml++
 INCLUDEPATH += ../librsvg/
 
 include(common.pri)
@@ -21,6 +22,7 @@ SOURCES += \
           util/LaserConfig.cpp \
           util/Eps.cpp \
 	  util/Svg2Ps.cpp \
+	  util/SvgFix.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
           vector/graph/SegmentGraph.cpp \
@@ -41,6 +43,7 @@ HEADERS += \
           util/Logger.h \
           util/LaserConfig.h \
           util/Svg2Ps.h \
+	  util/SvgFix.h \
 	  Ctrl-Cut.h \
           Driver.h \
           vector/graph/Traverse.h \

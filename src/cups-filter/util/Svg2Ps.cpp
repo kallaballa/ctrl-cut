@@ -56,7 +56,7 @@ void Svg2Pdf::convert() {
 
   g_type_init();
 
-  rsvg_set_default_dpi(90);
+  rsvg_set_default_dpi(72);
 
   handle = rsvg_handle_new_from_stream_sync(g_unix_input_stream_new(svgFixPipe[0], TRUE), NULL, RSVG_HANDLE_FLAGS_NONE, NULL, &error);
   rsvg_handle_set_size_callback(handle, correctViewBox,NULL,NULL);
