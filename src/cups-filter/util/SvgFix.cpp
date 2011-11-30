@@ -193,6 +193,14 @@ protected:
     std::cerr << svg << std::endl;;
   }
 
+  virtual void on_characters(const Glib::ustring& characters) {
+    writeSvg(characters);
+  }
+
+  virtual void on_cdata_block(const Glib::ustring& text) {
+    writeSvg(text);
+  }
+
   virtual void on_end_element(const Glib::ustring& name) {
     writeSvg("</" + name + ">");
   };
