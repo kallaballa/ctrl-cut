@@ -178,19 +178,24 @@ protected:
     const double wpx = convert(w,PX);
     const double hpx = convert(h,PX);
     stringstream sVB;
-    sVB << " viewBox=\"" << x << " " << y << " " << wpx << " " <<  hpx << "\"" << std::endl;
+    sVB << " viewBox=\"" << x << " " << y << " " << wpx << " " <<  hpx << "\"";
     return sVB.str();
   }
 
   const string make_attriburestring(const Attribute& attr) const {
     stringstream sAttr;
-    sAttr << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
+    sAttr << " " << attr.name << "=\"" << attr.value << "\"";
     return sAttr.str();
   }
 
   const void writeSvg(string svg) const {
+    outsvg << svg;
+    std::cerr << svg;
+  }
+
+  const void writeSvgln(string svg) const {
     outsvg << svg << std::endl;
-    std::cerr << svg << std::endl;;
+    std::cerr << svg << std::endl;
   }
 
   virtual void on_characters(const Glib::ustring& characters) {
@@ -213,17 +218,14 @@ protected:
       for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
         Attribute attr = *it;
 
-        if (attr.name == "viewBox") {
-          if(viewBox.empty())
+        if (viewBox.empty() && attr.name == "viewBox") {
             viewBox = make_attriburestring(attr);
         } else {
           if (attr.name == "width")
             this->docWidth = parseDimension(attr.value);
           else if (attr.name == "height")
             this->docHeight = parseDimension(attr.value);
-          make_attriburestring(attr);
-          outsvg << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
-          std::cerr << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
+          writeSvg(make_attriburestring(attr));
         }
       }
 
