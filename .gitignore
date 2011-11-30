@@ -1,9 +1,8 @@
 *.log
-EpilogFilter
 *.pyc
 out.*
 tmp.*
 tmp-*
 Makefile
 /tmp/*
-test-data/*/*.xml
+*.dSYM

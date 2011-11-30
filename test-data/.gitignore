@@ -1,13 +1,5 @@
-*.raw.svg
-*.prn.svg
-*.pdf
-*.raw
-*.pbm
-*.eps
-corel-*/*.png
-inkscape/*.png
-qcad/*.png
-vector/*.png
-Gimp/*.png
-*/*/out
+*.info
 *.xml
+*.raw
+*-v.png
+*-r.png
