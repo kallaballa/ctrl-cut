@@ -51,10 +51,8 @@ const double SvgDocument::convert(Dimension d, Unit target) const {
 }
 
 const string SvgDocument::make_viewboxstring(const double& x, const double& y, const Dimension& w, const Dimension& h) const {
-  const double wpx = convert(w,PX);
-  const double hpx = convert(h,PX);
   stringstream sVB;
-  sVB << " viewBox=\"" << x << " " << y << " " << wpx << " " <<  hpx << "\"";
+  sVB << " viewBox=\"" << x << " " << y << " " << convert(w,PX) << " " <<  convert(h,PX) << "\"";
   return sVB.str();
 }
 

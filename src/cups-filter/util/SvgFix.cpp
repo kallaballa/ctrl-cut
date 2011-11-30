@@ -69,6 +69,10 @@ void SvgFix::dump(std::ostream& out, const Glib::ustring& name, const SaxParser:
 void SvgFix::findGenerator(const Glib::ustring& text) {
   if(text.find("Inkscape") != string::npos) {
     this->generator = SvgFix::Inkscape;
+    /* Inkscape uses 90dpi as default resolution for the coordinates
+     * in the svg but doesn't use a viewbox to make it scale correctly.
+     * -> set the resolution to 90dpi so that the viewbox will correct the scale.
+     */
     this->document.resolution = SvgDocument::INKSCAPE_DEFAULT_RES;
   } else if (text.find("CorelDRAW") != string::npos) {
     this->generator = SvgFix::CorelDraw;
@@ -94,6 +98,7 @@ void SvgFix::fixViewbox(std::ostream& out, const Glib::ustring& name, const SaxP
     }
   }
 
+  // generate a viewBox in pixels reflecting the resolution
   if(viewBox.empty())
     viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
 
