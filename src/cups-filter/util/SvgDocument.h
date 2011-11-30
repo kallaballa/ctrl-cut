@@ -17,25 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SVGFIX_H_
-#define SVGFIX_H_
+#ifndef SVGDOCUMENT_H_
+#define SVGDOCUMENT_H_
 
 #include <stdio.h>
 #include <ctype.h>
 #include <string>
 #include <iostream>
 #include <sstream>
-
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
-
-#include <libxml++/libxml++.h>
 #include <fstream>
-#include "LaserConfig.h"
-#include <iostream>
-#include "SvgDocument.h"
+#include <libxml++/libxml++.h>
 
 using std::getline;
 using std::istream;
@@ -44,26 +35,37 @@ using std::stringstream;
 using std::pair;
 using xmlpp::SaxParser;
 
-class SvgFix {
+class SvgDocument {
 private:
-  int fdIn, fdOut;
+  static int lower_case (int c) {
+    return tolower (c);
+  }
 public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
 
-  enum DocGenerator {
-    Unknown, Inkscape, CorelDraw
+  enum Unit {
+    PX, MM, IN
   };
-  SvgDocument document;
-  DocGenerator generator;
 
-  void dump(std::ostream& out, const Glib::ustring& name, const SaxParser::AttributeList& properties);
-  void findGenerator(const Glib::ustring& text);
-  void fixViewbox(std::ostream& out, const Glib::ustring& name, const AttributeList& properties);
+  typedef pair<double, Unit> Dimension;
 
-  SvgFix(int fdIn, int fdOut) : fdIn(fdIn), fdOut(fdOut), generator(Unknown){ }
-  virtual ~SvgFix(){}
-  void work();
+  const static double SVG_DEFAULT_RES = 72;
+  const static double INKSCAPE_DEFAULT_RES = 90;
+  const static double MM_TO_INCH = 25.4;
+
+  Dimension width;
+  Dimension height;
+  double resolution;
+
+  const Unit parseUnit(const string unit) const;
+  Dimension parseDimension(string dimension) const;
+  const double convert(Dimension d, Unit target) const;
+  const string make_viewboxstring(const double& x, const double& y, const Dimension& w, const Dimension& h) const;
+  const string make_attriburestring(const Attribute& attr) const;
+
+  SvgDocument() : width(*(new Dimension(-1, PX))) , height(*(new Dimension(-1, PX))), resolution(SVG_DEFAULT_RES) { }
+  virtual ~SvgDocument(){}
 };
 
-#endif /* SVGFIX_H_ */
+#endif /* SVGDOCUMENT_H_ */
