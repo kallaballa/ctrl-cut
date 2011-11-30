@@ -123,7 +123,8 @@ searchpath="test-data"
         runtest "$fullname"
 	casekey="$testdir;$case;"
 	caselines="`grep "$casekey" "$CSV_OUT"`"
-	reference="`grep "$casekey" test-data/test-any.csv`"
+	username="`id -un`"
+	reference="`grep "$casekey" "test-data/$username.csv"`"
 	casesfailed="`diffResult "$caselines" "$reference"`"
 	[ -n "$casesfailed" ] \
 	  && red "`echo -en "$casesfailed" | grep -v "^[a-z0-9-]" | sed 's/^..//g' | cut -d";" -f2-3 | tr ";" " " | sed 's/^/\t/g' | sort | uniq `\n"
@@ -136,9 +137,10 @@ report_close
 #get collected test cases from csv
 cases="`cat "$CSV_OUT"`"
 caseskeys="`cut -d";" -f1,2,3 "$CSV_OUT"`"
+username="`id -un`"
 
 #search corresponding test case from the reference csv
-reference="`echo -e "$caseskeys" | grep --file="/dev/stdin" test-data/test-any.csv`"
+reference="`echo -e "$caseskeys" | grep --file="/dev/stdin" "test-data/$username.csv"`"
 
 #diff selected cases but only show changes from the just generated csv
 casesfailed="`diffResult "$cases" "$reference"`"

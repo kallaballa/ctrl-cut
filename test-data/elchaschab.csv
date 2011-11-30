@@ -9,11 +9,11 @@ test-data/corel-b/line_width_threshold;600;ps;no;N/A;206398;Err;0->96.00;0->722.
 test-data/corel-b/line_width_threshold;600;svg;no;N/A;311522;Err;0->96.00;0->722.16;0->836.48;
 test-data/inkscape/sleepy;default;ps;no;190;OK;OK;111.00->2.00;OK;407.19->79.57;
 test-data/inkscape/sleepy;default;svg;N/A;
-test-data/inkscape/deonion-bug;default;ps;ok;
-test-data/inkscape/deonion-bug;default;svg;no;2;OK;OK;OK;OK;OK;
+test-data/inkscape/deonion-bug;default;ps;no;2;N/A;OK;OK;14.17->13.83;166.08->164.29;
+test-data/inkscape/deonion-bug;default;svg;no;2;N/A;OK;OK;14.17->13.83;166.08->164.29;
 test-data/inkscape/crash;default;ps;no;35855;N/A;OK;1321.00->224.00;9459.49->7574.87;8043.49->10582.84;
 test-data/inkscape/spiral;default;ps;no;606;N/A;OK;301.00->1.00;OK;1108.61->94.12;
-test-data/inkscape/spiral;default;svg;no;29835;N/A;Err;301.00->1.00;708.22->708.21;1108.61->94.91;
+test-data/inkscape/spiral;default;svg;no;782;N/A;OK;301.00->1.00;OK;1108.61->94.12;
 test-data/inkscape/concentric-polygons;default;ps;no;30;N/A;OK;OK;OK;79.92->94.15;
 test-data/inkscape/concentric-polygons;default;svg;no;672;N/A;OK;OK;730.83->730.79;79.92->94.15;
 test-data/inkscape/concentric-polygons;inkscape-0.46;ps;no;30;N/A;OK;OK;OK;79.92->94.15;
