@@ -22,6 +22,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
@@ -38,32 +39,69 @@ using std::getline;
 using std::istream;
 using std::string;
 using std::stringstream;
+using std::pair;
 
 namespace io = boost::iostreams;
 
 typedef io::stream<io::file_descriptor_sink> fdostream;
 typedef io::stream<io::file_descriptor_source> fdistream;
-int lower_case2 (int c) {
-  return tolower (c);
-}
+
 
 class SvgSax : public xmlpp::SaxParser
 {
 private:
+  enum Unit{
+    PX, MM, IN
+  };
+  typedef pair<double, Unit> Dimension;
+
   std::ostream &outsvg;
-  bool done;
-
+  Dimension &docWidth;
+  Dimension &docHeight;
+  uint32_t docRes;
 public:
-  SvgSax(std::ostream &outsvg) : outsvg(outsvg), done(false) {}
+  SvgSax(std::ostream &outsvg) : outsvg(outsvg), docWidth(*(new Dimension(-1, PX))) , docHeight(*(new Dimension(-1, PX))), docRes(90){}
   virtual ~SvgSax(){}
-  bool isDone(){return done;}
+
 protected:
+  static int lower_case (int c) {
+    return tolower (c);
+  }
 
-
-  uint32_t parseDimensionPx(string dimension) {
-    stringstream sDigits;
+  const Unit parseUnit(const string unit) const {
     stringstream sUnit;
-    string::iterator it;
+    string::const_iterator it;
+    char c = ' ';
+
+    for (it = unit.begin(); c != 0 && it != unit.end(); it++) {
+      c = *it;
+
+      // consume whitespace
+      for(;isspace(c) && it != unit.end(); it++) c = *it;
+
+      // collect unit
+      for (;isalpha(c); c = *(++it)) {
+        sUnit << c;
+        if(it == unit.end())
+          break;
+      }
+    }
+
+    string u = sUnit.str();
+
+    transform(u.begin(), u.end(), u.begin(), lower_case);
+    if (u == "in")
+      return IN;
+    else if (u == "mm")
+      return MM;
+    else
+      assert(false);
+  }
+
+  Dimension parseDimension(string dimension) const {
+    stringstream sFloat;
+    stringstream sUnit;
+    string::const_iterator it;
     char c = ' ';
 
     for (it = dimension.begin(); c != 0 && it != dimension.end(); it++) {
@@ -71,9 +109,10 @@ protected:
 
       // consume whitespace
       for(;isspace(c) && it != dimension.end(); it++) c = *it;
-      // collect digits
-      for (;isdigit(c);c = *(++it)) {
-        sDigits << c;
+
+      // collect float
+      for (;isdigit(c) || c == '.'; c = *(++it)) {
+          sFloat << c;
         if(it == dimension.end())
           break;
       }
@@ -88,65 +127,111 @@ protected:
       }
     }
 
-    string digit = sDigits.str();
+    string digit = sFloat.str();
     string unit = sUnit.str();
-    uint32_t px = -1;
+    double val = -1;
     if(digit.size() > 0) {
+      val = boost::lexical_cast<double>(digit);
       if(unit.size() > 0) {
-        transform ( unit.begin(), unit.end(), unit.begin(), lower_case2 );
+        transform ( unit.begin(), unit.end(), unit.begin(), lower_case );
         if(unit == "in") {
-          px = boost::lexical_cast<uint32_t>(digit) * 72;
+          return std::make_pair(val,IN);
+        } else if(unit == "mm") {
+          return std::make_pair(val,MM);
         } else
           assert(false);
       } else {
-        px = boost::lexical_cast<uint32_t>(digit);
+        return std::make_pair(val,PX);
       }
-    }
+    } else
+      assert(false);
+  }
 
-    return px;
+  const double convert(Dimension d, Unit target) const {
+    double& val = d.first;
+    Unit& source = d.second;
+    double spx = -1;
+    double tpx = -1;
+
+    if (source == PX)
+      spx = val;
+    else if (source == MM)
+      spx = val * (docRes / 25.4);
+    else if (source == IN)
+      spx = val * docRes;
+    else
+      assert(false);
+
+    if (target == PX)
+      return spx;
+    else if (target == MM)
+      tpx = spx / (docRes / 25.4);
+    else if (target == IN)
+      tpx = spx / docRes;
+    else
+      assert(false);
+
+    return tpx;
+  }
+
+  const string make_viewboxstring(const double& x, const double& y, const Dimension& w, const Dimension& h) const {
+    const double wpx = convert(w,PX);
+    const double hpx = convert(h,PX);
+    stringstream sVB;
+    sVB << " viewBox=\"" << x << " " << y << " " << wpx << " " <<  hpx << "\"" << std::endl;
+    return sVB.str();
+  }
+
+  const string make_attriburestring(const Attribute& attr) const {
+    stringstream sAttr;
+    sAttr << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
+    return sAttr.str();
+  }
+
+  const void writeSvg(string svg) const {
+    outsvg << svg << std::endl;
+    std::cerr << svg << std::endl;;
   }
 
   virtual void on_end_element(const Glib::ustring& name) {
-    outsvg << "</" << name << ">" << std::endl;
-    std::cerr << "</" << name << ">" << std::endl;
+    writeSvg("</" + name + ">");
   };
 
-  virtual void on_start_element(const Glib::ustring& name,
-                                const AttributeList& properties) {
-    if(name == "svg") {
-      outsvg << "<" << name << std::endl;
-      std::cerr << "<" << name << std::endl;
-      uint32_t width = -1, height = -1;
-      for(AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++ ) {
+  virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties) {
+    if (name == "svg") {
+      writeSvg("<" + name);
+      string viewBox;
+
+      for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
         Attribute attr = *it;
-        if(attr.name == "viewbox") {
-          //nothing
+
+        if (attr.name == "viewBox") {
+          if(viewBox.empty())
+            viewBox = make_attriburestring(attr);
         } else {
-          if(attr.name == "width") {
-            width = parseDimensionPx(attr.value);
-          } else if(attr.name == "height") {
-            height = parseDimensionPx(attr.value);
-          }
-          outsvg << " " << attr.name << "=\"" << attr.value << "\""<< std::endl;
-          std::cerr << " " << attr.name << "=\"" << attr.value << "\""<< std::endl;
+          if (attr.name == "width")
+            this->docWidth = parseDimension(attr.value);
+          else if (attr.name == "height")
+            this->docHeight = parseDimension(attr.value);
+          make_attriburestring(attr);
+          outsvg << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
+          std::cerr << " " << attr.name << "=\"" << attr.value << "\"" << std::endl;
         }
       }
-      outsvg << " viewBox=\"0 0 " << width << " " <<  height << "\"" << std::endl;
-      std::cerr << " viewBox=\"0 0 " << width << " " <<  height << "\"" << std::endl;
-    } else {
-      outsvg << "<" << name << std::endl;
-      std::cerr << "<" << name << std::endl;
-      for(AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++ ) {
-        Attribute attr = *it;
 
-        outsvg << " " << attr.name << "=\"" << attr.value << "\""<< std::endl;
-        std::cerr << " " << attr.name << "=\"" << attr.value << "\""<< std::endl;
+      if(viewBox.empty())
+        viewBox = make_viewboxstring(0, 0, this->docWidth, this->docHeight);
+
+      writeSvg(viewBox);
+    } else {
+      writeSvg("<" + name);
+      for (AttributeList::const_iterator it = properties.begin(); it
+          != properties.end(); it++) {
+        Attribute attr = *it;
+        writeSvg(make_attriburestring(attr));
       }
     }
-    outsvg << ">" << std::endl;
-    std::cerr << ">" << std::endl;
-
-    done=true;
+    writeSvg(">");
   };
 };
 void fixResolutionByViewBox(std::istream& in, std::ostream& out) {

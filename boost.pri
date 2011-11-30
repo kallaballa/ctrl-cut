@@ -6,6 +6,7 @@ boost_thread {
   }
   LIBS += -lboost_thread-mt
   LIBS += -lboost_iostreams-mt
+  LIBS += -lboost_regex-mt
   QMAKE_CXXFLAGS += -DBOOST_IOSTREAMS_USE_DEPRECATED
 }
 
