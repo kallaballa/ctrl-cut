@@ -25,9 +25,6 @@
 #include "SvgFix.h"
 
 FILE* fpOut;
-void correctViewBox(gint *width, gint *height, gpointer user_data) {
-  std::cerr << "WIDTH: " << *width << "/ HEIGHT:" << *height << std::endl;
-}
 
 cairo_status_t cairowrite(void *closure, const unsigned char *data,
     unsigned int length) {
@@ -59,7 +56,6 @@ void Svg2Pdf::convert() {
   rsvg_set_default_dpi(72);
 
   handle = rsvg_handle_new_from_stream_sync(g_unix_input_stream_new(svgFixPipe[0], TRUE), NULL, RSVG_HANDLE_FLAGS_NONE, NULL, &error);
-  rsvg_handle_set_size_callback(handle, correctViewBox,NULL,NULL);
 
   if (error != NULL)
     FAIL (error->message);
