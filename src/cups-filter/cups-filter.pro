@@ -23,6 +23,7 @@ SOURCES += \
           util/Eps.cpp \
 	  util/Svg2Ps.cpp \
 	  util/SvgFix.cpp \
+	  util/SvgDocument.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
           vector/graph/SegmentGraph.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
           util/LaserConfig.h \
           util/Svg2Ps.h \
 	  util/SvgFix.h \
+          util/SvgDocument.cpp \
 	  Ctrl-Cut.h \
           Driver.h \
           vector/graph/Traverse.h \
