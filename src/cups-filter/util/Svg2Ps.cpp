@@ -42,7 +42,7 @@ void Svg2Pdf::convert() {
     fprintf(stderr, "Pipe failed.\n");
   }
 
-  SvgFix svgFix(fdIn, svgFixPipe[1], new ofstream("ctrl-cut.base64"),  new ofstream("ctrl-cut.svg"));
+  SvgFix svgFix(fdIn, svgFixPipe[1]);
   boost::thread svg_fix_thread(&SvgFix::work, svgFix);
 
   GError *error = NULL;
