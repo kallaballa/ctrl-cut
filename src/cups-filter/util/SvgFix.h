@@ -41,6 +41,7 @@ using std::istream;
 using std::string;
 using std::stringstream;
 using std::pair;
+using std::ofstream;
 using xmlpp::SaxParser;
 
 namespace io = boost::iostreams;
@@ -52,6 +53,9 @@ private:
 
   fdistream& in;
   fdostream& out;
+
+  ofstream* oBase64;
+  ofstream* oSvg;
 public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
@@ -62,12 +66,17 @@ public:
   SvgDocument document;
   DocGenerator generator;
   void writeSvg(string s);
-  void dump(const Glib::ustring& name, const SaxParser::AttributeList& properties);
+  void writeSvg(const Glib::ustring& name, const SaxParser::AttributeList& properties);
+  void dumpSvg(string s);
+  void dumpBase64(string s);
   void findGenerator(const Glib::ustring& text);
   void fixJpeg(const Glib::ustring& name, const AttributeList& properties);
   void fixViewbox(const Glib::ustring& name, const AttributeList& properties);
+  void writeBase64Image(const string& mimetype, string& pngBase64);
 
-  SvgFix(int fdIn, int fdOut) : in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))), generator(Unknown){ }
+  SvgFix(int fdIn, int fdOut, ofstream* oBase64 = NULL, ofstream* oSvg = NULL) :
+    in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))), oBase64(oBase64), oSvg(oSvg), generator(Unknown){ }
+
   virtual ~SvgFix(){}
   void work();
 };

@@ -18,21 +18,6 @@
  */
 
 #include "SvgFix.h"
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include "boost/archive/iterators/base64_from_binary.hpp"
-#include "boost/archive/iterators/binary_from_base64.hpp"
-#include "boost/archive/iterators/transform_width.hpp"
-#include <string>
-#include <iostream>
-
-using namespace boost::archive::iterators;
-
-typedef transform_width<binary_from_base64<string::const_iterator>, 8, 6> binary_t;
-
-void dec()
- {
-  //   string dec(binary_t(enc.begin()), binary_t(enc.end()));
- }
 
 class SvgSax : public SaxParser
 {
@@ -65,22 +50,33 @@ protected:
     } else if (name == "image") {
       svgFix.fixJpeg(name, properties);
     } else {
-      svgFix.dump(name, properties);
+      svgFix.writeSvg(name, properties);
     }
   };
 };
 
+
 void SvgFix::writeSvg(string s) {
-  std::cerr << s;
+  dumpSvg(s);
   out << s;
 }
 
-void SvgFix::dump(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
+void SvgFix::writeSvg(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
     writeSvg(document.make_attriburestring(*it));
   }
   writeSvg(">");
+}
+
+void SvgFix::dumpSvg(string s) {
+  if(this->oSvg != NULL)
+    (*oSvg) << s;
+}
+
+void SvgFix::dumpBase64(string s) {
+  if(this->oBase64 != NULL)
+    (*oBase64) << s;
 }
 
 void SvgFix::findGenerator(const Glib::ustring& text) {
@@ -96,6 +92,13 @@ void SvgFix::findGenerator(const Glib::ustring& text) {
   }
 }
 
+void SvgFix::writeBase64Image(const string& mimetype, string& pngBase64) {
+//  replace ( pngBase64.begin(), pngBase64.end(), ' ', '\n');
+  const string& imgData = "data:" + mimetype + ";base64," + pngBase64;
+  dumpBase64(pngBase64);
+  writeSvg(document.make_attriburestring("xlink:href", imgData));
+}
+
 // rsvg doesn't support embedded jpeg images, so we're converting them on the fly to png
 void SvgFix::fixJpeg(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
@@ -105,19 +108,19 @@ void SvgFix::fixJpeg(const Glib::ustring& name, const SaxParser::AttributeList& 
 
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
     Attribute attr = *it;
-    std::cerr <<  attr.name << ":" << attr.value << std::endl;
 
     if (attr.name == "xlink:href" && attr.value.find(jpegbase64Sig.c_str(), 0, jbSigSize) != string::npos) {
       string datalink = attr.value.raw();
       string jpegBase64 = datalink.erase(0, jbSigSize);
+      replace ( jpegBase64.begin(), jpegBase64.end(), ' ', '\n');
       Magick::Blob jpegblob;
       Magick::Blob pngblob;
       jpegblob.base64(jpegBase64);
       Magick::Image img(jpegblob);
       img.magick( "PNG" );
       img.write(&pngblob);
-
-      writeSvg(document.make_attriburestring(attr.name, "data:image/png;base64," + pngblob.base64()));
+      string pngBase64 = pngblob.base64();
+      writeBase64Image("image/png", pngBase64);
     } else {
       writeSvg(document.make_attriburestring(attr));
     }
@@ -157,6 +160,12 @@ void SvgFix::work() {
   SvgSax parser(*this);
   parser.set_substitute_entities(true);
   parser.parse_stream(in);
+
   in.close();
   out.close();
+  if(oBase64 != NULL)
+    oBase64->close();
+
+  if(oSvg != NULL)
+    oSvg->close();
 }

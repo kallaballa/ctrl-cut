@@ -23,6 +23,9 @@
 #include <gio/gunixinputstream.h>
 #include <cairo-ps.h>
 #include "SvgFix.h"
+#include <fstream>
+
+using std::ofstream;
 
 FILE* fpOut;
 
@@ -39,7 +42,7 @@ void Svg2Pdf::convert() {
     fprintf(stderr, "Pipe failed.\n");
   }
 
-  SvgFix svgFix(fdIn, svgFixPipe[1]);
+  SvgFix svgFix(fdIn, svgFixPipe[1], new ofstream("ctrl-cut.base64"),  new ofstream("ctrl-cut.svg"));
   boost::thread svg_fix_thread(&SvgFix::work, svgFix);
 
   GError *error = NULL;
