@@ -16,7 +16,7 @@ function scale() {
 }
 
 diff="`echo ${1%.prn-r.png}`_diff.png"
-mean=`trycat "generating difference mask" "convert $1 $2 -depth 8 -blur 3x3 -compose difference -composite -blur 1x1 -threshold 30% -format \"%[fx:round(mean*1000/w*h)]\" $diff"`
+mean=`trycat "generating difference mask" "convert $1 $2 -depth 8 -blur 3x3 -compose difference -composite -blur 1x1 -threshold 30% -format \"%[fx:round(mean*1000))]\" info:"`
 
 if [ $? -ne 0 ]; then
     echo "General error: Ouch"
