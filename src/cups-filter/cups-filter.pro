@@ -8,6 +8,8 @@ CONFIG += cairo-ps
 CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
+CONFIG += magick++
+
 INCLUDEPATH += ../librsvg/
 
 include(common.pri)

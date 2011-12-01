@@ -63,6 +63,7 @@ public:
   const double convert(Dimension d, Unit target) const;
   const string make_viewboxstring(const double& x, const double& y, const Dimension& w, const Dimension& h) const;
   const string make_attriburestring(const Attribute& attr) const;
+  const string make_attriburestring(const string& name, const string& value) const;
 
   SvgDocument() : width(*(new Dimension(-1, PX))) , height(*(new Dimension(-1, PX))), resolution(SVG_DEFAULT_RES) { }
   virtual ~SvgDocument(){}

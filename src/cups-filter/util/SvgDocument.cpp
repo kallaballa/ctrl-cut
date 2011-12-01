@@ -62,6 +62,12 @@ const string SvgDocument::make_attriburestring(const Attribute& attr) const {
   return sAttr.str();
 }
 
+const string SvgDocument::make_attriburestring(const string& name, const string& value) const {
+  stringstream sAttr;
+  sAttr << " " << name << "=\"" << value << "\"";
+  return sAttr.str();
+}
+
 const SvgDocument::Unit SvgDocument::parseUnit(const string unit) const {
   stringstream sUnit;
   string::const_iterator it;

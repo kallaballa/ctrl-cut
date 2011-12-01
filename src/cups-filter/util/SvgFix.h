@@ -25,16 +25,15 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
-#include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
 #include <libxml++/libxml++.h>
-#include <fstream>
-#include "LaserConfig.h"
-#include <iostream>
+#include <Magick++.h>
+
 #include "SvgDocument.h"
 
 using std::getline;
@@ -44,9 +43,15 @@ using std::stringstream;
 using std::pair;
 using xmlpp::SaxParser;
 
+namespace io = boost::iostreams;
+
 class SvgFix {
 private:
-  int fdIn, fdOut;
+  typedef io::stream<io::file_descriptor_sink> fdostream;
+  typedef io::stream<io::file_descriptor_source> fdistream;
+
+  fdistream& in;
+  fdostream& out;
 public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
@@ -56,12 +61,13 @@ public:
   };
   SvgDocument document;
   DocGenerator generator;
-
-  void dump(std::ostream& out, const Glib::ustring& name, const SaxParser::AttributeList& properties);
+  void writeSvg(string s);
+  void dump(const Glib::ustring& name, const SaxParser::AttributeList& properties);
   void findGenerator(const Glib::ustring& text);
-  void fixViewbox(std::ostream& out, const Glib::ustring& name, const AttributeList& properties);
+  void fixJpeg(const Glib::ustring& name, const AttributeList& properties);
+  void fixViewbox(const Glib::ustring& name, const AttributeList& properties);
 
-  SvgFix(int fdIn, int fdOut) : fdIn(fdIn), fdOut(fdOut), generator(Unknown){ }
+  SvgFix(int fdIn, int fdOut) : in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))), generator(Unknown){ }
   virtual ~SvgFix(){}
   void work();
 };

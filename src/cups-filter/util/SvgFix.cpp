@@ -16,25 +16,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "SvgFix.h"
+#include <boost/archive/iterators/binary_from_base64.hpp>
+#include "boost/archive/iterators/base64_from_binary.hpp"
+#include "boost/archive/iterators/binary_from_base64.hpp"
+#include "boost/archive/iterators/transform_width.hpp"
+#include <string>
+#include <iostream>
 
-namespace io = boost::iostreams;
+using namespace boost::archive::iterators;
 
-typedef io::stream<io::file_descriptor_sink> fdostream;
-typedef io::stream<io::file_descriptor_source> fdistream;
+typedef transform_width<binary_from_base64<string::const_iterator>, 8, 6> binary_t;
+
+void dec()
+ {
+  //   string dec(binary_t(enc.begin()), binary_t(enc.end()));
+ }
 
 class SvgSax : public SaxParser
 {
 private:
   SvgFix& svgFix;
-  std::ostream &outsvg;
 public:
-  SvgSax(SvgFix& svgFix, std::ostream &outsvg) : svgFix(svgFix), outsvg(outsvg){}
+  SvgSax(SvgFix& svgFix) : svgFix(svgFix){}
   virtual ~SvgSax(){}
 
 protected:
   virtual void on_characters(const Glib::ustring& characters) {
-    outsvg << characters;
+    svgFix.writeSvg(characters);
   }
 
   virtual void on_comment(const Glib::ustring& text){
@@ -42,28 +52,35 @@ protected:
   }
 
   virtual void on_cdata_block(const Glib::ustring& text) {
-    outsvg << text;
+    svgFix.writeSvg(text);
   }
 
   virtual void on_end_element(const Glib::ustring& name) {
-    outsvg << "</" + name + ">";
+    svgFix.writeSvg("</" + name + ">");
   };
 
   virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties) {
     if (name == "svg") {
-      svgFix.fixViewbox(outsvg, name, properties);
+      svgFix.fixViewbox(name, properties);
+    } else if (name == "image") {
+      svgFix.fixJpeg(name, properties);
     } else {
-      svgFix.dump(outsvg, name, properties);
+      svgFix.dump(name, properties);
     }
   };
 };
 
-void SvgFix::dump(std::ostream& out, const Glib::ustring& name, const SaxParser::AttributeList& properties) {
-  out << "<" << name;
+void SvgFix::writeSvg(string s) {
+  std::cerr << s;
+  out << s;
+}
+
+void SvgFix::dump(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
+  writeSvg("<" + name);
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
-    out << document.make_attriburestring(*it);
+    writeSvg(document.make_attriburestring(*it));
   }
-  out << ">";
+  writeSvg(">");
 }
 
 void SvgFix::findGenerator(const Glib::ustring& text) {
@@ -79,8 +96,38 @@ void SvgFix::findGenerator(const Glib::ustring& text) {
   }
 }
 
-void SvgFix::fixViewbox(std::ostream& out, const Glib::ustring& name, const SaxParser::AttributeList& properties) {
-  out << "<" << name;
+// rsvg doesn't support embedded jpeg images, so we're converting them on the fly to png
+void SvgFix::fixJpeg(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
+  writeSvg("<" + name);
+  const string jpegbase64Sig="data:image/jpeg;base64,";
+  const size_t jbSigSize = jpegbase64Sig.size();
+  const string pngbase64Sig="data:image/png;base64,";
+
+  for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
+    Attribute attr = *it;
+    std::cerr <<  attr.name << ":" << attr.value << std::endl;
+
+    if (attr.name == "xlink:href" && attr.value.find(jpegbase64Sig.c_str(), 0, jbSigSize) != string::npos) {
+      string datalink = attr.value.raw();
+      string jpegBase64 = datalink.erase(0, jbSigSize);
+      Magick::Blob jpegblob;
+      Magick::Blob pngblob;
+      jpegblob.base64(jpegBase64);
+      Magick::Image img(jpegblob);
+      img.magick( "PNG" );
+      img.write(&pngblob);
+
+      writeSvg(document.make_attriburestring(attr.name, "data:image/png;base64," + pngblob.base64()));
+    } else {
+      writeSvg(document.make_attriburestring(attr));
+    }
+  }
+
+  writeSvg(">");
+}
+
+void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
+  writeSvg("<" + name);
 
   string viewBox;
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
@@ -94,7 +141,7 @@ void SvgFix::fixViewbox(std::ostream& out, const Glib::ustring& name, const SaxP
       else if (attr.name == "height")
         document.height = document.parseDimension(attr.value);
 
-      out << document.make_attriburestring(attr);
+      writeSvg(document.make_attriburestring(attr));
     }
   }
 
@@ -102,15 +149,14 @@ void SvgFix::fixViewbox(std::ostream& out, const Glib::ustring& name, const SaxP
   if(viewBox.empty())
     viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
 
-  out << viewBox << ">";
+  writeSvg(viewBox + ">");
 }
 
-
 void SvgFix::work() {
-  fdistream in(fdIn,true);
-  fdostream out(fdOut,true);
   string line;
-  SvgSax parser(*this,out);
+  SvgSax parser(*this);
   parser.set_substitute_entities(true);
   parser.parse_stream(in);
+  in.close();
+  out.close();
 }
