@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "ui_CtrlCut.h"
 #include <QAbstractSocket>
+#include <QtGui>
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -28,6 +29,12 @@ public slots:
   void openFile(const QString &filename);
 
 private:
+  enum InputType {
+    PS,SVG,VECTOR,UNKNOWN
+  };
+
+  const InputType findInpuType(const QFileInfo &fileinfo) const;
+
   static MainWindow *inst;
   MainWindow();
 

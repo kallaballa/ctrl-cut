@@ -6,7 +6,7 @@
 #include "Driver.h"
 #include "vector/model/CutModel.h"
 #include "vector/geom/Geometry.h"
-
+#include "util/Svg2Ps.h"
 #include "LpdClient.h"
 #include "StreamUtils.h"
 #include "GroupItem.h"
@@ -15,7 +15,7 @@
 #include "LaserDialog.h"
 
 #include <assert.h>
-
+#include <boost/thread.hpp>
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
@@ -40,6 +40,20 @@ MainWindow::~MainWindow()
 {
 }
 
+const MainWindow::InputType MainWindow::findInpuType(const QFileInfo &fileinfo) const {
+  InputType inputType = UNKNOWN;
+  const QString &suffix = fileinfo.suffix();
+
+  if(suffix == "ps")
+    inputType = PS;
+  else if(suffix == "svg")
+    inputType = SVG;
+  else if(suffix == "vector")
+    inputType = VECTOR;
+
+  return inputType;
+}
+
 void MainWindow::openFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
@@ -57,8 +71,9 @@ void MainWindow::openFile(const QString &filename)
     }
 
     QFileInfo finfo(filename);
-    QString suffix = finfo.suffix();
-    if (suffix == "ps") {
+    InputType inputType = findInpuType(finfo);
+
+    if (inputType == PS || inputType == SVG) {
       this->psparser = new PostscriptParser(LaserConfig::inst());
       switch (LaserConfig::inst().raster_dithering) {
       case LaserConfig::DITHER_DEFAULT:
@@ -77,11 +92,35 @@ void MainWindow::openFile(const QString &filename)
       default:
         assert(false);
       }
-      cups_file_t *input_file = cupsFileOpen(filename.toLocal8Bit(), "r");
+
+      cups_file_t *input_file;
+
+      if (inputType == SVG) {
+        int convertPipe[2];
+        FILE *svgIn = fopen(filename.toLocal8Bit(), "r");
+        int svgFd = fileno(svgIn);
+
+        if (pipe(convertPipe)) {
+          LOG_FATAL_STR("Unable to initialize svg2ps pipe");
+          return;
+        }
+
+        Svg2Ps converter(svgFd, convertPipe[1]);
+        boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
+
+        if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
+          LOG_FATAL_MSG("unable to open print file", filename.toStdString());
+          return;
+        }
+      } else {
+        input_file = cupsFileOpen(filename.toLocal8Bit(), "r");
+      }
+
       if (!input_file) {
-        LOG_ERR("Error opening postscript file");
+        LOG_ERR_MSG("Error opening file", filename.toStdString());
         return;
       }
+
       LaserConfig::inst().basename = finfo.baseName().toStdString();
       if (!psparser->parse(input_file)) {
         LOG_FATAL("Error processing postscript");
@@ -128,7 +167,7 @@ void MainWindow::openFile(const QString &filename)
         this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
     }
-    else if (suffix == "vector") {
+    else if (inputType == VECTOR) {
       this->cutmodel = CutModel::load(filename.toStdString());
       if (!this->cutmodel) {
         fprintf(stderr, "Error: Unable to open vector file\n");
