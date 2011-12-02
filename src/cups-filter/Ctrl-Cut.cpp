@@ -192,19 +192,19 @@ int main(int argc, char *argv[]) {
     }
     else if (suffix == "svg") {
       // Try to open the print file...
-      int mypipe[2];
+      int convertPipe[2];
       FILE *svgIn = fopen(arg_filename, "r");
       int svgFd = fileno (svgIn);
 
-      if (pipe(mypipe)) {
+      if (pipe(convertPipe)) {
         fprintf(stderr, "Pipe failed.\n");
         return EXIT_FAILURE;
       }
 
-      Svg2Pdf converter(svgFd, mypipe[1]);
-      boost::thread svg_converter_thread(&Svg2Pdf::convert, converter);
+      Svg2Ps converter(svgFd, convertPipe[1]);
+      boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
 
-      if ((input_file = cupsFileOpenFd(mypipe[0], "r")) == NULL) {
+      if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
         LOG_FATAL_MSG("unable to open print file", arg_filename);
         return 1;
       }
