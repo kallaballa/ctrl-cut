@@ -29,13 +29,13 @@
 
 #define PIXELS_PER_POINT 1
 
-class Svg2Pdf {
+class Svg2Ps {
 private:
   int fdIn, fdOut;
   bool doFixSvg;
 public:
 
-  Svg2Pdf(int fdIn, int fdOut, bool doFixSvg=true) : fdIn(fdIn), fdOut(fdOut), doFixSvg(doFixSvg) { }
+  Svg2Ps(int fdIn, int fdOut, bool doFixSvg=true) : fdIn(fdIn), fdOut(fdOut), doFixSvg(doFixSvg) { }
   void convert();
 
 };

@@ -36,7 +36,7 @@ cairo_status_t cairowrite(void *closure, const unsigned char *data,
   return CAIRO_STATUS_SUCCESS;
 }
 
-void Svg2Pdf::convert() {
+void Svg2Ps::convert() {
   int svgFixPipe[2];
   if (pipe(svgFixPipe)) {
     fprintf(stderr, "Pipe failed.\n");
