@@ -123,7 +123,6 @@ CutModel *CutModel::load(LaserConfig& config, std::istream &input) {
   LOG_INFO_STR("Load vector data");
   int segmentCnt = 0;
   while (std::getline(input, line)) {
-    std::cerr << line << std::endl;
     first = line[0];
 
     if (first == 'X') { // End of output
