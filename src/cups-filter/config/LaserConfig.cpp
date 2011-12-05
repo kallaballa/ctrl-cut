@@ -81,7 +81,7 @@ void LaserConfig::loadDefaults() {
 /*!
  Copy supported options into the supplied laser_configa
  */
-LaserConfig& LaserConfig::parseCupsOptions(cups_option_s *options, int numOptions)
+void LaserConfig::initFromCups(cups_option_s *options, int numOptions)
 {
   CupsOptions cupsOptions(options, numOptions);
   LaserConfig& config = *(new LaserConfig());
@@ -183,9 +183,9 @@ LaserConfig& LaserConfig::parseCupsOptions(cups_option_s *options, int numOption
     LOG_FATAL_STR("Resolution not specified.");
   }
 
+  assert(LaserConfig::instance == NULL);
   LaserConfig::instance = &config;
   config.dumpDebug();
-  return config;
 }
 
 void LaserConfig::dumpDebug()
@@ -280,10 +280,10 @@ void LaserConfig::calculate_base_position()
   this->basey = this->basey * this->resolution / 72;
 }
 
-const double LaserConfig::getGraphicsDeviceWidth() const {
-  return this->laserCutter.bedSize.width.in(PX, 72) * this->resolution;
+const uint32_t LaserConfig::getGraphicsDeviceWidth() const {
+  return round(this->laserCutter.bedSize.width.in(PX, this->resolution));
 }
 
-const double LaserConfig::getGraphicsDeviceHeight() const {
-  return this->laserCutter.bedSize.height.in(PX, 72) * this->resolution;
+const uint32_t LaserConfig::getGraphicsDeviceHeight() const {
+  return round(this->laserCutter.bedSize.height.in(PX, this->resolution));
 }

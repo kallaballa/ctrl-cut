@@ -210,7 +210,6 @@ public:
       return true;
     } else {
       const Point& last = *points.back();
-      bool front = false;
       if (last == seg->first) {
         segments.push_back(seg);
         points.push_back(&seg->second);
@@ -218,7 +217,6 @@ public:
         segments.push_back(new Segment(seg->second, seg->first, seg->settings));
         points.push_back(&seg->first);
       } else {
-        front = true;
         const Point& first = *points.front();
         if (first == seg->first) {
           segments.push_front(new Segment(seg->second, seg->first, seg->settings));

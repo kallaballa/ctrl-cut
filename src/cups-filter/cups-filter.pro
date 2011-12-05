@@ -21,11 +21,13 @@ SOURCES += \
           Ctrl-Cut.cpp \
           LaserJob.cpp \
           PostscriptParser.cpp \
-          util/LaserConfig.cpp \
           util/Eps.cpp \
-	  util/Svg2Ps.cpp \
-	  util/SvgFix.cpp \
-	  util/SvgDocument.cpp \
+	  config/CtrlCutOptions.cpp \
+	  config/LaserConfig.cpp \
+	  svg/Svg2Ps.cpp \
+	  svg/SvgDocument.cpp \
+	  svg/SvgFix.cpp \
+	  util/Measurement.cpp \
           tri_logger/tri_logger.cpp \
           vector/HPGLEncoder.cpp \
           vector/graph/SegmentGraph.cpp \
@@ -44,10 +46,14 @@ HEADERS += \
           util/PJL.h \
           util/Eps.h \
           util/Logger.h \
-          util/LaserConfig.h \
-          util/Svg2Ps.h \
-	  util/SvgFix.h \
-          util/SvgDocument.cpp \
+	  config/CtrlCutOptions.h \
+	  config/CupsOptions.h \
+	  config/LaserConfig.h \
+	  config/LaserCutter.h \
+	  svg/Svg2Ps.h \
+	  svg/SvgDocument.h \
+	  svg/SvgFix.h \
+	  util/Measurement.h \
 	  Ctrl-Cut.h \
           Driver.h \
           vector/graph/Traverse.h \

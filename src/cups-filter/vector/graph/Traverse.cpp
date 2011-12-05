@@ -61,8 +61,8 @@ void check_linestrings(StringList::iterator first, StringList::iterator last) {
 
   for(StringList::iterator it = first; it != last; ++it) {
     const SegmentString& string = **it;
-    double gdWidth = LaserConfig::inst().getGraphicsDeviceWidth();
-    double gdHeight = LaserConfig::inst().getGraphicsDeviceHeight();
+    double gdWidth = LaserConfig::getInstance().getGraphicsDeviceWidth();
+    double gdHeight = LaserConfig::getInstance().getGraphicsDeviceHeight();
 
     for(SegmentString::SegmentConstIter it_s =  string.beginSegments(); it_s != string.endSegments(); ++it_s) {
       const Segment& seg = **it_s;
@@ -123,13 +123,11 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   double len = 0.0;
   boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
-  const StringGraph::Vertex* nextVertex = NULL;
   const SegmentString* nextString = NULL;
   std::set<const SegmentString*> traversedStrings;
 
   for (vector<StringGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {
-    nextVertex = &(*it);
     nextString = graph[*it].owner;
 
     if (nextString != NULL && traversedStrings.find(nextString) == traversedStrings.end()) {

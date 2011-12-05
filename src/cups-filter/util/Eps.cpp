@@ -66,8 +66,6 @@ bool get_bbox_from_string(const char *str, int &lower_left_x, int &lower_left_y,
  */
 bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
 {
-  int xoffset = 0;
-  int yoffset = 0;
   bool created_by_cairo = false;
   bool bboxfound = false;
   bool landscape = false;
@@ -104,8 +102,6 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
       bboxfound = get_bbox_from_string(buf + 18, lower_left_x, lower_left_y, upper_right_x, upper_right_y);
       if (bboxfound) {
         LOG_DEBUG_STR("Found bbox from %%PageBoundingBox");
-        xoffset = lower_left_x;
-        yoffset = lower_left_y;
         int width = upper_right_x - lower_left_x;
         int height = upper_right_y - lower_left_y;
 
@@ -149,8 +145,6 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
       bboxfound = get_bbox_from_string(buf + 14, lower_left_x, lower_left_y, upper_right_x, upper_right_y);
       if (bboxfound) {
         LOG_DEBUG_STR("Found bbox from %%BoundingBox");
-        xoffset = lower_left_x;
-        yoffset = lower_left_y;
         // int width = upper_right_x - lower_left_x;
         // int height = upper_right_y - lower_left_y;
 

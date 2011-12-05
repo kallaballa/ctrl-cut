@@ -13,8 +13,8 @@ public:
   typedef SegmentList::iterator iterator;
   typedef SegmentList::const_iterator const_iterator;
 
-  CutModel() :
-    config(LaserConfig::inst()),
+  CutModel(LaserConfig& config) :
+    config(config),
     clipped(0),
     zerolength(0),
     segmentTree(),
@@ -60,8 +60,9 @@ public:
     this->segmentTree = other.segmentTree;
   }
 
-  static CutModel *load(const std::string &filename);
-  static CutModel *load(std::istream &input);
+  static CutModel *load(LaserConfig& config, const std::string &filename);
+  static CutModel *load(LaserConfig& config, std::istream &input);
+
   LaserConfig& config;
 protected:
   uint64_t clipped;
@@ -70,6 +71,7 @@ protected:
   SegmentList segmentIndex;
 
 private:
+
   Segment leftBedBorder;
   Segment bottomBedBorder;
   Segment rightBedBorder;

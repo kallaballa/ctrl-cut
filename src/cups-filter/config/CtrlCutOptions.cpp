@@ -72,7 +72,7 @@ void CtrlCutOptions::parseGetOpt(int argc, char *argv[]) {
   // Handle CUPS options
   cups_option_t *cups_options;
   size_t numCupsOptions = cupsParseOptions(options.c_str(), 0, &cups_options);
-  LaserConfig::parseCupsOptions(cups_options, numCupsOptions);
+  LaserConfig::initFromCups(cups_options, numCupsOptions);
 }
 
 LaserJob CtrlCutOptions::createJob() const {

@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 
   // Perform a check over the global values to ensure that they have values
   // that are within a tolerated range.
-  LaserConfig::inst().rangeCheck();
+  LaserConfig::getInstance().rangeCheck();
 
   LaserJob job = options.createJob();
 
@@ -102,20 +102,20 @@ int main(int argc, char *argv[]) {
   enum { FORMAT_POSTSCRIPT, FORMAT_VECTOR, FORMAT_PBM } inputformat = FORMAT_POSTSCRIPT;
 
   cups_file_t *input_file;
-  bool input_is_stdin = false;
+
   if (options.filename.empty()) {
     input_file = cupsFileStdin();
-    input_is_stdin = true;
-    LaserConfig::inst().datadir = "/tmp";
-    LaserConfig::inst().basename = "stdin";
+
+    LaserConfig::getInstance().datadir = "/tmp";
+    LaserConfig::getInstance().basename = "stdin";
   } else {
-    LaserConfig::inst().datadir = dirname(strdup(options.filename.c_str()));
+    LaserConfig::getInstance().datadir = dirname(strdup(options.filename.c_str()));
     string base = basename(strdup(options.filename.c_str()));
     
     string suffix = base.substr(base.rfind(".") + 1);
     transform ( suffix.begin(), suffix.end(), suffix.begin(), lower_case );
 
-    LaserConfig::inst().basename = base.erase(base.rfind("."));
+    LaserConfig::getInstance().basename = base.erase(base.rfind("."));
     
     if (suffix == "vector") {
       inputformat = FORMAT_VECTOR;
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
   FileParser *parser = NULL;
 
   if (inputformat == FORMAT_POSTSCRIPT) {
-    string file_basename = LaserConfig::inst().tempdir + "/" + LaserConfig::inst().basename.c_str();
+    string file_basename = LaserConfig::getInstance().tempdir + "/" + LaserConfig::getInstance().basename.c_str();
     
     // Write out the incoming cups data if debug is enabled.
     // FIXME: This is disabled for now since it has a bug:
@@ -189,11 +189,11 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    PostscriptParser *psparser = new PostscriptParser(LaserConfig::inst());
+    PostscriptParser *psparser = new PostscriptParser(LaserConfig::getInstance());
     // Uncomment this to force ghostscript to render to file using the ppmraw
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
-    switch (LaserConfig::inst().raster_dithering) {
+    switch (LaserConfig::getInstance().raster_dithering) {
     case LaserConfig::DITHER_DEFAULT:
       psparser->setRasterFormat(PostscriptParser::BITMAP);
       break;
@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (LaserConfig::inst().enable_raster) {
+  if (LaserConfig::getInstance().enable_raster) {
     Raster *raster = NULL;
     if (inputformat == FORMAT_PBM) {
       raster = Raster::load(filename_pbm);
@@ -244,12 +244,12 @@ int main(int argc, char *argv[]) {
   }
 
   CutModel *cut = NULL;
-  if (LaserConfig::inst().enable_vector) {
+  if (LaserConfig::getInstance().enable_vector) {
     if (inputformat == FORMAT_VECTOR) {
-      cut = CutModel::load(filename_vector);
+      cut = CutModel::load(LaserConfig::getInstance(),filename_vector);
     }
     else if (parser) {
-      cut = CutModel::load(parser->getVectorData());
+      cut = CutModel::load(LaserConfig::getInstance(),parser->getVectorData());
     }
     if (cut) job.addCut(cut);
   }

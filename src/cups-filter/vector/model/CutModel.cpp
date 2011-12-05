@@ -53,8 +53,8 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
     }
   }
 
-  double gdWidth = this->config.getGraphicsDeviceHeight();
-  double gdHeight = this->config.getGraphicsDeviceWidth();
+   double gdHeight = this->config.getGraphicsDeviceHeight();
+   double gdWidth = this->config.getGraphicsDeviceWidth();
 
   if(greater_than(seg->first.x,gdWidth - 1) || greater_than(seg->second.x,gdWidth - 1)) {
     if(greater_than(seg->first.x, gdWidth - 1) && greater_than(seg->second.x,gdWidth - 1)) {
@@ -113,8 +113,8 @@ CutModel::iterator CutModel::remove(iterator it_seg) {
 /*!
  Loads vector data from EPS/Ghostscript output
  */
-CutModel *CutModel::load(std::istream &input) {
-  CutModel *model = new CutModel();
+CutModel *CutModel::load(LaserConfig& config, std::istream &input) {
+  CutModel *model = new CutModel(config);
   std::string line;
   char first;
   int power, x, y;
@@ -180,9 +180,9 @@ CutModel *CutModel::load(std::istream &input) {
 /*!
  Loads vector data from EPS/Ghostscript output from the given file
  */
-CutModel *CutModel::load(const std::string &filename) {
+CutModel *CutModel::load(LaserConfig& config, const std::string &filename) {
   std::ifstream infile(filename.c_str(), std::ios_base::in);
-  return CutModel::load(infile);
+  return CutModel::load(config,infile);
 }
 
 void make_route(StringList& route, CutModel& model) {

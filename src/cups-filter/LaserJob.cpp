@@ -49,7 +49,7 @@ void LaserJob::addRaster(Raster* raster) {
 void LaserJob::serializeTo(std::ostream &out) {
   int i;
   // REFACTOR
-  LaserConfig* lconf = &LaserConfig::inst();
+  LaserConfig* lconf = &LaserConfig::getInstance();
 
 
   /* Print the printer job language header. */

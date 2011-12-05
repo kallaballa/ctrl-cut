@@ -15,6 +15,12 @@
 
 class LaserConfig
 {
+private:
+  LaserConfig();
+  void loadDefaults();
+  void calculate_base_position();
+
+  static LaserConfig *instance;
 public:
   enum RasterDithering {
     DITHER_DEFAULT,
@@ -103,24 +109,17 @@ public:
   bool enable_vector;
 
   ~LaserConfig() {}
-  static LaserConfig &inst() {
-    if(instance == NULL)
-      assert(false); // attempt to access uninitalized config
 
+  static LaserConfig &getInstance() {
+    assert(instance != NULL);
     return *instance;
   }
 
-  static LaserConfig& parseCupsOptions(cups_option_s *options, int numOptions);
-  const double getGraphicsDeviceWidth() const;
-  const double getGraphicsDeviceHeight() const;
+  static void initFromCups(cups_option_s *options, int numOptions);
+  const uint32_t getGraphicsDeviceWidth() const;
+  const uint32_t getGraphicsDeviceHeight() const;
   void rangeCheck();
   void dumpDebug();
-private:
-  LaserConfig();
-  void loadDefaults();
-  void calculate_base_position();
-
-  static LaserConfig *instance;
 };
 
 #endif /* LASER_CONFIG_H_ */

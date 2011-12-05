@@ -65,7 +65,7 @@ public:
   void setBedSize(const uint32_t& width, const uint32_t &height, const Unit& unit) {
     this->bedSize.width.value = width;
     this->bedSize.width.unit = unit;
-    this->bedSize.height.value = width;
+    this->bedSize.height.value = height;
     this->bedSize.height.unit = unit;
   }
 

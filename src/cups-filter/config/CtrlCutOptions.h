@@ -45,6 +45,7 @@ public:
   string options;
   string filename;
   string *queue_options;
+
   CtrlCutOptions() : dumpXML(false) {}
   virtual ~CtrlCutOptions() {}
 

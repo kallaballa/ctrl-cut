@@ -19,7 +19,7 @@
 
 
 #include "SvgDocument.h"
-#include <lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
 #include <algorithm>
 
 const Unit SvgDocument::parseUnit(const string unit) {

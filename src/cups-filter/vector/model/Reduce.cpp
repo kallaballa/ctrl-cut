@@ -48,7 +48,7 @@ void reduce_linestrings(CutModel &model, float epsilon)
   SegmentGraph graph;
   StringList join;
   make_linestrings(join, model.begin(), model.end(), graph);
-  CutModel newModel;
+  CutModel newModel(model.config);
 
   // Reduce each polyline separately
   for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
