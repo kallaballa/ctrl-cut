@@ -9,9 +9,8 @@
 #include "boost/format.hpp"
 
 #include "util/PJL.h"
-#include "util/LaserConfig.h"
-#include "vector/HPGLEncoder.h"
 #include "raster/Raster.h"
+#include "vector/HPGLEncoder.h"
 #include "raster/PclEncoder.h"
 #include "vector/model/CutModel.h"
 
@@ -26,10 +25,8 @@ public:
 
   std::list<CutModel*> cuts;
   std::list<Raster*> rasters;
-  LaserConfig *lconf;
 
-  LaserJob(LaserConfig *lconf, 
-           const string &user, const string &name, const string &title);
+  LaserJob(const string &user, const string &name, const string &title);
   virtual ~LaserJob();
 
   void optimize();

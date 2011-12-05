@@ -2,9 +2,8 @@
 #define RENDERER_H_
 
 #include <map>
-
-#include "util/LaserConfig.h"
 #include "LaserJob.h"
+#include "config/LaserConfig.h"
 #include "vector/model/CutModel.h"
 
 class HPGLEncoder {

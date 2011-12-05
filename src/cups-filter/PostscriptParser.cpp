@@ -259,7 +259,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
 
   argstrings.push_back(str(format("-r%d") % this->conf.resolution));
   argstrings.push_back(str(format("-g%dx%d")
-                           % this->conf.device_width % this->conf.device_height));
+                           % this->conf.getGraphicsDeviceWidth() % this->conf.getGraphicsDeviceHeight()));
 
   if (!this->conf.enable_raster) {
     argstrings.push_back("-sDEVICE=nullpage");

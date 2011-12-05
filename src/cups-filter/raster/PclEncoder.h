@@ -22,7 +22,7 @@
 
 #include <map>
 
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
 #include "util/PJL.h"
 #include "util/2D.h"
 #include "Raster.h"

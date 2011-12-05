@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more de0tails.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -28,7 +28,8 @@
 #include <libgen.h>
 
 #include "util/Logger.h"
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
+#include "config/CtrlCutOptions.h"
 #include "util/Eps.h"
 #include "vector/model/CutModel.h"
 #include "LaserJob.h"
@@ -40,7 +41,7 @@
 
 #include "FileParser.h"
 #include <boost/thread.hpp>
-#include "util/Svg2Ps.h"
+#include "svg/Svg2Ps.h"
 
 /** The laser cutter configuration **/
 LogLevel cc_loglevel = CC_WARNING;
@@ -49,13 +50,6 @@ LogLevel cc_loglevel = CC_WARNING;
 char buf[102400];
 
 const char *queue_options = "";
-
-static void printEnv(const char *env) {
-  const char *envstr = getenv(env);
-  if (envstr) {
-    LOG_DEBUG_MSG(env, envstr);
-  }
-}
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -93,73 +87,14 @@ int main(int argc, char *argv[]) {
   // Make sure status messages are not buffered
   setbuf(stderr, NULL);
 
-  // Extract non-CUPS cmd-line parameters
-  bool dumpxml = false;
-  int c;
-  while ((c = getopt(argc, argv, "x")) != -1) {
-    switch (c) {
-    case 'x':
-      dumpxml = true;
-      break;
-    case ':':
-      printUsage(argv[0]);
-      break;
-    case '?':
-      printUsage(argv[0]);
-      break;
-    }
-  }
-  /** FIXME: free of cwd impairs logger???
-  char *cwd = getwd(NULL);
-  LOG_DEBUG(cwd);
-  free(cwd);
-  */
+  CtrlCutOptions options;
+  options.parseGetOpt(argc, argv);
 
-  // Now, only standard CUPS parameters should be left
-  int cupsargs = argc - optind;
-  if (cupsargs < 5 || cupsargs > 6) {
-    printUsage(argv[0]);
-  }
-
-  for (int i = optind; i < argc; i++) {
-    LOG_DEBUG(argv[i]);
-  }
-
-  // Env. variable debug output
-  printEnv("CHARSET");
-  printEnv("CLASS");
-  printEnv("CONTENT_TYPE");
-  printEnv("CUPS_CACHEDIR");
-  printEnv("CUPS_DATADIR");
-  printEnv("CUPS_FILETYPE");
-  printEnv("CUPS_SERVERROOT");
-  printEnv("DEVICE_URI");
-  printEnv("FINAL_CONTENT_TYPE");
-  printEnv("LANG");
-  printEnv("PPD");
-  printEnv("PRINTER");
-  printEnv("RIP_CACHE");
-  // FIXME: Use the TMPDIR to set LaserConfig::tempdir
-  printEnv("TMPDIR");
-  printEnv("PATH");
-
-  // FIXME: Register a signal handler to support cancelling of jobs
-  const char *arg_jobid = argv[optind];
-  const char *arg_user = argv[optind + 1];
-  const char *arg_title = argv[optind + 2];
-  const char *arg_copies = argv[optind + 3];
-  const char *arg_options = argv[optind + 4];
-  const char *arg_filename = (cupsargs == 6) ? argv[optind + 5] : NULL;
-
-  // Handle CUPS options
-  cups_option_t *options;
-  int numOptions = cupsParseOptions(arg_options, 0, &options);
-  LaserConfig::inst().setCupsOptions(options, numOptions);
   // Perform a check over the global values to ensure that they have values
   // that are within a tolerated range.
   LaserConfig::inst().rangeCheck();
 
-  LaserJob job(&LaserConfig::inst(), arg_user, arg_jobid, arg_title);
+  LaserJob job = options.createJob();
 
   string filename_vector;
   string filename_pbm;
@@ -168,14 +103,14 @@ int main(int argc, char *argv[]) {
 
   cups_file_t *input_file;
   bool input_is_stdin = false;
-  if (cupsargs == 5) {
+  if (options.filename.empty()) {
     input_file = cupsFileStdin();
     input_is_stdin = true;
     LaserConfig::inst().datadir = "/tmp";
     LaserConfig::inst().basename = "stdin";
   } else {
-    LaserConfig::inst().datadir = dirname(strdup(arg_filename));
-    string base = basename(strdup(arg_filename));
+    LaserConfig::inst().datadir = dirname(strdup(options.filename.c_str()));
+    string base = basename(strdup(options.filename.c_str()));
     
     string suffix = base.substr(base.rfind(".") + 1);
     transform ( suffix.begin(), suffix.end(), suffix.begin(), lower_case );
@@ -184,16 +119,14 @@ int main(int argc, char *argv[]) {
     
     if (suffix == "vector") {
       inputformat = FORMAT_VECTOR;
-      filename_vector = arg_filename;
-    }
-    else if (suffix == "pbm") {
+      filename_vector = options.filename;
+    } else if (suffix == "pbm") {
       inputformat = FORMAT_PBM;
-      filename_pbm = arg_filename;
-    }
-    else if (suffix == "svg") {
+      filename_pbm = options.filename;
+    } else if (suffix == "svg") {
       // Try to open the print file...
       int convertPipe[2];
-      FILE *svgIn = fopen(arg_filename, "r");
+      FILE *svgIn = fopen(options.filename.c_str(), "r");
       int svgFd = fileno (svgIn);
 
       if (pipe(convertPipe)) {
@@ -205,13 +138,13 @@ int main(int argc, char *argv[]) {
       boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
 
       if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", arg_filename);
+        LOG_FATAL_MSG("unable to open print file", options.filename.c_str());
         return 1;
       }
     } else {
       // Try to open the print file...
-      if ((input_file = cupsFileOpen(arg_filename, "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", arg_filename);
+      if ((input_file = cupsFileOpen(options.filename.c_str(), "r")) == NULL) {
+        LOG_FATAL_MSG("unable to open print file", options.filename.c_str());
         return 1;
       }
     }
@@ -322,7 +255,7 @@ int main(int argc, char *argv[]) {
   }
 
   Driver drv;
-  if (dumpxml) drv.enableXML(true);
+  if (options.dumpXML) drv.enableXML(true);
   std::stringstream ss;
   drv.process(&job, ss);
   LOG_DEBUG_MSG("Output size", ss.str().size());

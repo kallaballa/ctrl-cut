@@ -21,7 +21,7 @@
 #include "CutGraph.h"
 #include "Traverse.h"
 #include "util/Logger.h"
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
 #include <boost/graph/properties.hpp>
 #include <boost/graph/metric_tsp_approx.hpp>
 
@@ -61,16 +61,18 @@ void check_linestrings(StringList::iterator first, StringList::iterator last) {
 
   for(StringList::iterator it = first; it != last; ++it) {
     const SegmentString& string = **it;
+    double gdWidth = LaserConfig::inst().getGraphicsDeviceWidth();
+    double gdHeight = LaserConfig::inst().getGraphicsDeviceHeight();
 
     for(SegmentString::SegmentConstIter it_s =  string.beginSegments(); it_s != string.endSegments(); ++it_s) {
       const Segment& seg = **it_s;
       // assert the segments are globally unique
       assert(segments.find(seg) == segments.end() && segments.find(Segment(seg.second, seg.first, seg.settings)) == segments.end());
       // assert coordinate clipping to laser bed
-      assert(seg.first.x >= 0 && lesser_than(seg.first.x,LaserConfig::inst().device_width)
-          && seg.first.y >= 0 && lesser_than(seg.first.y,LaserConfig::inst().device_height)
-          && seg.second.x >= 0 && lesser_than(seg.second.x,LaserConfig::inst().device_width)
-          && seg.second.y >= 0 && lesser_than(seg.second.y,LaserConfig::inst().device_height)
+      assert(seg.first.x >= 0 && lesser_than(seg.first.x,gdWidth)
+          && seg.first.y >= 0 && lesser_than(seg.first.y,gdHeight)
+          && seg.second.x >= 0 && lesser_than(seg.second.x,gdWidth)
+          && seg.second.y >= 0 && lesser_than(seg.second.y,gdHeight)
       );
       segments.insert(seg);
     }

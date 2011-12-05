@@ -24,9 +24,8 @@
 using boost::format;
 using std::list;
 
-LaserJob::LaserJob(LaserConfig *lconf, const string &user, const string &name,
+LaserJob::LaserJob(const string &user, const string &name,
     const string &title) {
-  this->lconf = lconf;
   this->user = user;
   this->name = name;
   this->title = title;
@@ -49,11 +48,14 @@ void LaserJob::addRaster(Raster* raster) {
  */
 void LaserJob::serializeTo(std::ostream &out) {
   int i;
-  /* Print the printer job language header. */
+  // REFACTOR
+  LaserConfig* lconf = &LaserConfig::inst();
 
+
+  /* Print the printer job language header. */
   out << format(PJL_HEADER) % this->title.c_str();
   /* Set autofocus on or off. */
-  out << format(PCL_AUTOFOCUS) % this->lconf->focus;
+  out << format(PCL_AUTOFOCUS) % lconf->focus;
   /* FIXME unknown purpose. */
   out << PCL_UNKNOWN_BLAFOO;
   /* FIXME unknown purpose. */
@@ -67,13 +69,13 @@ void LaserJob::serializeTo(std::ostream &out) {
    */
   out << format(PCL_OFF_Y) % 0;
   /* Resolution of the print. */
-  out << format(PCL_PRINT_RESOLUTION) % this->lconf->resolution;
+  out << format(PCL_PRINT_RESOLUTION) % lconf->resolution;
   /* X position = 0 */
   out << format(PCL_POS_X) % 0;
   /* Y position = 0 */
   out << format(PCL_POS_Y) % 0;
   /* PCL resolution. */
-  out << format(PCL_RESOLUTION) % this->lconf->resolution;
+  out << format(PCL_RESOLUTION) % lconf->resolution;
 
   // Raster Orientation
   out << format(R_ORIENTATION) % 0;
@@ -85,8 +87,8 @@ void LaserJob::serializeTo(std::ostream &out) {
   out << format(R_SPEED) % lconf->raster_speed;
 
   out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % lconf->device_height;
-  out << format(R_WIDTH) % lconf->device_width;
+  out << format(R_HEIGHT) % lconf->getGraphicsDeviceHeight();
+  out << format(R_WIDTH) % lconf->getGraphicsDeviceWidth();
   // Raster compression
   int compressionLevel = 2;
 
@@ -96,18 +98,18 @@ void LaserJob::serializeTo(std::ostream &out) {
    * information to the print job.
    */
 
-  if (this->lconf->enable_raster && !this->rasters.empty()) {
+  if (lconf->enable_raster && !this->rasters.empty()) {
     for (list<Raster*>::iterator it = this->rasters.begin(); it != this->rasters.end(); it++) {
       Raster *raster = *it;
       if (raster) {
         LOG_DEBUG_STR("Encoding raster...");
-        PclEncoder r(this->lconf);
+        PclEncoder r(lconf);
         r.encode(raster, out);
       }
     }
   }
 
-  if (this->lconf->enable_vector && !this->cuts.empty()) {
+  if (lconf->enable_vector && !this->cuts.empty()) {
     // FIXME: This is to emulate the LT bug in the Epilog drivers:
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
@@ -123,7 +125,7 @@ void LaserJob::serializeTo(std::ostream &out) {
     /* We're going to perform a vector print. */
     for (list<CutModel*>::iterator it = this->cuts.begin(); it != this->cuts.end(); it++) {
       CutModel *model = *it;
-      HPGLEncoder r(this->lconf);
+      HPGLEncoder r(lconf);
       r.encode(*model,out);
     }
   }

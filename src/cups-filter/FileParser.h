@@ -8,7 +8,7 @@
 #include <fstream>
 #include <vector>
 
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
 #include "raster/Image.h"
 
 class FileParser

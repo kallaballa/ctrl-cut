@@ -4,9 +4,9 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "util/LaserConfig.h"
 #include "vector/geom/Geometry.h"
 #include "vector/geom/SegmentTree.h"
+#include "config/LaserConfig.h"
 
 class CutModel {
 public:
@@ -18,10 +18,10 @@ public:
     clipped(0),
     zerolength(0),
     segmentTree(),
-    leftBedBorder(*new Point(0, 0), *new Point(0, config.device_height-1), *new CutSettings(0,0,0)),
-    bottomBedBorder(*new Point(0, config.device_height-1), *new Point(config.device_width-1,config.device_height-1), *new CutSettings(0,0,0)),
-    rightBedBorder(*new Point(config.device_width-1, config.device_height-1), *new Point(config.device_width-1, 0), *new CutSettings(0,0,0)),
-    topBedBorder(*new Point(config.device_width-1, 0), *new Point(0, 0), *new CutSettings(0,0,0)),
+    leftBedBorder(*new Point(0, 0), *new Point(0, config.getGraphicsDeviceHeight()-1), *new CutSettings(0,0,0)),
+    bottomBedBorder(*new Point(0, config.getGraphicsDeviceHeight()-1), *new Point(config.getGraphicsDeviceWidth()-1,config.getGraphicsDeviceHeight()-1), *new CutSettings(0,0,0)),
+    rightBedBorder(*new Point(config.getGraphicsDeviceWidth()-1, config.getGraphicsDeviceHeight()-1), *new Point(config.getGraphicsDeviceWidth()-1, 0), *new CutSettings(0,0,0)),
+    topBedBorder(*new Point(config.getGraphicsDeviceWidth()-1, 0), *new Point(0, 0), *new CutSettings(0,0,0)),
     translation(Point(0,0))
   {}
 

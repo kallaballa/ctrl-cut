@@ -25,7 +25,7 @@
 #include "util/2D.h"
 #include "Image.h"
 #include "assert.h"
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
 
 class Dither {
 public:

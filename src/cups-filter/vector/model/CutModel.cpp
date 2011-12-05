@@ -53,8 +53,11 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
     }
   }
 
-  if(greater_than(seg->first.x,this->config.device_width - 1) || greater_than(seg->second.x,this->config.device_width - 1)) {
-    if(greater_than(seg->first.x, this->config.device_width - 1) && greater_than(seg->second.x,this->config.device_width - 1)) {
+  double gdWidth = this->config.getGraphicsDeviceHeight();
+  double gdHeight = this->config.getGraphicsDeviceWidth();
+
+  if(greater_than(seg->first.x,gdWidth - 1) || greater_than(seg->second.x,gdWidth - 1)) {
+    if(greater_than(seg->first.x, gdWidth - 1) && greater_than(seg->second.x,gdWidth - 1)) {
       this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings)); // out of bounds;
     }
@@ -70,8 +73,8 @@ const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
     }
   }
 
-  if(greater_than(seg->first.y, this->config.device_height - 1) || greater_than(seg->second.y,this->config.device_height - 1)) {
-    if(greater_than(seg->first.y, this->config.device_height - 1) && greater_than(seg->second.y,this->config.device_height - 1)) {
+  if(greater_than(seg->first.y, gdHeight - 1) || greater_than(seg->second.y,gdHeight - 1)) {
+    if(greater_than(seg->first.y, gdHeight - 1) && greater_than(seg->second.y,gdHeight - 1)) {
       this->clipped++;
       return (* new Segment(*new Point(), *new Point(), seg->settings)); // out of bounds;
     }

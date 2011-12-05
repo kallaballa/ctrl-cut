@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <boost/math/special_functions.hpp>
 #include <boost/tuple/tuple.hpp>
-#include "util/LaserConfig.h"
+#include "config/LaserConfig.h"
 
 static const float CC_PI = atan2(0,-1);
 
