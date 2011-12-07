@@ -28,20 +28,10 @@
 #include <libgen.h>
 
 #include "util/Logger.h"
-#include "config/LaserConfig.h"
+#include "Document.h"
 #include "config/CtrlCutOptions.h"
-#include "util/Eps.h"
-#include "vector/model/CutModel.h"
-#include "LaserJob.h"
 #include "Driver.h"
 #include "Ctrl-Cut.h"
-
-#include <cups/cups.h>
-#include <cups/file.h>
-
-#include "FileParser.h"
-#include <boost/thread.hpp>
-#include "svg/Svg2Ps.h"
 
 /** The laser cutter configuration **/
 LogLevel cc_loglevel = CC_WARNING;
@@ -87,172 +77,18 @@ int main(int argc, char *argv[]) {
   // Make sure status messages are not buffered
   setbuf(stderr, NULL);
 
+  Document job;
   CtrlCutOptions options;
-  options.parseGetOpt(argc, argv);
-
+  job.settings.resetToDefaults();
+  options.parseGetOpt(job.settings, argc, argv);
   // Perform a check over the global values to ensure that they have values
   // that are within a tolerated range.
-  LaserConfig::getInstance().rangeCheck();
-
-  LaserJob job = options.createJob();
+  job.settings.rangeCheck();
 
   string filename_vector;
   string filename_pbm;
 
-  enum { FORMAT_POSTSCRIPT, FORMAT_VECTOR, FORMAT_PBM } inputformat = FORMAT_POSTSCRIPT;
-
-  cups_file_t *input_file;
-
-  if (options.filename.empty()) {
-    input_file = cupsFileStdin();
-
-    LaserConfig::getInstance().datadir = "/tmp";
-    LaserConfig::getInstance().basename = "stdin";
-  } else {
-    LaserConfig::getInstance().datadir = dirname(strdup(options.filename.c_str()));
-    string base = basename(strdup(options.filename.c_str()));
-    
-    string suffix = base.substr(base.rfind(".") + 1);
-    transform ( suffix.begin(), suffix.end(), suffix.begin(), lower_case );
-
-    LaserConfig::getInstance().basename = base.erase(base.rfind("."));
-    
-    if (suffix == "vector") {
-      inputformat = FORMAT_VECTOR;
-      filename_vector = options.filename;
-    } else if (suffix == "pbm") {
-      inputformat = FORMAT_PBM;
-      filename_pbm = options.filename;
-    } else if (suffix == "svg") {
-      // Try to open the print file...
-      int convertPipe[2];
-      FILE *svgIn = fopen(options.filename.c_str(), "r");
-      int svgFd = fileno (svgIn);
-
-      if (pipe(convertPipe)) {
-        fprintf(stderr, "Pipe failed.\n");
-        return EXIT_FAILURE;
-      }
-
-      Svg2Ps converter(svgFd, convertPipe[1]);
-      boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
-
-      if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", options.filename.c_str());
-        return 1;
-      }
-    } else {
-      // Try to open the print file...
-      if ((input_file = cupsFileOpen(options.filename.c_str(), "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", options.filename.c_str());
-        return 1;
-      }
-    }
-  }
-
-  FileParser *parser = NULL;
-
-  if (inputformat == FORMAT_POSTSCRIPT) {
-    string file_basename = LaserConfig::getInstance().tempdir + "/" + LaserConfig::getInstance().basename.c_str();
-    
-    // Write out the incoming cups data if debug is enabled.
-    // FIXME: This is disabled for now since it has a bug:
-    // If we're reading from network/stdin, and debug is on, we reopen
-    // the dumped file as a FILE*. Otherwise, we'll keep the cups_file_t.
-    // Subsequent code doesn't handle the difference.
-#if 0
-    FILE *file_debug;
-    FILE *file_cups;
-    string filename_cups_debug;
-    if (cc_loglevel >= CC_DEBUG) {
-      /* We save the incoming cups data to the filesystem. */
-      filename_cups_debug = file_basename + ".cups";
-      file_debug = fopen(filename_cups_debug.c_str(), "w");
-      
-      /* Check that file handle opened. */
-      if (!file_debug) {
-        LOG_FATAL_MSG("Can't open", filename_cups_debug);
-        return 1;
-      }
-      
-      /* Write cups data to the filesystem. */
-      int l;
-      while ((l = cupsFileRead(input_file, buf, sizeof(buf))) > 0) {
-        fwrite(buf, 1, l, file_debug);
-      }
-      fclose(file_debug);
-      /* In case file_cups pointed to stdin we close the existing file handle
-       * and switch over to using the debug file handle.
-       */
-      cupsFileClose(input_file);
-      file_cups = fopen(filename_cups_debug, "r");
-    }
-#endif
-
-    PostscriptParser *psparser = new PostscriptParser(LaserConfig::getInstance());
-    // Uncomment this to force ghostscript to render to file using the ppmraw
-    // backend, instead of in-memory rendering
-    //    psparser->setRenderToFile(true);
-    switch (LaserConfig::getInstance().raster_dithering) {
-    case LaserConfig::DITHER_DEFAULT:
-      psparser->setRasterFormat(PostscriptParser::BITMAP);
-      break;
-    case LaserConfig::DITHER_BAYER:
-    case LaserConfig::DITHER_FLOYD_STEINBERG:
-    case LaserConfig::DITHER_JARVIS:
-    case LaserConfig::DITHER_BURKE:
-    case LaserConfig::DITHER_STUCKI:
-    case LaserConfig::DITHER_SIERRA2:
-    case LaserConfig::DITHER_SIERRA3:
-      psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
-      break;
-
-    default:
-      assert(false);
-    }
-    if (!psparser->parse(input_file)) {
-      LOG_FATAL("Error processing postscript");
-      return 1;
-    }
-    else {
-      parser = psparser;
-    }
-  }
-
-  if (LaserConfig::getInstance().enable_raster) {
-    Raster *raster = NULL;
-    if (inputformat == FORMAT_PBM) {
-      raster = Raster::load(filename_pbm);
-    }
-    else if (parser) {
-      if (parser->hasBitmapData()) {
-        LOG_DEBUG_STR("Processing bitmap data from memory");
-        raster = new Raster(parser->getImage());
-      }
-      else if (!parser->getBitmapFile().empty()) {
-        raster = Raster::load(parser->getBitmapFile());
-      }
-      else {
-        LOG_FATAL("No bitmap available from FileParser");
-        return 1;
-      }
-    }
-    if (raster) {
-      raster->addTile(raster->sourceImage());
-      job.addRaster(raster);
-    }
-  }
-
-  CutModel *cut = NULL;
-  if (LaserConfig::getInstance().enable_vector) {
-    if (inputformat == FORMAT_VECTOR) {
-      cut = CutModel::load(LaserConfig::getInstance(),filename_vector);
-    }
-    else if (parser) {
-      cut = CutModel::load(LaserConfig::getInstance(),parser->getVectorData());
-    }
-    if (cut) job.addCut(cut);
-  }
+  job.load(options.filename);
 
   Driver drv;
   if (options.dumpXML) drv.enableXML(true);
@@ -260,9 +96,6 @@ int main(int argc, char *argv[]) {
   drv.process(&job, ss);
   LOG_DEBUG_MSG("Output size", ss.str().size());
   std::cout << ss.rdbuf();
-
-  delete cut;
-  delete parser;
 
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;
