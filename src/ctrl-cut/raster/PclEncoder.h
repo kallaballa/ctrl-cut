@@ -31,11 +31,11 @@ class PclEncoder {
 
 public:
 	void averageXSequence(GrayscaleImage *img, int fromX, int toX, int y, Pixel<uint8_t>& p);
-	void encode(Raster* raster, std::ostream &out);
-	void encodeBitmapTile(BitmapImage* tile, std::ostream& out);
+	void encode(std::ostream &out, Raster& raster);
+	void encodeBitmapTile(Raster& raster, BitmapImage* tile, std::ostream& out);
 
-	PclEncoder();
-	virtual ~PclEncoder();
+	PclEncoder() {};
+	virtual ~PclEncoder() {};
 };
 
 #endif /* PCL_RENDERER_H_ */

@@ -32,18 +32,15 @@ public:
     SHORTEST_PATH
   };
 
-  static Key OPTIMIZE;
-  static Key CLIP;
-  static Key CSPEED;
-  static Key CPOWER;
-  static Key FREQUENCY;
-  static Key REDUCE;
+  static Key<Optimize> OPTIMIZE;
+  static Key<bool> CLIP;
+  static Key<uint16_t> CSPEED;
+  static Key<uint16_t> CPOWER;
+  static Key<uint16_t> FREQUENCY;
+  static Key<float> REDUCE;
 
-  CutSettings() : Settings(){}
   CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {}
   ~CutSettings() {}
-  virtual void resetToDefaults();
-  virtual void rangeCheck();
 };
 
 #endif /* CUT_SETTINGS_H_ */

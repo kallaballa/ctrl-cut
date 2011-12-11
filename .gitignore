@@ -6,3 +6,4 @@ tmp-*
 Makefile
 /tmp/*
 *.dSYM
+*.o

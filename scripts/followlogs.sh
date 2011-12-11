@@ -16,11 +16,11 @@ function tailcases {
   findcases $dir | while read casedir; do
     casename="`basename $casedir`"
     casedir="`dirname $casedir`/$casename"
-    casepath="$casedir/$casename.log"
-    mkdir -p "$casedir"
-    touch "$casepath"
+    casepath="$casedir/ps.raw.log $casedir/svg.raw.log $casedir/ps.prn.log $casedir/svg.prn.log" 
+#    mkdir -p "$casedir"
+#    touch "$casepath"
     echo "$casepath"
-  done | xargs tail -n0 -F | egrep -v "^(==> .* <==)?$"
+  done | xargs tail -n0 -f --follow=name --retry
 }
 
 tailcases

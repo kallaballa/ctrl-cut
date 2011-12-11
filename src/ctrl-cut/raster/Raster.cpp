@@ -21,24 +21,19 @@
 
 int tile_cnt = 0;
 
-void Raster::addTile(AbstractImage *tile) {
-  this->tiles.push_back(tile);
+Raster::Raster(const std::string&filename, DocumentSettings& docSettings) : settings(docSettings)  {
+  std::string suffix = filename.substr(filename.rfind(".") + 1);
+  if (suffix == "ppm" || suffix == "pgm") {
+    this->sourceimage = loadppm(filename);
+  }
+  else {
+    this->sourceimage = loadpbm(filename);
+  }
+  if (this->sourceimage) {
+    this->sourceimage->translate(392, 516);
+  }
 }
 
-Raster *Raster::load(const std::string &filename) {
-  std::string suffix = filename.substr(filename.rfind(".") + 1);
-  AbstractImage *img = NULL;
-  if (suffix == "ppm" || suffix == "pgm") {
-    img = loadppm(filename);
-  }
-  else {
-    img = loadpbm(filename);
-  }
-  if (img) {
-    img->translate(392, 516);
-    return new Raster(img);
-  }
-  else {
-    return NULL;
-  }
+void Raster::addTile(AbstractImage *tile) {
+  this->tiles.push_back(tile);
 }

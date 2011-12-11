@@ -20,8 +20,6 @@
 #include "CtrlCutOptions.h"
 #include "config/CupsOptions.h"
 
-DocumentSettings CutModel::defaultDocSettings;
-
 void CtrlCutOptions::printUsage(const string &name) {
   cerr << name << " " << STRINGIFY(CTRLCUT_VERSION) << endl;
   cerr << "Usage: " << name << " [options] job-id user title copies options [file]" << endl << endl;
@@ -32,6 +30,7 @@ void CtrlCutOptions::printUsage(const string &name) {
 }
 
 void CtrlCutOptions::parseGetOpt(DocumentSettings& docSettings, int argc, char *argv[]) {
+  typedef DocumentSettings DS;
   // Extract non-CUPS cmd-line parameters
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
@@ -71,6 +70,8 @@ void CtrlCutOptions::parseGetOpt(DocumentSettings& docSettings, int argc, char *
   this->copies = argv[optind + 3];
   this->options = argv[optind + 4];
   this->filename = (cupsargs == 6) ? argv[optind + 5] : NULL;
+  docSettings.put(DS::USER, user);
+  docSettings.put(DS::TITLE, title);
 
   // Handle CUPS options
   cups_option_t *cups_options;

@@ -22,10 +22,9 @@ public:
     zerolength(0),
     segmentTree(),
     translation(Point(0,0))
-  {}
+  { }
 
-  virtual ~CutModel() {
-  }
+  virtual ~CutModel() {}
 
   iterator begin() { return this->segmentIndex.begin(); }
   const_iterator begin() const  { return this->segmentIndex.begin(); }

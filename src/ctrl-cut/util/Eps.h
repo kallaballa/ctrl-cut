@@ -6,6 +6,6 @@
 #include "config/DocumentSettings.h"
 
 extern char buf[102400];
-extern bool ps_to_eps(DocumentSettings *lconf, cups_file_t *ps_file, FILE *eps_file);
+extern bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file);
 
 #endif

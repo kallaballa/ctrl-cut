@@ -6,6 +6,8 @@
 #include "config/DocumentSettings.h"
 #include <fstream>
 
+DocumentSettings CutModel::defaultDocSettings;
+
 bool CutModel::createSegment(const Point &p1, const Point &p2,
     OpParams& settings) {
   // ignore zero length segments
@@ -18,9 +20,10 @@ bool CutModel::createSegment(const Point &p1, const Point &p2,
 }
 
 const Segment& CutModel::clipSegmentToLaserBed(const Segment &unclipped) {
-  int resolution = this->settings.get<int>(DocumentSettings::RESOLUTION);
-  double width = this->settings.get<Measurement>(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->settings.get<Measurement>(DocumentSettings::HEIGHT).in(PX, resolution);
+  typedef DocumentSettings ds;
+  int resolution = this->settings.get(ds::RESOLUTION);
+  double width = this->settings.get(ds::WIDTH).in(PX, resolution);
+  double height = this->settings.get(ds::HEIGHT).in(PX, resolution);
 
   Segment leftBedBorder(
       *new Point(0, 0),
@@ -225,9 +228,9 @@ void make_route(StringList& route, CutModel& model) {
     segmentsLast = model.end();
   }
 
-  CutSettings::Optimize optimize = model.settings.get<CutSettings::Optimize>(CutSettings::OPTIMIZE);
-  string datadir = model.settings.get<string>(DocumentSettings::DATA_DIR);
-  string basename = model.settings.get<string>(DocumentSettings::BASENAME);
+  CutSettings::Optimize optimize = model.settings.get(CutSettings::OPTIMIZE);
+  string datadir = model.settings.get(DocumentSettings::DATA_DIR);
+  string basename = model.settings.get(DocumentSettings::BASENAME);
 
   if(optimize == CutSettings::SIMPLE) {
     make_linestrings(route,segmentsFirst, segmentsLast);

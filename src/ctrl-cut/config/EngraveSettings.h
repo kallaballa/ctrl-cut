@@ -20,7 +20,8 @@
 #ifndef ENGRAVE_SETTINGS_H_
 #define ENGRAVE_SETTINGS_H_
 
-#include "Settings.h"
+#include <stdint.h>
+#include "config/DocumentSettings.h"
 
 class EngraveSettings : public Settings
 {
@@ -41,15 +42,13 @@ public:
     BOTTOMUP = 1
   };
 
-  static Key DITHERING;
-  static Key DIRECTION;
-  static Key EPOWER;
-  static Key ESPEED;
+  static Key<Dithering> DITHERING;
+  static Key<Direction> DIRECTION;
+  static Key<uint16_t> EPOWER;
+  static Key<uint16_t> ESPEED;
 
-  EngraveSettings(): Settings(){}
+  EngraveSettings(DocumentSettings& docSettings) : Settings(docSettings) {}
   ~EngraveSettings() {}
-  void resetToDefaults();
-  void rangeCheck();
 };
 
 #endif /* ENGRAVE_SETTINGS_H_ */

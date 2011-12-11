@@ -65,6 +65,9 @@ public:
     }
   }
 
+  typedef DocumentSettings DS;
+  typedef CutSettings CSET;
+  typedef EngraveSettings ESET;
 
   /*!
    Copy supported options into the supplied
@@ -72,16 +75,13 @@ public:
   void parseSettings(DocumentSettings& ds)
   {
     string v;
-    typedef DocumentSettings D_SET;
-    typedef CutSettings C_SET;
-    typedef EngraveSettings E_SET;
 
     if (this->get(DRIVER,v)) {
       if (v == "EpilogLegend") {
-        ds[D_SET::DRIVER] = LaserCutter::EPILOG_LEGEND;
+        ds.put(DS::DRIVER, LaserCutter::EPILOG_LEGEND);
       }
       else if (v == "EpilogZing") {
-        ds[D_SET::DRIVER] = LaserCutter::EPILOG_ZING;
+        ds.put(DS::DRIVER, LaserCutter::EPILOG_ZING);
       }
       else {
         LOG_WARN_MSG("Illegal value for Driver", v);
@@ -89,16 +89,16 @@ public:
     }
     if (this->get(BEDSIZE,v)) {
       if (v == "16x12") {
-        ds[D_SET::WIDTH] = Measurement(16, IN);
-        ds[D_SET::HEIGHT] = Measurement(12, IN);
+        ds.put(DS::WIDTH, Measurement(16, IN));
+        ds.put(DS::HEIGHT, Measurement(12, IN));
       }
       else if (v == "24x12") {
-        ds[D_SET::WIDTH] = Measurement(24, IN);
-        ds[D_SET::HEIGHT] = Measurement(12, IN);
+        ds.put(DS::WIDTH, Measurement(24, IN));
+        ds.put(DS::HEIGHT, Measurement(12, IN));
       }
       else if (v == "36x24") {
-        ds[D_SET::WIDTH] = Measurement(36, IN);
-        ds[D_SET::HEIGHT] = Measurement(24, IN);
+        ds.put(DS::WIDTH, Measurement(36, IN));
+        ds.put(DS::HEIGHT, Measurement(24, IN));
       }
       else {
         LOG_WARN_MSG("Illegal value for BedSize", v);
@@ -106,56 +106,55 @@ public:
     }
 
     if (this->get(AUTOFOCUS,v)) {
-      ds[D_SET::AUTO_FOCUS] = (v != "false");
+      ds.put(DS::AUTO_FOCUS, (v != "false"));
     }
     if (this->get(RESOLUTION,v)) {
-      ds[D_SET::RESOLUTION] = lexical_cast<uint16_t>(v);
+      ds.put(DS::RESOLUTION, lexical_cast<uint16_t>(v));
     }
     if (this->get(RASTER_SPEED,v)) {
-      ds[E_SET::ESPEED] = lexical_cast<uint16_t>(v);
+      ds.put(ESET::ESPEED, lexical_cast<uint16_t>(v));
     }
     if (this->get(RASTER_POWER,v)) {
-      ds[E_SET::EPOWER] = lexical_cast<uint16_t>(v);
+      ds.put(ESET::EPOWER, lexical_cast<uint16_t>(v));
     }
     if (this->get(RASTER_DITHERING,v)) {
-
-      if (v == "Default") ds[E_SET::DITHERING] = E_SET::DEFAULT_DITHERING;
-      else if (v == "Bayer") ds[E_SET::DITHERING] = E_SET::BAYER;
-      else if (v == "FloydSteinberg") ds[E_SET::DITHERING] = E_SET::FLOYD_STEINBERG;
-      else if (v == "Jarvis") ds[E_SET::DITHERING] = E_SET::JARVIS;
-      else if (v == "Burke") ds[E_SET::DITHERING] = E_SET::BURKE;
-      else if (v == "Stucki") ds[E_SET::DITHERING] = E_SET::STUCKI;
-      else if (v == "Sierra2") ds[E_SET::DITHERING] = E_SET::SIERRA2;
-      else if (v == "Sierra3") ds[E_SET::DITHERING] = E_SET::SIERRA3;
+      if (v == "Default") ds.put(ESET::DITHERING, ESET::DEFAULT_DITHERING);
+      else if (v == "Bayer") ds.put(ESET::DITHERING, ESET::BAYER);
+      else if (v == "FloydSteinberg") ds.put(ESET::DITHERING, ESET::FLOYD_STEINBERG);
+      else if (v == "Jarvis") ds.put(ESET::DITHERING, ESET::JARVIS);
+      else if (v == "Burke") ds.put(ESET::DITHERING, ESET::BURKE);
+      else if (v == "Stucki") ds.put(ESET::DITHERING, ESET::STUCKI);
+      else if (v == "Sierra2") ds.put(ESET::DITHERING, ESET::SIERRA2);
+      else if (v == "Sierra3") ds.put(ESET::DITHERING, ESET::SIERRA3);
       else {
         LOG_WARN_MSG("Illegal value for RasterDithering", v);
       }
     }
     if (this->get(RASTER_DIRECTION,v)) {
       if (v == "TopDown")
-        ds[E_SET::DIRECTION] = E_SET::TOPDOWN;
+        ds.put(ESET::DIRECTION, ESET::TOPDOWN);
       else if (v == "BottomUp")
-        ds[E_SET::DIRECTION] = E_SET::BOTTOMUP;
+        ds.put(ESET::DIRECTION, ESET::BOTTOMUP);
       else {
         LOG_WARN_MSG("Illegal value for RasterDirection", v);
       }
     }
     if (this->get(VECTOR_SPEED,v)) {
-      ds[C_SET::CSPEED] = lexical_cast<uint16_t>(v);
+      ds.put(CSET::CSPEED, lexical_cast<uint16_t>(v));
     }
     if (this->get(VECTOR_POWER,v)) {
-      ds[C_SET::CPOWER] = lexical_cast<uint16_t>(v);
+      ds.put(CSET::CPOWER, lexical_cast<uint16_t>(v));
     }
     if (this->get(VECTOR_FREQUENCY,v)) {
-      ds[C_SET::FREQUENCY] = lexical_cast<uint16_t>(v);
+      ds.put(CSET::FREQUENCY, lexical_cast<uint16_t>(v));
     }
     if (this->get(VECTOR_REDUCE,v)) {
-      ds[C_SET::REDUCE] = lexical_cast<uint16_t>(v);
+      ds.put(CSET::REDUCE, lexical_cast<uint16_t>(v));
     }
     if (this->get(VECTOR_OPTIMIZE,v)) {
-      if (v == "Simple") ds[C_SET::OPTIMIZE] = C_SET::SIMPLE;
-      else if (v == "Inner-Outer") ds[C_SET::OPTIMIZE] = C_SET::INNER_OUTER;
-      else if (v == "Shortest-Path") ds[C_SET::OPTIMIZE] = C_SET::SHORTEST_PATH;
+      if (v == "Simple") ds.put(CSET::OPTIMIZE, CSET::SIMPLE);
+      else if (v == "Inner-Outer") ds.put(CSET::OPTIMIZE, CSET::INNER_OUTER);
+      else if (v == "Shortest-Path") ds.put(CSET::OPTIMIZE, CSET::SHORTEST_PATH);
       else {
         LOG_WARN_MSG("Illegal value for VectorOptimize", v);
       }
@@ -164,17 +163,17 @@ public:
       cc_loglevel = v != "false" ? CC_DEBUG : (LogLevel)DEBUG;
     }
     if (this->get(ENABLE_RASTER,v)) {
-      ds[D_SET::ENABLE_RASTER] = v != "false";
+      ds.put(DS::ENABLE_RASTER, v != "false");
     }
     if (this->get(ENABLE_VECTOR,v)) {
-      ds[D_SET::ENABLE_VECTOR] = v != "false";
+      ds.put(DS::ENABLE_VECTOR, v != "false");
     }
 
-    if (ds.get<LaserCutter::Driver>(D_SET::DRIVER) == LaserCutter::UNINITIALIZED) {
+    if (ds.get(DS::DRIVER) == LaserCutter::UNINITIALIZED) {
       LOG_FATAL_STR("Driver not specified.");
     }
 
-    if (ds.get<uint16_t>(D_SET::RESOLUTION)  <= 0) {
+    if (ds.get(DS::RESOLUTION)  <= 0) {
       LOG_FATAL_STR("Resolution not specified.");
     }
 

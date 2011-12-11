@@ -234,7 +234,7 @@ PostscriptParser::~PostscriptParser()
     if (unlink(this->filename_eps.c_str())) {
       LOG_FATAL_MSG("unlink failed", this->filename_eps);
     }
-    if (this->conf.get<bool>(DocumentSettings::ENABLE_RASTER)) {
+    if (this->conf.get(DocumentSettings::ENABLE_RASTER)) {
       if (unlink(this->filename_bitmap.c_str())) {
         LOG_FATAL_MSG("unlink failed", this->filename_bitmap);
       }
@@ -248,11 +248,11 @@ PostscriptParser::~PostscriptParser()
 
 bool PostscriptParser::parse(cups_file_t *input_file)
 {
-  uint32_t resolution = this->conf.get<uint16_t>(DocumentSettings::RESOLUTION);
-  double width = this->conf.get<Measurement>(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->conf.get<Measurement>(DocumentSettings::HEIGHT).in(PX, resolution);
-  bool enable_raster = this->conf.get<bool>(DocumentSettings::ENABLE_RASTER);
-  string tmpbasepath = this->conf.get<string>(DocumentSettings::TEMP_DIR) + "/" + this->conf.get<string>(DocumentSettings::BASENAME);
+  uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);
+  double width = this->conf.get(DocumentSettings::WIDTH).in(PX, resolution);
+  double height = this->conf.get(DocumentSettings::HEIGHT).in(PX, resolution);
+  bool enable_raster = this->conf.get(DocumentSettings::ENABLE_RASTER);
+  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + this->conf.get(DocumentSettings::BASENAME);
   this->filename_eps = tmpbasepath + ".eps";
 
   if (!createEps(input_file, this->filename_eps)) return false;
@@ -340,7 +340,7 @@ bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename
   LOG_DEBUG_MSG("Converting to EPS file", filename_eps);
   
   // Convert PS to EPS (for vector extraction)
-  if (!ps_to_eps(&this->conf, input_file, file_eps)) {
+  if (!ps_to_eps(input_file, file_eps)) {
     LOG_FATAL_STR("ps_to_eps failed");
     fclose(file_eps);
     return false;

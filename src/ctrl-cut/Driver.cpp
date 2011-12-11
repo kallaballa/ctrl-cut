@@ -26,13 +26,6 @@
 
 using std::list;
 
-Driver::Driver() : dumpxml(false)
-{
-}
-
-Driver::~Driver() {
-}
-
 /**
  * run the filter stack. additionally if dumpxml is set to true dump cut graph to xml.
  */
@@ -41,8 +34,7 @@ void Driver::filter(Document *job) {
    for (list<CutModel*>::iterator it = cuts.begin(); it != cuts.end(); it++) {
      CutModel& model = *(*it);
      explode_segments(model);
-     /* REFACTOR */
-     //     reduce_linestrings(model, job->lconf->vector_reduce);
+     reduce_linestrings(model, model.settings.get(CutSettings::REDUCE));
    }
 }
 

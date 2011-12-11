@@ -81,13 +81,13 @@ public:
     string filename_vector;
     string filename_pbm;
     DocumentFormat docFormat;
-    this->settings[DocumentSettings::DATA_DIR] = dirname(strdup(filename.c_str()));
+    this->settings.put(DocumentSettings::DATA_DIR, string(dirname(strdup(filename.c_str()))));
     string base = basename(strdup(filename.c_str()));
 
     string suffix = base.substr(base.rfind(".") + 1);
     transform ( suffix.begin(), suffix.end(), suffix.begin(), &Util::lower_case );
 
-    this->settings[DocumentSettings::BASENAME] = base.erase(base.rfind("."));
+    this->settings.put(DocumentSettings::BASENAME,base.erase(base.rfind(".")));
     cups_file_t* input_file;
 
     if (suffix == "vector") {
@@ -116,7 +116,6 @@ public:
         return false;
       }
     } else {
-      cups_file_t* input_file;
       // Try to open the print file...
       if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
         LOG_FATAL_MSG("unable to open print file", filename.c_str());
@@ -128,7 +127,7 @@ public:
     FileParser *parser = NULL;
 
     if (docFormat == POSTSCRIPT) {
-      string file_basename = this->settings.get<string>(DocumentSettings::TEMP_DIR)+ "/" + this->settings.get<string>(DocumentSettings::BASENAME);
+      string file_basename = this->settings.get(DocumentSettings::TEMP_DIR)+ "/" + this->settings.get(DocumentSettings::BASENAME);
 
       // Write out the incoming cups data if debug is enabled.
       // FIXME: This is disabled for now since it has a bug:
@@ -168,8 +167,8 @@ public:
       // Uncomment this to force ghostscript to render to file using the ppmraw
       // backend, instead of in-memory rendering
       //    psparser->setRenderToFile(true);
-      if (this->settings.get<bool>(DocumentSettings::ENABLE_RASTER)) {
-        switch (this->settings.get<EngraveSettings::Dithering>(EngraveSettings::DITHERING)) {
+      if (this->settings.get(DocumentSettings::ENABLE_RASTER)) {
+        switch (this->settings.get(EngraveSettings::DITHERING)) {
         case EngraveSettings::DEFAULT_DITHERING:
           psparser->setRasterFormat(PostscriptParser::BITMAP);
           break;
@@ -196,19 +195,18 @@ public:
       }
     }
 
-    if (this->settings.get<bool>(DocumentSettings::ENABLE_RASTER)) {
-      // REFACTOR
-      /*  Raster *raster = NULL;
+    if (this->settings.get(DocumentSettings::ENABLE_RASTER)) {
+      Raster *raster = NULL;
       if (docFormat == PBM) {
-        raster = Raster::load(filename_pbm);
+        raster = new Raster(filename_pbm, this->settings);
       }
       else if (parser) {
         if (parser->hasBitmapData()) {
           LOG_DEBUG_STR("Processing bitmap data from memory");
-          raster = new Raster(parser->getImage());
+          raster = new Raster(parser->getImage(), this->settings);
         }
         else if (!parser->getBitmapFile().empty()) {
-          raster = Raster::load(parser->getBitmapFile());
+          raster = new Raster(parser->getBitmapFile(), this->settings);
         }
         else {
           LOG_FATAL("No bitmap available from FileParser");
@@ -218,11 +216,11 @@ public:
       if (raster) {
         raster->addTile(raster->sourceImage());
         this->addRaster(raster);
-      }*/
+      }
     }
 
     CutModel *cut = NULL;
-    if (this->settings.get<bool>(DocumentSettings::ENABLE_VECTOR)) {
+    if (this->settings.get(DocumentSettings::ENABLE_VECTOR)) {
       if (docFormat == VECTOR) {
         cut = new CutModel(this->settings);
         if(!cut->load(filename_vector))

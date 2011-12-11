@@ -18,26 +18,7 @@
  */
 #include "EngraveSettings.h"
 
-EngraveSettings::Key EngraveSettings::DITHERING = "dithering";
-EngraveSettings::Key EngraveSettings::DIRECTION = "direction";
-EngraveSettings::Key EngraveSettings::EPOWER = "power";
-EngraveSettings::Key EngraveSettings::ESPEED = "speed";
-
-void EngraveSettings::resetToDefaults() {
-  (*this)[DITHERING] = DEFAULT_DITHERING;
-  (*this)[DIRECTION] = TOPDOWN;
-  (*this)[EPOWER] = 20;
-  (*this)[ESPEED] = 100;
-}
-
-/*!
- * Perform range validation checks on the major global variables to ensure
- * their values are sane. If values are outside accepted tolerances then modify
- * them to be the correct value.
- *
- * @return Nothing
- */
-void EngraveSettings::rangeCheck() {
-  clip(EPOWER,0, 100);
-  clip(ESPEED,1, 100);
-}
+EngraveSettings::Key<EngraveSettings::Dithering> EngraveSettings::DITHERING = "dithering";
+EngraveSettings::Key<EngraveSettings::Direction> EngraveSettings::DIRECTION = "direction";
+EngraveSettings::Key<uint16_t> EngraveSettings::EPOWER = "epower";
+EngraveSettings::Key<uint16_t> EngraveSettings::ESPEED = "espeed";

@@ -18,30 +18,10 @@
  */
 #include "CutSettings.h"
 
-CutSettings::Key CutSettings::OPTIMIZE = "optimize";
-CutSettings::Key CutSettings::CLIP = "CLIP";
-CutSettings::Key CutSettings::CSPEED = "speed";
-CutSettings::Key CutSettings::CPOWER = "power";
-CutSettings::Key CutSettings::FREQUENCY = "frequency";
-CutSettings::Key CutSettings::REDUCE = "reduce";
+CutSettings::Key<CutSettings::Optimize> CutSettings::OPTIMIZE = "optimize";
+CutSettings::Key<bool> CutSettings::CLIP = "CLIP";
+CutSettings::Key<uint16_t> CutSettings::CSPEED = "cspeed";
+CutSettings::Key<uint16_t> CutSettings::CPOWER = "cpower";
+CutSettings::Key<uint16_t> CutSettings::FREQUENCY = "frequency";
+CutSettings::Key<float> CutSettings::REDUCE = "reduce";
 
-void CutSettings::resetToDefaults() {
-  (*this)[OPTIMIZE] = INNER_OUTER;
-  (*this)[CSPEED] = 33;
-  (*this)[CPOWER] = 80;
-  (*this)[FREQUENCY] = 5000;
-  (*this)[REDUCE] = 0.0f;
-}
-
-/*!
- * Perform range validation checks on the major global variables to ensure
- * their values are sane. If values are outside accepted tolerances then modify
- * them to be the correct value.
- *
- * @return Nothing
- */
-void CutSettings::rangeCheck() {
-  clip(FREQUENCY,10, 5000);
-  clip(CPOWER,0, 100);
-  clip(CSPEED,1, 100);
-}

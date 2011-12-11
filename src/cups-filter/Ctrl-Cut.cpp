@@ -81,9 +81,6 @@ int main(int argc, char *argv[]) {
   CtrlCutOptions options;
   job.settings.resetToDefaults();
   options.parseGetOpt(job.settings, argc, argv);
-  // Perform a check over the global values to ensure that they have values
-  // that are within a tolerated range.
-  job.settings.rangeCheck();
 
   string filename_vector;
   string filename_pbm;

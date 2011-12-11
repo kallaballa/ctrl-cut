@@ -21,35 +21,32 @@
 #define DOCUMENT_SETTINGS_H_
 
 #include "Settings.h"
+#include "LaserCutter.h"
 
 class DocumentSettings : public Settings
 {
 public:
   // the configured laser cutter hardware
-  static Key DRIVER;
-  static Key USER;
-  static Key TITLE;
-  static Key TEMP_DIR;
-  static Key DATA_DIR;
-  static Key BASENAME;
+  const static Key<LaserCutter::Driver> DRIVER;
+  const static Key<string> USER;
+  const static Key<string> TITLE;
+  const static Key<string>  TEMP_DIR;
+  const static Key<string>  DATA_DIR;
+  const static Key<string>  BASENAME;
 
-  static Key RESOLUTION;
-  static Key WIDTH;
-  static Key HEIGHT;
-  static Key AUTO_FOCUS;
-  static Key SCREEN;
+  const static Key<uint16_t> RESOLUTION;
+  const static Key<Measurement> WIDTH;
+  const static Key<Measurement> HEIGHT;
+  const static Key<bool> AUTO_FOCUS;
+  const static Key<uint16_t> SCREEN;
 
-  static Key ENABLE_RASTER;
-  static Key ENABLE_VECTOR;
+  const static Key<bool> ENABLE_RASTER;
+  const static Key<bool> ENABLE_VECTOR;
 
   DocumentSettings() : Settings() {}
   ~DocumentSettings() {}
 
   virtual void resetToDefaults();
-  virtual void rangeCheck();
 };
 
 #endif /* DOCUMENT_SETTINGS_H_ */
-
-
-

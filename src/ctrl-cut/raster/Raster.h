@@ -23,17 +23,19 @@
 #include "util/2D.h"
 #include "DownSample.h"
 #include "MMapMatrix.h"
+#include "config/EngraveSettings.h"
 
 class Raster
 {
 public:
+  EngraveSettings settings;
   typedef std::list<AbstractImage*> TileContainer;
   typedef TileContainer::iterator iterator;
   typedef TileContainer::const_iterator const_iterator;
 
-  Raster(AbstractImage *sourceImage) {
-    this->sourceimage = sourceImage;
-  }
+  Raster(AbstractImage *sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceimage(sourceImage) {}
+  Raster(const std::string&filename, DocumentSettings& docSettings);
+
   virtual ~Raster() {}
 
   iterator begin() { return this->tiles.begin(); }
@@ -44,9 +46,8 @@ public:
 
   AbstractImage *sourceImage() { return this->sourceimage; }
   void addTile(AbstractImage *tile);
-
-  static Raster *load(const std::string &filename);
 private:
+
   AbstractImage *sourceimage;
   TileContainer tiles;
   std::list<DownSample*> grids;

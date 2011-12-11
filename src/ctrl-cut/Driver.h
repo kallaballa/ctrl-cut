@@ -10,8 +10,8 @@ class Document;
 
 class Driver {
 public:
-  Driver();
-  virtual ~Driver();
+  Driver() : dumpxml(false) {};
+  virtual ~Driver(){};
   void enableXML(bool on) { dumpxml = on; }
   void filter(Document *job);
 

@@ -31,21 +31,22 @@ void Document::addRaster(Raster* raster) {
   this->engraveList.push_back(raster);
 }
 
-/**
- *
- */
+typedef EngraveSettings ES;
+typedef DocumentSettings DS;
 void Document::serializeTo(std::ostream &out) {
-  int i;
-
-  string title = this->settings.get<string>(DocumentSettings::TITLE);
-  int resolution = this->settings.get<uint16_t>(DocumentSettings::RESOLUTION);
-  int raster_power = this->settings.get<int>(EngraveSettings::EPOWER);
-  int raster_speed = this->settings.get<int>(EngraveSettings::ESPEED);
-  double width = this->settings.get<Measurement>(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->settings.get<Measurement>(DocumentSettings::HEIGHT).in(PX, resolution);
-  bool enable_raster = this->settings.get<bool>(DocumentSettings::ENABLE_RASTER);
-  bool enable_vector = this->settings.get<bool>(DocumentSettings::ENABLE_VECTOR);
-  int focus = this->settings.get<int>(DocumentSettings::AUTO_FOCUS);
+  string title = this->settings.get(DS::TITLE);
+  int resolution = this->settings.get(DS::RESOLUTION);
+  int raster_power = 0;
+  int raster_speed = 0;
+  if(this->settings.get(DS::ENABLE_RASTER)) {
+    raster_power = this->front_engrave()->settings.get(ES::EPOWER);
+    raster_speed = this->front_engrave()->settings.get(ES::ESPEED);
+  }
+  double width = this->settings.get(DocumentSettings::WIDTH).in(PX, resolution);
+  double height = this->settings.get(DocumentSettings::HEIGHT).in(PX, resolution);
+  bool enable_raster = this->settings.get(DocumentSettings::ENABLE_RASTER);
+  bool enable_vector = this->settings.get(DocumentSettings::ENABLE_VECTOR);
+  int focus = this->settings.get(DocumentSettings::AUTO_FOCUS);
 
   /* Print the printer job language header. */
   out << format(PJL_HEADER) % title;
@@ -94,15 +95,14 @@ void Document::serializeTo(std::ostream &out) {
    */
 
   if (enable_raster && !this->engraveList.empty()) {
-    // REFACTOR
-   /* for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
+    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
       Raster *raster = *it;
       if (raster) {
         LOG_DEBUG_STR("Encoding raster...");
         PclEncoder r;
-        r.encode(raster, out);
+        r.encode(out, *raster);
       }
-    }*/
+    }
   }
 
   if (enable_vector && !this->cutList.empty()) {
@@ -130,7 +130,7 @@ void Document::serializeTo(std::ostream &out) {
   out << PJL_FOOTER;
 
   /* Pad out the remainder of the file with spaces and 'footer'. */
-  for (i = 0; i < 4092; i++) {
+  for (int i = 0; i < 4092; i++) {
     out << ' ';
   }
   out << "Mini]";

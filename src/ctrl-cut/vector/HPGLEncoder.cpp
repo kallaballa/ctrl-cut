@@ -31,9 +31,9 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) const {
   bool firstOperation = true;
   bool writingPolyline = false;
 
-  int power_set = model.settings.get<int>(CutSettings::CPOWER);
-  int speed_set = model.settings.get<int>(CutSettings::CSPEED);
-  int freq_set = model.settings.get<int>(CutSettings::FREQUENCY);
+  int power_set = model.settings.get(CutSettings::CPOWER);
+  int speed_set = model.settings.get(CutSettings::CSPEED);
+  int freq_set = model.settings.get(CutSettings::FREQUENCY);
 
   out << V_INIT << SEP;
   out << format(V_POWER) % power_set << SEP;

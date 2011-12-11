@@ -64,7 +64,7 @@ bool get_bbox_from_string(const char *str, int &lower_left_x, int &lower_left_y,
  *
  * @return Return true if the function completes its task, false otherwise.
  */
-bool ps_to_eps(DocumentSettings *lconf, cups_file_t *ps_file, FILE *eps_file)
+bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
 {
   bool created_by_cairo = false;
   bool bboxfound = false;

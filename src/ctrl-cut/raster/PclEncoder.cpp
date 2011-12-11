@@ -20,47 +20,47 @@
 #include <boost/format.hpp>
 #include <math.h>
 #include "Dither.h"
+#include "config/EngraveSettings.h"
 #include "PclEncoder.h"
 
 using boost::format;
 
-PclEncoder::PclEncoder(DocumentSettings* lconf) : lconf(lconf) {
-}
+typedef EngraveSettings ES;
 
-PclEncoder::~PclEncoder() {
-
-}
-
-void PclEncoder::encode(Raster *raster, std::ostream &out)
+void PclEncoder::encode(std::ostream &out, Raster& raster)
 {
-  LOG_DEBUG_MSG("Encode raster", raster->size());
+  LOG_DEBUG_MSG("Encode raster", raster.size());
+  int direction = raster.settings.get(ES::DIRECTION) == ES::TOPDOWN ? 0 : 1;
+  ES::Dithering dithering = raster.settings.get(ES::DITHERING);
 
   // Raster direction (1 = up)
-  out << format(R_DIRECTION) % lconf->raster_direction;
+  out << format(R_DIRECTION) % direction;
   // start at current position
   out << R_START;
 
   std::list<AbstractImage*>::iterator it;
-  for (it = raster->begin(); it != raster->end(); it++) {
+  for (it = raster.begin(); it != raster.end(); it++) {
     LOG_DEBUG_STR("Encoding tile..");
     BitmapImage *bitmap = dynamic_cast<BitmapImage*>(*it);
     if (!bitmap) {
       GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(*it);
       if (gsimage) {
-        Dither& dither = Dither::create(*gsimage, lconf->raster_dithering);
+        Dither& dither = Dither::create(*gsimage, dithering);
         bitmap = &dither.dither();
       }
     }
 
     assert(bitmap);
-    if (bitmap) encodeBitmapTile(bitmap, out);
+    if (bitmap) encodeBitmapTile(raster, bitmap, out);
   }
   out << R_END; // end raster
 }
 
-void PclEncoder::encodeBitmapTile(BitmapImage* tile, std::ostream& out)
+void PclEncoder::encodeBitmapTile(Raster& raster, BitmapImage* tile, std::ostream& out)
 {
+
   LOG_DEBUG_STR("Encoding bitmap tile..");
+  ES::Direction direction = raster.settings.get(ES::DIRECTION);
 
   int width = tile->width() / 8; // width in bytes
   int height = tile->height();
@@ -71,7 +71,7 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, std::ostream& out)
 
   for (int i=0;i<height;i++) {
     uint32_t y;
-    if (this->lconf->raster_direction == DocumentSettings::DIRECTION_BOTTOMUP) y = height - i - 1;
+    if (direction == ES::BOTTOMUP) y = height - i - 1;
     else y = i;
 
     uint8_t *scanline = (uint8_t *)tile->data() + y*tile->rowstride(); // Pointer to a scanline
@@ -89,7 +89,7 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, std::ostream& out)
       for (r = width - 1; r > l && (scanline[r] == 0xff); r--) { }
       r++;
 
-      uint32_t ypos = tile->yPos() + lconf->basey + y;
+      uint32_t ypos = tile->yPos() + y;
 
       // Epilog somehow outputs and END-DIR-START sequence for each 388 scanlines.
       // We'll do the same for now.
@@ -97,12 +97,12 @@ void PclEncoder::encodeBitmapTile(BitmapImage* tile, std::ostream& out)
       // FIXME: If we're rendering multiple tiles, we need to keep track of the 
       // position of the previous one.
       if (ypos / 388 != lasty / 388) {
-        out << R_END << format(R_DIRECTION) % lconf->raster_direction << R_START;
+        out << R_END << format(R_DIRECTION) % direction << R_START;
       }
       lasty = ypos;
 
       out << format(PCL_POS_Y) % ypos;
-      out << format(PCL_POS_X) % (tile->xPos() + lconf->basex + (l * 8));
+      out << format(PCL_POS_X) % (tile->xPos() + (l * 8));
 
       int n;
       if (dir) {

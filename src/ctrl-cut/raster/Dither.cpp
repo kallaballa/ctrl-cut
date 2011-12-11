@@ -28,27 +28,27 @@
 #include "DitherSierra2.h"
 #include "DitherSierra3.h"
 
-Dither& Dither::create(GrayscaleImage& img, DocumentSettings::RasterDithering dithering){
+Dither& Dither::create(GrayscaleImage& img, EngraveSettings::Dithering dithering){
   switch (dithering) {
-    case DocumentSettings::DITHER_BAYER:
+    case EngraveSettings::BAYER:
       return *(new DitherBayer(img));
       break;
-    case DocumentSettings::DITHER_FLOYD_STEINBERG:
+    case EngraveSettings::FLOYD_STEINBERG:
       return *(new DitherFloydSteinberg(img));
       break;
-    case DocumentSettings::DITHER_JARVIS:
+    case EngraveSettings::JARVIS:
       return *(new DitherJarvis(img));
       break;
-    case DocumentSettings::DITHER_BURKE:
+    case EngraveSettings::BURKE:
       return *(new DitherBurke(img));
       break;
-    case DocumentSettings::DITHER_STUCKI:
+    case EngraveSettings::STUCKI:
       return *(new DitherStucki(img));
       break;
-    case DocumentSettings::DITHER_SIERRA2:
+    case EngraveSettings::SIERRA2:
       return *(new DitherSierra2(img));
       break;
-    case DocumentSettings::DITHER_SIERRA3:
+    case EngraveSettings::SIERRA3:
       return *(new DitherSierra3(img));
       break;
     default:
