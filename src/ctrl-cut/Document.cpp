@@ -83,8 +83,8 @@ void Document::serializeTo(std::ostream &out) {
   out << format(R_SPEED) % raster_speed;
 
   out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % width;
-  out << format(R_WIDTH) % height;
+  out << format(R_HEIGHT) % height;
+  out << format(R_WIDTH) % width;
   // Raster compression
   int compressionLevel = 2;
 
