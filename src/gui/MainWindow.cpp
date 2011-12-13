@@ -1,13 +1,14 @@
 #include "MainWindow.h"
 #include <QtGui>
+#include "LpdClient.h"
 
 #include "FileParser.h"
-#include "LaserJob.h"
+#include "Document.h"
 #include "Driver.h"
 #include "vector/model/CutModel.h"
 #include "vector/geom/Geometry.h"
-#include "util/Svg2Ps.h"
-#include "LpdClient.h"
+#include "svg/Svg2Ps.h"
+
 #include "StreamUtils.h"
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
@@ -18,7 +19,7 @@
 #include <boost/thread.hpp>
 MainWindow *MainWindow::inst = NULL;
 
-MainWindow::MainWindow() : psparser(NULL), cutmodel(NULL), raster(NULL), laserdialog(NULL)
+MainWindow::MainWindow() : document(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -40,105 +41,21 @@ MainWindow::~MainWindow()
 {
 }
 
-const MainWindow::InputType MainWindow::findInpuType(const QFileInfo &fileinfo) const {
-  InputType inputType = UNKNOWN;
-  const QString &suffix = fileinfo.suffix();
-
-  if(suffix == "ps")
-    inputType = PS;
-  else if(suffix == "svg")
-    inputType = SVG;
-  else if(suffix == "vector")
-    inputType = VECTOR;
-
-  return inputType;
-}
-
 void MainWindow::openFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
-    if (this->cutmodel) {
-      delete this->cutmodel;
-      this->cutmodel = NULL;
+    if (this->document) {
+      delete this->document;
     }
-    if (this->raster) {
-      delete this->raster;
-      this->raster = NULL;
-    }
-    if (this->psparser) {
-      delete this->psparser;
-      this->psparser = NULL;
-    }
+    this->document = new Document();
+    this->document->settings.resetToDefaults();
+    this->document->load(filename.toStdString());
 
-    QFileInfo finfo(filename);
-    InputType inputType = findInpuType(finfo);
 
-    if (inputType == PS || inputType == SVG) {
-      this->psparser = new PostscriptParser(LaserConfig::inst());
-      switch (LaserConfig::inst().raster_dithering) {
-      case LaserConfig::DITHER_DEFAULT:
-        psparser->setRasterFormat(PostscriptParser::BITMAP);
-        break;
-      case LaserConfig::DITHER_BAYER:
-      case LaserConfig::DITHER_FLOYD_STEINBERG:
-      case LaserConfig::DITHER_JARVIS:
-      case LaserConfig::DITHER_BURKE:
-      case LaserConfig::DITHER_STUCKI:
-      case LaserConfig::DITHER_SIERRA2:
-      case LaserConfig::DITHER_SIERRA3:
-        psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
-        break;
-        
-      default:
-        assert(false);
-      }
-
-      cups_file_t *input_file;
-
-      if (inputType == SVG) {
-        int convertPipe[2];
-        FILE *svgIn = fopen(filename.toLocal8Bit(), "r");
-        int svgFd = fileno(svgIn);
-
-        if (pipe(convertPipe)) {
-          LOG_FATAL_STR("Unable to initialize svg2ps pipe");
-          return;
-        }
-
-        Svg2Ps converter(svgFd, convertPipe[1]);
-        boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
-
-        if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-          LOG_FATAL_MSG("unable to open print file", filename.toStdString());
-          return;
-        }
-      } else {
-        input_file = cupsFileOpen(filename.toLocal8Bit(), "r");
-      }
-
-      if (!input_file) {
-        LOG_ERR_MSG("Error opening file", filename.toStdString());
-        return;
-      }
-
-      LaserConfig::inst().basename = finfo.baseName().toStdString();
-      if (!psparser->parse(input_file)) {
-        LOG_FATAL("Error processing postscript");
-        return;
-      }
-
-      this->cutmodel = CutModel::load(psparser->getVectorData());
-
-      if (!this->cutmodel && !psparser->hasBitmapData()) {
-        fprintf(stderr, "Error: Unable to open postscript file\n");
-        return;
-      }
-
-      this->rasterpixmap = QPixmap();
-      this->rasterpos = QPointF();
-      if (psparser->hasBitmapData()) {
-        AbstractImage *image = psparser->getImage();
-        this->raster = new Raster(image);
+      if (!document->engraveList.empty()) {
+        this->rasterpixmap = QPixmap();
+        this->rasterpos = QPointF();
+        AbstractImage *image = document->front_engrave()->sourceImage();
         QImage *img;
         BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
         if (bitmap) {
@@ -167,21 +84,15 @@ void MainWindow::openFile(const QString &filename)
         this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
     }
-    else if (inputType == VECTOR) {
-      this->cutmodel = CutModel::load(filename.toStdString());
-      if (!this->cutmodel) {
-        fprintf(stderr, "Error: Unable to open vector file\n");
-        return;
-      }
-    }
+
 
     this->documentitem = new QGraphicsItemGroup();
     this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
     this->scene->addItem(this->documentitem);
 
-    if (this->cutmodel) {
+    if (!this->document->cutList.empty()) {
       this->firstitem = NULL;
-      for (CutModel::iterator iter = this->cutmodel->begin(); iter != this->cutmodel->end(); iter++) {
+      for (CutModel::iterator iter = this->document->front_cut()->begin(); iter != this->document->front_cut()->end(); iter++) {
         const Segment &segment = **iter;
         QGraphicsLineItem *line = 
           new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
@@ -196,7 +107,6 @@ void MainWindow::openFile(const QString &filename)
       this->rasteritem->setPos(this->rasterpos);
       this->documentitem->addToGroup(this->rasteritem);
     }
-  }
 }
 
 void MainWindow::on_fileOpenAction_triggered()
@@ -211,16 +121,15 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->cutmodel && !this->raster) {
-    fprintf(stderr, "No model loaded\n");
+  if (!this->document) {
+    fprintf(stderr, "No document loaded\n");
     return;
   }
 
   if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
-  this->laserdialog->updateLaserConfig(LaserConfig::inst());
-  LaserConfig::inst().dumpDebug();
+  this->laserdialog->updateLaserConfig(*this->document);
 
   QStringList items;
   items << "Lazzzor" << "localhost";
@@ -229,10 +138,10 @@ void MainWindow::on_filePrintAction_triggered()
   if (ok && !item.isEmpty()) {
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
 
-    LaserJob job(&LaserConfig::inst(), "kintel", "jobname", "jobtitle");
 
     // Apply transformations and add to job
     QPointF pos = this->documentitem->pos();
+/* REFACTOR
     if (this->cutmodel) {
       //      this->cutmodel->setTransformation(pos); // Assumes initial translation to be (0,0)
       job.addCut(this->cutmodel);
@@ -242,12 +151,13 @@ void MainWindow::on_filePrintAction_triggered()
       this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
       job.addRaster(this->raster);
     }
+    */
 
     Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ostream ostream(&streambuf);
-    drv.process(&job, ostream);
+    drv.process(this->document, ostream);
     
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }

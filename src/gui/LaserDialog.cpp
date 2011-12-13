@@ -1,5 +1,12 @@
 #include "LaserDialog.h"
+#include "config/EngraveSettings.h"
+#include "config/CutSettings.h"
+#include "config/DocumentSettings.h"
 #include <assert.h>
+
+typedef DocumentSettings DS;
+typedef EngraveSettings ES;
+typedef CutSettings CS;
 
 LaserDialog::LaserDialog(QWidget *parent) : QDialog(parent)
 {
@@ -19,70 +26,74 @@ LaserDialog::~LaserDialog()
 {
 }
 
-void LaserDialog::updateLaserConfig(LaserConfig &config)
+void LaserDialog::updateLaserConfig(Document& document)
 {
-  config.focus = this->autoFocusBox->isChecked();
+  DS &ds = document.settings;
+  ds.put(DS::AUTO_FOCUS, this->autoFocusBox->isChecked());
   QStringList res = this->resolutionCombo->currentText().split(" ");
-  if (res.length() > 0) config.resolution = res[0].toInt();
+  if (res.length() > 0) ds.put(DS::RESOLUTION, res[0].toInt());
 
-  config.enable_raster = !this->vectorRadio->isChecked();
-  config.enable_vector = !this->rasterRadio->isChecked();
-  config.raster_speed = this->rasterSpeedSlider->value();
-  config.raster_power = this->rasterPowerSlider->value();
-  config.raster_direction = (LaserConfig::RasterDirection)this->rasterDirection->currentIndex();
-
+  ds.put(DS::ENABLE_RASTER, !this->vectorRadio->isChecked());
+  ds.put(DS::ENABLE_VECTOR, !this->rasterRadio->isChecked());
+  ds.put(ES::ESPEED, this->rasterSpeedSlider->value());
+  ds.put(ES::EPOWER, this->rasterPowerSlider->value());
+  ds.put(ES::DIRECTION, this->rasterDirection->currentIndex());
   const QString &dither = this->rasterDithering->currentText();
-  if (dither == "Default") config.raster_dithering = LaserConfig::DITHER_DEFAULT;
-  else if (dither == "Bayer") config.raster_dithering = LaserConfig::DITHER_BAYER;
-  else if (dither == "Floyd-Steinberg") config.raster_dithering = LaserConfig::DITHER_FLOYD_STEINBERG;
-  else if (dither == "Jarvis") config.raster_dithering = LaserConfig::DITHER_JARVIS;
-  else if (dither == "Burke") config.raster_dithering = LaserConfig::DITHER_BURKE;
-  else if (dither == "Stucki") config.raster_dithering = LaserConfig::DITHER_STUCKI;
-  else if (dither == "Sierra2") config.raster_dithering = LaserConfig::DITHER_SIERRA2;
-  else if (dither == "Sierra3") config.raster_dithering = LaserConfig::DITHER_SIERRA3;
 
-  config.vector_speed = this->vectorSpeedSlider->value();
-  config.vector_power = this->vectorPowerSlider->value();
-  config.vector_freq = this->vectorFreqSlider->value();
+  ES::Dithering dithering;
+  if (dither == "Default") dithering = ES::DEFAULT_DITHERING;
+  else if (dither == "Bayer") dithering = ES::BAYER;
+  else if (dither == "Floyd-Steinberg") dithering = ES::FLOYD_STEINBERG;
+  else if (dither == "Jarvis") dithering = ES::JARVIS;
+  else if (dither == "Burke") dithering = ES::BURKE;
+  else if (dither == "Stucki") dithering = ES::STUCKI;
+  else if (dither == "Sierra2") dithering = ES::SIERRA2;
+  else if (dither == "Sierra3") dithering = ES::SIERRA3;
+
+  ds.put(ES::DITHERING, dithering);
+  ds.put(CS::CSPEED, this->vectorSpeedSlider->value());
+  ds.put(CS::CPOWER, this->vectorPowerSlider->value());
+  ds.put(CS::FREQUENCY, this->vectorFreqSlider->value());
 }
 
-void LaserDialog::applyLaserConfig(LaserConfig &config)
+void LaserDialog::applyLaserConfig(Document& document)
 {
-  this->autoFocusBox->setChecked(config.focus);
-  this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(config.resolution) + " DPI"));
+  DS &ds = document.settings;
+  this->autoFocusBox->setChecked(ds.get(DS::AUTO_FOCUS));
+  this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(ds.get(DS::RESOLUTION)) + " DPI"));
 
-  if (config.enable_raster && config.enable_vector) this->combinedRadio->setChecked(true);
-  else if (config.enable_raster) this->rasterRadio->setChecked(true);
+  if (ds.get(DS::ENABLE_RASTER) && ds.get(DS::ENABLE_VECTOR)) this->combinedRadio->setChecked(true);
+  else if (ds.get(DS::ENABLE_RASTER)) this->rasterRadio->setChecked(true);
   else this->vectorRadio->setChecked(true);
 
-  this->rasterSpeedSlider->setValue(config.raster_speed);
-  this->rasterPowerSlider->setValue(config.raster_power);
-  this->rasterDirection->setCurrentIndex(config.raster_direction);
+  this->rasterSpeedSlider->setValue(ds.get(ES::ESPEED));
+  this->rasterPowerSlider->setValue(ds.get(ES::EPOWER));
+  this->rasterDirection->setCurrentIndex(ds.get(ES::DIRECTION));
 
   QString ditherstr;
-  switch (config.raster_dithering) {
-  case LaserConfig::DITHER_BAYER:
+  switch (ds.get(ES::DITHERING)) {
+  case EngraveSettings::BAYER:
     ditherstr = "Bayer";
     break;
-  case LaserConfig::DITHER_FLOYD_STEINBERG:
+  case EngraveSettings::FLOYD_STEINBERG:
     ditherstr = "Floyd-Steinberg";
     break;
-  case LaserConfig::DITHER_JARVIS:
+  case EngraveSettings::JARVIS:
     ditherstr = "Jarvis";
     break;
-  case LaserConfig::DITHER_BURKE:
+  case EngraveSettings::BURKE:
     ditherstr = "Burke";
     break;
-  case LaserConfig::DITHER_STUCKI:
+  case EngraveSettings::STUCKI:
     ditherstr = "Stucki";
     break;
-  case LaserConfig::DITHER_SIERRA2:
+  case EngraveSettings::SIERRA2:
     ditherstr = "Sierra2";
     break;
-  case LaserConfig::DITHER_SIERRA3:
+  case EngraveSettings::SIERRA3:
     ditherstr = "Sierra3";
     break;
-  case LaserConfig::DITHER_DEFAULT:
+  case EngraveSettings::DEFAULT_DITHERING:
     ditherstr = "Default";
     break;
   default:
@@ -90,9 +101,9 @@ void LaserDialog::applyLaserConfig(LaserConfig &config)
   }
   this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
 
-  this->vectorSpeedSlider->setValue(config.vector_speed);
-  this->vectorPowerSlider->setValue(config.vector_power);
-  this->vectorFreqSlider->setValue(config.vector_freq);
+  this->vectorSpeedSlider->setValue(ds.get(CS::CSPEED));
+  this->vectorPowerSlider->setValue(ds.get(CS::CPOWER));
+  this->vectorFreqSlider->setValue(ds.get(CS::FREQUENCY));
 }
 
 void LaserDialog::on_rasterPowerSlider_valueChanged(int val)

@@ -3,8 +3,7 @@
 
 #include <QDialog>
 #include "ui_LaserDialog.h"
-
-#include "util/LaserConfig.h"
+#include "Document.h"
 
 class LaserDialog : public QDialog, private Ui::LaserDialog
 {
@@ -13,8 +12,8 @@ public:
   LaserDialog(QWidget *parent = NULL);
   ~LaserDialog();
   
-  void applyLaserConfig(LaserConfig &config);
-  void updateLaserConfig(LaserConfig &config);
+  void applyLaserConfig(Document &document);
+  void updateLaserConfig(Document &document);
 
 private slots:
   void on_rasterPowerSlider_valueChanged(int);

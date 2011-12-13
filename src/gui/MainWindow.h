@@ -29,12 +29,6 @@ public slots:
   void openFile(const QString &filename);
 
 private:
-  enum InputType {
-    PS,SVG,VECTOR,UNKNOWN
-  };
-
-  const InputType findInpuType(const QFileInfo &fileinfo) const;
-
   static MainWindow *inst;
   MainWindow();
 
@@ -42,9 +36,7 @@ private:
   class QGraphicsItem *firstitem;
   class CtrlCutScene *scene;
 
-  class PostscriptParser *psparser; // Only to retain data between loads, needed by Raster
-  class CutModel *cutmodel;
-  class Raster *raster;
+  class Document *document;
   class QGraphicsItemGroup *documentitem;
   class QGraphicsPixmapItem *rasteritem;
   QPixmap rasterpixmap;
