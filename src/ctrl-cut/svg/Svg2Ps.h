@@ -19,12 +19,22 @@
 #ifndef SVG_TO_PS_H_
 #define SVG_TO_PS_H_
 
+
+#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <boost/thread.hpp>
+
+//QT makes use of signals too
+#undef signals
+#include <gio/gunixinputstream.h>
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
 
+#include <cairo-ps.h>
 #include <cairo-pdf.h>
+#include "SvgFix.h"
 
 #define FAIL(msg)							\
     do { fprintf (stderr, "FAIL: %s\n", msg); exit (-1); } while (0)

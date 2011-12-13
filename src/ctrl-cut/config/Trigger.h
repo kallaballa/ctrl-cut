@@ -20,7 +20,7 @@
 #ifndef TRIGGER_H_
 #define TRIGGER_H_
 
-#include <assert.hpp>
+#include <assert.h>
 #include <functional>
 #include <boost/concept_check.hpp>
 #include <string>

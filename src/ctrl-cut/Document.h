@@ -77,17 +77,20 @@ public:
 
   void serializeTo(std::ostream &out);
 
+
   bool load(const string& filename) {
+    typedef DocumentSettings DS;
+
     string filename_vector;
     string filename_pbm;
     DocumentFormat docFormat;
-    this->settings.put(DocumentSettings::DATA_DIR, string(dirname(strdup(filename.c_str()))));
+    this->settings.put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
     string base = basename(strdup(filename.c_str()));
 
     string suffix = base.substr(base.rfind(".") + 1);
     transform ( suffix.begin(), suffix.end(), suffix.begin(), &Util::lower_case );
 
-    this->settings.put(DocumentSettings::BASENAME,base.erase(base.rfind(".")));
+    this->settings.put(DS::BASENAME,base.erase(base.rfind(".")));
     cups_file_t* input_file;
 
     if (suffix == "vector") {
@@ -98,7 +101,7 @@ public:
       filename_pbm = filename;
     } else if (suffix == "svg") {
       // Try to open the print file...
-
+      docFormat = SVG;
       int convertPipe[2];
       FILE *svgIn = fopen(filename.c_str(), "r");
       int svgFd = fileno (svgIn);
@@ -116,6 +119,7 @@ public:
         return false;
       }
     } else {
+      docFormat = POSTSCRIPT;
       // Try to open the print file...
       if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
         LOG_FATAL_MSG("unable to open print file", filename.c_str());
@@ -126,8 +130,8 @@ public:
 
     FileParser *parser = NULL;
 
-    if (docFormat == POSTSCRIPT) {
-      string file_basename = this->settings.get(DocumentSettings::TEMP_DIR)+ "/" + this->settings.get(DocumentSettings::BASENAME);
+    if (docFormat == POSTSCRIPT || docFormat == SVG) {
+      string file_basename = this->settings.get(DS::TEMP_DIR)+ "/" + this->settings.get(DS::BASENAME);
 
       // Write out the incoming cups data if debug is enabled.
       // FIXME: This is disabled for now since it has a bug:
@@ -167,7 +171,7 @@ public:
       // Uncomment this to force ghostscript to render to file using the ppmraw
       // backend, instead of in-memory rendering
       //    psparser->setRenderToFile(true);
-      if (this->settings.get(DocumentSettings::ENABLE_RASTER)) {
+      if (this->settings.get(DS::ENABLE_RASTER)) {
         switch (this->settings.get(EngraveSettings::DITHERING)) {
         case EngraveSettings::DEFAULT_DITHERING:
           psparser->setRasterFormat(PostscriptParser::BITMAP);
@@ -195,7 +199,7 @@ public:
       }
     }
 
-    if (this->settings.get(DocumentSettings::ENABLE_RASTER)) {
+    if (this->settings.get(DS::ENABLE_RASTER)) {
       Raster *raster = NULL;
       if (docFormat == PBM) {
         raster = new Raster(filename_pbm, this->settings);
@@ -220,7 +224,7 @@ public:
     }
 
     CutModel *cut = NULL;
-    if (this->settings.get(DocumentSettings::ENABLE_VECTOR)) {
+    if (this->settings.get(DS::ENABLE_VECTOR)) {
       if (docFormat == VECTOR) {
         cut = new CutModel(this->settings);
         if(!cut->load(filename_vector))
@@ -236,7 +240,6 @@ public:
 
     return true;
   }
-
 };
 
 #endif /* DOCUMENT_H_ */

@@ -58,7 +58,7 @@ public:
       std::cerr << "Key constr" << this->id << "|" << string(id) << std::endl;
     };
 
-    const bool addTrigger(Trigger<T> c) {
+    bool addTrigger(Trigger<T> c) {
       return triggers.insert(c).second;
     }
 

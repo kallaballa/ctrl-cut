@@ -38,7 +38,7 @@ void Document::serializeTo(std::ostream &out) {
   int resolution = this->settings.get(DS::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  if(this->settings.get(DS::ENABLE_RASTER)) {
+  if(this->settings.get(DS::ENABLE_RASTER) && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(ES::EPOWER);
     raster_speed = this->front_engrave()->settings.get(ES::ESPEED);
   }

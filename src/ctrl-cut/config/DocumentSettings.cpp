@@ -42,12 +42,12 @@ void DocumentSettings::resetToDefaults() {
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
   this->put(TEMP_DIR, string("tmp"));
   this->put(AUTO_FOCUS, true);
-  this->put(RESOLUTION, 0);
+  this->put(RESOLUTION, 600);
   this->put(SCREEN, 8);
   this->put(ENABLE_VECTOR, true);
   this->put(ENABLE_RASTER, false);
-  this->put(WIDTH, Measurement(-1,PX));
-  this->put(HEIGHT, Measurement(-1,PX));
+  this->put(WIDTH, Measurement(21600,PX));
+  this->put(HEIGHT, Measurement(14400,PX));
   this->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);

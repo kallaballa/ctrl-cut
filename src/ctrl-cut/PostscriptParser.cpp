@@ -230,7 +230,7 @@ PostscriptParser::PostscriptParser(DocumentSettings &conf)
 PostscriptParser::~PostscriptParser()
 {
   // Cleanup unneeded files provided that debug mode is disabled.
-  if (cc_loglevel > CC_DEBUG) {
+  if (Logger::getLevel() > CC_DEBUG) {
     if (unlink(this->filename_eps.c_str())) {
       LOG_FATAL_MSG("unlink failed", this->filename_eps);
     }

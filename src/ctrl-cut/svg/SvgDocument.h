@@ -26,6 +26,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#undef protected
 #include <libxml++/libxml++.h>
 #include "util/Measurement.h"
 
