@@ -4,9 +4,8 @@
 
 #include "FileParser.h"
 #include "Document.h"
-#include "Driver.h"
-#include "vector/model/CutModel.h"
-#include "vector/geom/Geometry.h"
+#include "cut/model/CutModel.h"
+#include "cut/geom/Geometry.h"
 #include "svg/Svg2Ps.h"
 
 #include "StreamUtils.h"
@@ -48,65 +47,62 @@ void MainWindow::openFile(const QString &filename)
       delete this->document;
     }
     this->document = new Document();
-    this->document->settings.resetToDefaults();
     this->document->load(filename.toStdString());
 
-
-      if (!document->engraveList.empty()) {
-        this->rasterpixmap = QPixmap();
-        this->rasterpos = QPointF();
-        AbstractImage *image = document->front_engrave()->sourceImage();
-        QImage *img;
-        BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
-        if (bitmap) {
+    if (!document->engraveList.empty()) {
+      this->rasterpixmap = QPixmap();
+      this->rasterpos = QPointF();
+      AbstractImage *image = document->front_engrave()->sourceImage();
+      QImage *img;
+      BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
+      if (bitmap) {
+        img = new QImage((const uchar *)image->data(), image->width(), image->height(),
+                         image->rowstride(), QImage::Format_Mono);
+        QVector<QRgb> colortable;
+        colortable.append(qRgba(0,0,0,255));
+        colortable.append(qRgba(0,0,0,0));
+        img->setColorTable(colortable);
+      }
+      else {
+        GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
+        if (gsimage) {
           img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
-                           image->rowstride(), QImage::Format_Mono);
+                           image->rowstride(), QImage::Format_Indexed8);
           QVector<QRgb> colortable;
-          colortable.append(qRgba(0,0,0,255));
-          colortable.append(qRgba(0,0,0,0));
+          for(int i=0;i<255;i++) colortable.append(qRgba(i,i,i,255));
+          colortable.append(qRgba(255,255,255,0));
           img->setColorTable(colortable);
         }
-        else {
-          GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
-          if (gsimage) {
-            img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
-                             image->rowstride(), QImage::Format_Indexed8);
-            QVector<QRgb> colortable;
-            for(int i=0;i<255;i++) colortable.append(qRgba(i,i,i,255));
-            colortable.append(qRgba(255,255,255,0));
-            img->setColorTable(colortable);
-          }
-        }
-        // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
-        // of its buffer
-        img->bits();
-        this->rasterpixmap = QPixmap::fromImage(*img);
-        this->rasterpos = QPointF(image->xPos(), image->yPos());
       }
+      // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
+      // of its buffer
+      img->bits();
+      this->rasterpixmap = QPixmap::fromImage(*img);
+      this->rasterpos = QPointF(image->xPos(), image->yPos());
     }
+  }
 
+  this->documentitem = new QGraphicsItemGroup();
+  this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+  this->scene->addItem(this->documentitem);
 
-    this->documentitem = new QGraphicsItemGroup();
-    this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-    this->scene->addItem(this->documentitem);
-
-    if (!this->document->cutList.empty()) {
-      this->firstitem = NULL;
-      for (CutModel::iterator iter = this->document->front_cut()->begin(); iter != this->document->front_cut()->end(); iter++) {
-        const Segment &segment = **iter;
-        QGraphicsLineItem *line = 
-          new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
-                                this->documentitem);
-        this->documentitem->addToGroup(line);
-        if (!this->firstitem) this->firstitem = line;
-      }
+  if (!this->document->cutList.empty()) {
+    this->firstitem = NULL;
+    for (CutModel::iterator iter = this->document->front_cut()->begin(); iter != this->document->front_cut()->end(); iter++) {
+      const Segment &segment = **iter;
+      QGraphicsLineItem *line =
+        new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
+                              this->documentitem);
+      this->documentitem->addToGroup(line);
+      if (!this->firstitem) this->firstitem = line;
     }
+  }
 
-    if (!this->rasterpixmap.isNull()) {
-      this->rasteritem = new QGraphicsPixmapItem(this->rasterpixmap, this->documentitem);
-      this->rasteritem->setPos(this->rasterpos);
-      this->documentitem->addToGroup(this->rasteritem);
-    }
+  if (!this->rasterpixmap.isNull()) {
+    this->rasteritem = new QGraphicsPixmapItem(this->rasterpixmap, this->documentitem);
+    this->rasteritem->setPos(this->rasterpos);
+    this->documentitem->addToGroup(this->rasteritem);
+  }
 }
 
 void MainWindow::on_fileOpenAction_triggered()
@@ -153,11 +149,11 @@ void MainWindow::on_filePrintAction_triggered()
     }
     */
 
-    Driver drv;
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ostream ostream(&streambuf);
-    drv.process(this->document, ostream);
+    this->document->preprocess();
+    this->document->write(ostream);
     
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }

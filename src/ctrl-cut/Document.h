@@ -11,13 +11,12 @@
 #include "boost/format.hpp"
 
 #include "util/PJL.h"
-#include "raster/Raster.h"
-#include "vector/HPGLEncoder.h"
-#include "raster/PclEncoder.h"
-#include "vector/model/CutModel.h"
+#include "engrave/Engrave.h"
+#include "cut/HPGLEncoder.h"
+#include "engrave/PclEncoder.h"
+#include "cut/model/CutModel.h"
 #include "config/DocumentSettings.h"
 #include "config/EngraveSettings.h"
-#include "Driver.h"
 
 #include "util/Util.h"
 #include <cups/cups.h>
@@ -39,7 +38,7 @@ public:
   };
 
   typedef std::list<CutModel*> CutList;
-  typedef std::list<Raster*> EngraveList;
+  typedef std::list<Engraving*> EngraveList;
   typedef CutList::iterator CutIt;
   typedef EngraveList::iterator EngraveIt;
   typedef CutList::const_iterator CutConstIt;
@@ -72,11 +71,11 @@ public:
 
   void optimize();
   void addCut(CutModel* cut);
-  void addRaster(Raster* raster);
+  void addRaster(Engraving* raster);
   CutList getCuts() { return cutList; }
 
-  void serializeTo(std::ostream &out);
-
+  void write(std::ostream &out);
+  void preprocess();
 
   bool load(const string& filename) {
     typedef DocumentSettings DS;
@@ -200,17 +199,17 @@ public:
     }
 
     if (this->settings.get(DS::ENABLE_RASTER)) {
-      Raster *raster = NULL;
+      Engraving *raster = NULL;
       if (docFormat == PBM) {
-        raster = new Raster(filename_pbm, this->settings);
+        raster = new Engraving(filename_pbm, this->settings);
       }
       else if (parser) {
         if (parser->hasBitmapData()) {
           LOG_DEBUG_STR("Processing bitmap data from memory");
-          raster = new Raster(parser->getImage(), this->settings);
+          raster = new Engraving(parser->getImage(), this->settings);
         }
         else if (!parser->getBitmapFile().empty()) {
-          raster = new Raster(parser->getBitmapFile(), this->settings);
+          raster = new Engraving(parser->getBitmapFile(), this->settings);
         }
         else {
           LOG_FATAL("No bitmap available from FileParser");
@@ -218,7 +217,6 @@ public:
         }
       }
       if (raster) {
-        raster->addTile(raster->sourceImage());
         this->addRaster(raster);
       }
     }

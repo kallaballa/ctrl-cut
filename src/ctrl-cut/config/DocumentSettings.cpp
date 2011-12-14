@@ -37,8 +37,9 @@ const DocumentSettings::Key<uint16_t> DocumentSettings::SCREEN = "screen";
 
 const DocumentSettings::Key<bool> DocumentSettings::ENABLE_RASTER = "enableRaster";
 const DocumentSettings::Key<bool> DocumentSettings::ENABLE_VECTOR = "enableVector";
+const DocumentSettings::Key<bool> DocumentSettings::DUMP_XML = "dumpXml";
 
-void DocumentSettings::resetToDefaults() {
+DocumentSettings::DocumentSettings() : Settings() {
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
   this->put(TEMP_DIR, string("tmp"));
   this->put(AUTO_FOCUS, true);
@@ -48,6 +49,7 @@ void DocumentSettings::resetToDefaults() {
   this->put(ENABLE_RASTER, false);
   this->put(WIDTH, Measurement(21600,PX));
   this->put(HEIGHT, Measurement(14400,PX));
+  this->put(DUMP_XML, false);
   this->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);

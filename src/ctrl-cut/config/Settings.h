@@ -33,50 +33,25 @@
 #include <boost/bind.hpp>
 
 #include "util/Logger.h"
-#include "Trigger.h"
 
 using std::string;
 
 class Settings
 {
 public:
-  template <typename T>
-  struct TriggerVector {
-    typedef std::vector<Trigger<T> > type;
-  };
-
   template<typename T>
   class Key {
   public:
     const string id;
-    std::set<Trigger<T> > triggers;
 
-    size_t size() const { return this->triggers.size(); }
-    bool empty() const { return this->triggers.empty(); }
-
-    Key(const char* id): id(id) {
-      std::cerr << "Key constr" << this->id << "|" << string(id) << std::endl;
-    };
-
-    bool addTrigger(Trigger<T> c) {
-      return triggers.insert(c).second;
-    }
+    Key(const char* id): id(id) {};
 
     operator std::string() const{
       return this->id;
     }
 
-    typename TriggerVector<T>::type runTriggers(T& value) const {
-      using namespace boost;
-      typename TriggerVector<T>::type triggered;
-      std::for_each(triggers.begin(), triggers.end(), insertOnTriggered(triggered, _1, value));
-      return triggered;
-    }
-
-  private:
-    void insertOnTriggered(typename TriggerVector<T>::type& triggered, Trigger<T> trigger, T& value) {
-      if(trigger(value))
-        triggered.push_back(trigger);
+    const bool operator<(const Key& other) const{
+      return this->id < other->id;
     }
   };
 
@@ -96,12 +71,9 @@ public:
   iterator end() { return this->properties.end(); }
   const_iterator end() const  { return this->properties.end(); }
 
-
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
-   // typename TriggerVector<T>::type trigger = key.runTriggers(static_cast<T>(value));
     properties[key] = boost::any(static_cast<T>(value));
-    //return trigger;
   }
 
   template<typename T>
@@ -117,7 +89,6 @@ public:
     return boost::any_cast<T>(properties[key]);
   }
 
-  virtual void log();
 private:
   PropertyMap properties;
   Settings* parent;

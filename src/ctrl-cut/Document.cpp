@@ -20,6 +20,10 @@
 #include <list>
 #include "Document.h"
 #include "util/Measurement.h"
+#include "cut/model/Explode.h"
+#include "cut/model/Reduce.h"
+#include "cut/graph/Traverse.h"
+
 using boost::format;
 using std::list;
 
@@ -27,13 +31,13 @@ void Document::addCut(CutModel* cut) {
   this->cutList.push_back(cut);
 }
 
-void Document::addRaster(Raster* raster) {
+void Document::addRaster(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
 typedef EngraveSettings ES;
 typedef DocumentSettings DS;
-void Document::serializeTo(std::ostream &out) {
+void Document::write(std::ostream &out) {
   string title = this->settings.get(DS::TITLE);
   int resolution = this->settings.get(DS::RESOLUTION);
   int raster_power = 0;
@@ -96,7 +100,7 @@ void Document::serializeTo(std::ostream &out) {
 
   if (enable_raster && !this->engraveList.empty()) {
     for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
-      Raster *raster = *it;
+      Engraving *raster = *it;
       if (raster) {
         LOG_DEBUG_STR("Encoding raster...");
         PclEncoder r;
@@ -134,4 +138,12 @@ void Document::serializeTo(std::ostream &out) {
     out << ' ';
   }
   out << "Mini]";
+}
+
+void Document::preprocess() {
+   for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
+     CutModel& model = *(*it);
+     explode_segments(model);
+     reduce_linestrings(model, model.settings.get(CutSettings::REDUCE));
+   }
 }

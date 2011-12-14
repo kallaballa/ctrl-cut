@@ -1,7 +1,7 @@
 
-#include "vector/model/CutModel.h"
-#include "vector/graph/Traverse.h"
-#include "vector/geom/Geometry.h"
+#include "cut/model/CutModel.h"
+#include "cut/graph/Traverse.h"
+#include "cut/geom/Geometry.h"
 #include <boost/graph/properties.hpp>
 
 int main() {

@@ -42,11 +42,10 @@ public:
 
   const static Key<bool> ENABLE_RASTER;
   const static Key<bool> ENABLE_VECTOR;
+  const static Key<bool> DUMP_XML;
 
-  DocumentSettings() : Settings() {}
+  DocumentSettings();
   ~DocumentSettings() {}
-
-  virtual void resetToDefaults();
 };
 
 #endif /* DOCUMENT_SETTINGS_H_ */

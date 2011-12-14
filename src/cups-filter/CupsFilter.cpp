@@ -16,43 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <ctype.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <unistd.h>
-#include <time.h>
-#include <libgen.h>
 
 #include "util/Logger.h"
 #include "Document.h"
-#include "GetOpt.h"
-#include "Driver.h"<
-
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-
-void printUsage(const char *name) {
-  fprintf(stderr, "%s %s\n", name, TOSTRING(CTRLCUT_VERSION));
-  fprintf(stderr,
-      "Usage: %s [options] job-id user title copies options [file]\n\n", name);
-
-  fprintf(stderr, "Options:\n");
-  fprintf(stderr, "  -x        Output xml files for debugging\n");
-  fprintf(stderr, "  -f <file> Read vectors from the given file instead of the postscript\n");
-  exit(1);
-}
-
-int lower_case ( int c )
-{
-  return tolower ( c );
-}
+#include "CupsGetOpt.h"
 
 /**
- * Main entry point for the program.
+ * Cups filter entry point.
  *
  * @param argc The number of command line options passed to the program.
  * @param argv An array of strings where each string represents a command line
@@ -68,20 +38,12 @@ int main(int argc, char *argv[]) {
   // Make sure status messages are not buffered
   setbuf(stderr, NULL);
 
-  Document job;
-  GetOpt options;
-  job.settings.resetToDefaults();
-  options.parseDocumentSettings(job.settings, argc, argv);
+  Document& doc = CupsGetOpt::load_document(argc, argv);
+  doc.preprocess();
 
-  string filename_vector;
-  string filename_pbm;
-
-  job.load(options.filename);
-
-  Driver drv;
-  if (options.dumpXML) drv.enableXML(true);
   std::stringstream ss;
-  drv.process(&job, ss);
+  doc.write(ss);
+
   LOG_DEBUG_MSG("Output size", ss.str().size());
   std::cout << ss.rdbuf();
 
