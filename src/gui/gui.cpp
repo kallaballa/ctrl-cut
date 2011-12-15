@@ -4,13 +4,9 @@
 #include "util/Logger.h"
 #include "config/DocumentSettings.h"
 
-LogLevel cc_loglevel = CC_DEBUG;
-/** Temporary buffer for building our strings. */
-char buf[102400];
-
 int main(int argc, char **argv)
 {
-  Logger::init(CC_WARNING);
+  Logger::init(CC_DEBUG);
   QApplication app(argc, argv);
   app.installEventFilter(new EventFilter(&app));
 

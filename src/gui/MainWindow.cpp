@@ -1,24 +1,8 @@
 #include "MainWindow.h"
-#include <QtGui>
-#include "LpdClient.h"
 
-#include "FileParser.h"
-#include "Document.h"
-#include "cut/model/CutModel.h"
-#include "cut/geom/Geometry.h"
-#include "svg/Svg2Ps.h"
-
-#include "StreamUtils.h"
-#include "GroupItem.h"
-#include "CtrlCutScene.h"
-
-#include "LaserDialog.h"
-
-#include <assert.h>
-#include <boost/thread.hpp>
 MainWindow *MainWindow::inst = NULL;
 
-MainWindow::MainWindow() : document(NULL), laserdialog(NULL)
+MainWindow::MainWindow() : documentitem(NULL), laserdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -37,87 +21,46 @@ MainWindow::MainWindow() : document(NULL), laserdialog(NULL)
 }
 
 MainWindow::~MainWindow()
-{
-}
+{}
 
 void MainWindow::openFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
-    if (this->document) {
-      delete this->document;
+    if(this->documentitem != NULL) {
+      delete this->documentitem;
     }
-    this->document = new Document();
-    this->document->load(filename.toStdString());
-
-    if (!document->engraveList.empty()) {
-      this->rasterpixmap = QPixmap();
-      this->rasterpos = QPointF();
-      AbstractImage *image = document->front_engrave()->sourceImage();
-      QImage *img;
-      BitmapImage *bitmap = dynamic_cast<BitmapImage*>(image);
-      if (bitmap) {
-        img = new QImage((const uchar *)image->data(), image->width(), image->height(),
-                         image->rowstride(), QImage::Format_Mono);
-        QVector<QRgb> colortable;
-        colortable.append(qRgba(0,0,0,255));
-        colortable.append(qRgba(0,0,0,0));
-        img->setColorTable(colortable);
-      }
-      else {
-        GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(image);
-        if (gsimage) {
-          img = new QImage((const uchar *)image->data(), image->width(), image->height(), 
-                           image->rowstride(), QImage::Format_Indexed8);
-          QVector<QRgb> colortable;
-          for(int i=0;i<255;i++) colortable.append(qRgba(i,i,i,255));
-          colortable.append(qRgba(255,255,255,0));
-          img->setColorTable(colortable);
-        }
-      }
-      // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
-      // of its buffer
-      img->bits();
-      this->rasterpixmap = QPixmap::fromImage(*img);
-      this->rasterpos = QPointF(image->xPos(), image->yPos());
-    }
+    Document loaded;
+    loaded.load(filename.toStdString());
+    this->documentitem = new DocumentItem(*this->scene,loaded);
   }
+}
 
-  this->documentitem = new QGraphicsItemGroup();
-  this->documentitem->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  this->scene->addItem(this->documentitem);
-
-  if (!this->document->cutList.empty()) {
-    this->firstitem = NULL;
-    for (CutModel::iterator iter = this->document->front_cut()->begin(); iter != this->document->front_cut()->end(); iter++) {
-      const Segment &segment = **iter;
-      QGraphicsLineItem *line =
-        new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1],
-                              this->documentitem);
-      this->documentitem->addToGroup(line);
-      if (!this->firstitem) this->firstitem = line;
+void MainWindow::importFile(const QString &filename)
+{
+  if (!filename.isEmpty()) {
+    Document loaded;
+    loaded.load(filename.toStdString());
+    if(this->documentitem == NULL) {
+      this->documentitem = new DocumentItem(*this->scene,loaded);
+    } else {
+      this->documentitem->load(loaded);
     }
-  }
-
-  if (!this->rasterpixmap.isNull()) {
-    this->rasteritem = new QGraphicsPixmapItem(this->rasterpixmap, this->documentitem);
-    this->rasteritem->setPos(this->rasterpos);
-    this->documentitem->addToGroup(this->rasteritem);
   }
 }
 
 void MainWindow::on_fileOpenAction_triggered()
 {
-  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Supported files (*.ps *.vector)"));
+  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Ctrl-Cut SVG (*.svg)"));
 }
 
 void MainWindow::on_fileImportAction_triggered()
 {
-  QMessageBox::information(this, "Not Implemented", "Not Implemented");
+  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.vector *.svg)"));
 }
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->document) {
+  if (!this->documentitem) {
     fprintf(stderr, "No document loaded\n");
     return;
   }
@@ -125,7 +68,7 @@ void MainWindow::on_filePrintAction_triggered()
   if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
-  this->laserdialog->updateLaserConfig(*this->document);
+  this->laserdialog->updateLaserConfig(this->documentitem->doc);
 
   QStringList items;
   items << "Lazzzor" << "localhost";
@@ -133,27 +76,39 @@ void MainWindow::on_filePrintAction_triggered()
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
-
-
-    // Apply transformations and add to job
-    QPointF pos = this->documentitem->pos();
+    foreach (QGraphicsItem *sitem, this->scene->items()) {
+      CutItem* ci = NULL;
+      EngraveItem* ei = NULL;
+      QPointF pos;
+      if((ci = dynamic_cast<CutItem*>(sitem))) {
+        pos = ci->pos();
+        ci->cut.setTranslation(* new Point(pos.x(), pos.y()));
+      } else if((ei = dynamic_cast<EngraveItem*>(sitem))) {
 /* REFACTOR
-    if (this->cutmodel) {
-      //      this->cutmodel->setTransformation(pos); // Assumes initial translation to be (0,0)
-      job.addCut(this->cutmodel);
+       pos = ei->pos();
+        ei->engraving.setTranslation(new Point(pos.x(), pos.y()));
+        */
+      }
+    }
+
+/* REFACTOR
+    // Apply transformations
+    QPointF pos = this->documentitem->pos();
+
+    if (!this->documentitem.doc.empty_cut()) {
+      this->document->front_cut()->setTranslation(* new Point(pos.x(), pos.y()));
     }
     QPointF rasterpos = this->rasteritem->pos() + pos;
-    if (this->raster) {
-      this->raster->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
-      job.addRaster(this->raster);
+    if (!this->document->empty_engrave()) {
+      this->document->front_engrave()->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
     }
-    */
 
+*/
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ostream ostream(&streambuf);
-    this->document->preprocess();
-    this->document->write(ostream);
+    this->documentitem->doc.preprocess();
+    this->documentitem->doc.write(ostream);
     
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
@@ -180,10 +135,12 @@ void MainWindow::sceneSelectionChanged()
 
 void MainWindow::on_toolsMoveToOriginAction_triggered()
 {
+  /* REFACTOR
   QRectF brect = this->documentitem->boundingRect();
   qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();
   QPointF topleft = brect.topLeft();
   this->documentitem->setPos(-topleft);
+  */
 }
 
 #define STRINGIFY(x) #x

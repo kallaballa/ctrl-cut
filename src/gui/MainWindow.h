@@ -1,10 +1,19 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
+
 #include <QMainWindow>
 #include "ui_CtrlCut.h"
 #include <QAbstractSocket>
 #include <QtGui>
+#include <assert.h>
+#include "LpdClient.h"
+#include "StreamUtils.h"
+#include "GroupItem.h"
+#include "CtrlCutScene.h"
+#include "LaserDialog.h"
+#include "helpers/Qt.h"
+#include "helpers/DocumentItem.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -27,21 +36,16 @@ public slots:
   void sceneSelectionChanged();
 
   void openFile(const QString &filename);
+  void importFile(const QString &filename);
 
 private:
   static MainWindow *inst;
   MainWindow();
 
-  class LpdClient *lpdclient;
-  class QGraphicsItem *firstitem;
-  class CtrlCutScene *scene;
-
-  class Document *document;
-  class QGraphicsItemGroup *documentitem;
-  class QGraphicsPixmapItem *rasteritem;
-  QPixmap rasterpixmap;
-  QPointF rasterpos;
-  class LaserDialog *laserdialog;
+  LpdClient *lpdclient;
+  CtrlCutScene *scene;
+  DocumentItem *documentitem;
+  LaserDialog *laserdialog;
 };
 
 #endif

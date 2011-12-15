@@ -25,7 +25,7 @@
 #include "util/PJL.h"
 #include "util/2D.h"
 #include "Engrave.h"
-#include "MMapMatrix.h"
+#include "image/MMapMatrix.h"
 
 class PclEncoder {
 

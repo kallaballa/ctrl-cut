@@ -9,7 +9,7 @@ CtrlCutScene::CtrlCutScene(QObject *parent) : QGraphicsScene(parent)
   laserbed->setZValue(-1000); // Render at the back
   this->addItem(laserbed);
 
-  QPen gray(Qt::gray);
+  QPen gray(Qt::lightGray);
   for (int j=1000;j<14400;j+=1000) {
     this->addLine(0, j, 21600, j, gray);
   }

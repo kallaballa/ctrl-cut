@@ -39,6 +39,19 @@ using std::string;
 class Settings
 {
 public:
+  class setting_not_found : public std::exception
+  {
+  public:
+    const string keyid;
+    setting_not_found(const string keyid) : keyid(keyid) {}
+    virtual ~setting_not_found() throw () {}
+
+  public:
+      virtual const char * what() const throw() {
+          return ("setting_not_found: " + keyid).c_str();
+      }
+  };
+
   template<typename T>
   class Key {
   public:
@@ -48,10 +61,6 @@ public:
 
     operator std::string() const{
       return this->id;
-    }
-
-    const bool operator<(const Key& other) const{
-      return this->id < other->id;
     }
   };
 
@@ -85,8 +94,7 @@ public:
       return parent->get(key);
     }
 
-    // FIXME: throw exception
-    return boost::any_cast<T>(properties[key]);
+    boost::throw_exception(setting_not_found(key.id));
   }
 
 private:

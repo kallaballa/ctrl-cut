@@ -23,7 +23,7 @@
 
 #include "stdlib.h"
 #include "util/2D.h"
-#include "Image.h"
+#include "engrave/image/Image.h"
 #include "assert.h"
 #include "config/EngraveSettings.h"
 

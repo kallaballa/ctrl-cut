@@ -30,11 +30,18 @@ using std::string;
 
 class Document {
 public:
-  enum DocumentFormat {
+  enum Format {
+    UNSPECIFIED,
     POSTSCRIPT,
     SVG,
     VECTOR,
     PBM
+  };
+
+  enum LoadType {
+    ENGRAVING,
+    CUT,
+    BOTH
   };
 
   typedef std::list<CutModel*> CutList;
@@ -77,59 +84,58 @@ public:
   void write(std::ostream &out);
   void preprocess();
 
-  bool load(const string& filename) {
-    typedef DocumentSettings DS;
-
-    string filename_vector;
-    string filename_pbm;
-    DocumentFormat docFormat;
-    this->settings.put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
+  Format findFormat(const string& filename) {
     string base = basename(strdup(filename.c_str()));
-
     string suffix = base.substr(base.rfind(".") + 1);
     transform ( suffix.begin(), suffix.end(), suffix.begin(), &Util::lower_case );
 
+    if (suffix == "vector")
+      return VECTOR;
+    else if (suffix == "pbm")
+      return PBM;
+    else if (suffix == "svg")
+      return SVG;
+    else
+      return POSTSCRIPT;
+  }
+
+  bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED) {
+    typedef DocumentSettings DS;
+    if(docFormat == UNSPECIFIED)
+      docFormat = findFormat(filename);
+
+    string base = basename(strdup(filename.c_str()));
+
+    this->settings.put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
     this->settings.put(DS::BASENAME,base.erase(base.rfind(".")));
+
     cups_file_t* input_file;
-
-    if (suffix == "vector") {
-      docFormat = VECTOR;
-      filename_vector = filename;
-    } else if (suffix == "pbm") {
-      docFormat = PBM;
-      filename_pbm = filename;
-    } else if (suffix == "svg") {
-      // Try to open the print file...
-      docFormat = SVG;
-      int convertPipe[2];
-      FILE *svgIn = fopen(filename.c_str(), "r");
-      int svgFd = fileno (svgIn);
-
-      if (pipe(convertPipe)) {
-        fprintf(stderr, "Pipe failed.\n");
-        return false;
-      }
-
-      Svg2Ps converter(svgFd, convertPipe[1]);
-      boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
-
-      if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", filename.c_str());
-        return false;
-      }
-    } else {
-      docFormat = POSTSCRIPT;
-      // Try to open the print file...
-      if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", filename.c_str());
-        return false;
-      }
-    }
-
-
     FileParser *parser = NULL;
 
     if (docFormat == POSTSCRIPT || docFormat == SVG) {
+      if (docFormat == SVG) {
+        int convertPipe[2];
+        FILE *svgIn = fopen(filename.c_str(), "r");
+        int svgFd = fileno (svgIn);
+
+        if (pipe(convertPipe)) {
+          fprintf(stderr, "Pipe failed.\n");
+          return false;
+        }
+
+        Svg2Ps converter(svgFd, convertPipe[1]);
+        boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
+
+        if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
+          LOG_FATAL_MSG("unable to open print file", filename.c_str());
+          return false;
+        }
+      } else if(docFormat == POSTSCRIPT){
+        if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
+          LOG_FATAL_MSG("unable to open print file", filename.c_str());
+          return false;
+        }
+      }
       string file_basename = this->settings.get(DS::TEMP_DIR)+ "/" + this->settings.get(DS::BASENAME);
 
       // Write out the incoming cups data if debug is enabled.
@@ -170,7 +176,7 @@ public:
       // Uncomment this to force ghostscript to render to file using the ppmraw
       // backend, instead of in-memory rendering
       //    psparser->setRenderToFile(true);
-      if (this->settings.get(DS::ENABLE_RASTER)) {
+      if (load == ENGRAVING || load == BOTH) {
         switch (this->settings.get(EngraveSettings::DITHERING)) {
         case EngraveSettings::DEFAULT_DITHERING:
           psparser->setRasterFormat(PostscriptParser::BITMAP);
@@ -198,10 +204,10 @@ public:
       }
     }
 
-    if (this->settings.get(DS::ENABLE_RASTER)) {
+    if (load == ENGRAVING || load == BOTH) {
       Engraving *raster = NULL;
       if (docFormat == PBM) {
-        raster = new Engraving(filename_pbm, this->settings);
+        raster = new Engraving(filename, this->settings);
       }
       else if (parser) {
         if (parser->hasBitmapData()) {
@@ -211,10 +217,6 @@ public:
         else if (!parser->getBitmapFile().empty()) {
           raster = new Engraving(parser->getBitmapFile(), this->settings);
         }
-        else {
-          LOG_FATAL("No bitmap available from FileParser");
-          return 1;
-        }
       }
       if (raster) {
         this->addRaster(raster);
@@ -222,10 +224,10 @@ public:
     }
 
     CutModel *cut = NULL;
-    if (this->settings.get(DS::ENABLE_VECTOR)) {
+    if (load == CUT || load == BOTH) {
       if (docFormat == VECTOR) {
         cut = new CutModel(this->settings);
-        if(!cut->load(filename_vector))
+        if(!cut->load(filename))
           return false;
       }
       else if (parser) {

@@ -20,11 +20,11 @@ const string CupsOptions::OPTION_STRINGS[]= {
   };
 
 typedef DocumentSettings DS;
-typedef CutSettings CSET;
-typedef EngraveSettings ESET;
+typedef CutSettings CS;
+typedef EngraveSettings ES;
 
 /*!
- Copy supported options into the supplied DocumentSettings
+ Translate supported options into the supplied DocumentSettings
  */
 void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, int numOptions) {
   string v;
@@ -61,60 +61,60 @@ void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, in
     ds.put(DS::RESOLUTION, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::RASTER_SPEED, v)) {
-    ds.put(ESET::ESPEED, lexical_cast<uint16_t> (v));
+    ds.put(ES::ESPEED, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::RASTER_POWER, v)) {
-    ds.put(ESET::EPOWER, lexical_cast<uint16_t> (v));
+    ds.put(ES::EPOWER, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::RASTER_DITHERING, v)) {
     if (v == "Default")
-      ds.put(ESET::DITHERING, ESET::DEFAULT_DITHERING);
+      ds.put(ES::DITHERING, ES::DEFAULT_DITHERING);
     else if (v == "Bayer")
-      ds.put(ESET::DITHERING, ESET::BAYER);
+      ds.put(ES::DITHERING, ES::BAYER);
     else if (v == "FloydSteinberg")
-      ds.put(ESET::DITHERING, ESET::FLOYD_STEINBERG);
+      ds.put(ES::DITHERING, ES::FLOYD_STEINBERG);
     else if (v == "Jarvis")
-      ds.put(ESET::DITHERING, ESET::JARVIS);
+      ds.put(ES::DITHERING, ES::JARVIS);
     else if (v == "Burke")
-      ds.put(ESET::DITHERING, ESET::BURKE);
+      ds.put(ES::DITHERING, ES::BURKE);
     else if (v == "Stucki")
-      ds.put(ESET::DITHERING, ESET::STUCKI);
+      ds.put(ES::DITHERING, ES::STUCKI);
     else if (v == "Sierra2")
-      ds.put(ESET::DITHERING, ESET::SIERRA2);
+      ds.put(ES::DITHERING, ES::SIERRA2);
     else if (v == "Sierra3")
-      ds.put(ESET::DITHERING, ESET::SIERRA3);
+      ds.put(ES::DITHERING, ES::SIERRA3);
     else {
       LOG_WARN_MSG("Illegal value for RasterDithering", v);
     }
   }
   if (cupsOpts.get(CupsOptions::RASTER_DIRECTION, v)) {
     if (v == "TopDown")
-      ds.put(ESET::DIRECTION, ESET::TOPDOWN);
+      ds.put(ES::DIRECTION, ES::TOPDOWN);
     else if (v == "BottomUp")
-      ds.put(ESET::DIRECTION, ESET::BOTTOMUP);
+      ds.put(ES::DIRECTION, ES::BOTTOMUP);
     else {
       LOG_WARN_MSG("Illegal value for RasterDirection", v);
     }
   }
   if (cupsOpts.get(CupsOptions::VECTOR_SPEED, v)) {
-    ds.put(CSET::CSPEED, lexical_cast<uint16_t> (v));
+    ds.put(CS::CSPEED, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_POWER, v)) {
-    ds.put(CSET::CPOWER, lexical_cast<uint16_t> (v));
+    ds.put(CS::CPOWER, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_FREQUENCY, v)) {
-    ds.put(CSET::FREQUENCY, lexical_cast<uint16_t> (v));
+    ds.put(CS::FREQUENCY, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    ds.put(CSET::REDUCE, lexical_cast<uint16_t> (v));
+    ds.put(CS::REDUCE, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_OPTIMIZE, v)) {
     if (v == "Simple")
-      ds.put(CSET::OPTIMIZE, CSET::SIMPLE);
+      ds.put(CS::OPTIMIZE, CS::SIMPLE);
     else if (v == "Inner-Outer")
-      ds.put(CSET::OPTIMIZE, CSET::INNER_OUTER);
+      ds.put(CS::OPTIMIZE, CS::INNER_OUTER);
     else if (v == "Shortest-Path")
-      ds.put(CSET::OPTIMIZE, CSET::SHORTEST_PATH);
+      ds.put(CS::OPTIMIZE, CS::SHORTEST_PATH);
     else {
       LOG_WARN_MSG("Illegal value for VectorOptimize", v);
     }

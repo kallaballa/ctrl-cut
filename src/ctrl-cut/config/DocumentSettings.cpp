@@ -58,5 +58,5 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::CSPEED, 33);
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);
-  this->put(CutSettings::REDUCE, 0.0f);
+  this->put(CutSettings::REDUCE, 3.0f);
 }

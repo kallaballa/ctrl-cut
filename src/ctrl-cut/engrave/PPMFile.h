@@ -25,7 +25,7 @@
 #include "stdio.h"
 #include <fstream>
 #include "util/Logger.h"
-#include "MMapMatrix.h"
+#include "image/MMapMatrix.h"
 
 GrayscaleImage *loadppm(std::string filename)
 {

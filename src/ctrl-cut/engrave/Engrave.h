@@ -21,8 +21,7 @@
 #define ENGRAVE_H_
 
 #include "util/2D.h"
-#include "DownSample.h"
-#include "MMapMatrix.h"
+#include "image/MMapMatrix.h"
 #include "config/EngraveSettings.h"
 
 class Engraving

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "config/DocumentSettings.h"
-#include "engrave/Image.h"
+#include "engrave/image/Image.h"
 
 class FileParser
 {
