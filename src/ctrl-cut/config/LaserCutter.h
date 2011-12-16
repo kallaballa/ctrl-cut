@@ -22,6 +22,8 @@
 
 #include "util/Logger.h"
 #include "util/Measurement.h"
+#include "encoder/PclEncoder.h"
+#include "encoder/HPGLEncoder.h"
 
 /**
  *  This class models the basic hardware specific parameters of a laser cutter.
@@ -35,26 +37,20 @@ private:
   static LaserCutter* instance;
 
 public:
+  typedef PclEncoder EngraveEncoder;
+  typedef HPGLEncoder CutEncoder;
+
   enum Driver {
     UNINITIALIZED,
     EPILOG_LEGEND,
     EPILOG_ZING
   };
 
-  class BedSize {
-  public:
-    Measurement width;
-    Measurement height;
-
-    BedSize(Measurement width, Measurement height): width(width), height(height) {}
-  };
-
   Driver driver;
-  BedSize bedSize;
   Unit nativeUnit;
   bool supportsAutoFocus;
 
-  LaserCutter(Driver driver) : driver(driver), bedSize(Measurement(0.0, IN), Measurement(0.0,IN)) {
+  LaserCutter(Driver driver) : driver(driver) {
     this->nativeUnit = IN;
     if(this->driver == EPILOG_LEGEND)
       this->supportsAutoFocus = true;
@@ -62,12 +58,6 @@ public:
       this->supportsAutoFocus = false;
   }
 
-  void setBedSize(const uint32_t& width, const uint32_t &height, const Unit& unit) {
-    this->bedSize.width.value = width;
-    this->bedSize.width.unit = unit;
-    this->bedSize.height.value = height;
-    this->bedSize.height.unit = unit;
-  }
 
   // init must be called exactly once per ctrl-cut livetime and it must be called before the first invocation of getInstance.
   const LaserCutter& init(const Driver driver) {

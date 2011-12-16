@@ -11,6 +11,8 @@
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -18,7 +20,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1703556739" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.141540329" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ctrl-cut/Debug}" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.1412831354" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="-3" superClass="org.eclipse.cdt.build.core.internal.builder"/>
+							<builder buildPath="${workspace_loc:/ctrl-cut/src/gui}" id="cdt.managedbuild.target.gnu.builder.exe.debug.1081722244" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1483022190" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1607083553" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -46,7 +48,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/librsvg-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/pango-1.0"/>
-									<listOptionValue builtIn="false" value="/usr/include/ImageMagick"/>
+									<listOptionValue builtIn="false" value="/usr/local/include/ImageMagick"/>
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/ctrl-cut}&quot;"/>
 								</option>
@@ -63,10 +65,10 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.953127411" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.flags.1408387142" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.paths.548494469" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="/usr/local/lib64/"/>
 									<listOptionValue builtIn="false" value="/usr/lib64"/>
 								</option>
 								<option id="gnu.cpp.link.option.libs.548370981" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value=":libjpeg.so.8.0.2"/>
 									<listOptionValue builtIn="false" value="boost_program_options-mt"/>
 									<listOptionValue builtIn="false" value="boost_iostreams-mt"/>
 									<listOptionValue builtIn="false" value="cups"/>
@@ -113,18 +115,8 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518.1497330834" name="/" resourcePath="src/ctrl-cut/raster/filter">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.630154716" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.318813530" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1483022190"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1660034709" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1296836643" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.965524635"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1351999445" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1113801678"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.620594233" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.953127411"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.236451091" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1482307099"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/ctrl-cut/raster/filter|src/ctrl-cut/test|src/cli|src/svg2pdf|tmp|src/gui|test-code|src/lpd-epilog|src/librsvg|src/pclint|src/objects|src/cups-filter/test|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="test-code|src/librsvg|src/pclint|src/objects|src/cups-filter/test|src/svg2pdf|tmp|src/ctrl-cut/test|src/ctrl-cut/raster/filter|src/lpd-epilog|src/cli|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

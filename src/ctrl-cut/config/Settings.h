@@ -82,7 +82,7 @@ public:
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
-    properties[key] = boost::any(static_cast<T>(value));
+    properties[key.id] = boost::any(static_cast<T>(value));
   }
 
   template<typename T>

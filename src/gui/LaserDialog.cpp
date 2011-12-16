@@ -155,3 +155,4 @@ void LaserDialog::on_vectorFreq_textEdited(const QString &text)
 {
   this->vectorFreqSlider->setValue(text.toInt());
 }
+

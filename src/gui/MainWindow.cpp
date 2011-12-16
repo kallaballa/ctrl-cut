@@ -29,7 +29,7 @@ void MainWindow::openFile(const QString &filename)
     if(this->documentitem != NULL) {
       delete this->documentitem;
     }
-    Document loaded;
+    Document& loaded = * new Document();
     loaded.load(filename.toStdString());
     this->documentitem = new DocumentItem(*this->scene,loaded);
   }
@@ -38,7 +38,7 @@ void MainWindow::openFile(const QString &filename)
 void MainWindow::importFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
-    Document loaded;
+    Document& loaded = * new Document();
     loaded.load(filename.toStdString());
     if(this->documentitem == NULL) {
       this->documentitem = new DocumentItem(*this->scene,loaded);
@@ -69,7 +69,8 @@ void MainWindow::on_filePrintAction_triggered()
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
   this->laserdialog->updateLaserConfig(this->documentitem->doc);
-
+  this->documentitem->doc.settings.put(DocumentSettings::TITLE, "Default Title");
+  this->documentitem->doc.settings.put(DocumentSettings::USER, "DefaultUser");
   QStringList items;
   items << "Lazzzor" << "localhost";
   bool ok;
