@@ -22,6 +22,7 @@
 
 #include "Settings.h"
 #include "DocumentSettings.h"
+#include "cut/geom/Geometry.h"
 
 class CutSettings : public Settings
 {
@@ -34,6 +35,7 @@ public:
 
   static Key<Optimize> OPTIMIZE;
   static Key<bool> CLIP;
+  static Key<Point> CPOS;
   static Key<uint16_t> CSPEED;
   static Key<uint16_t> CPOWER;
   static Key<uint16_t> FREQUENCY;

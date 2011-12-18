@@ -50,6 +50,9 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(WIDTH, Measurement(21600,PX));
   this->put(HEIGHT, Measurement(14400,PX));
   this->put(DUMP_XML, false);
+  //FIXME dont do empty defaults
+  this->put(TITLE, "");
+  this->put(USER, "");
   this->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);
@@ -59,4 +62,6 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);
   this->put(CutSettings::REDUCE, 3.0f);
+  this->put(CutSettings::CPOS, Point());
+  this->put(EngraveSettings::EPOS, Point());
 }

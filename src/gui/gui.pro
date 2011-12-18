@@ -6,6 +6,9 @@ CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
+CONFIG += X11
+CONFIG += libpng
+!macx:CONFIG += SDL
 
 INCLUDEPATH += ../ctrl-cut/
 
@@ -25,9 +28,9 @@ macx {
   LIBS += -framework CoreFoundation
 }
 
-DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
+DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
 
-INCLUDEPATH += ../cups-filter ../lpd-epilog
+INCLUDEPATH += ../cups-filter ../lpd-epilog ../pclint
 
 FORMS   += CtrlCut.ui LaserDialog.ui
 
@@ -48,6 +51,7 @@ HEADERS += ./MainWindow.h \
            ./helpers/CutItem.h \
            ./helpers/DocumentItem.h \
            ./helpers/EngraveItem.h \
+	   ./event/CtrlCutEvent.h \
            ../ctrl-cut/FileParser.h \
            ../ctrl-cut/util/Measurement.h \
            ../ctrl-cut/util/2D.h \
@@ -89,7 +93,20 @@ HEADERS += ./MainWindow.h \
            ../ctrl-cut/config/DocumentSettings.h \
            ../ctrl-cut/svg/SvgFix.h \
            ../ctrl-cut/svg/SvgDocument.h \
-           ../ctrl-cut/svg/Svg2Ps.h
+           ../ctrl-cut/svg/Svg2Ps.h \
+           ../pclint/Pcl.h \
+           ../pclint/CLI.h \
+           ../pclint/HPGL.h \
+           ../pclint/SDLCanvas.h \
+           ../pclint/2D.h \
+           ../pclint/Interpreter.h \
+           ../pclint/PclIntConfig.h \
+           ../pclint/Statistic.h \
+           ../pclint/Plot.h \
+           ../pclint/Plotter.h \
+           ../pclint/Raster.h \
+           ../pclint/CImg.h \
+           ../pclint/Canvas.h
 
 SOURCES += ./gui.cpp \
            ./LaserDialog.cpp \
@@ -102,6 +119,7 @@ SOURCES += ./gui.cpp \
            ./StreamUtils.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/EngraveItem.cpp \
+	   ./event/CtrlCutEvent.cpp \
            ../ctrl-cut/PostscriptParser.cpp \
            ../ctrl-cut/util/Measurement.cpp \
            ../ctrl-cut/util/Logger.cpp \
@@ -133,5 +151,6 @@ SOURCES += ./gui.cpp \
            ../ctrl-cut/config/DocumentSettings.cpp \
            ../ctrl-cut/svg/SvgFix.cpp \
            ../ctrl-cut/svg/SvgDocument.cpp \
-           ../ctrl-cut/svg/Svg2Ps.cpp
-
+           ../ctrl-cut/svg/Svg2Ps.cpp \
+	   ../pclint/SDLCanvas.cpp \
+           ../pclint/Canvas.cpp

@@ -20,23 +20,41 @@
 #ifndef ENGRAVE_H_
 #define ENGRAVE_H_
 
-#include "util/2D.h"
+#include "cut/geom/Geometry.h"
 #include "image/MMapMatrix.h"
 #include "config/EngraveSettings.h"
+#include "engrave/dither/Dither.h"
 
 class Engraving
 {
 public:
   EngraveSettings settings;
 
-  Engraving(AbstractImage *sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceimage(sourceImage) {}
+  Engraving(AbstractImage *sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceimage(sourceImage), processedimage(sourceImage) {}
   Engraving(const std::string&filename, DocumentSettings& docSettings);
 
   virtual ~Engraving() {}
 
   AbstractImage *sourceImage() { return this->sourceimage; }
+  AbstractImage *processedImage() { return this->processedimage; }
+
+  void preprocess() {
+
+    GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(this->sourceImage());
+    if (gsimage) {
+      EngraveSettings::Dithering dithering = this->settings.get(EngraveSettings::DITHERING);
+      Dither& dither = Dither::create(*gsimage, dithering);
+      /* FIXME
+       if(!(this->processedimage == this->sourceimage)) {
+        delete this->processedimage;
+      }
+      */
+      this->processedimage = &dither.dither();
+    }
+  }
 private:
   AbstractImage *sourceimage;
+  AbstractImage *processedimage;
 };
 
 #endif

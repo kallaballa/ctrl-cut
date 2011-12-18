@@ -19,7 +19,7 @@
 #include "CutItem.h"
 #include "DocumentItem.h"
 
-CutItem::CutItem(DocumentItem& docItem,  CutModel& cut) : QGraphicsItemGroup(), docItem(docItem), cut(cut) {
+CutItem::CutItem(DocumentItem& parent,  CutModel& cut) : QGraphicsItemGroup(), AbstractCtrlCutItem(), cut(cut) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
   for (CutModel::iterator iter = cut.begin(); iter != cut.end(); iter++) {
     const Segment &segment = **iter;

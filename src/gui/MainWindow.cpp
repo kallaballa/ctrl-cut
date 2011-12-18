@@ -30,6 +30,7 @@ void MainWindow::openFile(const QString &filename)
       delete this->documentitem;
     }
     Document& loaded = * new Document();
+    loaded.settings.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
     loaded.load(filename.toStdString());
     this->documentitem = new DocumentItem(*this->scene,loaded);
   }
@@ -39,6 +40,7 @@ void MainWindow::importFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
     Document& loaded = * new Document();
+    loaded.settings.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
     loaded.load(filename.toStdString());
     if(this->documentitem == NULL) {
       this->documentitem = new DocumentItem(*this->scene,loaded);
@@ -77,37 +79,11 @@ void MainWindow::on_filePrintAction_triggered()
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
     QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
-    foreach (QGraphicsItem *sitem, this->scene->items()) {
-      CutItem* ci = NULL;
-      EngraveItem* ei = NULL;
-      QPointF pos;
-      if((ci = dynamic_cast<CutItem*>(sitem))) {
-        pos = ci->pos();
-        ci->cut.setTranslation(* new Point(pos.x(), pos.y()));
-      } else if((ei = dynamic_cast<EngraveItem*>(sitem))) {
-/* REFACTOR
-       pos = ei->pos();
-        ei->engraving.setTranslation(new Point(pos.x(), pos.y()));
-        */
-      }
-    }
 
-/* REFACTOR
-    // Apply transformations
-    QPointF pos = this->documentitem->pos();
-
-    if (!this->documentitem.doc.empty_cut()) {
-      this->document->front_cut()->setTranslation(* new Point(pos.x(), pos.y()));
-    }
-    QPointF rasterpos = this->rasteritem->pos() + pos;
-    if (!this->document->empty_engrave()) {
-      this->document->front_engrave()->sourceImage()->setTranslation(rasterpos.x(), rasterpos.y());
-    }
-
-*/
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ostream ostream(&streambuf);
+    this->documentitem->commit();
     this->documentitem->doc.preprocess();
     this->documentitem->doc.write(ostream);
     
@@ -159,4 +135,75 @@ MainWindow::on_helpAboutAction_triggered()
                                    "it under the terms of the GNU General Public License as published by"
                                    "the Free Software Foundation; either version 2 of the License, or"
                                    "(at your option) any later version."));
+}
+
+void
+MainWindow::on_simulateAction_triggered()
+{
+  simulate();
+}
+
+#undef Point
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include "Interpreter.h"
+#include "PclIntConfig.h"
+#include "Plotter.h"
+#include "SDLCanvas.h"
+#include <stdlib.h>
+#ifdef PCLINT_USE_SDL
+#include <SDL.h>
+#include "boost/thread.hpp"
+#include "boost/bind.hpp"
+#endif
+
+using std::ofstream;
+using std::ifstream;
+using std::string;
+using std::cerr;
+using std::cout;
+using std::endl;
+
+void sdl_waitAndQuit(Interpreter* intr) {
+  SDL_Event event;
+  do {
+    SDL_PollEvent( &event );
+  } while(event.type == 4 || event.type == 1);
+  intr->abort();
+}
+
+void MainWindow::simulate() {
+  PclIntConfig* config = PclIntConfig::singleton();
+  config->autocrop = true;
+  config->clip = NULL;
+  config->debugLevel = LVL_DEBUG;
+  config->interactive = false;
+  config->screenSize =BoundingBox::createFromGeometryString("1024x768");
+
+  ofstream *tmpfile = new ofstream("pclint.tmp", ios::out | ios::binary);
+  this->documentitem->doc.write(*tmpfile);
+
+  ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);
+  RtlPlot* plot = new RtlPlot(infile);
+  Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
+  SDLCanvas* canvas = NULL;
+  if(PclIntConfig::singleton()->screenSize != NULL)
+    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight(), PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
+  else
+    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight());
+
+  Interpreter& intr = * new Interpreter(plot, canvas);
+  boost::thread aborted_thread(boost::bind(sdl_waitAndQuit, &intr));
+
+  Debugger::create(canvas);
+  Debugger::getInstance()->autoupdate = true;
+  boost::thread render_thread(&Interpreter::render, intr);
+  SDL_Quit();
+  if (config->debugLevel >= LVL_INFO) {
+    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
+    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
+  }
 }

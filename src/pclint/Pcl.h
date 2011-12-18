@@ -122,7 +122,7 @@ private:
   const uint8_t backlogSize;
   list<PclInstr*> backlog;
   static Trace* instance;
-  Point penPos;
+  PIPoint penPos;
 
   Trace(): backlogSize(10), penPos(0,0) {}
 public:
@@ -138,7 +138,7 @@ public:
     backlog.push_back(instr);
   }
 
-  void logPlotterStat(Point &penPos) {
+  void logPlotterStat(PIPoint &penPos) {
     this->penPos = penPos;
   }
 

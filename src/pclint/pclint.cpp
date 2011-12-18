@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #ifdef PCLINT_USE_SDL
 #include <SDL.h>
+#include "SDLCanvas.h"
 #endif
 
 using std::ofstream;
@@ -48,11 +49,17 @@ int main(int argc, char *argv[]) {
   ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
   RtlPlot* plot = new RtlPlot(infile);
   Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
+  SDLCanvas* canvas = NULL;
+  if(PclIntConfig::singleton()->screenSize != NULL)
+    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight(), PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
+  else
+    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight());
 
-  Interpreter intr(plot);
+  Interpreter intr(plot,canvas);
   if (config->interactive) {
-    Debugger::create(intr.vectorPlotter);
+    Debugger::create(canvas);
     Debugger::getInstance()->setInteractive(true);
+    Debugger::getInstance()->autoupdate = true;
   } else
     Debugger::create();
 

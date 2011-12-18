@@ -144,7 +144,7 @@ CutModel::iterator CutModel::remove(iterator it_seg) {
 /*!
  Loads vector data from EPS/Ghostscript output
  */
-const bool CutModel::load(std::istream &input) {
+bool CutModel::load(std::istream &input) {
   std::string line;
   char first;
   int power, x, y;
@@ -208,19 +208,19 @@ const bool CutModel::load(std::istream &input) {
 /*!
  Loads vector data from EPS/Ghostscript output from the given file
  */
-const bool CutModel::load(const std::string &filename) {
+bool CutModel::load(const std::string &filename) {
   std::ifstream infile(filename.c_str(), std::ios_base::in);
   return this->load(infile);
 }
 
 void make_route(StringList& route, CutModel& model) {
-  const Point& translation = model.getTranslation();
+  const Point& pos = model.settings.get(CutSettings::CPOS);
   SegmentList::iterator segmentsFirst;
   SegmentList::iterator segmentsLast;
   SegmentList translated;
 
-  if(translation.x != 0 || translation.y != 0) {
-    translate(translated, model.begin(), model.end(), translation);
+  if(pos.x != 0 || pos.y != 0) {
+    translate(translated, model.begin(), model.end(), pos);
     segmentsFirst = translated.begin();
     segmentsLast = translated.end();
   } else{

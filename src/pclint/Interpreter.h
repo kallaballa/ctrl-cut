@@ -1,5 +1,5 @@
 /*
- * EpilogCUPS - A laser cutter CUPS driver
+ * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 #include "Pcl.h"
 #include "Raster.h"
 #include "Plot.h"
@@ -38,8 +39,11 @@ class Interpreter {
 private:
   dim width;
   dim height;
+  bool isAborted;
 
   PclInstr* nextPclInstr(PclPlot* pclPlot, const char* expected = NULL) {
+    if(this->isAborted)
+      return NULL;
     PclInstr* instr = pclPlot->readInstr(expected);
     Debugger::getInstance()->announce(instr);
     return instr;
@@ -50,18 +54,18 @@ public:
   BitmapPlotter* bitmapPlotter;
   RtlPlot* rtlplot;
 
-  Interpreter(RtlPlot* plot): width(0), height(0), bitmapPlotter(NULL), rtlplot(plot){
-    this->bitmapPlotter = new BitmapPlotter(plot->getWidth()/8, plot->getHeight(), PclIntConfig::singleton()->clip);
-    this->vectorPlotter = new VectorPlotter(plot->getWidth(),plot->getHeight(), PclIntConfig::singleton()->clip);
+  Interpreter(RtlPlot* plot, Canvas* canvas): width(0), height(0), isAborted(false), bitmapPlotter(NULL), rtlplot(plot){
+    this->bitmapPlotter = new BitmapPlotter(plot->getWidth()/8, plot->getHeight(), canvas, PclIntConfig::singleton()->clip);
+    this->vectorPlotter = new VectorPlotter(plot->getWidth(),plot->getHeight(), canvas, PclIntConfig::singleton()->clip);
   };
 
   void renderPclPlot(PclPlot *pclPlot) {
     PclInstr *xInstr = NULL, *yInstr = NULL, *pixlenInstr = NULL, *dataInstr = NULL;
     Run *run = new Run();
     RasterDecoder raster(this->bitmapPlotter);
-    Point origin;
+    PIPoint origin;
 
-    while (pclPlot->good()) {
+    while (pclPlot->good() && !this->isAborted) {
         if (
             (yInstr = nextPclInstr(pclPlot,PCL_Y))
             && (xInstr = nextPclInstr(pclPlot,PCL_X))
@@ -78,7 +82,7 @@ public:
   void renderHpglPlot(HpglPlot *hpglPlot) {
     HpglInstr* hpglInstr;
 
-    while (hpglPlot->good() && (hpglInstr = hpglPlot->readInstr())) {
+    while (hpglPlot->good() && (hpglInstr = hpglPlot->readInstr()) && !this->isAborted) {
       if (PclIntConfig::singleton()->debugLevel >= LVL_DEBUG || PclIntConfig::singleton()->interactive) {
         cerr << *hpglInstr << endl;
       }
@@ -109,8 +113,12 @@ public:
     }
   }
 
+  void abort() {
+    this->isAborted = true;
+  }
+
   void render() {
-    while (this->rtlplot->isValid()) {
+    while (this->rtlplot->isValid() && !this->isAborted) {
       RtlContext activeContext = this->rtlplot->getActiveContext();
 
       if (activeContext == PCL_CONTEXT) {

@@ -20,15 +20,20 @@
 #define CUTITEM_H_
 
 #include "cut/model/CutModel.h"
-#include <qgraphicsitem.h>
+#include "config/CutSettings.h"
+#include "Qt.h"
 
-class Q_GUI_EXPORT CutItem: public QGraphicsItemGroup {
+class CutItem: public QGraphicsItemGroup, AbstractCtrlCutItem {
 public:
-  class DocumentItem& docItem;
   CutModel& cut;
 
-  CutItem(DocumentItem& docItem,  CutModel& cut);
+  CutItem(class DocumentItem& docItem,  CutModel& cut);
   ~CutItem(){};
+
+  void commit() {
+    const QPointF& pos = this->pos();
+    this->cut.settings.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
+  }
 };
 
 #endif /* CUTITEM_H_ */

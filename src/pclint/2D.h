@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TWOD_H_
-#define TWOD_H_
+#ifndef TWOD_PCLINT_H_
+#define TWOD_PCLINT_H_
 
 #include <boost/lexical_cast.hpp>
 #include <cctype>
@@ -39,22 +39,22 @@ using boost::lexical_cast;
 typedef uint32_t coord;
 typedef uint32_t dim;
 
-class Point {
+class PIPoint {
 public:
   coord x;
   coord y;
 
-  Point(coord x, coord y): x(x), y(y) {}
-  Point(): x(0), y(0) {}
+  PIPoint(coord x, coord y): x(x), y(y) {}
+  PIPoint(): x(0), y(0) {}
 
-  Point &operator=(const Point &p) {
+  PIPoint &operator=(const PIPoint &p) {
     if (this != &p) {
       this->x = p.x;
       this->y = p.y;
     }
     return *this;
   }
-  bool operator==(const Point &p) const {
+  bool operator==(const PIPoint &p) const {
     if (this == &p) {
       return true;
     } else {
@@ -62,11 +62,11 @@ public:
     }
   }
 
-  bool operator!=(const Point &p) const {
+  bool operator!=(const PIPoint &p) const {
     return !(this->operator==(p));
   }
 
-  friend ostream& operator <<(ostream &os, const Point &p) {
+  friend ostream& operator <<(ostream &os, const PIPoint &p) {
     os << "<" << p.x << "," << p.y << ">";
     return os;
   }
@@ -74,9 +74,9 @@ public:
 
 class BoundingBox {
 public:
-  Point ul;
-  Point lr;
-  BoundingBox(Point ul, Point lr): ul(ul), lr(lr) {}
+  PIPoint ul;
+  PIPoint lr;
+  BoundingBox(PIPoint ul, PIPoint lr): ul(ul), lr(lr) {}
   BoundingBox(): ul(PCL_2D_MAX, PCL_2D_MAX), lr(0,0){}
 
   void reset(){
@@ -86,7 +86,7 @@ public:
     this->lr.y=0;
   }
 
-  void update(const Point& p) {
+  void update(const PIPoint& p) {
     update(p.x, p.y);
   }
 
@@ -108,7 +108,7 @@ public:
     return (c1>=c2?c1:c2);
   }
 
-  Point& shape(Point &p) const {
+  PIPoint& shape(PIPoint &p) const {
     if(!inside(p)) {
       p.x = max(p.x, ul.x);
       p.x = min(p.x, lr.x);
@@ -118,7 +118,7 @@ public:
     return p;
   }
 
-  bool inside(const Point &p) const {
+  bool inside(const PIPoint &p) const {
     return (p.x <= lr.x && p.x >= ul.x && p.y <= lr.y
             && p.y >= ul.y);
   }
@@ -169,4 +169,4 @@ public:
     return bb;
   }
 };
-#endif /* TWOD_H_ */
+#endif /* TWOD_PCLINT_H_ */

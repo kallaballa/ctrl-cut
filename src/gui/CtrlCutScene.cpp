@@ -1,9 +1,12 @@
 #include "CtrlCutScene.h"
+#include "event/CtrlCutEvent.h"
 #include <QGraphicsItem>
 #include <QKeyEvent>
 
 CtrlCutScene::CtrlCutScene(QObject *parent) : QGraphicsScene(parent)
 {
+  using namespace Qt;
+
   QGraphicsPolygonItem *laserbed = new QGraphicsPolygonItem(QPolygonF(QRectF(QPointF(0,0), QSizeF(21600, 14400))));
   laserbed->setBrush(QBrush(Qt::white));
   laserbed->setZValue(-1000); // Render at the back
@@ -17,33 +20,33 @@ CtrlCutScene::CtrlCutScene(QObject *parent) : QGraphicsScene(parent)
     this->addLine(i, 0, i, 14400, gray);
   }
 
+  typedef CtrlCutEvent CCE;
+  typedef CCE::MoveItems MoveItems;
+  typedef CCE::GroupItems GroupItems;
+  typedef CCE::UngroupItems UngroupItems;
+
+  qreal step = 1;
+  CCE::registerAction(ControlModifier, Key_Up, MoveItems::UP(step));
+  CCE::registerAction(ControlModifier, Key_Left, MoveItems::LEFT(step));
+  CCE::registerAction(ControlModifier, Key_Down, MoveItems::DOWN(step));
+  CCE::registerAction(ControlModifier, Key_Right, MoveItems::RIGHT(step));
+
+  step = 10;
+  CCE::registerAction(Key_Up, MoveItems::UP(step));
+  CCE::registerAction(Key_Left, MoveItems::LEFT(step));
+  CCE::registerAction(Key_Down, MoveItems::DOWN(step));
+  CCE::registerAction(Key_Right, MoveItems::RIGHT(step));
+
+  step = 100;
+  CCE::registerAction(ShiftModifier, Key_Up, MoveItems::UP(step));
+  CCE::registerAction(ShiftModifier, Key_Left, MoveItems::LEFT(step));
+  CCE::registerAction(ShiftModifier, Key_Down, MoveItems::DOWN(step));
+  CCE::registerAction(ShiftModifier, Key_Right, MoveItems::RIGHT(step));
+
+  CCE::registerAction(ControlModifier, Key_G, GroupItems(*this));
+  CCE::registerAction(ShiftModifier, Key_G, UngroupItems(*this));
 }
 
-void CtrlCutScene::keyPressEvent(QKeyEvent *event)
-{
-  QPointF delta;
-
-  switch (event->key()) {
-  case Qt::Key_Up:
-    delta.setY(-10);
-    break;
-  case Qt::Key_Down:
-    delta.setY(10);
-    break;
-  case Qt::Key_Left:
-    delta.setX(-10);
-    break;
-  case Qt::Key_Right:
-    delta.setX(10);
-    break;
-  }
-
-  if (event->modifiers() & Qt::ShiftModifier) delta *= 10;
-
-  foreach (QGraphicsItem *item, this->selectedItems()) {
-    QPointF pos = item->pos();
-    pos += delta;
-    item->setPos(pos);
-  }
+void CtrlCutScene::keyPressEvent(QKeyEvent *event) {
+  CtrlCutEvent::act(*event, this->selectedItems());
 }
-

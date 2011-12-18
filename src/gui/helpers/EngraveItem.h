@@ -22,16 +22,21 @@
 #define ENGRAVINGITEM_H_
 
 #include "engrave/Engrave.h"
+#include "config/EngraveSettings.h"
 #include <qgraphicsitem.h>
 #include "helpers/Qt.h"
 
-class Q_GUI_EXPORT EngraveItem: public QGraphicsItemGroup {
+class EngraveItem: public QGraphicsItemGroup, AbstractCtrlCutItem {
 public:
-  class DocumentItem& docItem;
   Engraving& engraving;
 
-  EngraveItem(DocumentItem& docItem, Engraving& engraving);
+  EngraveItem(class DocumentItem& docItem, Engraving& engraving);
   ~EngraveItem(){};
+
+  void commit() {
+    const QPointF& pos = this->pos();
+    this->engraving.settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
+  }
 };
 
 #endif /* ENGRAVINGITEM_H_ */

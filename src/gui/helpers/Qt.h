@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <qgraphicsitem.h>
 #include <qimage.h>
 #include "engrave/image/Image.h"
 
@@ -47,6 +48,12 @@ public:
 
     return *img;
   }
+};
+
+
+class AbstractCtrlCutItem{
+public:
+  virtual void commit() = 0;
 };
 
 #endif /* QTMAKE_H_ */

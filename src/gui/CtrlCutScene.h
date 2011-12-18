@@ -11,7 +11,6 @@ public:
   ~CtrlCutScene() {}
 
   void keyPressEvent(QKeyEvent *event);
-
 };
 
 #endif

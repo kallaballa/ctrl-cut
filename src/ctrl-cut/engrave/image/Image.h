@@ -47,7 +47,6 @@ public:
     BitmapImage *bitmapcopy = new BitmapImage(w, h);
 
     this->performcopy(bitmapcopy, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
-    bitmapcopy->xpos *= 8;
     return bitmapcopy;
   }
 
@@ -100,7 +99,6 @@ public:
   */
   Image(Image *parent, uint32_t width, uint32_t height, uint32_t offsetx, uint32_t offsety) :
     AbstractImage(width, height) {
-    translate(offsetx, offsety);
     this->row_stride = parent->row_stride;
     this->comp = parent->components();
     this->bytes_per_pixel = sizeof(T) * components;
@@ -121,8 +119,6 @@ public:
     Image<T> *imgcopy = new Image<T>(w, h, this->comp);
 
     this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
-    imgcopy->xpos /= sizeof(T);
-
     return imgcopy;
   }
 

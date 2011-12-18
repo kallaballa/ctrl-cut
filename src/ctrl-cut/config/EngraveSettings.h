@@ -20,7 +20,9 @@
 #ifndef ENGRAVE_SETTINGS_H_
 #define ENGRAVE_SETTINGS_H_
 
+
 #include <stdint.h>
+#include "cut/geom/Geometry.h"
 #include "config/DocumentSettings.h"
 
 class EngraveSettings : public Settings
@@ -44,6 +46,8 @@ public:
 
   static Key<Dithering> DITHERING;
   static Key<Direction> DIRECTION;
+
+  static Key<Point> EPOS;
   static Key<uint16_t> EPOWER;
   static Key<uint16_t> ESPEED;
 

@@ -32,12 +32,13 @@ public slots:
   void on_toolsMoveToOriginAction_triggered();
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
+  void on_simulateAction_triggered();
 
   void sceneSelectionChanged();
 
   void openFile(const QString &filename);
   void importFile(const QString &filename);
-
+  void simulate();
 private:
   static MainWindow *inst;
   MainWindow();

@@ -20,19 +20,15 @@
 #include "EngraveItem.h"
 #include "DocumentItem.h"
 
-EngraveItem::EngraveItem(DocumentItem& docItem, Engraving& engraving) : QGraphicsItemGroup(), docItem(docItem), engraving(engraving) {
+EngraveItem::EngraveItem(DocumentItem& docItem, Engraving& engraving) : QGraphicsItemGroup(), AbstractCtrlCutItem(), engraving(engraving) {
   QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  AbstractImage& image = *engraving.sourceImage();
-  QImage& img = QtMake::make_QImage(image);
-
-    // Makes a deep copy of the image so it's safe for PostscriptParser to dispose
-    // of its buffer
+  QImage& img = QtMake::make_QImage(*engraving.sourceImage());
   img.bits();
   QPixmap pixmap = QPixmap::fromImage(img);
-  QPointF pos(image.xPos(), image.yPos());
+  Point pos = engraving.settings.get(EngraveSettings::EPOS);
   if (!pixmap.isNull()) {
     QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);
-    pixmapItem->setPos(pos);
+    pixmapItem->setPos(QPointF(pos.x, pos.y));
     QGraphicsItemGroup::addToGroup(pixmapItem);
   }
 }

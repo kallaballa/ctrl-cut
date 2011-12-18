@@ -240,8 +240,9 @@ PostscriptParser::~PostscriptParser()
       }
     }
   }
-  delete gsimage;
-  delete image;
+  // FIXME: because of the gui depending on the data we can't delete right now. auto_ptr?
+ // delete gsimage;
+  //delete image;
 
   PostscriptParser::inst = NULL;
 }
@@ -407,8 +408,9 @@ void PostscriptParser::copyPage()
 */
 void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride)
 {
-  delete this->gsimage;
-  delete this->image;
+// FIXME: because of the gui depending on the data we can't delete right now. auto_ptr?
+//  delete this->gsimage;
+//  delete this->image;
   if (this->rasterformat == BITMAP) {
     this->gsimage = new BitmapImage(width, height, (uint8_t *)pimage);
     if (rowstride != 0) this->gsimage->setRowstride(rowstride);

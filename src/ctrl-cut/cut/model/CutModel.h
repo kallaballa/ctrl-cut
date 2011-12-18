@@ -20,8 +20,7 @@ public:
     settings(docSettings),
     clipped(0),
     zerolength(0),
-    segmentTree(),
-    translation(Point(0,0))
+    segmentTree()
   { }
 
   virtual ~CutModel() {}
@@ -34,8 +33,6 @@ public:
   SegmentList::reference back() { return this->segmentIndex.back(); }
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
-  void setTranslation(const Point p) { this->translation = p; }
-  const Point& getTranslation() { return translation; }
   bool createSegment(const Point &p1, const Point &p2, OpParams& settings);
   bool createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, OpParams& settings);
 
@@ -57,8 +54,8 @@ public:
     this->segmentTree = other.segmentTree;
   }
 
-  const bool load(const std::string &filename);
-  const bool load(std::istream &input);
+  bool load(const std::string &filename);
+  bool load(std::istream &input);
 protected:
   uint64_t clipped;
   uint64_t zerolength;
@@ -66,8 +63,6 @@ protected:
   SegmentList segmentIndex;
 
 private:
-  Point translation;
-
   const Segment& clipSegmentToLaserBed(const Segment& seg);
 };
 

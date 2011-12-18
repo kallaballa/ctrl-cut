@@ -49,19 +49,15 @@ private:
   Canvas *canvas;
   uint8_t intensity[1];
 public:
-  Point penPos;
+  PIPoint penPos;
 
-  VectorPlotter(dim width, dim height, BoundingBox* clip = NULL) :
-    clip(clip), down(false), penPos(0, 0) {
+  VectorPlotter(dim width, dim height, Canvas* canvas, BoundingBox* clip = NULL) :
+    clip(clip), down(false), canvas(canvas), penPos(0, 0) {
     if (clip != NULL) {
       width = clip->min(width, clip->lr.x - clip->ul.x);
       height = clip->min(height, clip->lr.y - clip->ul.y);
     }
     intensity[0] = 255;
-    if(PclIntConfig::singleton()->screenSize != NULL)
-      this->canvas = new Canvas(width, height, PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
-    else
-      this->canvas = new Canvas(width, height);
   }
 
   VectorPlotter(BoundingBox* clip = NULL) :
@@ -79,7 +75,7 @@ public:
   }
 
   void move(coord x, coord y) {
-    Point m(x, y);
+    PIPoint m(x, y);
     move(m);
   }
 
@@ -91,13 +87,13 @@ public:
     return this->intensity[0];
   }
 
-  virtual void draw(const Point& from, const Point& to) {
+  virtual void draw(const PIPoint& from, const PIPoint& to) {
     if(from == to) {
       Trace::singleton()->warn("zero length drawing operation?");
       return;
     }
-    Point drawFrom = from;
-    Point drawTo = to;
+    PIPoint drawFrom = from;
+    PIPoint drawTo = to;
 
     coord clip_offX = 0;
     coord clip_offY = 0;
@@ -122,7 +118,7 @@ public:
     canvas->drawCut(drawFrom.x, drawFrom.y, drawTo.x, drawTo.y);
   }
 
-  void move(Point& to) {
+  void move(PIPoint& to) {
     if (penPos != to) {
       if (down) {
         draw(penPos, to);
@@ -160,14 +156,14 @@ private:
   uint32_t width;
   uint32_t height;
   uint8_t *imgbuffer;
-
+  Canvas* canvas;
 public:
-  Point penPos;
+  PIPoint penPos;
 
   // width/height is given in bytes
   //
-  BitmapPlotter(uint32_t width, uint32_t height, BoundingBox *clip = NULL) :
-    clip(clip), width(width), height(height), penPos(0, 0) {
+  BitmapPlotter(uint32_t width, uint32_t height, Canvas* canvas, BoundingBox *clip = NULL) :
+    clip(clip), width(width), height(height), canvas(canvas), penPos(0, 0) {
     if (clip != NULL) {
       this->width = clip->min(width, clip->lr.x - clip->ul.x);
       this->height = clip->min(height, clip->lr.y - clip->ul.y);
@@ -183,11 +179,11 @@ public:
   }
 
   void move(coord x, coord y) {
-    Point p(x, y);
+    PIPoint p(x, y);
     move(p);
   }
 
-  void move(Point &to) {
+  void move(PIPoint &to) {
     Statistic::singleton()->announceMove(penPos, to, SLOT_RASTER);
     this->penPos = to;
     // Trace::singleton()->logPlotterStat(penPos);
@@ -199,10 +195,10 @@ public:
 
   void fill(uint8_t bitmap, int len) {
     int dir = (len < 0) ? -1 : 1;
-    Point pos = this->penPos;
-    Point from = pos;
+    PIPoint pos = this->penPos;
+    PIPoint from = pos;
     from.x *= 8;
-    Point to = from;
+    PIPoint to = from;
     int delta = len * 8 - 1 * dir;
     if (int(from.x) + delta < 0) {
       Debugger::getInstance()->waitSteps();
@@ -223,6 +219,12 @@ public:
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
      this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
+     uint8_t on = 0;
+     for (int b=0;b<8;b++) {
+       if ((bitmap & (0x80 >> b))) {
+         canvas->drawPixel(pos.x*8 + b, pos.y, 0,255,0);
+       }
+     }
     }
     Statistic::singleton()->announcePenUp(SLOT_RASTER);
   }
@@ -234,8 +236,8 @@ public:
   void dumpCanvas(const string& filename) {
     BoundingBox bbox = getBoundingBox();
     if(bbox.isValid()) {
-      Point start(0,0);
-      Point size(this->width * 8, this->height);
+      PIPoint start(0,0);
+      PIPoint size(this->width * 8, this->height);
       if (PclIntConfig::singleton()->autocrop) {
         start.x = bbox.ul.x;
         start.y = bbox.ul.y;
@@ -250,11 +252,6 @@ public:
       for (uint32_t y=0;y<size.y;y++) {
         for (uint32_t x=0;x<(size.x/8);x++) {
           uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x/8)];
-          for (int b=0;b<8;b++) {
-            if ((bitmap & (0x80 >> b))) {
-              canvas->draw_point(x*8 + b, y, &on);
-            }
-          }
         }
       }
       canvas->save(filename.c_str());

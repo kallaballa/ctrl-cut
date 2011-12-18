@@ -25,13 +25,14 @@
 #include "CutItem.h"
 #include "EngraveItem.h"
 #include "../CtrlCutScene.h"
+#include "Qt.h"
 
-class DocumentItem {
+class DocumentItem : public QGraphicsItemGroup, AbstractCtrlCutItem {
 public:
   Document& doc;
   CtrlCutScene& scene;
 
-  DocumentItem(CtrlCutScene& scene, Document& doc) : doc(doc), scene(scene) {
+  DocumentItem(CtrlCutScene& scene, Document& doc) : AbstractCtrlCutItem(), doc(doc), scene(scene) {
     for(Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
       this->scene.addItem(new CutItem(*this, **it));
     }
@@ -54,6 +55,15 @@ public:
   }
 
   ~DocumentItem() {};
+
+  void commit() {
+    foreach (QGraphicsItem *sitem, this->scene.items()){
+      AbstractCtrlCutItem* ccItem;
+      if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem))) {
+        ccItem->commit();
+      }
+    }
+  }
 };
 
 #endif /* DOCUMENTITEM_H_ */
