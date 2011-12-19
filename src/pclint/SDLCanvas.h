@@ -22,7 +22,8 @@ public:
   void drawMove(coord x0, coord y0, coord x1, coord y1);
   void drawCut(coord x0, coord y0, coord x1, coord y1);
   void update();
-  void dump(const string& filename, BoundingBox* clip = NULL);
+  void dumpVectorImage(const string& filename, BoundingBox* clip = NULL);
+  void dumpRasterImage(const string& filename, BoundingBox* clip = NULL);
 private:
   class SDL_Surface *screen;
   dim bedWidth;
@@ -32,7 +33,8 @@ private:
   dim screenHeight;
 
   BoundingBox* clip;
-  CImg<uint8_t> offscreen;
+  CImg<uint8_t> voffscreen;
+  CImg<uint8_t> roffscreen;
   uint8_t intensity[1];
   double scale;
 

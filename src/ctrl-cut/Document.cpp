@@ -42,14 +42,16 @@ void Document::write(std::ostream &out) {
   int resolution = this->settings.get(DS::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  if(this->settings.get(DS::ENABLE_RASTER) && !this->engraveList.empty()) {
+  bool enable_raster = this->settings.get(DocumentSettings::ENABLE_RASTER);
+  bool enable_vector = this->settings.get(DocumentSettings::ENABLE_VECTOR);
+
+  if(enable_raster && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(ES::EPOWER);
     raster_speed = this->front_engrave()->settings.get(ES::ESPEED);
   }
+
   double width = this->settings.get(DocumentSettings::WIDTH).in(PX, resolution);
   double height = this->settings.get(DocumentSettings::HEIGHT).in(PX, resolution);
-  bool enable_raster = this->settings.get(DocumentSettings::ENABLE_RASTER);
-  bool enable_vector = this->settings.get(DocumentSettings::ENABLE_VECTOR);
   int focus = this->settings.get(DocumentSettings::AUTO_FOCUS);
 
   /* Print the printer job language header. */

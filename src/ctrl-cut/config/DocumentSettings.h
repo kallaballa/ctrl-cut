@@ -42,6 +42,8 @@ public:
 
   const static Key<bool> ENABLE_RASTER;
   const static Key<bool> ENABLE_VECTOR;
+  const static Key<bool> LOAD_CUT;
+  const static Key<bool> LOAD_ENGRAVING;
   const static Key<bool> DUMP_XML;
 
   DocumentSettings();

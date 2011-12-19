@@ -234,7 +234,7 @@ PostscriptParser::~PostscriptParser()
     if (unlink(this->filename_eps.c_str())) {
       LOG_FATAL_MSG("unlink failed", this->filename_eps);
     }
-    if (this->conf.get(DocumentSettings::ENABLE_RASTER)) {
+    if (this->conf.get(DocumentSettings::LOAD_ENGRAVING)) {
       if (unlink(this->filename_bitmap.c_str())) {
         LOG_FATAL_MSG("unlink failed", this->filename_bitmap);
       }
@@ -252,7 +252,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);
   double width = this->conf.get(DocumentSettings::WIDTH).in(PX, resolution);
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX, resolution);
-  bool loadRaster = this->conf.get(DocumentSettings::ENABLE_RASTER);
+  bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
   string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + this->conf.get(DocumentSettings::BASENAME);
   this->filename_eps = tmpbasepath + ".eps";
 
@@ -267,7 +267,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   argstrings.push_back(str(format("-r%d") % resolution));
   argstrings.push_back(str(format("-g%ux%u") % width % height));
 
-  if (!loadRaster) {
+  if (!loadEngraving) {
     argstrings.push_back("-sDEVICE=nullpage");
   } else if (this->rendertofile) {
     this->filename_bitmap = tmpbasepath;

@@ -2,8 +2,8 @@ TARGET = pclint
 CONFIG -= qt
 CONFIG += boost_thread
 CONFIG += X11
-#CONFIG += ImageMagick
 CONFIG += libpng14
+#CONFIG += ImageMagick
 !macx:CONFIG += SDL
 
 include(common.pri)

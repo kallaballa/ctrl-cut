@@ -1,7 +1,7 @@
 #include "SDLCanvas.h"
 
 SDLCanvas::SDLCanvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight, BoundingBox* clip) :
-Canvas(bedWidth, bedHeight, screenWidth, screenHeight, clip) {
+Canvas(bedWidth, bedHeight, screenWidth, screenHeight, clip), voffscreen(bedWidth, bedHeight, 1, 1, 255), roffscreen(bedWidth, bedHeight, 1, 1, 255) {
 #ifdef PCLINT_USE_SDL
   if (screenWidth > 0 && screenHeight > 0) {
     if (SDL_Init(SDL_INIT_VIDEO) == -1) {
@@ -29,12 +29,13 @@ Canvas(bedWidth, bedHeight, screenWidth, screenHeight, clip) {
 }
 
 void SDLCanvas::drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b) {
+  roffscreen.draw_point(x0, y0, this->intensity);
 #ifdef PCLINT_USE_SDL
   if(screen != NULL && screen->format != NULL) {
     scaleCoordinate(x0);
     scaleCoordinate(y0);
 
-    pixelRGBA(screen, x0, y0, r, g, b, 128);
+    pixelRGBA(screen, x0, y0, 0, 255, 0, 128);
   }
 #endif
 }
@@ -52,7 +53,7 @@ void SDLCanvas::drawMove(coord x0, coord y0, coord x1, coord y1) {
 }
 
 void SDLCanvas::drawCut(coord x0, coord y0, coord x1, coord y1) {
-  offscreen.draw_line(x0, y0, x1, y1, this->intensity);
+  voffscreen.draw_line(x0, y0, x1, y1, this->intensity);
 #ifdef PCLINT_USE_SDL
   if(screen != NULL && screen->format != NULL) {
     scaleCoordinate(x0);
@@ -73,12 +74,22 @@ void SDLCanvas::update() {
 #endif
 }
 
-void SDLCanvas::dump(const string& filename, BoundingBox* crop) {
-  if (!offscreen.is_empty()) {
-    if (crop != NULL)
-      offscreen.crop(crop->ul.x, crop->ul.y, crop->lr.x, crop->lr.y, false).save(
+void SDLCanvas::dumpVectorImage(const string& filename, BoundingBox* clip) {
+  if (!voffscreen.is_empty()) {
+    if (clip != NULL)
+      voffscreen.crop(clip->ul.x, clip->ul.y, clip->lr.x, clip->lr.y, false).save(
           filename.c_str());
     else
-      offscreen.save(filename.c_str());
+      voffscreen.save(filename.c_str());
+  }
+}
+
+void SDLCanvas::dumpRasterImage(const string& filename, BoundingBox* clip) {
+  if (!roffscreen.is_empty()) {
+    if (clip != NULL)
+      roffscreen.crop(clip->ul.x, clip->ul.y, clip->lr.x, clip->lr.y, false).save(
+          filename.c_str());
+    else
+      roffscreen.save(filename.c_str());
   }
 }

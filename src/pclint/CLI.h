@@ -90,8 +90,13 @@ public:
           canvas->update();
         }
       } else if (cmd.compare("dump") == 0 && canvas != NULL) {
-        canvas->dump(param.c_str());
-        cerr << "=== dumped: " << param << endl;
+        string vname = "v_" + param;
+        string rname = "r_" + param;
+
+        canvas->dumpVectorImage(vname);
+        cerr << "=== dumped: " << vname << endl;
+        canvas->dumpRasterImage(rname);
+        cerr << "=== dumped: " << rname << endl;
       }
     }
 

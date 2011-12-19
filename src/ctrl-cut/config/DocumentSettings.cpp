@@ -37,6 +37,9 @@ const DocumentSettings::Key<uint16_t> DocumentSettings::SCREEN = "screen";
 
 const DocumentSettings::Key<bool> DocumentSettings::ENABLE_RASTER = "enableRaster";
 const DocumentSettings::Key<bool> DocumentSettings::ENABLE_VECTOR = "enableVector";
+const DocumentSettings::Key<bool> DocumentSettings::LOAD_CUT = "loadCut";
+const DocumentSettings::Key<bool> DocumentSettings::LOAD_ENGRAVING = "loadEngraving";
+
 const DocumentSettings::Key<bool> DocumentSettings::DUMP_XML = "dumpXml";
 
 DocumentSettings::DocumentSettings() : Settings() {
@@ -47,6 +50,9 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(SCREEN, 8);
   this->put(ENABLE_VECTOR, true);
   this->put(ENABLE_RASTER, false);
+  this->put(LOAD_CUT, true);
+  this->put(LOAD_ENGRAVING, false);
+
   this->put(WIDTH, Measurement(21600,PX));
   this->put(HEIGHT, Measurement(14400,PX));
   this->put(DUMP_XML, false);
@@ -57,6 +63,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);
   this->put(EngraveSettings::ESPEED, 100);
+
   this->put(CutSettings::OPTIMIZE, CutSettings::INNER_OUTER);
   this->put(CutSettings::CSPEED, 33);
   this->put(CutSettings::CPOWER, 80);

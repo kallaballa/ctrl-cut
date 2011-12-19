@@ -143,9 +143,9 @@ public:
 
   virtual void dumpCanvas(const string& filename) {
     if (PclIntConfig::singleton()->autocrop) {
-      canvas->dump(filename,&getBoundingBox());
+      canvas->dumpVectorImage(filename,&getBoundingBox());
     } else {
-      canvas->dump(filename);
+      canvas->dumpVectorImage(filename);
     }
   }
 };
@@ -218,13 +218,13 @@ public:
       if (this->clip) {
         if ((this->penPos.x + i) < this->clip->ul.x || (this->penPos.x + i) > this->clip->lr.x) return;
       }
-     this->imgbuffer[pos.y * this->width + pos.x + i*dir] = bitmap;
-     uint8_t on = 0;
-     for (int b=0;b<8;b++) {
-       if ((bitmap & (0x80 >> b))) {
-         canvas->drawPixel(pos.x*8 + b, pos.y, 0,255,0);
-       }
-     }
+      this->imgbuffer[pos.y * this->width + pos.x + i * dir] = bitmap;
+      uint8_t on = 0;
+      for (int b = 0; b < 8; b++) {
+        if ((bitmap & (0x80 >> b))) {
+          this->canvas->drawPixel(pos.x * 8 + b, pos.y, 0, 0, 0);
+        }
+      }
     }
     Statistic::singleton()->announcePenUp(SLOT_RASTER);
   }
@@ -236,7 +236,7 @@ public:
   void dumpCanvas(const string& filename) {
     BoundingBox bbox = getBoundingBox();
     if(bbox.isValid()) {
-      PIPoint start(0,0);
+      /*PIPoint start(0,0);
       PIPoint size(this->width * 8, this->height);
       if (PclIntConfig::singleton()->autocrop) {
         start.x = bbox.ul.x;
@@ -246,15 +246,19 @@ public:
         size.y = bbox.lr.y - bbox.ul.y + 1;
       }
 
-      CImg<uint8_t>* canvas = new CImg<uint8_t>(size.x, size.y, 1, 1, 255);
-
       uint8_t on = 0;
       for (uint32_t y=0;y<size.y;y++) {
         for (uint32_t x=0;x<(size.x/8);x++) {
           uint8_t bitmap = this->imgbuffer[(y + start.y)*this->width + (x + start.x/8)];
+          for (int b=0;b<8;b++) {
+            if ((bitmap & (0x80 >> b))) {
+              this->canvas->drawPixel(x*8 + b, y, 0,0,0);
+            }
+         }
         }
-      }
-      canvas->save(filename.c_str());
+      }*/
+      this->canvas->dumpRasterImage(filename.c_str());
+
     }
   }
 };

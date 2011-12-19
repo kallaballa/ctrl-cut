@@ -18,7 +18,8 @@ public:
   virtual void drawMove(coord x0, coord y0, coord x1, coord y1) = 0;
   virtual void drawCut(coord x0, coord y0, coord x1, coord y1) = 0;
   virtual void update() = 0;
-  virtual void dump(const string& filename, BoundingBox* clip = NULL) = 0;
+  virtual void dumpVectorImage(const string& filename, BoundingBox* clip = NULL) = 0;
+  virtual void dumpRasterImage(const string& filename, BoundingBox* clip = NULL) = 0;
 
   dim bedWidth;
   dim bedHeight;
