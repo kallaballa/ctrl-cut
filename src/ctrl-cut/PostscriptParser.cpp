@@ -252,6 +252,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);
   double width = this->conf.get(DocumentSettings::WIDTH).in(PX, resolution);
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX, resolution);
+  bool loadRaster = this->conf.get(DocumentSettings::ENABLE_RASTER);
   string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + this->conf.get(DocumentSettings::BASENAME);
   this->filename_eps = tmpbasepath + ".eps";
 
@@ -265,12 +266,10 @@ bool PostscriptParser::parse(cups_file_t *input_file)
 
   argstrings.push_back(str(format("-r%d") % resolution));
   argstrings.push_back(str(format("-g%ux%u") % width % height));
-/* REFACTOR
+
   if (!loadRaster) {
     argstrings.push_back("-sDEVICE=nullpage");
-  } else */
-
-  if (this->rendertofile) {
+  } else if (this->rendertofile) {
     this->filename_bitmap = tmpbasepath;
     switch (this->rasterformat) {
     case BITMAP: 

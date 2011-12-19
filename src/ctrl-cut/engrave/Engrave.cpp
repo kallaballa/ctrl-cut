@@ -25,12 +25,12 @@ int tile_cnt = 0;
 Engraving::Engraving(const std::string&filename, DocumentSettings& docSettings) : settings(docSettings)  {
   std::string suffix = filename.substr(filename.rfind(".") + 1);
   if (suffix == "ppm" || suffix == "pgm") {
-    this->sourceimage = loadppm(filename);
+    this->sourceImage = loadppm(filename);
   }
   else {
-    this->sourceimage = loadpbm(filename);
+    this->sourceImage = loadpbm(filename);
   }
-  if (this->sourceimage) {
-    this->sourceimage->translate(392, 516);
+  if (this->sourceImage) {
+    this->sourceImage->translate(392, 516);
   }
 }

@@ -30,31 +30,32 @@ class Engraving
 public:
   EngraveSettings settings;
 
-  Engraving(AbstractImage *sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceimage(sourceImage), processedimage(sourceImage) {}
+  Engraving(AbstractImage& sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceImage(&sourceImage), processedImage(NULL) {}
   Engraving(const std::string&filename, DocumentSettings& docSettings);
 
   virtual ~Engraving() {}
 
-  AbstractImage *sourceImage() { return this->sourceimage; }
-  AbstractImage *processedImage() { return this->processedimage; }
+  AbstractImage& getSourceImage() { return *this->sourceImage; }
+  AbstractImage& getProcessedImage() {
+    //copy the source if no processing took place
+    if(!this->processedImage) {
+      this->processedImage = this->sourceImage->copy(Rectangle(0,0,this->sourceImage->width(), this->sourceImage->height()));
+    }
 
-  void preprocess() {
+    return *this->processedImage;
+  }
 
-    GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(this->sourceImage());
+  void dither() {
+    GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(this->sourceImage);
     if (gsimage) {
       EngraveSettings::Dithering dithering = this->settings.get(EngraveSettings::DITHERING);
       Dither& dither = Dither::create(*gsimage, dithering);
-      /* FIXME
-       if(!(this->processedimage == this->sourceimage)) {
-        delete this->processedimage;
-      }
-      */
-      this->processedimage = &dither.dither();
+      this->processedImage = &dither.dither();
     }
   }
 private:
-  AbstractImage *sourceimage;
-  AbstractImage *processedimage;
+  AbstractImage* sourceImage;
+  AbstractImage *processedImage;
 };
 
 #endif

@@ -57,7 +57,6 @@ protected:
 
 
 void SvgFix::writeSvg(string s) {
-  dumpSvg(s);
   out << s;
 }
 
@@ -67,16 +66,6 @@ void SvgFix::writeSvg(const Glib::ustring& name, const SaxParser::AttributeList&
     writeSvg(document.make_attriburestring(*it));
   }
   writeSvg(">");
-}
-
-void SvgFix::dumpSvg(string s) {
-  if(this->oSvg != NULL)
-    (*oSvg) << s;
-}
-
-void SvgFix::dumpBase64(string s) {
-  if(this->oBase64 != NULL)
-    (*oBase64) << s;
 }
 
 void SvgFix::findGenerator(const Glib::ustring& text) {
@@ -95,7 +84,6 @@ void SvgFix::findGenerator(const Glib::ustring& text) {
 void SvgFix::writeBase64Image(const string& mimetype, string& pngBase64) {
 //  replace ( pngBase64.begin(), pngBase64.end(), ' ', '\n');
   const string& imgData = "data:" + mimetype + ";base64," + pngBase64;
-  dumpBase64(pngBase64);
   writeSvg(document.make_attriburestring("xlink:href", imgData));
 }
 
@@ -163,9 +151,4 @@ void SvgFix::work() {
 
   in.close();
   out.close();
-  if(oBase64 != NULL)
-    oBase64->close();
-
-  if(oSvg != NULL)
-    oSvg->close();
 }

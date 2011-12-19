@@ -44,7 +44,7 @@ public:
   Measurement(double value, Unit unit) : value(value), unit(unit) {};
   virtual ~Measurement() {};
   const Measurement convert(const Unit& target, const uint16_t& dpi=72) const;
-  const double in(const Unit& target, const uint16_t& dpi=72) const;
+  double in(const Unit& target, const uint16_t& dpi=72) const;
 };
 
 

@@ -140,6 +140,10 @@ void Document::preprocess() {
      explode_segments(model);
      reduce_linestrings(model, model.settings.get(CutSettings::REDUCE));
    }
+
+   for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
+     (*it)->dither();
+   }
 }
 
 Document::Format Document::findFormat(const string& filename) {
@@ -270,7 +274,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     else if (parser) {
       if (parser->hasBitmapData()) {
         LOG_DEBUG_STR("Processing bitmap data from memory");
-        raster = new Engraving(parser->getImage(), this->settings);
+        raster = new Engraving(*parser->getImage(), this->settings);
       }
       else if (!parser->getBitmapFile().empty()) {
         raster = new Engraving(parser->getBitmapFile(), this->settings);

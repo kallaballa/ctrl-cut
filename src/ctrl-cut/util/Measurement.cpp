@@ -44,6 +44,6 @@ const Measurement Measurement::convert(const Unit& target, const uint16_t& dpi) 
   return convertee;
 }
 
-const double Measurement::in(const Unit& target, const uint16_t& dpi) const {
+double Measurement::in(const Unit& target, const uint16_t& dpi) const {
   return this->convert(target, dpi).value;
 }

@@ -32,7 +32,7 @@ typedef EngraveSettings ES;
 
 void encodeBitmapTile(Engraving& raster, std::ostream& out)
 {
-  BitmapImage* image = dynamic_cast<BitmapImage*>(raster.processedImage());
+  BitmapImage* image = dynamic_cast<BitmapImage*>(&raster.getProcessedImage());
   LOG_DEBUG_STR("Encoding bitmap image..");
   ES::Direction direction = raster.settings.get(ES::DIRECTION);
 
@@ -150,8 +150,6 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
   LOG_DEBUG_STR("Encode raster");
   int direction = raster.settings.get(ES::DIRECTION) == ES::TOPDOWN ? 0 : 1;
-  ES::Dithering dithering = raster.settings.get(ES::DITHERING);
-
   // Raster direction (1 = up)
   out << format(R_DIRECTION) % direction;
   // start at current position

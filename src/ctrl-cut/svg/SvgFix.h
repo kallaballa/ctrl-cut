@@ -53,9 +53,6 @@ private:
 
   fdistream& in;
   fdostream& out;
-
-  ofstream* oBase64;
-  ofstream* oSvg;
 public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
@@ -74,8 +71,8 @@ public:
   void fixViewbox(const Glib::ustring& name, const AttributeList& properties);
   void writeBase64Image(const string& mimetype, string& pngBase64);
 
-  SvgFix(int fdIn, int fdOut, ofstream* oBase64 = NULL, ofstream* oSvg = NULL) :
-    in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))), oBase64(oBase64), oSvg(oSvg), generator(Unknown){ }
+  SvgFix(int fdIn, int fdOut) :
+    in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))),  generator(Unknown){ }
 
   virtual ~SvgFix(){}
   void work();
