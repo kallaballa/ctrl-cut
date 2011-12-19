@@ -22,7 +22,7 @@
 
 EngraveItem::EngraveItem(DocumentItem& docItem, Engraving& engraving) : QGraphicsItemGroup(), AbstractCtrlCutItem(), engraving(engraving) {
   QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  QImage& img = QtMake::make_QImage(*engraving.sourceImage());
+  QImage& img = QtMake::make_QImage(engraving.getSourceImage());
   img.bits();
   QPixmap pixmap = QPixmap::fromImage(img);
   Point pos = engraving.settings.get(EngraveSettings::EPOS);
