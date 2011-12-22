@@ -37,7 +37,7 @@ void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Se
 
   bool owned = graph[lastEdge].owner != NULL;
 
-  if(!owned && skin.addSegment(*lastSegment)) {
+  if(!owned && skin.add(lastSegment)) {
     graph[lastEdge].owner = &skin;
     segTree.remove(*lastSegment);
   } else {

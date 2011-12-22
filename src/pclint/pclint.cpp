@@ -57,11 +57,11 @@ int main(int argc, char *argv[]) {
 
   Interpreter intr(plot,canvas);
   if (config->interactive) {
-    Debugger::create(canvas);
     Debugger::getInstance()->setInteractive(true);
     Debugger::getInstance()->autoupdate = true;
-  } else
-    Debugger::create();
+  }
+
+  Debugger::create(canvas);
 
   intr.render();
 

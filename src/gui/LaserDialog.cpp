@@ -51,6 +51,15 @@ void LaserDialog::updateLaserConfig(Document& document)
   else if (dither == "Sierra3") dithering = ES::SIERRA3;
 
   ds.put(ES::DITHERING, dithering);
+
+  const QString& strOptimize = this->cutOptimize->currentText();
+
+  CS::Optimize optimize;
+  if (strOptimize == "Simple") optimize = CS::SIMPLE;
+  else if (strOptimize == "Inner-Outer") optimize = CS::INNER_OUTER;
+  else if (strOptimize == "Shortest Path") optimize = CS::SHORTEST_PATH;
+
+    ds.put(CS::OPTIMIZE, optimize);
   ds.put(CS::CSPEED, this->vectorSpeedSlider->value());
   ds.put(CS::CPOWER, this->vectorPowerSlider->value());
   ds.put(CS::FREQUENCY, this->vectorFreqSlider->value());
@@ -100,6 +109,22 @@ void LaserDialog::applyLaserConfig(Document& document)
     assert(false && "Unhandled raster dithering setting");
   }
   this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
+
+  QString strOptimize;
+  switch (ds.get(CS::OPTIMIZE)) {
+  case CS::SIMPLE:
+    strOptimize = "Simple";
+    break;
+  case CS::INNER_OUTER:
+    strOptimize = "Inner-Outer";
+    break;
+  case CS::SHORTEST_PATH:
+    strOptimize = "Shortest Path";
+    break;
+  default:
+    assert(false && "Unhandled cut optimize setting");
+  }
+  this->cutOptimize->setCurrentIndex(this->cutOptimize->findText(strOptimize));
 
   this->vectorSpeedSlider->setValue(ds.get(CS::CSPEED));
   this->vectorPowerSlider->setValue(ds.get(CS::CPOWER));

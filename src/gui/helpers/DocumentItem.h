@@ -21,13 +21,14 @@
 #ifndef DOCUMENTITEM_H_
 #define DOCUMENTITEM_H_
 
+#include <vector>
 #include "Document.h"
 #include "CutItem.h"
 #include "EngraveItem.h"
 #include "../CtrlCutScene.h"
 #include "Qt.h"
 
-class DocumentItem : public QGraphicsItemGroup, AbstractCtrlCutItem {
+class DocumentItem : public AbstractCtrlCutItem {
 public:
   Document& doc;
   CtrlCutScene& scene;
@@ -59,7 +60,7 @@ public:
   void commit() {
     foreach (QGraphicsItem *sitem, this->scene.items()){
       AbstractCtrlCutItem* ccItem;
-      if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem))) {
+      if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
         ccItem->commit();
       }
     }

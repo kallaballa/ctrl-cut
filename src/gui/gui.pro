@@ -32,7 +32,7 @@ DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
 
 INCLUDEPATH += ../cups-filter ../lpd-epilog ../pclint
 
-FORMS   += CtrlCut.ui LaserDialog.ui
+FORMS   += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
@@ -51,7 +51,7 @@ HEADERS += ./MainWindow.h \
            ./helpers/CutItem.h \
            ./helpers/DocumentItem.h \
            ./helpers/EngraveItem.h \
-	   ./event/CtrlCutEvent.h \
+	       ./event/CtrlCutEvent.h \
            ../ctrl-cut/FileParser.h \
            ../ctrl-cut/util/Measurement.h \
            ../ctrl-cut/util/2D.h \
@@ -61,6 +61,7 @@ HEADERS += ./MainWindow.h \
            ../ctrl-cut/util/Util.h \
            ../ctrl-cut/cut/model/Reduce.h \
            ../ctrl-cut/cut/model/CutModel.h \
+           ../ctrl-cut/cut/model/CutView.h \
            ../ctrl-cut/cut/model/Explode.h \
            ../ctrl-cut/cut/geom/SegmentTree.h \
            ../ctrl-cut/cut/geom/Geometry.h \
@@ -106,7 +107,10 @@ HEADERS += ./MainWindow.h \
            ../pclint/Plotter.h \
            ../pclint/Raster.h \
            ../pclint/CImg.h \
-           ../pclint/Canvas.h
+           ../pclint/Canvas.h \
+           ./SimulatorDialog.h \
+           ./SimulatorView.h \
+           ./SimulatorScene.h
 
 SOURCES += ./gui.cpp \
            ./LaserDialog.cpp \
@@ -117,15 +121,19 @@ SOURCES += ./gui.cpp \
            ./LpdClient.cpp \
            ./MainWindow.cpp \
            ./StreamUtils.cpp \
+	       ./SimulatorDialog.cpp \
+           ./SimulatorView.cpp \
+           ./SimulatorScene.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/EngraveItem.cpp \
-	   ./event/CtrlCutEvent.cpp \
+	       ./event/CtrlCutEvent.cpp \
            ../ctrl-cut/PostscriptParser.cpp \
            ../ctrl-cut/util/Measurement.cpp \
            ../ctrl-cut/util/Logger.cpp \
            ../ctrl-cut/util/Eps.cpp \
            ../ctrl-cut/cut/model/Explode.cpp \
            ../ctrl-cut/cut/model/CutModel.cpp \
+           ../ctrl-cut/cut/model/CutView.cpp \
            ../ctrl-cut/cut/model/Reduce.cpp \
            ../ctrl-cut/cut/geom/Geometry.cpp \
            ../ctrl-cut/cut/graph/SegmentGraph.cpp \
@@ -152,5 +160,5 @@ SOURCES += ./gui.cpp \
            ../ctrl-cut/svg/SvgFix.cpp \
            ../ctrl-cut/svg/SvgDocument.cpp \
            ../ctrl-cut/svg/Svg2Ps.cpp \
-	   ../pclint/SDLCanvas.cpp \
+	       ../pclint/SDLCanvas.cpp \
            ../pclint/Canvas.cpp

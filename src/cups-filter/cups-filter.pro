@@ -26,6 +26,7 @@ SOURCES += ./CupsGetOpt.cpp \
            ../ctrl-cut/encoder/HPGLEncoder.cpp \
            ../ctrl-cut/cut/model/Explode.cpp \
            ../ctrl-cut/cut/model/CutModel.cpp \
+           ../ctrl-cut/cut/model/CutView.cpp \
            ../ctrl-cut/cut/model/Reduce.cpp \
            ../ctrl-cut/cut/geom/Geometry.cpp \
            ../ctrl-cut/cut/graph/SegmentGraph.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
            ../ctrl-cut/util/Util.h \
            ../ctrl-cut/cut/model/Reduce.h \
            ../ctrl-cut/cut/model/CutModel.h \
+           ../ctrl-cut/cut/model/CutView.h \
            ../ctrl-cut/cut/model/Explode.h \
            ../ctrl-cut/cut/geom/SegmentTree.h \
            ../ctrl-cut/cut/geom/Geometry.h \

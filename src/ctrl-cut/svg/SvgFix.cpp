@@ -57,7 +57,7 @@ protected:
 
 
 void SvgFix::writeSvg(string s) {
-  out << s;
+  *out << s;
 }
 
 void SvgFix::writeSvg(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
@@ -147,8 +147,8 @@ void SvgFix::work() {
   string line;
   SvgSax parser(*this);
   parser.set_substitute_entities(true);
-  parser.parse_stream(in);
+  parser.parse_stream(*in);
 
-  in.close();
-  out.close();
+  in->close();
+  out->close();
 }

@@ -22,7 +22,7 @@
 #include "cut/graph/Traverse.h"
 #include <list>
 
-void findWithinRange(const SegmentTree& segTree, CutModel::iterator it_s, std::list<SegmentNode>& in_range) {
+void findWithinRange(SegmentTree& segTree, CutModel::iterator it_s, std::list<SegmentNode>& in_range) {
   if(!in_range.empty())
     in_range.clear();
   segTree.findWithinRange(it_s, in_range);
@@ -34,7 +34,7 @@ void findWithinRange(const SegmentTree& segTree, CutModel::iterator it_s, std::l
 void explode_segments(CutModel& model) {
   LOG_INFO_STR("Explode");
   LOG_DEBUG_MSG("Segments before", model.size());
-  const SegmentTree& segTree = model.getSegmentTree();
+  SegmentTree& segTree = SegmentTree::build(model.begin(), model.end());
 
   std::list<SegmentNode> in_range;
   Point intersection;
@@ -63,14 +63,14 @@ void explode_segments(CutModel& model) {
       if (is_res == ALIGN_INTERSECT) {
        if(pick[0] != intersection && pick[1] != intersection) {
          remove_pick = true;
-         model.createSegment(pick[0], * new Point(intersection), pick.settings);
-         model.createSegment(pick[1], * new Point(intersection), pick.settings);
+         model.createSegment(pick[0], intersection, pick.settings);
+         model.createSegment(pick[1], intersection, pick.settings);
         }
 
         if(candidate[0] != intersection && candidate[1] != intersection) {
           remove_candidate = true;
-          model.createSegment(candidate[0], * new Point(intersection), candidate.settings);
-          model.createSegment(candidate[1], * new Point(intersection), candidate.settings);
+          model.createSegment(candidate[0], intersection, candidate.settings);
+          model.createSegment(candidate[1], intersection, candidate.settings);
         }
       } else if(is_res == ALIGN_COINCIDENCE) {
         bool firstMatches = pick[0] == candidate[0] || pick[0] == candidate[1];
@@ -129,7 +129,9 @@ void explode_segments(CutModel& model) {
       }
 
       if(remove_candidate) {
-        model.remove((*it_o).getIterator());
+        segTree.remove((*it_o).getIterator());
+        model.erase((*it_o).getIterator());
+
         //FIXME find out why maintaining the in_range list incrementally produces invalid iterators
         if(!remove_pick) {
           //don't search again if the loop is going to break*/
@@ -140,7 +142,8 @@ void explode_segments(CutModel& model) {
         ++it_o;
 
       if(remove_pick) {
-        it_s = model.remove(it_s);
+        segTree.remove(it_s);
+        it_s = model.erase(it_s);
         break;
       }
     };
@@ -149,4 +152,5 @@ void explode_segments(CutModel& model) {
       ++it_s;
   }
   LOG_DEBUG_MSG("Segments after", model.size());
+  delete &segTree;
 }

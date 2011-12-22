@@ -46,6 +46,6 @@ void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::
     sx = seg->second[0] + translation.x;
     sy = seg->second[1] + translation.y;
 
-    segments.push_back(new Segment(*new Point(fx,fy),* new Point(sx,sy), seg->settings));
+    segments.push_back(new Segment(Point(fx,fy),Point(sx,sy), seg->settings));
   }
 }

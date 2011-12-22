@@ -26,7 +26,7 @@
 #include <qgraphicsitem.h>
 #include "helpers/Qt.h"
 
-class EngraveItem: public QGraphicsItemGroup, AbstractCtrlCutItem {
+class EngraveItem: public AbstractCtrlCutItem {
 public:
   Engraving& engraving;
 

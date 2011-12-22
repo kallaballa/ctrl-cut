@@ -19,11 +19,20 @@ public:
   CutModel(DocumentSettings& docSettings = defaultDocSettings) :
     settings(docSettings),
     clipped(0),
-    zerolength(0),
-    segmentTree()
+    zerolength(0)
   { }
 
-  virtual ~CutModel() {}
+  //deep copy
+  CutModel(const CutModel& other) :
+    settings(*static_cast<DocumentSettings* const>(other.settings.parent)), clipped(0), zerolength(0) {
+    for(CutModel::const_iterator it = other.begin(); it != other.end(); it++) {
+      this->add(* new Segment(**it));
+    }
+  }
+
+  virtual ~CutModel() {
+    this->clear();
+  }
 
   iterator begin() { return this->segmentIndex.begin(); }
   const_iterator begin() const  { return this->segmentIndex.begin(); }
@@ -33,37 +42,27 @@ public:
   SegmentList::reference back() { return this->segmentIndex.back(); }
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
-  bool createSegment(const Point &p1, const Point &p2, OpParams& settings);
-  bool createSegment(int32_t inX, int32_t inY, int32_t outX, int32_t outY, OpParams& settings);
 
-  void add(const Segment& seg);
-  iterator remove(iterator it_seg);
-  void remove(const Segment& seg);
+  bool createSegment(const Point& p1, const Point& p2, const OpParams& settings);
+  bool createSegment(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY,const OpParams& settings);
+
+  virtual void add(const Segment& seg);
+  virtual void remove(const Segment& seg);
+  virtual iterator erase(iterator it);
+  virtual void clear();
 
   bool wasClipped() const {
     return this->clipped > 0;
   }
 
-  const SegmentTree& getSegmentTree() {
-    return segmentTree;
-  }
-
-  void operator=(CutModel& other) {
-    this->settings = other.settings;
-    this->segmentIndex = other.segmentIndex;
-    this->segmentTree = other.segmentTree;
-  }
-
   bool load(const std::string &filename);
   bool load(std::istream &input);
+  const Segment& clip(const Segment& seg);
 protected:
+  //FIXME should be managed by settings
   uint64_t clipped;
   uint64_t zerolength;
-  SegmentTree segmentTree;
   SegmentList segmentIndex;
-
-private:
-  const Segment& clipSegmentToLaserBed(const Segment& seg);
 };
 
 void make_route(StringList& strings, CutModel& model);

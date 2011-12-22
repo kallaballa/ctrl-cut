@@ -19,6 +19,7 @@
 #include "Reduce.h"
 #include "util/Logger.h"
 #include "cut/graph/Traverse.h"
+#include "cut/model/CutModel.h"
 
 bool isShared(SegmentGraph& graph, const Point& p) {
   SegmentGraph::Vertex* v;
@@ -40,6 +41,9 @@ bool isShared(SegmentGraph& graph, const Point& p) {
  */
 void reduce_linestrings(CutModel &model, float epsilon)
 {
+  // FIxME reduce seems to cause memory corruption when called twice on a model
+  epsilon = 0.0f;
+
   if(epsilon == 0.0f)
     return;
 
@@ -53,19 +57,17 @@ void reduce_linestrings(CutModel &model, float epsilon)
 
   // Reduce each polyline separately
   for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
-    const SegmentString *string = *it;
-    SegmentString *newstring = new SegmentString();
-
+    const SegmentString& string = **it;
     // Select a start iterator
-    SegmentString::SegmentConstIter startit = string->beginSegments();
+    SegmentString::SegmentConstIter startit = string.beginSegments();
 
     // Walk the entire string
     SegmentString::SegmentConstIter  pit;
-    for (pit = startit; ++pit != string->endSegments(); ) {
+    for (pit = startit; ++pit != string.endSegments(); ) {
       const Segment& startSegment = **startit;
       float largest = 0;
       SegmentString::SegmentConstIter  largestit;
-      if (!string->isClosed()) {
+      if (!string.isClosed()) {
         // Span a segment to the current vertex for testing
         Segment consider(startSegment.first, (*pit)->second, startSegment.settings);
 
@@ -106,17 +108,12 @@ void reduce_linestrings(CutModel &model, float epsilon)
 
       // We exceeded the epsilon, split the edge and continue
       if (largest > epsilon) {
-        Segment *newseg = new Segment(startSegment.first, (*largestit)->second, startSegment.settings);
-        newstring->addSegment(*newseg);
+        newModel.add(Segment(startSegment.first, (*largestit)->second, startSegment.settings));
         startit = ++largestit;
       }
     }
     // Add last line
-    Segment *newe = new Segment((*startit)->first, string->backSegments()->second, (*startit)->settings);
-    newstring->addSegment(*newe);
-
-    for(SegmentString::SegmentConstIter it_s = newstring->beginSegments(); it_s != newstring->endSegments(); ++it_s)
-      newModel.add(**it_s);
+    newModel.add(Segment((*startit)->first, string.backSegments()->second, (*startit)->settings));
   }
 
   model = newModel;

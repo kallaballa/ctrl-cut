@@ -2,7 +2,7 @@
 
 MainWindow *MainWindow::inst = NULL;
 
-MainWindow::MainWindow() : documentitem(NULL), laserdialog(NULL)
+MainWindow::MainWindow() : rawDocItem(NULL), processDocItem(NULL), laserdialog(NULL), simdialog(NULL)
 {
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -26,14 +26,14 @@ MainWindow::~MainWindow()
 void MainWindow::openFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
-    if(this->documentitem != NULL) {
-      delete this->documentitem;
+    if(this->rawDocItem != NULL) {
+      delete this->rawDocItem;
     }
     Document& loading = * new Document();
     loading.settings.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
     loading.settings.put(DocumentSettings::LOAD_ENGRAVING, true);
     loading.load(filename.toStdString());
-    this->documentitem = new DocumentItem(*this->scene,loading);
+    this->rawDocItem = new DocumentItem(*this->scene,loading);
   }
 }
 
@@ -45,10 +45,10 @@ void MainWindow::importFile(const QString &filename)
     loading.settings.put(DocumentSettings::LOAD_ENGRAVING, true);
 
     loading.load(filename.toStdString());
-    if(this->documentitem == NULL) {
-      this->documentitem = new DocumentItem(*this->scene,loading);
+    if(this->rawDocItem == NULL) {
+      this->rawDocItem = new DocumentItem(*this->scene,loading);
     } else {
-      this->documentitem->load(loading);
+      this->rawDocItem->load(loading);
     }
   }
 }
@@ -65,7 +65,7 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->documentitem) {
+  if (!this->rawDocItem) {
     fprintf(stderr, "No document loaded\n");
     return;
   }
@@ -73,10 +73,10 @@ void MainWindow::on_filePrintAction_triggered()
   if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
-  this->laserdialog->updateLaserConfig(this->documentitem->doc);
-  this->documentitem->doc.settings.put(DocumentSettings::TITLE, "Default Title");
-  this->documentitem->doc.settings.put(DocumentSettings::USER, "Default User");
-  QStringList items;
+  this->laserdialog->updateLaserConfig(this->rawDocItem->doc);
+  this->rawDocItem->doc.settings.put(DocumentSettings::TITLE, "Default Title");
+  this->rawDocItem->doc.settings.put(DocumentSettings::USER, "Default User");
+ /* QStringList items;
   items << "Lazzzor" << "localhost";
   bool ok;
   QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
@@ -91,7 +91,7 @@ void MainWindow::on_filePrintAction_triggered()
     this->documentitem->doc.write(ostream);
     
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
-  }
+  }*/
 }
 
 void MainWindow::on_lpdclient_done(bool error)
@@ -146,77 +146,13 @@ MainWindow::on_simulateAction_triggered()
   simulate();
 }
 
-#undef Point
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
-#include <fstream>
-#include "Interpreter.h"
-#include "PclIntConfig.h"
-#include "Plotter.h"
-#include "SDLCanvas.h"
-#include <stdlib.h>
-#ifdef PCLINT_USE_SDL
-#include <SDL.h>
-#include "boost/thread.hpp"
-#include "boost/bind.hpp"
-#endif
-
-using std::ofstream;
-using std::ifstream;
-using std::string;
-using std::cerr;
-using std::cout;
-using std::endl;
-
-void sdl_wait(Interpreter* intr) {
-  SDL_Event event;
-  do {
-    SDL_PollEvent( &event );
-  } while(event.type == 4 || event.type == 1);
-  intr->abort();
-}
-
-void intr_render_sqlquit(Interpreter* intr) {
-  intr->render();
-}
 
 void MainWindow::simulate() {
-  PclIntConfig* config = PclIntConfig::singleton();
-  config->autocrop = true;
-  config->clip = NULL;
-  config->debugLevel = LVL_INFO;
-  config->interactive = false;
-  config->screenSize =BoundingBox::createFromGeometryString("1024x768");
-
-  ofstream *tmpfile = new ofstream("pclint.tmp", ios::out | ios::binary);
-  bool oldWriteEngraving = this->documentitem->doc.settings.get(DocumentSettings::ENABLE_RASTER);
-  this->documentitem->doc.settings.put(DocumentSettings::ENABLE_RASTER, true);
-  this->documentitem->doc.preprocess();
-  this->documentitem->doc.write(*tmpfile);
-  this->documentitem->doc.settings.put(DocumentSettings::ENABLE_RASTER, oldWriteEngraving);
-
-  ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);
-  RtlPlot* plot = new RtlPlot(infile);
-  Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
-  SDLCanvas* canvas = NULL;
-  if(PclIntConfig::singleton()->screenSize != NULL)
-    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight(), PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
-  else
-    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight());
-
-  Interpreter& intr = * new Interpreter(plot, canvas);
-  boost::thread aborted_thread(boost::bind(sdl_wait, &intr));
-
-  Debugger::create(canvas);
-  Debugger::getInstance()->autoupdate = true;
-
-  boost::thread render_thread(boost::bind(intr_render_sqlquit, &intr));
-  render_thread.join();
-
-  if (config->debugLevel >= LVL_INFO) {
-    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
-    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
+  if (!this->rawDocItem) {
+    fprintf(stderr, "No document loaded\n");
+    return;
   }
+
+  if (!this->simdialog) this->simdialog = new SimulatorDialog(*this->rawDocItem,this);
+  this->simdialog->setVisible(true);
 }

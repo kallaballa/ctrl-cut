@@ -20,7 +20,7 @@
 #include "EngraveItem.h"
 #include "DocumentItem.h"
 
-EngraveItem::EngraveItem(DocumentItem& docItem, Engraving& engraving) : QGraphicsItemGroup(), AbstractCtrlCutItem(), engraving(engraving) {
+EngraveItem::EngraveItem(DocumentItem& docItem, Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
   QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
   QImage& img = QtMake::make_QImage(engraving.getSourceImage());
   img.bits();

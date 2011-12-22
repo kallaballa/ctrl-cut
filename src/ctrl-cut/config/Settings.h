@@ -39,6 +39,7 @@ using std::string;
 class Settings
 {
 public:
+  Settings* parent;
   class setting_not_found : public std::exception
   {
   public:
@@ -79,6 +80,13 @@ public:
   const_iterator begin() const  { return this->properties.begin(); }
   iterator end() { return this->properties.end(); }
   const_iterator end() const  { return this->properties.end(); }
+  void clear() { return this->properties.clear(); }
+  size_t size() const { return this->properties.size(); }
+
+  void operator=(Settings& other) {
+    this->parent = other.parent;
+    this->properties = properties;
+  }
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
@@ -86,8 +94,8 @@ public:
   }
 
   template<typename T>
-  const T get(const Settings::Key<T>& key) {
-    iterator it = this->properties.find(key);
+  const T get(const Settings::Key<T>& key) const {
+    const_iterator it = this->properties.find(key);
     if (it != this->end()) {
       return boost::any_cast<T>((*it).second);
     } else if(parent != NULL) {
@@ -99,7 +107,6 @@ public:
 
 private:
   PropertyMap properties;
-  Settings* parent;
 };
 
 #endif /* SETTINGS_H_ */

@@ -25,7 +25,7 @@ struct SegmentNode {
       return this->owner == other.owner && this->end_point == other.end_point;
   }
 
-  const SegmentList::iterator& getIterator() {
+  SegmentList::iterator& getIterator() {
     assert(this->it != NULL);
     return *this->it;
   }

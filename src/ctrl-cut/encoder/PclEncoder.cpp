@@ -30,11 +30,21 @@ using boost::format;
 
 typedef EngraveSettings ES;
 
-void encodeBitmapTile(Engraving& raster, std::ostream& out)
+void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
   BitmapImage* image = dynamic_cast<BitmapImage*>(&raster.getProcessedImage());
-  LOG_DEBUG_STR("Encoding bitmap image..");
+  if(!image) {
+    LOG_WARN_STR("Engraving is not processed. Can't encode");
+    return;
+  }
+  LOG_DEBUG_STR("Encode raster");
   ES::Direction direction = raster.settings.get(ES::DIRECTION);
+  // Raster direction (1 = up)
+  out << format(R_DIRECTION) % direction;
+  // start at current position
+  out << R_START;
+
+  LOG_DEBUG_STR("Encoding bitmap image..");
 
   int width = image->width() / 8; // width in bytes
   int height = image->height();
@@ -144,18 +154,6 @@ void encodeBitmapTile(Engraving& raster, std::ostream& out)
       }
     }
   }
-}
-
-void PclEncoder::encode(std::ostream &out, Engraving& raster)
-{
-  LOG_DEBUG_STR("Encode raster");
-  int direction = raster.settings.get(ES::DIRECTION) == ES::TOPDOWN ? 0 : 1;
-  // Raster direction (1 = up)
-  out << format(R_DIRECTION) % direction;
-  // start at current position
-  out << R_START;
-
-  encodeBitmapTile(raster, out);
 
   out << R_END; // end raster
 }

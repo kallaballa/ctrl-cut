@@ -44,9 +44,9 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
     const Segment* seg = graph[e].segment;
 
     if (graph[e].owner == NULL) {
-      if (current == NULL || !current->addSegment(*seg)) {
+      if (current == NULL || !current->add(seg)) {
         current = new SegmentString();
-        current->addSegment(*seg);
+        current->add(seg);
         strings.push_back(current);
       }
 

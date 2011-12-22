@@ -22,6 +22,7 @@ HEADERS += FileParser.h \
            util/Util.h \
            cut/model/Reduce.h \
            cut/model/CutModel.h \
+           cut/model/CutView.h \
            cut/model/Explode.h \
            cut/geom/SegmentTree.h \
            cut/geom/Geometry.h \
@@ -62,6 +63,7 @@ SOURCES += PostscriptParser.cpp \
            util/Eps.cpp \
            cut/model/Explode.cpp \
            cut/model/CutModel.cpp \
+           cut/model/CutView.cpp \
            cut/model/Reduce.cpp \
            cut/geom/Geometry.cpp \
            cut/graph/SegmentGraph.cpp \

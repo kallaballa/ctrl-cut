@@ -23,7 +23,7 @@
 #include "config/CutSettings.h"
 #include "Qt.h"
 
-class CutItem: public QGraphicsItemGroup, AbstractCtrlCutItem {
+class CutItem: public AbstractCtrlCutItem {
 public:
   CutModel& cut;
 

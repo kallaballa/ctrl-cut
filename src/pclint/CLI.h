@@ -179,7 +179,7 @@ public:
 
 
 public:
-  static void create(Canvas* canvas = NULL);
+  static void create(Canvas* canvas);
   static Debugger* getInstance();
 
   Debugger(Canvas* canvas) :

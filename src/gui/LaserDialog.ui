@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>597</width>
-    <height>423</height>
+    <width>663</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,8 +28,8 @@
         <rect>
          <x>10</x>
          <y>0</y>
-         <width>551</width>
-         <height>320</height>
+         <width>621</width>
+         <height>332</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
@@ -239,7 +239,7 @@
           </layout>
          </widget>
         </item>
-        <item row="1" column="0" rowspan="2">
+        <item row="1" column="0" rowspan="3">
          <widget class="QGroupBox" name="groupBox_4">
           <property name="title">
            <string>Options</string>
@@ -319,8 +319,8 @@
           <property name="title">
            <string>Vector Setting</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0" colspan="2">
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
               <widget class="QLabel" name="label_5">
@@ -411,6 +411,52 @@
              </item>
             </layout>
            </item>
+           <item row="1" column="0" colspan="2">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Optimize</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="cutOptimize">
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Simple</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Inner-Outer</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Shortest Path</string>
+                </property>
+               </item>            
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
         </item>
@@ -437,7 +483,7 @@
      <item>
       <widget class="QPushButton" name="cutButton">
        <property name="text">
-        <string>Cut</string>
+        <string>Save</string>
        </property>
       </widget>
      </item>

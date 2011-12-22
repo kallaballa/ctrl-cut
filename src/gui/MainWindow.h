@@ -11,6 +11,7 @@
 #include "StreamUtils.h"
 #include "GroupItem.h"
 #include "CtrlCutScene.h"
+#include "SimulatorDialog.h"
 #include "LaserDialog.h"
 #include "helpers/Qt.h"
 #include "helpers/DocumentItem.h"
@@ -45,8 +46,10 @@ private:
 
   LpdClient *lpdclient;
   CtrlCutScene *scene;
-  DocumentItem *documentitem;
+  DocumentItem *rawDocItem;
+  DocumentItem *processDocItem;
   LaserDialog *laserdialog;
+  SimulatorDialog *simdialog;
 };
 
 #endif

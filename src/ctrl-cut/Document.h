@@ -79,7 +79,7 @@ public:
   CutList getCuts() { return cutList; }
 
   void write(std::ostream &out);
-  void preprocess();
+  Document& preprocess();
 
   Format findFormat(const string& filename);
   bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED);

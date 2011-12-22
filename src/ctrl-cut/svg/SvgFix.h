@@ -51,8 +51,8 @@ private:
   typedef io::stream<io::file_descriptor_sink> fdostream;
   typedef io::stream<io::file_descriptor_source> fdistream;
 
-  fdistream& in;
-  fdostream& out;
+  fdistream* in;
+  fdostream* out;
 public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
@@ -72,9 +72,8 @@ public:
   void writeBase64Image(const string& mimetype, string& pngBase64);
 
   SvgFix(int fdIn, int fdOut) :
-    in(*(new fdistream(fdIn,true))), out(*(new fdostream(fdOut,true))),  generator(Unknown){ }
+    in(new fdistream(fdIn,true)), out(new fdostream(fdOut,true)),  generator(Unknown){ }
 
-  virtual ~SvgFix(){}
   void work();
 };
 

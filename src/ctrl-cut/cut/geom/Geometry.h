@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <deque>
+#include <limits>
 #include <list>
 #include <assert.h>
 #include <boost/math/special_functions.hpp>
@@ -27,7 +28,6 @@ public:
   int32_t y;
 
   Point(): x(0), y(0) {}
-  Point(const Point& other): x(other.x), y(other.y) {}
   Point(int32_t x, int32_t y): x(x), y(y) {}
 
   const int32_t &operator[](size_t idx) const {
@@ -79,18 +79,17 @@ public:
   const Point center;
   const uint32_t radius;
 
-  Sphere(const Point& center, uint32_t radius) : center(center) , radius(radius) {}
+  Sphere(const Point& center, const uint32_t& radius) : center(center) , radius(radius) {}
 };
 
 class Segment {
 public:
-  const Point& first;
-  const Point& second;
-  OpParams& settings;
-  Segment() :first(* new Point()), second(* new Point()), settings(* new OpParams()){
-  }
+  Point first;
+  Point second;
 
-  Segment(const Point& first, const Point& second, OpParams& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
+  OpParams settings;
+  Segment() {}
+  Segment(const Point& first, const Point& second, const OpParams& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
     if(first < second)
       this->box = new Box(first, second);
     else
@@ -138,20 +137,35 @@ public:
     Returns angle to the positive Y axis
   */
   float getSlope(bool invert = false) const;
+
+  const class SegmentString* getOwner() {
+    return this->owner;
+  }
+
+  void setOwner(SegmentString* string) {
+    assert(this->owner == NULL);
+    this->owner = string;
+  }
 private:
   Box* box;
   Sphere* sphere;
+  SegmentString* owner;
 };
 
 class SegmentString {
 public:
-  typedef std::list<const Segment*> SegmentDeque;
-  typedef std::list<const Point*> PointDeque;
+  typedef uint64_t id_t;
+  typedef std::list<const Segment *> SegmentDeque;
+  typedef std::list<const Point *> PointDeque;
   typedef SegmentDeque::iterator SegmentIter;
   typedef SegmentDeque::const_iterator SegmentConstIter;
   typedef PointDeque::iterator PointIter;
   typedef PointDeque::const_iterator PointConstIter;
-
+  ~SegmentString() {
+    for(SegmentIter it = beginSegments(); it != endSegments(); it++) {
+     // (*it)->setOwner(NULL);
+    }
+  }
   SegmentIter beginSegments() { return this->segments.begin(); }
   SegmentConstIter beginSegments() const  { return this->segments.begin(); }
   SegmentIter endSegments() { return this->segments.end(); }
@@ -171,6 +185,14 @@ public:
   PointDeque::reference backPoints()  { return this->points.back(); }
   PointDeque::const_reference frontPoints() const { return this->points.front(); }
   PointDeque::const_reference backPoints() const { return this->points.back(); }
+  void clear() {
+    this->segments.clear();
+    this->points.clear();
+  }
+
+  bool empty() {
+    return this->segments.empty() && this->points.empty();
+  }
 
   size_t numPoints() const { return this->points.size(); }
   bool pointsEmpty() const { return this->points.empty(); }
@@ -199,9 +221,7 @@ public:
     return false;
   }
 
-  bool addSegment(const Segment& segref) {
-    const Segment* seg = &segref;
-
+  bool add(const Segment* seg) {
     if (segments.empty()) {
       segments.push_back(seg);
       points.push_back(&seg->first);
@@ -231,15 +251,13 @@ public:
     }
     return false;
   }
-
-
 private:
   SegmentDeque segments;
   PointDeque points;
 };
 
 typedef std::list<const Segment*> SegmentList;
-typedef std::list<const SegmentString*> StringList;
+typedef std::list<const SegmentString *> StringList;
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 

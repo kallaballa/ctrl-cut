@@ -73,7 +73,6 @@ void Svg2Ps::convert() {
   if (status)
     FAIL (cairo_status_to_string (status));
 
-
   cairo_destroy(cr);
   cairo_surface_destroy(surface);
   fflush(fpOut);

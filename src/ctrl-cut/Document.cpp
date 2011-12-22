@@ -121,7 +121,6 @@ void Document::write(std::ostream &out) {
 
     /* We're going to perform a vector print. */
     for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      this->settings.get(DS::DRIVER);
       LaserCutter::CutEncoder::encode(out,**it);
     }
   }
@@ -136,9 +135,9 @@ void Document::write(std::ostream &out) {
   out << "Mini]";
 }
 
-void Document::preprocess() {
+Document& Document::preprocess() {
    for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
-     CutModel& model = *(*it);
+     CutModel& model = **it;
      explode_segments(model);
      reduce_linestrings(model, model.settings.get(CutSettings::REDUCE));
    }
@@ -146,6 +145,8 @@ void Document::preprocess() {
    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
      (*it)->dither();
    }
+
+   return *this;
 }
 
 Document::Format Document::findFormat(const string& filename) {
