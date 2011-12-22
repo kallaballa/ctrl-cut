@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SimulatorDialog</class>
+ <widget class="QDialog" name="SimulatorDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>802</width>
+    <height>602</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Simulator</string>
+  </property>
+  <widget class="SimulatorView" name="graphicsView">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>40</y>
+     <width>801</width>
+     <height>561</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QPushButton" name="simulateButton">
+      <property name="text">
+       <string>Cut</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cancelButton">
+      <property name="text">
+       <string>Cancel</string>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SimulatorDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>544</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>298</x>
+     <y>211</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>simulateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SimulatorDialog</receiver>
+   <slot>simulate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>469</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>298</x>
+     <y>211</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+  <customwidgets>
+  <customwidget>
+   <class>SimulatorView</class>
+   <extends>QGraphicsView</extends>
+   <header>SimulatorView.h</header>
+  </customwidget>
+ </customwidgets>
+</ui>
