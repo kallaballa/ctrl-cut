@@ -24,15 +24,15 @@ using std::map;
 using std::pair;
 
 struct SegmentProperty {
-  const Segment* segment;
-  const SegmentString* owner;
+  Segment* segment;
+  SegmentString* owner;
 
   SegmentProperty() : segment(0), owner(0) {}
-  SegmentProperty(const Segment* seg, const SegmentString* string) : segment(seg), owner(string) {}
+  SegmentProperty(Segment* seg, SegmentString* string) : segment(seg), owner(string) {}
 
   bool operator<(const SegmentProperty& other) const {
-    const Segment* seg1 = this->segment;
-    const Segment* seg2 = other.segment;
+    Segment* const seg1 = this->segment;
+    Segment* const seg2 = other.segment;
     const SegmentString* string1 = this->owner;
     const SegmentString* string2 = other.owner;
 
@@ -41,10 +41,10 @@ struct SegmentProperty {
 };
 
 struct PointProperty  {
-  const Point* point;
+  Point* point;
 
   PointProperty () : point(0) {}
-  PointProperty (const Point* p) : point(p) {}
+  PointProperty (Point* const  p) : point(p) {}
 
   bool operator<(const PointProperty & other) const {
     return *this->point < *other.point;
@@ -70,13 +70,13 @@ public:
   SegmentGraph(const SegmentGraph& graph) : adjacency_list<vecS, vecS, undirectedS, PointProperty , SegmentProperty>(graph) , edge_count(0) {}
   SegmentGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, PointProperty , SegmentProperty>(size) , edge_count(0){}
 
-  SegmentGraph::Vertex* findVertex(const Point& p);
-  SegmentGraph::Vertex addVertex(const Point& p);
+  SegmentGraph::Vertex* findVertex(Point&  p);
+  SegmentGraph::Vertex addVertex(Point&  p);
   const PointMap& getPointMap() {
     return points;
   }
 
-  void createEdge(const Segment& seg);
+  void createEdge(Segment& seg);
   bool hasEdge(const Vertex& in, const Vertex& out);
 private:
   PointMap points;

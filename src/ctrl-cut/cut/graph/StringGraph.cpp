@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const Point& origin, StringList::const_iterator start, StringList::const_iterator end) {
-  const SegmentString* s_i = NULL;
-  const SegmentString* s_j = NULL;
+StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, Point origin, StringList::const_iterator start, StringList::const_iterator end) {
+  SegmentString* s_i = NULL;
+  SegmentString* s_j = NULL;
   StringGraph::Vertex v_origin = graph.addVertex(&origin);
 
   for(StringList::const_iterator it_si = start; it_si != end; ++it_si) {
@@ -35,7 +35,7 @@ StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const P
   return v_origin;
 }
 
-void StringGraph::createWorkEdge(const Vertex& in, const Vertex& out, const SegmentString* owner) {
+void StringGraph::createWorkEdge(const Vertex& in, const Vertex& out, SegmentString* owner) {
   if(in == out || hasEdge(in, out))
     return;
 
@@ -57,7 +57,7 @@ bool StringGraph::hasEdge(const Vertex& in, const Vertex& out) {
   return boost::edge(in, out, *this).second;
 }
 
-void StringGraph::permutateEdges(const SegmentString& string, Vertex v_origin,
+void StringGraph::permutateEdges(SegmentString& string, Vertex v_origin,
     vector<Vertex>& outVertices) {
 //  std::cerr << "permutate" << std::endl;
 
@@ -88,7 +88,7 @@ StringGraph::Vertex* StringGraph::findVertex(const TieProperty &map) {
     return (StringGraph::Vertex*)&(*it).second;
 }
 
-StringGraph::Vertex StringGraph::addVertex(const Point* p, const SegmentString* owner) {
+StringGraph::Vertex StringGraph::addVertex(Point* p, SegmentString* owner) {
   TieProperty map(p,owner);
   Vertex* v = findVertex(map);
   if (v == NULL) {

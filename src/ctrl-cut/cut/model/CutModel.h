@@ -43,11 +43,10 @@ public:
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
 
-  bool createSegment(const Point& p1, const Point& p2, const OpParams& settings);
+  bool createSegment(const Point&  p1, const Point&  p2, const OpParams& settings);
   bool createSegment(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY,const OpParams& settings);
 
-  virtual void add(const Segment& seg);
-  virtual void remove(const Segment& seg);
+  virtual void remove(Segment& seg);
   virtual iterator erase(iterator it);
   virtual void clear();
 
@@ -57,12 +56,13 @@ public:
 
   bool load(const std::string &filename);
   bool load(std::istream &input);
-  const Segment& clip(const Segment& seg);
+  void clip(Segment& seg);
 protected:
   //FIXME should be managed by settings
   uint64_t clipped;
   uint64_t zerolength;
   SegmentList segmentIndex;
+  virtual void add(Segment& seg);
 };
 
 void make_route(StringList& strings, CutModel& model);

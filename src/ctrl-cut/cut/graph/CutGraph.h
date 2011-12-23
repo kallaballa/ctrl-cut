@@ -70,7 +70,7 @@ const typename boost::graph_traits<Graph>::edge_descriptor find_steapest(const G
 
   for (_EdgeIterator it = first; it != last; ++it){
     const Edge candidate = *it;
-    const Segment* seg = graph[candidate].segment;
+    Segment* const seg = graph[candidate].segment;
 
     float steapness = CC_PI - seg->getSlope();
 

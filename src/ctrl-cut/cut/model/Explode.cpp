@@ -41,7 +41,7 @@ void explode_segments(CutModel& model) {
   CutModel::iterator it_s = model.begin();
 
   while (it_s != model.end()) {
-    const Segment& pick = *(*it_s);
+    Segment& pick = *(*it_s);
 
     bool remove_pick = false;
     bool remove_candidate = false;
@@ -51,7 +51,7 @@ void explode_segments(CutModel& model) {
 
     while(it_o != in_range.end()) {
       remove_candidate = false;
-      const Segment& candidate = **(*it_o).getIterator();
+      Segment& candidate = **(*it_o).getIterator();
 
       if(&pick == &candidate) {
         ++it_o;
@@ -82,10 +82,10 @@ void explode_segments(CutModel& model) {
           }
         } else {
           //coincidental but neither tip connected nor identical
-          const Point* pick_min;
-          const Point* pick_max;
-          const Point* candidate_min;
-          const Point* candidate_max;
+          Point* pick_min;
+          Point* pick_max;
+          Point* candidate_min;
+          Point* candidate_max;
 
           if(pick.first < pick.second) {
             pick_min = &pick.first;

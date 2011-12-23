@@ -11,14 +11,13 @@ struct SegmentNode {
   const Segment* owner;
   const Point* end_point;
 
-
-  SegmentNode(const Point& end_point) : it(NULL), owner(NULL), end_point(&end_point) {
+  SegmentNode(const Point&  end_point) : it(NULL), owner(NULL), end_point(&end_point) {
   }
 
-  SegmentNode(const Segment& seg, const Point& end_point) : it(NULL), owner(&seg), end_point(&end_point) {
+  SegmentNode(const Segment& seg, const Point&  end_point) : it(NULL), owner(&seg), end_point(&end_point) {
   }
 
-  SegmentNode(SegmentList::iterator& it, const Point& end_point) : it(new SegmentList::iterator(it)), owner(*it), end_point(&end_point) {
+  SegmentNode(SegmentList::iterator& it, const Point&  end_point) : it(new SegmentList::iterator(it)), owner(*it), end_point(&end_point) {
   }
 
   bool operator==(const SegmentNode& other) const {
@@ -73,7 +72,7 @@ public:
       this->erase(it_t);
   }
 
-  const Point& findNearest(const Point& p) const {
+  const Point&  findNearest(const Point&  p) const {
     SegmentNode pos = *new SegmentNode(p);
     return *(*(this->find_nearest(pos).first)).end_point;
   }

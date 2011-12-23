@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-float Segment::distance(const Point &p) const
+float Segment::distance(const Point& p) const
 {
   return
     fabs((this->first[1] - this->second[1]) * p.x + (this->second[0] - this->first[0]) * p.y +
@@ -32,8 +32,8 @@ float Segment::getSlope(bool invert) const
   return CC_PI - ((float)atan2(d_x, -d_y));
 }
 
-void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point& translation) {
-  const Segment* seg;
+void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point&  translation) {
+  Segment* seg;
   int32_t fx;
   int32_t fy;
   int32_t sx;
@@ -46,6 +46,7 @@ void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::
     sx = seg->second[0] + translation.x;
     sy = seg->second[1] + translation.y;
 
+    //FIXME
     segments.push_back(new Segment(Point(fx,fy),Point(sx,sy), seg->settings));
   }
 }

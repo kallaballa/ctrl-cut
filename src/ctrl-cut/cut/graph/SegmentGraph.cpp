@@ -11,7 +11,7 @@ bool SegmentGraph::hasEdge(const Vertex& in, const Vertex& out) {
   return boost::edge(in, out, *this).second;
 }
 
-void SegmentGraph::createEdge(const Segment& seg) {
+void SegmentGraph::createEdge(Segment& seg) {
   SegmentGraph::Vertex inV = addVertex(seg.first);
   SegmentGraph::Vertex outV = addVertex(seg.second);
 
@@ -21,7 +21,7 @@ void SegmentGraph::createEdge(const Segment& seg) {
   add_edge(inV, outV, SegmentProperty(&seg, 0), *this);
 }
 
-SegmentGraph::Vertex* SegmentGraph::findVertex(const Point& p) {
+SegmentGraph::Vertex* SegmentGraph::findVertex(Point&  p) {
   PointMap::const_iterator it = points.find(PointProperty(&p));
   if (it == points.end())
     return NULL;
@@ -29,7 +29,7 @@ SegmentGraph::Vertex* SegmentGraph::findVertex(const Point& p) {
     return (SegmentGraph::Vertex*)&(*it).second;
 }
 
-SegmentGraph::Vertex SegmentGraph::addVertex(const Point& p) {
+SegmentGraph::Vertex SegmentGraph::addVertex(Point&  p) {
   Vertex* v = findVertex(p);
   if (v == NULL) {
     PointProperty prop(&p);

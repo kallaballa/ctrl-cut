@@ -82,7 +82,7 @@ bool CutModel::load(const std::string &filename) {
 }
 
 void make_route(StringList& route, CutModel& model) {
-  const Point& pos = model.settings.get(CutSettings::CPOS);
+  const Point&  pos = model.settings.get(CutSettings::CPOS);
   SegmentList::iterator segmentsFirst;
   SegmentList::iterator segmentsLast;
   SegmentList translated;
@@ -116,20 +116,20 @@ void make_route(StringList& route, CutModel& model) {
     assert(false);
 }
 
-void CutModel::add(const Segment& seg) {
-  const Segment& clipped = clip(seg);
-  if (clipped.first == clipped.second) // ignore zero length segments
+void CutModel::add(Segment& seg) {
+  clip(seg);
+  if (seg.first == seg.second) // ignore zero length segments
     return;
-  segmentIndex.push_back(&clipped);
+  segmentIndex.push_back(&seg);
 }
 
-void CutModel::remove(const Segment& seg) {
+void CutModel::remove(Segment& seg) {
   segmentIndex.remove(&seg);
   delete &seg;
 }
 
 CutModel::iterator CutModel::erase(SegmentList::iterator it) {
-  const Segment* seg = *it;
+  Segment* const seg = *it;
   iterator next = segmentIndex.erase(it);
   delete seg;
   return next;
@@ -141,7 +141,7 @@ void CutModel::clear() {
   }
 }
 
-bool CutModel::createSegment(const Point& p1, const Point& p2, const OpParams& settings) {
+bool CutModel::createSegment(const Point&  p1, const Point&  p2, const OpParams& settings) {
   // ignore zero length segments
   if (p1 == p2) {
     this->zerolength++;
@@ -156,7 +156,7 @@ bool CutModel::createSegment(const int32_t& inX,const int32_t& inY,const int32_t
 }
 
 
-const Segment& CutModel::clip(const Segment &seg) {
+void CutModel::clip(Segment& seg) {
   typedef DocumentSettings ds;
   int resolution = this->settings.get(ds::RESOLUTION);
   double width = this->settings.get(ds::WIDTH).in(PX, resolution);
@@ -174,13 +174,14 @@ const Segment& CutModel::clip(const Segment &seg) {
     // out of bounds;
     if(seg.first.x < 0 && seg.second.x < 0) {
       this->clipped++;
-      return seg;
+      return;
     }
+
     if(intersects(seg, leftBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.x < seg.second.x)
-        clipped = Segment(intersection, seg.second, seg.settings);
+        seg = Segment(intersection, seg.second, seg.settings);
       else
-        clipped = Segment(intersection, seg.first, seg.settings);
+        seg = Segment(intersection, seg.first, seg.settings);
 
       intersection = Point();
       this->clipped++;
@@ -190,14 +191,13 @@ const Segment& CutModel::clip(const Segment &seg) {
   if(seg.first.y < 0 || seg.second.y < 0) {
     if(seg.first.y < 0 && seg.second.y < 0) {
       this->clipped++;
-      return seg;
     }
 
     if(intersects(seg, topBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.y < seg.second.y)
-        clipped = Segment(intersection, seg.second, seg.settings);
+        seg = Segment(intersection, seg.second, seg.settings);
       else
-        clipped = Segment(intersection, seg.first, seg.settings);
+        seg = Segment(intersection, seg.first, seg.settings);
 
       intersection = Point();
       this->clipped++;
@@ -208,14 +208,14 @@ const Segment& CutModel::clip(const Segment &seg) {
   if(greater_than(seg.first.x,width - 1) || greater_than(seg.second.x,width - 1)) {
     if(greater_than(seg.first.x, width - 1) && greater_than(seg.second.x,width - 1)) {
       this->clipped++;
-      return seg;
+      return;
     }
 
     if(intersects(seg, rightBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.x > seg.second.x)
-        clipped = Segment(intersection, seg.second, seg.settings);
+        seg = Segment(intersection, seg.second, seg.settings);
       else
-        clipped = Segment(intersection, seg.first, seg.settings);
+        seg = Segment(intersection, seg.first, seg.settings);
 
       intersection = Point();
       this->clipped++;
@@ -225,16 +225,14 @@ const Segment& CutModel::clip(const Segment &seg) {
   if(greater_than(seg.first.y, height - 1) || greater_than(seg.second.y,height - 1)) {
     if(greater_than(seg.first.y, height - 1) && greater_than(seg.second.y,height - 1)) {
       this->clipped++;
-      return seg;
+      return;
     }
     if(intersects(seg, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.y > seg.second.y)
-        clipped = Segment(intersection, seg.second, seg.settings);
+        seg = Segment(intersection, seg.second, seg.settings);
       else
-        clipped = Segment(intersection, seg.first, seg.settings);
+        seg = Segment(intersection, seg.first, seg.settings);
     }
     this->clipped++;
   }
-
-  return seg;
 }

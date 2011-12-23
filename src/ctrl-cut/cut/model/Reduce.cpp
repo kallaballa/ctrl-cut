@@ -21,7 +21,7 @@
 #include "cut/graph/Traverse.h"
 #include "cut/model/CutModel.h"
 
-bool isShared(SegmentGraph& graph, const Point& p) {
+bool isShared(SegmentGraph& graph, Point&  p) {
   SegmentGraph::Vertex* v;
   if((v = graph.findVertex(p)) != NULL) {
     boost::graph_traits<SegmentGraph>::out_edge_iterator oe_it, oe_end;
@@ -57,22 +57,22 @@ void reduce_linestrings(CutModel &model, float epsilon)
 
   // Reduce each polyline separately
   for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
-    const SegmentString& string = **it;
+    SegmentString& string = **it;
     // Select a start iterator
-    SegmentString::SegmentConstIter startit = string.beginSegments();
+    SegmentString::SegmentIter startit = string.beginSegments();
 
     // Walk the entire string
-    SegmentString::SegmentConstIter  pit;
+    SegmentString::SegmentIter  pit;
     for (pit = startit; ++pit != string.endSegments(); ) {
       const Segment& startSegment = **startit;
       float largest = 0;
-      SegmentString::SegmentConstIter  largestit;
+      SegmentString::SegmentIter  largestit;
       if (!string.isClosed()) {
         // Span a segment to the current vertex for testing
         Segment consider(startSegment.first, (*pit)->second, startSegment.settings);
 
         // Check distance from every intermediate vertex
-        for (SegmentString::SegmentConstIter  pit2 = startit; pit2 != pit; pit2++) {
+        for (SegmentString::SegmentIter  pit2 = startit; pit2 != pit; pit2++) {
           float d = consider.distance((**pit2)[1]);
           if (d > largest) {
             largest = d;
@@ -91,7 +91,7 @@ void reduce_linestrings(CutModel &model, float epsilon)
         // it to a line. FIXME: This might not be desirable in the end.
 
         // Check distance from every intermediate vertex to this vertex
-        for (SegmentString::SegmentConstIter  pit2 = startit; pit2 != pit; pit2++) {
+        for (SegmentString::SegmentIter  pit2 = startit; pit2 != pit; pit2++) {
           float d = startSegment.first.distance((*pit2)->second);
           if (d > largest) {
             largest = d;
@@ -108,12 +108,12 @@ void reduce_linestrings(CutModel &model, float epsilon)
 
       // We exceeded the epsilon, split the edge and continue
       if (largest > epsilon) {
-        newModel.add(Segment(startSegment.first, (*largestit)->second, startSegment.settings));
+        newModel.createSegment(startSegment.first, (*largestit)->second, startSegment.settings);
         startit = ++largestit;
       }
     }
     // Add last line
-    newModel.add(Segment((*startit)->first, string.backSegments()->second, (*startit)->settings));
+    newModel.createSegment((*startit)->first, string.backSegments()->second, (*startit)->settings);
   }
 
   model = newModel;

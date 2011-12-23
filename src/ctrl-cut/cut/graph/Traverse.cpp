@@ -41,7 +41,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 
   void next_edge(SegmentGraph::Edge e) {
-    const Segment* seg = graph[e].segment;
+    Segment* const seg = graph[e].segment;
 
     if (graph[e].owner == NULL) {
       if (current == NULL || !current->add(seg)) {
@@ -106,7 +106,7 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   LOG_DEBUG_MSG("strings before", strings.size());
 
   StringGraph graph;
-  StringGraph::Vertex v_origin = create_complete_graph_from_point(graph, * new Point(0,0),first, last);
+  StringGraph::Vertex v_origin = create_complete_graph_from_point(graph, Point(0,0),first, last);
 
   typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, TieProperty, StringProperty>, double StringProperty::*>::type WeightMap;
   WeightMap weight_map(get(&StringProperty::weight, graph));
@@ -115,8 +115,8 @@ void travel_linestrings(StringList& strings, StringList::iterator first, StringL
   double len = 0.0;
   boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_len_visitor(graph, std::back_inserter(route), len, weight_map));
 
-  const SegmentString* nextString = NULL;
-  std::set<const SegmentString*> traversedStrings;
+  SegmentString* nextString = NULL;
+  std::set<SegmentString*> traversedStrings;
 
   for (vector<StringGraph::Vertex>::iterator it = route.begin(); it
       != route.end(); ++it) {

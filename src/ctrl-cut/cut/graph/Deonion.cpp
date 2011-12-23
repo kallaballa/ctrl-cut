@@ -24,8 +24,8 @@
 void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, SegmentString& skin, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV)
 {
   SegmentGraph::Edge nextEdge;
-  const Segment* lastSegment = graph[lastEdge].segment;
-  const Point* lastPoint = graph[outV].point;
+  Segment* const lastSegment = graph[lastEdge].segment;
+  Point* const  lastPoint = graph[outV].point;
   float lastSlope;
 
   if((*lastPoint) == (*lastSegment)[0])
@@ -53,7 +53,7 @@ void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Se
 
   for(boost::tie(eit, eend) = boost::out_edges(outV, graph); eit != eend; ++eit) {
     const SegmentGraph::Edge candidate = *eit;
-    const Segment* segment = graph[candidate].segment;
+    Segment* const segment = graph[candidate].segment;
 
     //skip identical segment
     if(segment == lastSegment)
@@ -118,14 +118,14 @@ void traverse_onion(StringList& skins, SegmentList::iterator first, SegmentList:
     if(startVertex == NULL)
       break;
 
-    const Point& startPoint = *freeGeometryView[*startVertex].point;
+    const Point&  startPoint = *freeGeometryView[*startVertex].point;
 
     SegmentString* skin  = new SegmentString();
 
     boost::tie(eit, eend) = boost::out_edges(*startVertex, freeGeometryView);
     const SegmentGraph::Edge steapest = find_steapest(freeGeometryView, eit, eend);
     const SegmentGraph::Vertex outVertex = get_opposite(freeGeometryView,steapest, *startVertex);
-    const Point& outPoint = *freeGeometryView[outVertex].point;
+    const Point&  outPoint = *freeGeometryView[outVertex].point;
 
     if(outPoint.y < startPoint.y || (outPoint.y == startPoint.y && outPoint.x > startPoint.x))
       walkTheEdge(segTree, freeGeometryView, *skin, steapest, outVertex);

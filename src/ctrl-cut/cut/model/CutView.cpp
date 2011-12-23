@@ -1,38 +1,45 @@
 #include "CutView.h"
+#include <algorithm>
 
-void CutView::add(const Segment& seg) {
-  const Segment& clipped = CutModel::clip(seg);
-  if (clipped.first == clipped.second) // ignore zero length segments
+void CutView::add(Segment& seg) {
+  CutModel::clip(seg);
+  if (seg.first == seg.second) // ignore zero length segments
     return;
-  segmentIndex.push_back(&clipped);
-  increment.insert(&clipped);
+  increment.push_back(&seg);
 }
 
-void CutView::remove(const Segment& seg) {
-  SegmentSet::iterator it_inc = increment.find(&seg);
-  if(it_inc != increment.end()) {
-    increment.erase(it_inc);
-    CutModel::remove(seg);
-  } else
-    segmentIndex.remove(&seg);
+void CutView::remove(Segment& seg) {
+  SegmentList::iterator it_seg = std::find(increment.begin(), increment.end(), &seg);
+  if(it_seg != increment.end()) {
+   increment.remove(&seg);
+   delete &seg;
+  }
+  else
+   segmentIndex.remove(&seg);
 }
 
 CutView::iterator CutView::erase(iterator it) {
-  SegmentSet::iterator it_inc = increment.find(*it);
-  if(it_inc != increment.end()) {
-    increment.erase(it_inc);
-    return CutModel::erase(it);
-  } else
-    return segmentIndex.erase(it);
+  SegmentList::iterator it_seg = std::find(increment.begin(), increment.end(), *it);
+  bool first;
+  if(it_seg != increment.end()) {
+    first = false;
+    Segment* seg = *it_seg;
+    it_seg = increment.erase(it_seg);
+    delete seg;
+  } else {
+    first = true;
+    it_seg = segmentIndex.erase(it_seg);
+  }
+
+  return CutView::iterator(segmentIndex.begin(), segmentIndex.end(), increment.begin(), increment.end(), it_seg, first);
 }
 
 void CutView::clear() {
-   for(iterator it = begin(); it != end(); it++) {
-     SegmentSet::iterator it_inc = increment.find(*it);
-     if(it_inc != increment.end()) {
-       increment.erase(it_inc);
-       CutModel::erase(it);
-     } else
-       segmentIndex.erase(it);
-   }
- }
+  for(SegmentList::iterator it = increment.begin(); it != increment.end(); it++) {
+    Segment* seg = *it;
+    increment.erase(it);
+    delete seg;
+  }
+
+  segmentIndex.clear();
+}

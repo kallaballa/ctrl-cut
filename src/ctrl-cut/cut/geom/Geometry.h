@@ -38,30 +38,30 @@ public:
       return y;
   }
 
-  bool operator<(const Point& other) const {
+  bool operator<(const Point&  other) const {
       return  (this->x < other.x) || ((this->x == other.x) && (this->y < other.y));
   }
 
-  bool operator==(const Point& other) const {
+  bool operator==(const Point&  other) const {
     return this->x == other.x && this->y == other.y;
   }
 
-  bool operator!=(const Point& other) const {
+  bool operator!=(const Point&  other) const {
     return this->x != other.x || this->y != other.y;
   }
 
-  Point& operator-(const Point& other) const {
+  Point& operator-(const Point&  other) const {
     int32_t x_diff = this->x - other.x;
     int32_t y_diff = this->y - other.y;
     return (* new Point(x_diff, y_diff));
   }
 
-  void operator=(const Point& other) {
+  void operator=(const Point&  other) {
     this->x = other.x;
     this->y = other.y;
   }
 
-  double distance(const Point& other) const {
+  double distance(const Point&  other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
 };
@@ -71,7 +71,7 @@ public:
   const Point min_corner;
   const Point max_corner;
 
-  Box(const Point& min_corner, const Point& max_corner) : min_corner(min_corner) , max_corner(max_corner) {}
+  Box(const Point&  min_corner, const Point&  max_corner) : min_corner(min_corner) , max_corner(max_corner) {}
 };
 
 class Sphere {
@@ -79,7 +79,7 @@ public:
   const Point center;
   const uint32_t radius;
 
-  Sphere(const Point& center, const uint32_t& radius) : center(center) , radius(radius) {}
+  Sphere(const Point&  center, const uint32_t& radius) : center(center) , radius(radius) {}
 };
 
 class Segment {
@@ -89,7 +89,7 @@ public:
 
   OpParams settings;
   Segment() {}
-  Segment(const Point& first, const Point& second, const OpParams& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
+  Segment(const Point&  first, const Point&  second, const OpParams& settings) : first(first), second(second), settings(settings), box(NULL), sphere(NULL) {
     if(first < second)
       this->box = new Box(first, second);
     else
@@ -101,7 +101,15 @@ public:
     this->sphere = new Sphere(center, radius);
   }
 
-  const Point &operator[](size_t idx) const {
+  const Point& operator[](size_t idx) const {
+    assert(idx < 2);
+    if (idx == 0)
+      return first;
+    else
+      return second;
+  }
+
+  Point& operator[](size_t idx) {
     assert(idx < 2);
     if (idx == 0)
       return first;
@@ -132,7 +140,7 @@ public:
   /*!
     Calculates the distance from the Point to the infinite segment
   */
-  float distance(const Point &p) const;
+  float distance(const Point& p) const;
   /*!
     Returns angle to the positive Y axis
   */
@@ -155,12 +163,12 @@ private:
 class SegmentString {
 public:
   typedef uint64_t id_t;
-  typedef std::list<const Segment *> SegmentDeque;
-  typedef std::list<const Point *> PointDeque;
-  typedef SegmentDeque::iterator SegmentIter;
-  typedef SegmentDeque::const_iterator SegmentConstIter;
-  typedef PointDeque::iterator PointIter;
-  typedef PointDeque::const_iterator PointConstIter;
+  typedef std::list<Segment*> SegmentList;
+  typedef std::list<Point*> PointList;
+  typedef SegmentList::iterator SegmentIter;
+  typedef SegmentList::const_iterator SegmentConstIter;
+  typedef PointList::iterator PointIter;
+  typedef PointList::const_iterator PointConstIter;
   ~SegmentString() {
     for(SegmentIter it = beginSegments(); it != endSegments(); it++) {
      // (*it)->setOwner(NULL);
@@ -170,10 +178,10 @@ public:
   SegmentConstIter beginSegments() const  { return this->segments.begin(); }
   SegmentIter endSegments() { return this->segments.end(); }
   SegmentConstIter endSegments() const  { return this->segments.end(); }
-  SegmentDeque::reference frontSegments() { return this->segments.front(); }
-  SegmentDeque::reference backSegments() { return this->segments.back(); }
-  SegmentDeque::const_reference frontSegments() const { return this->segments.front(); }
-  SegmentDeque::const_reference backSegments() const { return this->segments.back(); }
+  SegmentList::reference frontSegments() { return this->segments.front(); }
+  SegmentList::reference backSegments() { return this->segments.back(); }
+  SegmentList::const_reference frontSegments() const { return this->segments.front(); }
+  SegmentList::const_reference backSegments() const { return this->segments.back(); }
   size_t numSegments() const { return this->segments.size(); }
   bool segmentsEmpty() const { return this->segments.empty(); }
 
@@ -181,10 +189,10 @@ public:
   PointConstIter beginPoints() const  { return this->points.begin(); }
   PointIter endPoints() { return this->points.end(); }
   PointConstIter endPoints() const  { return this->points.end(); }
-  PointDeque::reference frontPoints()  { return this->points.front(); }
-  PointDeque::reference backPoints()  { return this->points.back(); }
-  PointDeque::const_reference frontPoints() const { return this->points.front(); }
-  PointDeque::const_reference backPoints() const { return this->points.back(); }
+  PointList::reference frontPoints()  { return this->points.front(); }
+  PointList::reference backPoints()  { return this->points.back(); }
+  PointList::const_reference frontPoints() const { return this->points.front(); }
+  PointList::const_reference backPoints() const { return this->points.back(); }
   void clear() {
     this->segments.clear();
     this->points.clear();
@@ -199,7 +207,7 @@ public:
 
   bool isClosed() const { return *this->frontPoints() == *this->backPoints(); }
 
-  bool rotate(const Point& first) {
+  bool rotate(const Point&  first) {
     assert(isClosed());
     if(first != *frontPoints()) {
       for(PointIter it = beginPoints()++; it != endPoints(); ++it) {
@@ -221,14 +229,14 @@ public:
     return false;
   }
 
-  bool add(const Segment* seg) {
+  bool add(Segment* const seg) {
     if (segments.empty()) {
       segments.push_back(seg);
       points.push_back(&seg->first);
       points.push_back(&seg->second);
       return true;
     } else {
-      const Point& last = *points.back();
+      const Point&  last = *points.back();
       if (last == seg->first) {
         segments.push_back(seg);
         points.push_back(&seg->second);
@@ -236,7 +244,7 @@ public:
         segments.push_back(new Segment(seg->second, seg->first, seg->settings));
         points.push_back(&seg->first);
       } else {
-        const Point& first = *points.front();
+        const Point&  first = *points.front();
         if (first == seg->first) {
           segments.push_front(new Segment(seg->second, seg->first, seg->settings));
           points.push_front(&seg->second);
@@ -252,12 +260,12 @@ public:
     return false;
   }
 private:
-  SegmentDeque segments;
-  PointDeque points;
+  SegmentList segments;
+  PointList points;
 };
 
-typedef std::list<const Segment*> SegmentList;
-typedef std::list<const SegmentString *> StringList;
+typedef std::list<Segment*> SegmentList;
+typedef std::list<SegmentString*> StringList;
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
 
@@ -265,7 +273,7 @@ enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN
   Calculates alignment of two segments to each other and sets the supplied point to the resulting point if they intersect
   Tip intersections are reported as ordinary intersections.
 */
-inline intersection_result intersects(const Segment& s1, const Segment &s2, Point& intersection)
+inline intersection_result intersects(const Segment& s1, const Segment&s2, Point& intersection)
 {
   float denom =
     ((s2[1][1] - s2[0][1]) * (s1[1][0] - s1[0][0])) -
@@ -298,7 +306,7 @@ inline intersection_result intersects(const Segment& s1, const Segment &s2, Poin
 
   return ALIGN_NONE;
 }
-inline std::ostream& operator<<(std::ostream &os, const Point &p)  {
+inline std::ostream& operator<<(std::ostream &os, const Point& p)  {
   os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" key=\"" << p.x << "/" << p.y << "\" />";
   return os;
 }
@@ -333,6 +341,6 @@ inline bool lesser_than(int32_t s, uint32_t us) {
   return s < (int32_t)us;
 }
 
-void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point &translation);
+void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point& translation);
 
 #endif /* GEOMETRY_H_ */
