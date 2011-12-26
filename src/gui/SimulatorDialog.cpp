@@ -82,12 +82,12 @@ void SimulatorDialog::simulate() {
   config->screenSize =BoundingBox::createFromGeometryString("1024x768");
 
   ofstream *tmpfile = new ofstream("pclint.tmp", ios::out | ios::binary);
-  bool oldWriteEngraving = this->documentItem->doc.settings.get(DocumentSettings::ENABLE_RASTER);
-  this->documentItem->doc.settings.put(DocumentSettings::ENABLE_RASTER, true);
+  bool oldWriteEngraving = this->documentItem->doc.get(DocumentSettings::ENABLE_RASTER);
+  this->documentItem->doc.put(DocumentSettings::ENABLE_RASTER, true);
 
   Document& preprocessed = this->documentItem->doc.preprocess();
   preprocessed.write(*tmpfile);
-  preprocessed.settings.put(DocumentSettings::ENABLE_RASTER, oldWriteEngraving);
+  preprocessed.put(DocumentSettings::ENABLE_RASTER, oldWriteEngraving);
 
   ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);
   RtlPlot* plot = new RtlPlot(infile);

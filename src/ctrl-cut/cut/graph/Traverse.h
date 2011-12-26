@@ -21,11 +21,32 @@ using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
 
-void dump_linestrings(const std::string &filename, StringList::iterator first, StringList::iterator last);
-void dump_linestrings(std::ostream& os, StringList::iterator first, StringList::iterator last);
-void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
-void make_linestrings(StringList& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);
-void travel_linestrings(StringList& strings, StringList::iterator first, StringList::iterator last);
+template<typename Graph>
+class RouteBuilder {
+public:
+  Graph* graph;
+  Route* route;
+
+  RouteBuilder(Graph& graph, Route& route) : graph(&graph), route(&route), first(true) {}
+  RouteBuilder(const RouteBuilder& rb) : graph(rb.graph), route(rb.route), first(rb.first) {}
+
+  void operator()(typename Graph::Vertex v) {
+    Point& current = (*graph)[v];
+    if(!first) {
+      route->append(Segment(this->last,current, *route));
+    }
+    this->last = current;
+  }
+private:
+  bool first;
+  Point last;
+};
+
+void dump_linestrings(const std::string &filename, Route::StringIter first, Route::StringIter last);
+void dump_linestrings(std::ostream& os, Route::StringIter first, Route::StringIter last);
+void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
+void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);
+void travel_linestrings(Route& strings, Route::StringIter first, Route::StringIter last);
 
 template<typename Graph>
 bool build_planar_embedding(typename Graph::Embedding& embedding, Graph& graph) {

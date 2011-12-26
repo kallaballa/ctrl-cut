@@ -20,6 +20,7 @@
 #include "util/Logger.h"
 #include "Explode.h"
 #include "cut/graph/Traverse.h"
+#include "cut/geom/SegmentTree.h"
 #include <list>
 
 void findWithinRange(SegmentTree& segTree, CutModel::iterator it_s, std::list<SegmentNode>& in_range) {
@@ -41,7 +42,7 @@ void explode_segments(CutModel& model) {
   CutModel::iterator it_s = model.begin();
 
   while (it_s != model.end()) {
-    Segment& pick = *(*it_s);
+    Segment& pick = (*it_s);
 
     bool remove_pick = false;
     bool remove_candidate = false;
@@ -51,7 +52,7 @@ void explode_segments(CutModel& model) {
 
     while(it_o != in_range.end()) {
       remove_candidate = false;
-      Segment& candidate = **(*it_o).getIterator();
+      Segment& candidate = *(*it_o).getIterator();
 
       if(&pick == &candidate) {
         ++it_o;
@@ -63,14 +64,14 @@ void explode_segments(CutModel& model) {
       if (is_res == ALIGN_INTERSECT) {
        if(pick[0] != intersection && pick[1] != intersection) {
          remove_pick = true;
-         model.createSegment(pick[0], intersection, pick.settings);
-         model.createSegment(pick[1], intersection, pick.settings);
+         model.create(pick[0], intersection, pick);
+         model.create(pick[1], intersection, pick);
         }
 
         if(candidate[0] != intersection && candidate[1] != intersection) {
           remove_candidate = true;
-          model.createSegment(candidate[0], intersection, candidate.settings);
-          model.createSegment(candidate[1], intersection, candidate.settings);
+          model.create(candidate[0], intersection, candidate);
+          model.create(candidate[1], intersection, candidate);
         }
       } else if(is_res == ALIGN_COINCIDENCE) {
         bool firstMatches = pick[0] == candidate[0] || pick[0] == candidate[1];
@@ -109,20 +110,20 @@ void explode_segments(CutModel& model) {
               remove_pick = true;
               remove_candidate = true;
               if((*pick_max) < (*candidate_max)) {
-                model.createSegment(*pick_min, *candidate_min, pick.settings);
-                model.createSegment(*candidate_min, *pick_max, pick.settings);
-                model.createSegment(*pick_max, *candidate_max, candidate.settings);
+                model.create(*pick_min, *candidate_min, pick);
+                model.create(*candidate_min, *pick_max, pick);
+                model.create(*pick_max, *candidate_max, candidate);
               } else {
-                model.createSegment(*pick_min, *candidate_min, pick.settings);
-                model.createSegment(*candidate_min, *candidate_max, candidate.settings);
-                model.createSegment(*candidate_max, *pick_max, pick.settings);
+                model.create(*pick_min, *candidate_min, pick);
+                model.create(*candidate_min, *candidate_max, candidate);
+                model.create(*candidate_max, *pick_max, pick);
               }
             } else if((*pick_min) < (*candidate_max)) {
               remove_pick = true;
               remove_candidate = true;
-              model.createSegment(*candidate_min, *pick_min, candidate.settings);
-              model.createSegment(*pick_min, *candidate_max, candidate.settings);
-              model.createSegment(*candidate_max, *pick_max, pick.settings);
+              model.create(*candidate_min, *pick_min, candidate);
+              model.create(*pick_min, *candidate_max, candidate);
+              model.create(*candidate_max, *pick_max, pick);
             }
           }
         }

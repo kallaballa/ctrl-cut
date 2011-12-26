@@ -1,14 +1,15 @@
-#include "CutModel.h"
-#include "cut/geom/Geometry.h"
-#include "cut/graph/Traverse.h"
-#include "util/Logger.h"
-#include "util/Measurement.h"
-#include "config/DocumentSettings.h"
 #include <fstream>
+#include "CutModel.h"
+#include "Document.h"
+#include "util/Logger.h"
+#include "cut/geom/Segment.h"
 
-DocumentSettings CutModel::defaultDocSettings;
-
-
+CutModel::CutModel(Document& parent) :
+  parent(&parent),
+  settings(parent.getSettings()),
+  clipped(0),
+  zerolength(0)
+{ }
 /*!
  Loads vector data from EPS/Ghostscript output
  */
@@ -40,7 +41,7 @@ bool CutModel::load(std::istream &input) {
       case 'C': // close
         if (lx != mx || ly != my) {
           segmentCnt++;
-          this->createSegment(lx, ly, mx, my, OpParams(power, 0, 0));
+          this->create(lx, ly, mx, my);
         }
         break;
       case 'P': // power
@@ -53,7 +54,7 @@ bool CutModel::load(std::istream &input) {
       case 'L': // line to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
           segmentCnt++;
-          this->createSegment(lx, ly, x, y, OpParams(power, 0, 0));
+          this->create(lx, ly, x, y);
           lx = x;
           ly = y;
         }
@@ -81,91 +82,84 @@ bool CutModel::load(const std::string &filename) {
   return this->load(infile);
 }
 
-void make_route(StringList& route, CutModel& model) {
-  const Point&  pos = model.settings.get(CutSettings::CPOS);
-  SegmentList::iterator segmentsFirst;
-  SegmentList::iterator segmentsLast;
-  SegmentList translated;
-
-  if(pos.x != 0 || pos.y != 0) {
-    translate(translated, model.begin(), model.end(), pos);
-    segmentsFirst = translated.begin();
-    segmentsLast = translated.end();
-  } else{
-    segmentsFirst = model.begin();
-    segmentsLast = model.end();
-  }
-
-  CutSettings::Optimize optimize = model.settings.get(CutSettings::OPTIMIZE);
-  string datadir = model.settings.get(DocumentSettings::DATA_DIR);
-  string basename = model.settings.get(DocumentSettings::BASENAME);
-
-  if(optimize == CutSettings::SIMPLE) {
-    //FIXME dump_linestrings("simple", segmentsFirst, segmentsLast);
-  } else if(optimize == CutSettings::SHORTEST_PATH) {
-    StringList join;
-    make_linestrings(join,segmentsFirst, segmentsLast);
-    travel_linestrings(route, join.begin(), join.end());
-
-    //FIXME dump_linestrings("join", segmentsFirst, segmentsLast);
-  } else if(optimize == CutSettings::INNER_OUTER) {
-    traverse_onion(route, segmentsFirst, segmentsLast);
-
-    //FIXME dump_linestrings("innerouter", segmentsFirst, segmentsLast);
-  } else
-    assert(false);
-}
-
-void CutModel::add(Segment& seg) {
-  clip(seg);
-  if (seg.first == seg.second) // ignore zero length segments
-    return;
-  segmentIndex.push_back(&seg);
-}
-
 void CutModel::remove(Segment& seg) {
-  segmentIndex.remove(&seg);
-  delete &seg;
+  segmentIndex.remove(seg);
 }
 
 CutModel::iterator CutModel::erase(SegmentList::iterator it) {
-  Segment* const seg = *it;
-  iterator next = segmentIndex.erase(it);
-  delete seg;
-  return next;
+  return  segmentIndex.erase(it);
 }
 
 void CutModel::clear() {
-  for (iterator it = begin(); it != end(); it++) {
-    it = erase(it);
-  }
+  segmentIndex.clear();
 }
 
-bool CutModel::createSegment(const Point&  p1, const Point&  p2, const OpParams& settings) {
+bool CutModel::create(const Point&  p1, const Point&  p2, const Segment& seg) {
   // ignore zero length segments
   if (p1 == p2) {
     this->zerolength++;
     return false;
   }
-  add(*new Segment(p1, p2, settings));
+
+  create(Segment(p1,p2,seg));
   return true;
 }
 
-bool CutModel::createSegment(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY,const OpParams& settings) {
-  return createSegment(Point(inX, inY), Point(outX, outY), settings);
+bool CutModel::create(const Point&  p1, const Point&  p2) {
+  // ignore zero length segments
+  if (p1 == p2) {
+    this->zerolength++;
+    return false;
+  }
+
+  create(Segment(p1,p2,*this));
+  return true;
+}
+
+bool CutModel::create(Segment& seg, bool doclip) {
+  if(doclip)
+    clip(seg);
+  if (seg.first == seg.second) {
+    this->clipped++;
+    return false;
+  }
+  create(seg);
+  return true;
+}
+
+bool CutModel::create(const Segment& seg) {
+  segmentIndex.push_back(seg);
+  return true;
 }
 
 
+bool CutModel::create(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY) {
+  return create(Point(inX, inY), Point(outX, outY));
+}
+
+
+void CutModel::push_front(const Segment& seg) {
+  segmentIndex.push_front(seg);
+}
+
+void CutModel::push_back(const Segment& seg) {
+  segmentIndex.push_back(seg);
+}
+
+void CutModel::insert(iterator pos, const Segment& seg) {
+  segmentIndex.insert(pos,seg);
+}
+
 void CutModel::clip(Segment& seg) {
   typedef DocumentSettings ds;
-  int resolution = this->settings.get(ds::RESOLUTION);
-  double width = this->settings.get(ds::WIDTH).in(PX, resolution);
-  double height = this->settings.get(ds::HEIGHT).in(PX, resolution);
+  int resolution = this->get(ds::RESOLUTION);
+  double width = this->get(ds::WIDTH).in(PX, resolution);
+  double height = this->get(ds::HEIGHT).in(PX, resolution);
 
-  Segment leftBedBorder(Point(0, 0),Point(0, height-1),OpParams(0,0,0));
-  Segment bottomBedBorder(Point(0, height-1),Point(width-1, height-1), OpParams(0,0,0));
-  Segment rightBedBorder(Point(width-1, height-1),Point(width-1, 0),OpParams(0,0,0));
-  Segment topBedBorder(Point(width-1, 0),Point(0, 0),OpParams(0,0,0));
+  Segment leftBedBorder(Point(0, 0),Point(0, height-1), *this);
+  Segment bottomBedBorder(Point(0, height-1),Point(width-1, height-1), *this);
+  Segment rightBedBorder(Point(width-1, height-1),Point(width-1, 0), *this);
+  Segment topBedBorder(Point(width-1, 0),Point(0, 0), *this);
 
   Point intersection;
   Segment clipped;
@@ -179,9 +173,10 @@ void CutModel::clip(Segment& seg) {
 
     if(intersects(seg, leftBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.x < seg.second.x)
-        seg = Segment(intersection, seg.second, seg.settings);
+        seg.first = intersection;
       else
-        seg = Segment(intersection, seg.first, seg.settings);
+        seg.second = seg.first;
+        seg.first = intersection;
 
       intersection = Point();
       this->clipped++;
@@ -195,9 +190,10 @@ void CutModel::clip(Segment& seg) {
 
     if(intersects(seg, topBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.y < seg.second.y)
-        seg = Segment(intersection, seg.second, seg.settings);
+        seg.first = intersection;
       else
-        seg = Segment(intersection, seg.first, seg.settings);
+        seg.second = seg.first;
+        seg.first = intersection;
 
       intersection = Point();
       this->clipped++;
@@ -213,9 +209,10 @@ void CutModel::clip(Segment& seg) {
 
     if(intersects(seg, rightBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.x > seg.second.x)
-        seg = Segment(intersection, seg.second, seg.settings);
+        seg.first = intersection;
       else
-        seg = Segment(intersection, seg.first, seg.settings);
+        seg.second = seg.first;
+        seg.first = intersection;
 
       intersection = Point();
       this->clipped++;
@@ -229,10 +226,26 @@ void CutModel::clip(Segment& seg) {
     }
     if(intersects(seg, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
       if(seg.first.y > seg.second.y)
-        seg = Segment(intersection, seg.second, seg.settings);
+        seg.first = intersection;
       else
-        seg = Segment(intersection, seg.first, seg.settings);
+        seg.second = seg.first;
+        seg.first = intersection;
     }
     this->clipped++;
+  }
+}
+
+void CutModel::operator=(const CutModel& other) {
+  this->copy(other);
+}
+
+void CutModel::copy(const CutModel& other) {
+  if(other.hasParent())
+    this->parent = other.getParent();
+
+  this->settings = other.getSettings();
+
+  for(CutModel::const_iterator it = other.begin(); it != other.end(); it++) {
+    this->create(*it);
   }
 }

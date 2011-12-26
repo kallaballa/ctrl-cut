@@ -22,8 +22,6 @@
 
 #include "util/Logger.h"
 #include "util/Measurement.h"
-#include "encoder/PclEncoder.h"
-#include "encoder/HPGLEncoder.h"
 
 /**
  *  This class models the basic hardware specific parameters of a laser cutter.
@@ -37,9 +35,6 @@ private:
   static LaserCutter* instance;
 
 public:
-  typedef PclEncoder EngraveEncoder;
-  typedef HPGLEncoder CutEncoder;
-
   enum Driver {
     UNINITIALIZED,
     EPILOG_LEGEND,

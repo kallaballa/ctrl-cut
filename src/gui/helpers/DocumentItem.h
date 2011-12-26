@@ -35,23 +35,23 @@ public:
 
   DocumentItem(CtrlCutScene& scene, Document& doc) : AbstractCtrlCutItem(), doc(doc), scene(scene) {
     for(Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-      this->scene.addItem(new CutItem(*this, **it));
+      this->scene.addItem(new CutItem(**it));
     }
 
     for(Document::EngraveIt it = doc.begin_engrave(); it != doc.end_engrave(); it++) {
-      this->scene.addItem(new EngraveItem(*this, **it));
+      this->scene.addItem(new EngraveItem(**it));
     }
   }
 
   void load(Document& doc) {
     for(Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
       this->doc.addCut(*it);
-      this->scene.addItem(new CutItem(*this, **it));
+      this->scene.addItem(new CutItem(**it));
     }
 
     for(Document::EngraveIt it = doc.begin_engrave(); it != doc.end_engrave(); it++) {
       this->doc.addRaster(*it);
-      this->scene.addItem(new EngraveItem(*this, **it));
+      this->scene.addItem(new EngraveItem(**it));
     }
   }
 

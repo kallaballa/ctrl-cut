@@ -14,7 +14,7 @@
 class FileParser
 {
 public:
-  FileParser(DocumentSettings &conf) : conf(conf) {}
+  FileParser(const DocumentSettings &conf) : conf(conf) {}
   virtual ~FileParser() {}
 
   //  bool parse(const string &filename) = 0;
@@ -26,13 +26,13 @@ public:
   virtual const std::string &getBitmapFile() = 0;
 
 protected:
-  DocumentSettings &conf;
+  const DocumentSettings &conf;
 };
 
 class PostscriptParser : public FileParser
 {
 public:
-  PostscriptParser(DocumentSettings &conf);
+  PostscriptParser(const DocumentSettings &conf);
   ~PostscriptParser();
 
   enum RasterFormat {

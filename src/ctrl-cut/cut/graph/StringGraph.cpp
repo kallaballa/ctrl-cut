@@ -3,21 +3,19 @@
 #include <iostream>
 #include <vector>
 
-StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, Point origin, StringList::const_iterator start, StringList::const_iterator end) {
-  SegmentString* s_i = NULL;
-  SegmentString* s_j = NULL;
-  StringGraph::Vertex v_origin = graph.addVertex(&origin);
+StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const Point& origin, Route::StringIter start, Route::StringIter end) {
+  StringGraph::Vertex v_origin = graph.addVertex(origin);
 
-  for(StringList::const_iterator it_si = start; it_si != end; ++it_si) {
-    s_i = *it_si;
-    for (StringList::const_iterator it_sj = start; it_sj != end; ++it_sj) {
-      s_j = *it_sj;
+  for(Route::StringIter it_si = start; it_si != end; ++it_si) {
+    SegmentString& s_i = *it_si;
+    for (Route::StringIter it_sj = start; it_sj != end; ++it_sj) {
+      SegmentString& s_j = *it_sj;
       vector<StringGraph::Vertex> siVertices;
       vector<StringGraph::Vertex> sjVertices;
 
-      graph.permutateEdges(*s_i, v_origin, siVertices);
-      if (s_i != s_j) {
-        graph.permutateEdges(*s_j, v_origin, sjVertices);
+      graph.permutateEdges(s_i, v_origin, siVertices);
+      if (it_si != it_sj) {
+        graph.permutateEdges(s_j, v_origin, sjVertices);
 
         for (vector<StringGraph::Vertex>::iterator it_vi = siVertices.begin(); it_vi
             != siVertices.end(); ++it_vi) {
@@ -35,22 +33,21 @@ StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, Point o
   return v_origin;
 }
 
-void StringGraph::createWorkEdge(const Vertex& in, const Vertex& out, SegmentString* owner) {
+void StringGraph::createWorkEdge(const Vertex& in, const Vertex& out) {
   if(in == out || hasEdge(in, out))
     return;
 
 //  std::cerr << in << " " << out << std::endl;
-  add_edge(in, out, StringProperty(owner), *this);
+  add_edge(in, out, StringProperty(), *this);
 }
 
 void StringGraph::createMoveEdge(const Vertex& in, const Vertex& out) {
   if(in == out || hasEdge(in, out))
     return;
-  const Point* p_in = (*this)[in].point;
-  const Point* p_out = (*this)[out].point;
-  StringProperty map(0, p_in->distance(*p_out));
+  const Point& p_in = (*this)[in];
+  const Point& p_out = (*this)[out];
 //  std::cerr << in << " " << out << std::endl;
-  add_edge(in, out, map, *this);
+  add_edge(in, out, StringProperty(p_in.distance(p_out)), *this);
 }
 
 bool StringGraph::hasEdge(const Vertex& in, const Vertex& out) {
@@ -61,12 +58,12 @@ void StringGraph::permutateEdges(SegmentString& string, Vertex v_origin,
     vector<Vertex>& outVertices) {
 //  std::cerr << "permutate" << std::endl;
 
-  StringGraph::Vertex frontV = addVertex(string.frontPoints(), &string);
-  StringGraph::Vertex backV = addVertex(string.backPoints(), &string);
+  StringGraph::Vertex frontV = addVertex(string.frontPoints());
+  StringGraph::Vertex backV = addVertex(string.backPoints());
   outVertices.push_back(frontV);
   outVertices.push_back(backV);
 
-  createWorkEdge(frontV, backV, &string);
+  createWorkEdge(frontV, backV);
   createMoveEdge(frontV, v_origin);
   createMoveEdge(backV, v_origin);
 
@@ -80,22 +77,22 @@ void StringGraph::permutateEdges(SegmentString& string, Vertex v_origin,
 }
 
 
-StringGraph::Vertex* StringGraph::findVertex(const TieProperty &map) {
-  TieMap::const_iterator it = tieMap.find(map);
-  if (it == tieMap.end())
-    return NULL;
-  else
-    return (StringGraph::Vertex*)&(*it).second;
+bool StringGraph::findVertex(Vertex& v, const Point& point) {
+  PointMap::const_iterator it = points.find(point);
+  if (it == points.end())
+    return false;
+
+  v = (*it).second;
+  return true;
 }
 
-StringGraph::Vertex StringGraph::addVertex(Point* p, SegmentString* owner) {
-  TieProperty map(p,owner);
-  Vertex* v = findVertex(map);
-  if (v == NULL) {
-    Vertex new_vertex = add_vertex(map, *this);
-    tieMap[map] = new_vertex;
+StringGraph::Vertex StringGraph::addVertex(const Point& p) {
+  Vertex v;
+  if (findVertex(v, p)) {
+    Vertex new_vertex = add_vertex(p, *this);
+    points[p] = new_vertex;
     return new_vertex;
   }
 
-  return *v;
+  return v;
 }

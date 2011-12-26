@@ -3,25 +3,36 @@
 
 #include <kdtree++/kdtree.hpp>
 #include "Geometry.h"
+#include "Segment.h"
 
 namespace kdt = KDTree;
 
 struct SegmentNode {
+  enum BaseOrientation {
+    FIRST,
+    SECOND
+  };
+
   SegmentList::iterator* it;
-  const Segment* owner;
-  const Point* end_point;
+  Segment owner;
+  BaseOrientation orientation;
 
-  SegmentNode(const Point&  end_point) : it(NULL), owner(NULL), end_point(&end_point) {
+  SegmentNode(const Point& base_point) : it(NULL), orientation(FIRST) {
+    owner.first = base_point;
   }
-
-  SegmentNode(const Segment& seg, const Point&  end_point) : it(NULL), owner(&seg), end_point(&end_point) {
-  }
-
-  SegmentNode(SegmentList::iterator& it, const Point&  end_point) : it(new SegmentList::iterator(it)), owner(*it), end_point(&end_point) {
-  }
+  SegmentNode(const Segment& seg, BaseOrientation orientation) : it(NULL), owner(seg), orientation(orientation) {}
+  SegmentNode(SegmentList::iterator& it, BaseOrientation orientation) : it(new SegmentList::iterator(it)), owner(*it), orientation(orientation) {}
 
   bool operator==(const SegmentNode& other) const {
-      return this->owner == other.owner && this->end_point == other.end_point;
+      return this->owner == other.owner && this->getBasePoint() == other.getBasePoint();
+  }
+
+  Point getBasePoint() const {
+    if(orientation == FIRST) {
+      return owner.first;
+    } else {
+      return owner.second;
+    }
   }
 
   SegmentList::iterator& getIterator() {
@@ -31,7 +42,7 @@ struct SegmentNode {
 };
 
 inline int32_t segment_node_ac( SegmentNode item, int k ) {
-  return (*item.end_point)[k];
+  return (item.getBasePoint())[k];
 }
 
 class SegmentTree: public kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
@@ -61,8 +72,8 @@ public:
   }
 
   void remove(const Segment& seg) {
-    SegmentNode nf(seg, seg.first);
-    SegmentNode ns(seg, seg.second);
+    SegmentNode nf(seg, SegmentNode::FIRST);
+    SegmentNode ns(seg, SegmentNode::SECOND);
     SegmentTree::const_iterator it_t = this->find(nf);
     if(it_t != this->end())
       this->erase(it_t);
@@ -72,15 +83,17 @@ public:
       this->erase(it_t);
   }
 
-  const Point&  findNearest(const Point&  p) const {
+  const Point findNearest(const Point&  p) const {
+    // FIXME
     SegmentNode pos = *new SegmentNode(p);
-    return *(*(this->find_nearest(pos).first)).end_point;
+    return (*(this->find_nearest(pos).first)).getBasePoint();
   }
 
   void findWithinRange(SegmentList::iterator& it_seg, std::list<SegmentNode>& v) const {
-    const Sphere& bsphere = (*it_seg)->getSphere();
-    SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
-    this->find_within_range(scenter, bsphere.radius, std::back_inserter(v));
+    const Sphere& bsphere = (*it_seg).getSphere();
+    //REFACTOR
+    //SegmentNode scenter = *new SegmentNode(it_seg, bsphere.center);
+    //this->find_within_range(scenter, bsphere.radius, std::back_inserter(v));
   }
 
   static SegmentTree& build(SegmentList::iterator first, SegmentList::iterator last) {
@@ -94,8 +107,9 @@ public:
   }
 private:
   std::pair<SegmentNode, SegmentNode> createSegmentNodes(SegmentList::iterator& it_seg) {
-    SegmentNode si_first = *new SegmentNode(it_seg, (*it_seg)->first);
-    SegmentNode si_second = *new SegmentNode(it_seg, (*it_seg)->second);
+    //FIXME
+    SegmentNode si_first = *new SegmentNode(it_seg, SegmentNode::FIRST);
+    SegmentNode si_second = *new SegmentNode(it_seg, SegmentNode::SECOND);
     return std::pair<SegmentNode, SegmentNode>(si_first, si_second);
   }
 };

@@ -20,26 +20,24 @@
 #include "Deonion.h"
 #include "util/Logger.h"
 #include "cut/graph/Traverse.h"
+#include "cut/geom/SegmentTree.h"
 
-void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, SegmentString& skin, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV)
+void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Route& skins, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV)
 {
   SegmentGraph::Edge nextEdge;
-  Segment* const lastSegment = graph[lastEdge].segment;
-  Point* const  lastPoint = graph[outV].point;
+  Segment& lastSegment = graph[lastEdge];
+  Point& lastPoint = graph[outV];
   float lastSlope;
 
-  if((*lastPoint) == (*lastSegment)[0])
-    lastSlope = lastSegment->getSlope();
-  else if((*lastPoint) == (*lastSegment)[1])
-    lastSlope = lastSegment->getSlope(true);
+  if(lastPoint == lastSegment[0])
+    lastSlope = lastSegment.getSlope();
+  else if(lastPoint == lastSegment[1])
+    lastSlope = lastSegment.getSlope(true);
   else
     assert(false);
 
-  bool owned = graph[lastEdge].owner != NULL;
-
-  if(!owned && skin.add(lastSegment)) {
-    graph[lastEdge].owner = &skin;
-    segTree.remove(*lastSegment);
+  if(skins.append(lastSegment)) {
+    segTree.remove(lastSegment);
   } else {
     return;
   }
@@ -53,16 +51,16 @@ void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Se
 
   for(boost::tie(eit, eend) = boost::out_edges(outV, graph); eit != eend; ++eit) {
     const SegmentGraph::Edge candidate = *eit;
-    Segment* const segment = graph[candidate].segment;
+    Segment& segment = graph[candidate];
 
     //skip identical segment
     if(segment == lastSegment)
       continue;
 
-    if((*segment)[0] != (*lastPoint))
-      candidateSlope = segment->getSlope(true);
+    if(segment[0] != lastPoint)
+      candidateSlope = segment.getSlope(true);
     else
-      candidateSlope = segment->getSlope();
+      candidateSlope = segment.getSlope();
 
     slopeDiff = lastSlope - candidateSlope;
 
@@ -81,13 +79,13 @@ void walkTheEdge(SegmentTree& segTree, FreeGeometryView<SegmentGraph>& graph, Se
   }
 
   if (found) {
-    walkTheEdge(segTree, graph, skin, nextEdge, get_opposite(graph, nextEdge, outV));
+    walkTheEdge(segTree, graph, skins, nextEdge, get_opposite(graph, nextEdge, outV));
   }
 
   //polyline fully consumed
 }
 
-SegmentGraph::Vertex* pop_mostleft_free_vertex(SegmentGraph::PointMap& point2Vertex, const FreeGeometryView<SegmentGraph> freeGeometryView) {
+bool pop_mostleft_free_vertex(SegmentGraph::Vertex& v, SegmentGraph::PointMap& point2Vertex, const FreeGeometryView<SegmentGraph> freeGeometryView) {
   boost::graph_traits<FreeGeometryView<SegmentGraph> >::out_edge_iterator eit, eend;
   for(SegmentGraph::PointMap::iterator it = point2Vertex.begin(); it != point2Vertex.end(); ++it) {
     SegmentGraph::Vertex& candidate = (*it).second;
@@ -96,13 +94,14 @@ SegmentGraph::Vertex* pop_mostleft_free_vertex(SegmentGraph::PointMap& point2Ver
     boost::tie(eit, eend) = boost::out_edges(candidate, freeGeometryView);
     if(eit != eend) {
       // found vertex of a free edge
-      return &candidate;
+      v = candidate;
+      return true;
     }
   }
-  return NULL;
+  return false;
 }
 
-void traverse_onion(StringList& skins, SegmentList::iterator first, SegmentList::iterator last)
+void traverse_onion(Route& skins, SegmentList::iterator first, SegmentList::iterator last)
 {
   LOG_INFO_STR("Deonion");
   SegmentGraph graph;
@@ -113,26 +112,23 @@ void traverse_onion(StringList& skins, SegmentList::iterator first, SegmentList:
   boost::graph_traits<FreeGeometryView<SegmentGraph> >::out_edge_iterator eit, eend;
 
   while (!segTree.empty()) {
-    SegmentGraph::Vertex* startVertex = pop_mostleft_free_vertex(point2Vertex, freeGeometryView);
+    SegmentGraph::Vertex startVertex;
     // no more vertices with free edges
-    if(startVertex == NULL)
+    if(pop_mostleft_free_vertex(startVertex, point2Vertex, freeGeometryView))
       break;
 
-    const Point&  startPoint = *freeGeometryView[*startVertex].point;
+    const Point startPoint = freeGeometryView[startVertex];
+    boost::tie(eit, eend) = boost::out_edges(startVertex, freeGeometryView);
+    SegmentGraph::Edge steapest;
+    find_steapest(steapest, freeGeometryView, eit, eend);
 
-    SegmentString* skin  = new SegmentString();
-
-    boost::tie(eit, eend) = boost::out_edges(*startVertex, freeGeometryView);
-    const SegmentGraph::Edge steapest = find_steapest(freeGeometryView, eit, eend);
-    const SegmentGraph::Vertex outVertex = get_opposite(freeGeometryView,steapest, *startVertex);
-    const Point&  outPoint = *freeGeometryView[outVertex].point;
+    const SegmentGraph::Vertex outVertex = get_opposite(freeGeometryView,steapest, startVertex);
+    const Point outPoint = freeGeometryView[outVertex];
 
     if(outPoint.y < startPoint.y || (outPoint.y == startPoint.y && outPoint.x > startPoint.x))
-      walkTheEdge(segTree, freeGeometryView, *skin, steapest, outVertex);
+      walkTheEdge(segTree, freeGeometryView, skins, steapest, outVertex);
     else
-      walkTheEdge(segTree, freeGeometryView, *skin, steapest, *startVertex);
-
-    skins.push_back(skin);
+      walkTheEdge(segTree, freeGeometryView, skins, steapest, startVertex);
   }
 
   reverse(skins.begin(), skins.end());

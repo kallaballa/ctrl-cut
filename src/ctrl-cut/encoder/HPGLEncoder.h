@@ -2,11 +2,13 @@
 #define HPGL_ENCODER_H_
 
 #include <iostream>
+#include "cut/model/CutModel.h"
+#include "cut/geom/SegmentString.h"
 
 class HPGLEncoder {
 
 public:
-  static void encode(std::ostream &out, class CutModel& model);
+  static void encode(std::ostream &out, CutModel& model);
 };
 
 #endif /* HPGL_ENCODER_H_ */

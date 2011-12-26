@@ -4,34 +4,32 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "cut/geom/Geometry.h"
-#include "cut/geom/SegmentTree.h"
-#include "config/CutSettings.h"
-#include "config/DocumentSettings.h"
 
+#include "config/CutSettings.h"
+#include "cut/geom/Segment.h"
+
+class Document;
 class CutModel {
 public:
-  CutSettings settings;
-  static DocumentSettings defaultDocSettings;
+  typedef std::list<Segment> SegmentList;
   typedef SegmentList::iterator iterator;
   typedef SegmentList::const_iterator const_iterator;
+  CutModel(Document& parent);
 
-  CutModel(DocumentSettings& docSettings = defaultDocSettings) :
-    settings(docSettings),
-    clipped(0),
-    zerolength(0)
-  { }
-
-  //deep copy
-  CutModel(const CutModel& other) :
-    settings(*static_cast<DocumentSettings* const>(other.settings.parent)), clipped(0), zerolength(0) {
-    for(CutModel::const_iterator it = other.begin(); it != other.end(); it++) {
-      this->add(* new Segment(**it));
-    }
+  //shallow copy
+  CutModel(const CutModel& other) : parent(other.getParent()), settings(other.getSettings()), clipped(0), zerolength(0) {
   }
 
-  virtual ~CutModel() {
+  ~CutModel() {
     this->clear();
+  }
+
+  CutSettings& getSettings() {
+    return settings;
+  }
+
+  const CutSettings getSettings() const {
+    return settings;
   }
 
   iterator begin() { return this->segmentIndex.begin(); }
@@ -42,13 +40,20 @@ public:
   SegmentList::reference back() { return this->segmentIndex.back(); }
   size_t size() const { return this->segmentIndex.size(); }
   bool empty() const { return this->segmentIndex.empty(); }
+  void push_front(const Segment& seg);
+  void push_back(const Segment& seg);
+  void insert(iterator pos, const Segment& seg);
+  iterator find(const Segment& seg) { return std::find(begin(),end(), seg); };
+  void remove(Segment& seg);
+  iterator erase(iterator it);
+  void clear();
+  void copy(const CutModel& other);
+  virtual bool create(const Segment& segment);
 
-  bool createSegment(const Point&  p1, const Point&  p2, const OpParams& settings);
-  bool createSegment(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY,const OpParams& settings);
-
-  virtual void remove(Segment& seg);
-  virtual iterator erase(iterator it);
-  virtual void clear();
+  bool create(Segment& seg, bool doclip=true);
+  bool create(const Point&  p1, const Point&  p2);
+  bool create(const Point&  p1, const Point&  p2, const Segment& seg);
+  bool create(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY);
 
   bool wasClipped() const {
     return this->clipped > 0;
@@ -57,13 +62,33 @@ public:
   bool load(const std::string &filename);
   bool load(std::istream &input);
   void clip(Segment& seg);
+  void operator=(const CutModel& other);
+
+  bool hasParent() const {
+    return parent != NULL;
+  }
+
+  Document* getParent() const {
+    return parent;
+  }
+
+  template<typename T, typename V>
+  void put(const Settings::Key<T>& key, V value) {
+    settings.put(key,value);
+  }
+
+  template<typename T>
+  const T get(const Settings::Key<T>& key) const {
+    return settings.get(key);
+  }
 protected:
   //FIXME should be managed by settings
+  Document* parent;
+  CutSettings settings;
   uint64_t clipped;
   uint64_t zerolength;
   SegmentList segmentIndex;
-  virtual void add(Segment& seg);
 };
 
-void make_route(StringList& strings, CutModel& model);
+
 #endif /* CUTMODEL_H_ */

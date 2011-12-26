@@ -30,7 +30,7 @@ class EngraveItem: public AbstractCtrlCutItem {
 public:
   Engraving& engraving;
 
-  EngraveItem(class DocumentItem& docItem, Engraving& engraving);
+  EngraveItem(Engraving& engraving);
   ~EngraveItem(){};
 
   void commit() {

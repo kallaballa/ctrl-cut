@@ -20,9 +20,12 @@
 #include <list>
 #include "Document.h"
 #include "util/Measurement.h"
+#include "cut/model/CutModel.h"
 #include "cut/model/Explode.h"
 #include "cut/model/Reduce.h"
 #include "cut/graph/Traverse.h"
+#include "encoder/HPGLEncoder.h"
+#include "encoder/PclEncoder.h"
 
 using boost::format;
 using std::list;
@@ -38,21 +41,21 @@ void Document::addRaster(Engraving* raster) {
 typedef EngraveSettings ES;
 typedef DocumentSettings DS;
 void Document::write(std::ostream &out) {
-  string title = this->settings.get(DS::TITLE);
-  int resolution = this->settings.get(DS::RESOLUTION);
+  string title = this->get(DS::TITLE);
+  int resolution = this->get(DS::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  bool enable_raster = this->settings.get(DocumentSettings::ENABLE_RASTER);
-  bool enable_vector = this->settings.get(DocumentSettings::ENABLE_VECTOR);
+  bool enable_raster = this->get(DocumentSettings::ENABLE_RASTER);
+  bool enable_vector = this->get(DocumentSettings::ENABLE_VECTOR);
 
   if(enable_raster && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(ES::EPOWER);
     raster_speed = this->front_engrave()->settings.get(ES::ESPEED);
   }
 
-  double width = this->settings.get(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->settings.get(DocumentSettings::HEIGHT).in(PX, resolution);
-  int focus = this->settings.get(DocumentSettings::AUTO_FOCUS);
+  double width = this->get(DocumentSettings::WIDTH).in(PX, resolution);
+  double height = this->get(DocumentSettings::HEIGHT).in(PX, resolution);
+  int focus = this->get(DocumentSettings::AUTO_FOCUS);
 
   /* Print the printer job language header. */
   out << format(PJL_HEADER) % title;
@@ -102,7 +105,7 @@ void Document::write(std::ostream &out) {
 
   if (enable_raster && !this->engraveList.empty()) {
     for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
-      LaserCutter::EngraveEncoder::encode(out, **it);
+      PclEncoder::encode(out, **it);
     }
   }
 
@@ -121,7 +124,7 @@ void Document::write(std::ostream &out) {
 
     /* We're going to perform a vector print. */
     for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      LaserCutter::CutEncoder::encode(out,**it);
+      HPGLEncoder::encode(out,**it);
     }
   }
   out << PCL_SECTION_END << HPGL_PEN_UP;
@@ -139,7 +142,7 @@ Document& Document::preprocess() {
    for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
      CutModel& model = **it;
      explode_segments(model);
-     reduce_linestrings(model, model.settings.get(CutSettings::REDUCE));
+     reduce_linestrings(model, model.get(CutSettings::REDUCE));
    }
 
    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
@@ -171,8 +174,8 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
 
   string base = basename(strdup(filename.c_str()));
 
-  this->settings.put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
-  this->settings.put(DS::BASENAME,base.erase(base.rfind(".")));
+  this->put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
+  this->put(DS::BASENAME,base.erase(base.rfind(".")));
 
   cups_file_t* input_file;
   FileParser *parser = NULL;
@@ -201,7 +204,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
         return false;
       }
     }
-    string file_basename = this->settings.get(DS::TEMP_DIR)+ "/" + this->settings.get(DS::BASENAME);
+    string file_basename = this->get(DS::TEMP_DIR)+ "/" + this->get(DS::BASENAME);
 
     // Write out the incoming cups data if debug is enabled.
     // FIXME: This is disabled for now since it has a bug:
@@ -237,12 +240,12 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     }
 #endif
 
-    PostscriptParser *psparser = new PostscriptParser(this->settings);
+    PostscriptParser *psparser = new PostscriptParser(this->getSettings());
     // Uncomment this to force ghostscript to render to file using the ppmraw
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
     if (load == ENGRAVING || load == BOTH) {
-      switch (this->settings.get(EngraveSettings::DITHERING)) {
+      switch (this->get(EngraveSettings::DITHERING)) {
       case EngraveSettings::DEFAULT_DITHERING:
         psparser->setRasterFormat(PostscriptParser::BITMAP);
         break;
@@ -272,15 +275,15 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   if (load == ENGRAVING || load == BOTH) {
     Engraving *raster = NULL;
     if (docFormat == PBM) {
-      raster = new Engraving(filename, this->settings);
+      raster = new Engraving(filename, *this);
     }
     else if (parser) {
       if (parser->hasBitmapData()) {
         LOG_DEBUG_STR("Processing bitmap data from memory");
-        raster = new Engraving(*parser->getImage(), this->settings);
+        raster = new Engraving(*parser->getImage(), *this);
       }
       else if (!parser->getBitmapFile().empty()) {
-        raster = new Engraving(parser->getBitmapFile(), this->settings);
+        raster = new Engraving(parser->getBitmapFile(), *this);
       }
     }
     if (raster) {
@@ -291,12 +294,12 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   CutModel *cut = NULL;
   if (load == CUT || load == BOTH) {
     if (docFormat == VECTOR) {
-      cut = new CutModel(this->settings);
+      cut = new CutModel(*this);
       if(!cut->load(filename))
         return false;
     }
     else if (parser) {
-      cut = new CutModel(this->settings);
+      cut = new CutModel(*this);
       if(!cut->load(parser->getVectorData()))
           return false;
     }

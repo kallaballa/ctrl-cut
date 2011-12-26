@@ -12,7 +12,6 @@
 
 #include "util/PJL.h"
 #include "engrave/Engrave.h"
-#include "cut/model/CutModel.h"
 #include "config/DocumentSettings.h"
 
 #include "util/Util.h"
@@ -25,7 +24,8 @@
 
 using std::string;
 
-class Document {
+class CutModel;
+class Document{
 public:
   enum Format {
     UNSPECIFIED,
@@ -48,7 +48,9 @@ public:
   typedef CutList::const_iterator CutConstIt;
   typedef EngraveList::const_iterator EngraveConstIt;
 
-  DocumentSettings settings;
+  Document() {}
+  virtual ~Document() {};
+
   CutList cutList;
   EngraveList engraveList;
 
@@ -70,9 +72,6 @@ public:
   size_t size_engrave() const { return this->engraveList.size(); }
   bool empty_engrave() const { return this->engraveList.empty(); }
 
-  Document() {};
-  virtual ~Document() {};
-
   void optimize();
   void addCut(CutModel* cut);
   void addRaster(Engraving* raster);
@@ -83,6 +82,21 @@ public:
 
   Format findFormat(const string& filename);
   bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED);
+  DocumentSettings& getSettings() {
+    return settings;
+  };
+
+  template<typename T, typename V>
+  void put(const Settings::Key<T>& key, V value) {
+    settings.put(key,value);
+  }
+
+  template<typename T>
+  const T get(const Settings::Key<T>& key) const {
+    return settings.get(key);
+  }
+private:
+  DocumentSettings settings;
 };
 
 #endif /* DOCUMENT_H_ */

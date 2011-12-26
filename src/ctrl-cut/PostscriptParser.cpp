@@ -221,7 +221,7 @@ bool PostscriptParser::execute_ghostscript_cmd(const std::vector<std::string> &a
 }
 #endif
 
-PostscriptParser::PostscriptParser(DocumentSettings &conf) 
+PostscriptParser::PostscriptParser(const DocumentSettings &conf)
   : FileParser(conf), rendertofile(false), rasterformat(BITMAP), gsimage(NULL), image(NULL)
 {
   PostscriptParser::inst = this;

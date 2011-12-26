@@ -28,16 +28,15 @@ LaserDialog::~LaserDialog()
 
 void LaserDialog::updateLaserConfig(Document& document)
 {
-  DS &ds = document.settings;
-  ds.put(DS::AUTO_FOCUS, this->autoFocusBox->isChecked());
+  document.put(DS::AUTO_FOCUS, this->autoFocusBox->isChecked());
   QStringList res = this->resolutionCombo->currentText().split(" ");
-  if (res.length() > 0) ds.put(DS::RESOLUTION, res[0].toInt());
+  if (res.length() > 0) document.put(DS::RESOLUTION, res[0].toInt());
 
-  ds.put(DS::ENABLE_RASTER, !this->vectorRadio->isChecked());
-  ds.put(DS::ENABLE_VECTOR, !this->rasterRadio->isChecked());
-  ds.put(ES::ESPEED, this->rasterSpeedSlider->value());
-  ds.put(ES::EPOWER, this->rasterPowerSlider->value());
-  ds.put(ES::DIRECTION, this->rasterDirection->currentIndex());
+  document.put(DS::ENABLE_RASTER, !this->vectorRadio->isChecked());
+  document.put(DS::ENABLE_VECTOR, !this->rasterRadio->isChecked());
+  document.put(ES::ESPEED, this->rasterSpeedSlider->value());
+  document.put(ES::EPOWER, this->rasterPowerSlider->value());
+  document.put(ES::DIRECTION, this->rasterDirection->currentIndex());
   const QString &dither = this->rasterDithering->currentText();
 
   ES::Dithering dithering;
@@ -50,7 +49,7 @@ void LaserDialog::updateLaserConfig(Document& document)
   else if (dither == "Sierra2") dithering = ES::SIERRA2;
   else if (dither == "Sierra3") dithering = ES::SIERRA3;
 
-  ds.put(ES::DITHERING, dithering);
+  document.put(ES::DITHERING, dithering);
 
   const QString& strOptimize = this->cutOptimize->currentText();
 
@@ -59,28 +58,27 @@ void LaserDialog::updateLaserConfig(Document& document)
   else if (strOptimize == "Inner-Outer") optimize = CS::INNER_OUTER;
   else if (strOptimize == "Shortest Path") optimize = CS::SHORTEST_PATH;
 
-    ds.put(CS::OPTIMIZE, optimize);
-  ds.put(CS::CSPEED, this->vectorSpeedSlider->value());
-  ds.put(CS::CPOWER, this->vectorPowerSlider->value());
-  ds.put(CS::FREQUENCY, this->vectorFreqSlider->value());
+    document.put(CS::OPTIMIZE, optimize);
+  document.put(CS::CSPEED, this->vectorSpeedSlider->value());
+  document.put(CS::CPOWER, this->vectorPowerSlider->value());
+  document.put(CS::FREQUENCY, this->vectorFreqSlider->value());
 }
 
 void LaserDialog::applyLaserConfig(Document& document)
 {
-  DS &ds = document.settings;
-  this->autoFocusBox->setChecked(ds.get(DS::AUTO_FOCUS));
-  this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(ds.get(DS::RESOLUTION)) + " DPI"));
+  this->autoFocusBox->setChecked(document.get(DS::AUTO_FOCUS));
+  this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(document.get(DS::RESOLUTION)) + " DPI"));
 
-  if (ds.get(DS::ENABLE_RASTER) && ds.get(DS::ENABLE_VECTOR)) this->combinedRadio->setChecked(true);
-  else if (ds.get(DS::ENABLE_RASTER)) this->rasterRadio->setChecked(true);
+  if (document.get(DS::ENABLE_RASTER) && document.get(DS::ENABLE_VECTOR)) this->combinedRadio->setChecked(true);
+  else if (document.get(DS::ENABLE_RASTER)) this->rasterRadio->setChecked(true);
   else this->vectorRadio->setChecked(true);
 
-  this->rasterSpeedSlider->setValue(ds.get(ES::ESPEED));
-  this->rasterPowerSlider->setValue(ds.get(ES::EPOWER));
-  this->rasterDirection->setCurrentIndex(ds.get(ES::DIRECTION));
+  this->rasterSpeedSlider->setValue(document.get(ES::ESPEED));
+  this->rasterPowerSlider->setValue(document.get(ES::EPOWER));
+  this->rasterDirection->setCurrentIndex(document.get(ES::DIRECTION));
 
   QString ditherstr;
-  switch (ds.get(ES::DITHERING)) {
+  switch (document.get(ES::DITHERING)) {
   case EngraveSettings::BAYER:
     ditherstr = "Bayer";
     break;
@@ -111,7 +109,7 @@ void LaserDialog::applyLaserConfig(Document& document)
   this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
 
   QString strOptimize;
-  switch (ds.get(CS::OPTIMIZE)) {
+  switch (document.get(CS::OPTIMIZE)) {
   case CS::SIMPLE:
     strOptimize = "Simple";
     break;
@@ -126,9 +124,9 @@ void LaserDialog::applyLaserConfig(Document& document)
   }
   this->cutOptimize->setCurrentIndex(this->cutOptimize->findText(strOptimize));
 
-  this->vectorSpeedSlider->setValue(ds.get(CS::CSPEED));
-  this->vectorPowerSlider->setValue(ds.get(CS::CPOWER));
-  this->vectorFreqSlider->setValue(ds.get(CS::FREQUENCY));
+  this->vectorSpeedSlider->setValue(document.get(CS::CSPEED));
+  this->vectorPowerSlider->setValue(document.get(CS::CPOWER));
+  this->vectorFreqSlider->setValue(document.get(CS::FREQUENCY));
 }
 
 void LaserDialog::on_rasterPowerSlider_valueChanged(int val)

@@ -20,7 +20,6 @@
 #ifndef CUT_SETTINGS_H_
 #define CUT_SETTINGS_H_
 
-#include "Settings.h"
 #include "DocumentSettings.h"
 #include "cut/geom/Geometry.h"
 
@@ -41,7 +40,8 @@ public:
   static Key<uint16_t> FREQUENCY;
   static Key<float> REDUCE;
 
-  CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {}
+  CutSettings() : Settings() {}
+  CutSettings(const DocumentSettings& docSettings) : Settings(docSettings) {}
   ~CutSettings() {}
 };
 

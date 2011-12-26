@@ -27,12 +27,12 @@ class CutItem: public AbstractCtrlCutItem {
 public:
   CutModel& cut;
 
-  CutItem(class DocumentItem& docItem,  CutModel& cut);
+  CutItem(CutModel& cut);
   ~CutItem(){};
 
   void commit() {
     const QPointF& pos = this->pos();
-    this->cut.settings.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
+    this->cut.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
   }
 };
 

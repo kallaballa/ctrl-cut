@@ -22,6 +22,7 @@ HEADERS += FileParser.h \
            util/Util.h \
            cut/model/Reduce.h \
            cut/model/CutModel.h \
+           cut/model/CutView.h \
            cut/model/Explode.h \
            cut/geom/SegmentTree.h \
            cut/geom/Geometry.h \
@@ -56,36 +57,39 @@ HEADERS += FileParser.h \
            svg/SvgDocument.h \
            svg/Svg2Ps.h
 
-SOURCES += PostscriptParser.cpp \
-           util/Measurement.cpp \
-           util/Logger.cpp \
-           util/Eps.cpp \
-           cut/model/Explode.cpp \
-           cut/model/CutModel.cpp \
-           cut/model/Reduce.cpp \
-           cut/geom/Geometry.cpp \
-           cut/graph/SegmentGraph.cpp \
-           cut/graph/Traverse.cpp \
-           cut/graph/Deonion.cpp \
-           cut/graph/StringGraph.cpp \
-           encoder/HPGLEncoder.cpp \
-           encoder/PclEncoder.cpp \
-           engrave/dither/DitherBayer.cpp \
-           engrave/dither/DitherFloydSteinberg.cpp \
-           engrave/dither/DitherBurke.cpp \
-           engrave/dither/DitherThreshold.cpp \
-           engrave/dither/DitherSierra2.cpp \
-           engrave/Engrave.cpp \
-           engrave/dither/DitherStucki.cpp \
-           engrave/dither/DitherJarvis.cpp \
-           engrave/dither/Dither.cpp \
-           engrave/dither/DitherSierra3.cpp \
-           Document.cpp \
-           tri_logger/tri_logger.cpp \
-           config/EngraveSettings.cpp \
-           config/CutSettings.cpp \
-           config/DocumentSettings.cpp \
-           svg/SvgFix.cpp \
-           svg/SvgDocument.cpp \
-           svg/Svg2Ps.cpp
-
+SOURCES += ./encoder/HPGLEncoder.cpp \
+           ./encoder/PclEncoder.cpp \
+           ./PostscriptParser.cpp \
+           ./util/Measurement.cpp \
+           ./util/Logger.cpp \
+           ./util/Eps.cpp \
+           ./cut/model/CutView.cpp \
+           ./cut/model/Explode.cpp \
+           ./cut/model/CutModel.cpp \
+           ./cut/model/Factory.cpp \
+           ./cut/model/Reduce.cpp \
+           ./cut/geom/Geometry.cpp \
+           ./cut/geom/Segment.cpp \
+           ./cut/graph/SegmentGraph.cpp \
+           ./cut/graph/Traverse.cpp \
+           ./cut/graph/Deonion.cpp \
+           ./cut/graph/StringGraph.cpp \
+           ./engrave/Engrave.cpp \
+           ./engrave/dither/DitherBayer.cpp \
+           ./engrave/dither/DitherFloydSteinberg.cpp \
+           ./engrave/dither/DitherBurke.cpp \
+           ./engrave/dither/DitherThreshold.cpp \
+           ./engrave/dither/DitherSierra2.cpp \
+           ./engrave/dither/DitherStucki.cpp \
+           ./engrave/dither/DitherJarvis.cpp \
+           ./engrave/dither/Dither.cpp \
+           ./engrave/dither/DitherSierra3.cpp \
+           ./Document.cpp \
+           ./tri_logger/tri_logger.cpp \
+           ./config/EngraveSettings.cpp \
+           ./config/SegmentSettings.cpp \
+           ./config/CutSettings.cpp \
+           ./config/DocumentSettings.cpp \
+           ./svg/SvgFix.cpp \
+           ./svg/SvgDocument.cpp \
+           ./svg/Svg2Ps.cpp

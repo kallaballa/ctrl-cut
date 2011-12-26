@@ -18,13 +18,13 @@
  */
 #include "CutItem.h"
 #include "DocumentItem.h"
+#include <qgraphicsitem.h>
 
-CutItem::CutItem(DocumentItem& parent,  CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
+CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
   for (CutModel::iterator iter = cut.begin(); iter != cut.end(); iter++) {
-    Segment *
-    QGraphicsLineItem *line =
-      new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1], this);
+    Segment& segment = *iter;
+    QGraphicsLineItem *line = new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1], this);
     QGraphicsItemGroup::addToGroup(line);
   }
 }

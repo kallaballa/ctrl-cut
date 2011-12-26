@@ -1,4 +1,4 @@
-#ifndef CUTVIEW_H_
+#if 0
 #define CUTVIEW_H_
 
 #include <set>

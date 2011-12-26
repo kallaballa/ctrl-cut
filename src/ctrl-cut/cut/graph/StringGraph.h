@@ -11,8 +11,7 @@
 #include <boost/graph/properties.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
-
-#include "cut/geom/Geometry.h"
+#include "cut/geom/Route.h"
 
 using boost::adjacency_list;
 using boost::undirectedS;
@@ -24,47 +23,16 @@ using std::map;
 using std::pair;
 
 struct StringProperty {
-  SegmentString* string;
   double weight;
 
-  StringProperty() : string(0), weight(0) {}
-  StringProperty(SegmentString* string, double weight=0) : string(string), weight(weight) {}
-
+  StringProperty(double weight=0) : weight(weight) {}
+/*
   bool operator<(const StringProperty& other) const {
     return this->string < other.string;
-  }
+  }*/
 };
 
-struct TieProperty {
-  const Point*  point;
-  SegmentString* owner;
-
-  TieProperty() : point(0), owner(0) {}
-  TieProperty(Point* p, SegmentString* string) : point(p), owner(string) {}
-
-  bool operator<(const TieProperty& other) const {
-    const Point*  p1 = this->point;
-    const Point*  p2 = other.point;
-    const SegmentString* string1 = this->owner;
-    const SegmentString* string2 = other.owner;
-
-    bool pLess;
-
-    if(p1 != NULL && p2 != NULL) {
-      if(string1 != NULL && string1 == string2 && string1->isClosed() && *p1 == *p2) {
-        pLess = p1 < p2;
-      } else {
-        pLess = *p1 < *p2;
-      }
-    } else {
-      pLess = p1 < p2;
-    }
-
-    return string1 < string2 || (string1 == string2 && pLess);
-  }
-};
-
-class StringGraph : public adjacency_list<vecS, vecS, undirectedS, TieProperty, StringProperty> {
+class StringGraph : public adjacency_list<vecS, vecS, undirectedS, Point, StringProperty> {
 public:
 
   boost::graph_traits<StringGraph>::edges_size_type edge_count;
@@ -77,22 +45,22 @@ public:
       ::vertices_size_type v_size;
     typedef std::vector<std::vector< StringGraph::Edge > > Embedding;
 
-  typedef map<const TieProperty, Vertex> TieMap;
+  typedef map<const Point, Vertex> PointMap;
 
-  StringGraph() : adjacency_list<vecS, vecS, undirectedS, TieProperty, StringProperty>() , edge_count(0){}
-  StringGraph(const StringGraph& graph) : adjacency_list<vecS, vecS, undirectedS, TieProperty, StringProperty>(graph) , edge_count(0) {}
-  StringGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, TieProperty, StringProperty>(size) , edge_count(0){}
+  StringGraph() : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>() , edge_count(0){}
+  StringGraph(const StringGraph& graph) : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>(graph) , edge_count(0) {}
+  StringGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>(size) , edge_count(0){}
 
-  StringGraph::Vertex* findVertex(const TieProperty &map);
-  StringGraph::Vertex addVertex(Point*  p, SegmentString* owner = 0);
-  void createWorkEdge(const Vertex& in, const Vertex& out, SegmentString* owner);
+  bool findVertex(StringGraph::Vertex& v, const Point& map);
+  StringGraph::Vertex addVertex(const Point& p);
+  void createWorkEdge(const Vertex& in, const Vertex& out);
   void createMoveEdge(const Vertex& in, const Vertex& out);
   bool hasEdge(const Vertex& in, const Vertex& out);
   void permutateEdges(SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices);
 private:
-  TieMap tieMap;
+  PointMap points;
 };
 
-StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, Point origin, StringList::const_iterator start, StringList::const_iterator end);
+StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const Point& origin, Route::StringIter start, Route::StringIter end);
 
 #endif

@@ -22,15 +22,16 @@
 #include "cut/model/CutModel.h"
 
 bool isShared(SegmentGraph& graph, Point&  p) {
-  SegmentGraph::Vertex* v;
-  if((v = graph.findVertex(p)) != NULL) {
+  SegmentGraph::Vertex v;
+  if(graph.findVertex(v,p)) {
     boost::graph_traits<SegmentGraph>::out_edge_iterator oe_it, oe_end;
-    const SegmentString* last_owner = NULL;
-    for(boost::tie(oe_it,oe_end) = boost::out_edges(*v, graph); oe_it != oe_end; ++oe_it) {
-      if(last_owner != NULL && last_owner != graph[*oe_it].owner) {
+    CutModel* last_owner = NULL;
+    for(boost::tie(oe_it,oe_end) = boost::out_edges(v, graph); oe_it != oe_end; ++oe_it) {
+      Segment& current = graph[*oe_it];
+      if(last_owner != NULL && current.hasParent() && last_owner != &current.getParent())
         return true;
-      } else
-        last_owner = graph[*oe_it].owner;
+      else
+        last_owner = &current.getParent();
     }
   }
   return false;
@@ -50,36 +51,35 @@ void reduce_linestrings(CutModel &model, float epsilon)
   LOG_INFO_STR("Reduce");
   LOG_DEBUG_MSG("Segments before", model.size());
   SegmentGraph graph;
-  StringList join;
+  Route join(model);
   make_linestrings(join, model.begin(), model.end(), graph);
-  CutModel newModel;
-  newModel.settings = model.settings;
+  CutModel newModel(model);
 
   // Reduce each polyline separately
-  for (StringList::iterator it = join.begin(); it != join.end(); ++it) {
-    SegmentString& string = **it;
+  for (Route::StringIter it = join.beginStrings(); it != join.endStrings(); ++it) {
+    SegmentString& string = *it;
     // Select a start iterator
-    SegmentString::SegmentIter startit = string.beginSegments();
+    SegmentString::iterator startit = string.begin();
 
     // Walk the entire string
-    SegmentString::SegmentIter  pit;
-    for (pit = startit; ++pit != string.endSegments(); ) {
-      const Segment& startSegment = **startit;
+    SegmentString::iterator  pit;
+    for (pit = startit; ++pit != string.end(); ) {
+      const Segment& startSegment = *startit;
       float largest = 0;
-      SegmentString::SegmentIter  largestit;
+      SegmentString::iterator largestit;
       if (!string.isClosed()) {
         // Span a segment to the current vertex for testing
-        Segment consider(startSegment.first, (*pit)->second, startSegment.settings);
+        Segment consider(startSegment.first, (*pit).second, startSegment);
 
         // Check distance from every intermediate vertex
-        for (SegmentString::SegmentIter  pit2 = startit; pit2 != pit; pit2++) {
-          float d = consider.distance((**pit2)[1]);
+        for (SegmentString::iterator pit2 = startit; pit2 != pit; pit2++) {
+          float d = consider.distance((*pit2)[1]);
           if (d > largest) {
             largest = d;
             largestit = pit2;
           }
 
-          if(isShared(graph,(**pit2)[1])) {
+          if(isShared(graph,(*pit2)[1])) {
             largest = epsilon + 1;
             largestit = pit2;
             break;
@@ -91,14 +91,14 @@ void reduce_linestrings(CutModel &model, float epsilon)
         // it to a line. FIXME: This might not be desirable in the end.
 
         // Check distance from every intermediate vertex to this vertex
-        for (SegmentString::SegmentIter  pit2 = startit; pit2 != pit; pit2++) {
-          float d = startSegment.first.distance((*pit2)->second);
+        for (SegmentString::iterator pit2 = startit; pit2 != pit; pit2++) {
+          float d = startSegment.first.distance((*pit2).second);
           if (d > largest) {
             largest = d;
             largestit = pit2;
           }
 
-          if(isShared(graph,(**pit2)[1])) {
+          if(isShared(graph,(*pit2)[1])) {
             largest = epsilon + 1;
             largestit = pit2;
             break;
@@ -108,12 +108,12 @@ void reduce_linestrings(CutModel &model, float epsilon)
 
       // We exceeded the epsilon, split the edge and continue
       if (largest > epsilon) {
-        newModel.createSegment(startSegment.first, (*largestit)->second, startSegment.settings);
+        newModel.create(startSegment.first, (*largestit).second, startSegment);
         startit = ++largestit;
       }
     }
     // Add last line
-    newModel.createSegment((*startit)->first, string.backSegments()->second, (*startit)->settings);
+    newModel.create((*startit).first, string.back().second, *startit);
   }
 
   model = newModel;

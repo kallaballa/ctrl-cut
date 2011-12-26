@@ -25,13 +25,15 @@
 #include "config/EngraveSettings.h"
 #include "engrave/dither/Dither.h"
 
+class Document;
+
 class Engraving
 {
 public:
   EngraveSettings settings;
 
-  Engraving(AbstractImage& sourceImage, DocumentSettings& docSettings) : settings(docSettings), sourceImage(&sourceImage), processedImage(NULL) {}
-  Engraving(const std::string&filename, DocumentSettings& docSettings);
+  Engraving(AbstractImage& sourceImage, Document& doc);
+  Engraving(const std::string&filename, Document& doc);
 
   virtual ~Engraving() {}
 

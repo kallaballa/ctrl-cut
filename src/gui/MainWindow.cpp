@@ -30,8 +30,8 @@ void MainWindow::openFile(const QString &filename)
       delete this->rawDocItem;
     }
     Document& loading = * new Document();
-    loading.settings.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-    loading.settings.put(DocumentSettings::LOAD_ENGRAVING, true);
+    loading.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+    loading.put(DocumentSettings::LOAD_ENGRAVING, true);
     loading.load(filename.toStdString());
     this->rawDocItem = new DocumentItem(*this->scene,loading);
   }
@@ -41,8 +41,8 @@ void MainWindow::importFile(const QString &filename)
 {
   if (!filename.isEmpty()) {
     Document& loading = * new Document();
-    loading.settings.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-    loading.settings.put(DocumentSettings::LOAD_ENGRAVING, true);
+    loading.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+    loading.put(DocumentSettings::LOAD_ENGRAVING, true);
 
     loading.load(filename.toStdString());
     if(this->rawDocItem == NULL) {
@@ -74,8 +74,8 @@ void MainWindow::on_filePrintAction_triggered()
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
   this->laserdialog->updateLaserConfig(this->rawDocItem->doc);
-  this->rawDocItem->doc.settings.put(DocumentSettings::TITLE, "Default Title");
-  this->rawDocItem->doc.settings.put(DocumentSettings::USER, "Default User");
+  this->rawDocItem->doc.put(DocumentSettings::TITLE, "Default Title");
+  this->rawDocItem->doc.put(DocumentSettings::USER, "Default User");
  /* QStringList items;
   items << "Lazzzor" << "localhost";
   bool ok;

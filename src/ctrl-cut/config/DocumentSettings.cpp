@@ -16,11 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "DocumentSettings.h"
 #include "EngraveSettings.h"
+#include "SegmentSettings.h"
 #include "CutSettings.h"
 #include "util/Measurement.h"
-#include "config/LaserCutter.h"
 
 const DocumentSettings::Key<LaserCutter::Driver>  DocumentSettings::DRIVER = "driver";
 const DocumentSettings::Key<string> DocumentSettings::USER = "user";
@@ -63,6 +64,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);
   this->put(EngraveSettings::ESPEED, 100);
+  this->put(EngraveSettings::EPOS, Point());
 
   this->put(CutSettings::OPTIMIZE, CutSettings::INNER_OUTER);
   this->put(CutSettings::CSPEED, 33);
@@ -70,5 +72,8 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::FREQUENCY, 5000);
   this->put(CutSettings::REDUCE, 3.0f);
   this->put(CutSettings::CPOS, Point());
-  this->put(EngraveSettings::EPOS, Point());
+
+  this->put(SegmentSettings::S_SPEED, 33);
+  this->put(SegmentSettings::S_POWER, 80);
+  this->put(SegmentSettings::S_FREQUENCY, 5000);
 }

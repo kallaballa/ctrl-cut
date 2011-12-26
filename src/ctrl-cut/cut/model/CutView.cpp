@@ -1,3 +1,4 @@
+#if 0
 #include "CutView.h"
 #include <algorithm>
 
@@ -43,3 +44,4 @@ void CutView::clear() {
 
   segmentIndex.clear();
 }
+#endif

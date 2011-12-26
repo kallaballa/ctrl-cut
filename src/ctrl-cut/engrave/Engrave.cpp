@@ -19,10 +19,13 @@
 
 #include "Engrave.h"
 #include "image/PPMFile.h"
+#include "Document.h"
 
 int tile_cnt = 0;
 
-Engraving::Engraving(const std::string&filename, DocumentSettings& docSettings) : settings(docSettings)  {
+Engraving::Engraving(AbstractImage& sourceImage, Document& doc)
+: settings(doc.getSettings()), sourceImage(&sourceImage), processedImage(NULL) {}
+Engraving::Engraving(const std::string&filename, Document& doc) : settings(doc.getSettings())  {
   std::string suffix = filename.substr(filename.rfind(".") + 1);
   if (suffix == "ppm" || suffix == "pgm") {
     this->sourceImage = loadppm(filename);

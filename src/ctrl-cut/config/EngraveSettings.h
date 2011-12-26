@@ -51,7 +51,7 @@ public:
   static Key<uint16_t> EPOWER;
   static Key<uint16_t> ESPEED;
 
-  EngraveSettings(DocumentSettings& docSettings) : Settings(docSettings) {}
+  EngraveSettings(const DocumentSettings& docSettings) : Settings(docSettings) {}
   ~EngraveSettings() {}
 };
 

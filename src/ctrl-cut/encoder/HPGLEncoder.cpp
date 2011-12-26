@@ -21,19 +21,19 @@
 #include "boost/format.hpp"
 #include "util/PJL.h"
 #include "cut/model/CutModel.h"
+#include "cut/geom/Route.h"
 
 using boost::format;
 
 void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
-  StringList route;
-  make_route(route, model);
+  Route& route = Route::make(model);
 
   bool firstOperation = true;
   bool writingPolyline = false;
 
-  int power_set = model.settings.get(CutSettings::CPOWER);
-  int speed_set = model.settings.get(CutSettings::CSPEED);
-  int freq_set = model.settings.get(CutSettings::FREQUENCY);
+  int power_set = model.get(CutSettings::CPOWER);
+  int speed_set = model.get(CutSettings::CSPEED);
+  int freq_set = model.get(CutSettings::FREQUENCY);
 
   out << V_INIT << SEP;
   out << format(V_POWER) % power_set << SEP;
@@ -43,13 +43,13 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
-
-  for (StringList::const_iterator it_ss = route.begin(); it_ss != route.end(); ++it_ss) {
-    const SegmentString& segString = **it_ss;
-    for (SegmentString::SegmentConstIter it_s = segString.beginSegments(); it_s != segString.endSegments(); ++it_s) {
-      const Segment &seg = **it_s;
-
-      int power = (seg.settings.power != -1) ? seg.settings.power : power_set;
+  typedef SegmentSettings S_SET;
+  for (Route::StringConstIter it_ss = route.beginStrings(); it_ss != route.endStrings(); ++it_ss) {
+    const SegmentString& segString = *it_ss;
+    for (CutModel::const_iterator it_s = segString.begin(); it_s != segString.end(); ++it_s) {
+      const Segment &seg = *it_s;
+//FIXME
+      int power = (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;

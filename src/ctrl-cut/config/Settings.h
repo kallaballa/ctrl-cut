@@ -20,6 +20,7 @@
 #ifndef SETTINGS_H_
 #define SETTINGS_H_
 
+#include <stdint.h>
 #include <iostream>
 #include <string>
 
@@ -36,10 +37,11 @@
 
 using std::string;
 
+typedef uint64_t CtrlCutID_t;
 class Settings
 {
 public:
-  Settings* parent;
+
   class setting_not_found : public std::exception
   {
   public:
@@ -66,27 +68,25 @@ public:
   };
 
   typedef boost::any Value;
-  typedef std::map<string,Value>  PropertyMap;
-  typedef PropertyMap::iterator iterator;
-  typedef PropertyMap::const_iterator const_iterator;
+  typedef std::map<string,Value>  SettingsMap;
+  typedef SettingsMap::iterator iterator;
+  typedef SettingsMap::const_iterator const_iterator;
 
   Settings(Settings& parent) : parent(&parent)  {};
+  Settings(const Settings& other) : parent(NULL)  {
+    if(other.hasParent()) {
+      this->parent = &other.getParent();
+    }
+
+    this->properties = other.properties;
+  };
 
   Settings() : parent(NULL)  {};
 
   ~Settings() {}
 
-  iterator begin() { return this->properties.begin(); }
-  const_iterator begin() const  { return this->properties.begin(); }
-  iterator end() { return this->properties.end(); }
-  const_iterator end() const  { return this->properties.end(); }
   void clear() { return this->properties.clear(); }
   size_t size() const { return this->properties.size(); }
-
-  void operator=(Settings& other) {
-    this->parent = other.parent;
-    this->properties = properties;
-  }
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
@@ -96,7 +96,7 @@ public:
   template<typename T>
   const T get(const Settings::Key<T>& key) const {
     const_iterator it = this->properties.find(key);
-    if (it != this->end()) {
+    if (it != this->properties.end()) {
       return boost::any_cast<T>((*it).second);
     } else if(parent != NULL) {
       return parent->get(key);
@@ -105,8 +105,24 @@ public:
     boost::throw_exception(setting_not_found(key.id));
   }
 
-private:
-  PropertyMap properties;
+  bool hasParent() const {
+    return this->parent != NULL;
+  }
+
+  Settings& getParent() const {
+    assert(this->hasParent());
+    return *this->parent;
+  }
+
+  void operator=(const Settings& other) {
+    if(other.hasParent())
+      this->parent = &other.getParent();
+
+    this->properties = other.properties;
+  }
+protected:
+  Settings* parent;
+  SettingsMap properties;
 };
 
 #endif /* SETTINGS_H_ */
