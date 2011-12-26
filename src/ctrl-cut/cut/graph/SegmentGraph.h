@@ -23,7 +23,20 @@ using std::vector;
 using std::map;
 using std::pair;
 
-class SegmentGraph : public adjacency_list<vecS, vecS, undirectedS, Point, Segment> {
+class PointProperty : public Point {
+public:
+  PointProperty() : Point(){}
+  PointProperty(const Point& p) : Point(p) {}
+};
+
+class SegmentProperty : public Segment {
+public:
+  bool owned;
+  SegmentProperty() : Segment(), owned(false)  {}
+  SegmentProperty(const Segment& s) : Segment(s), owned(false) {}
+};
+
+class SegmentGraph : public adjacency_list<vecS, vecS, undirectedS, PointProperty, SegmentProperty> {
 public:
   boost::graph_traits<SegmentGraph>::edges_size_type edge_count;
 
@@ -37,9 +50,9 @@ public:
 
   typedef map<const Point , Vertex> PointMap;
 
-  SegmentGraph() : adjacency_list<vecS, vecS, undirectedS, Point, Segment>() , edge_count(0){}
-  SegmentGraph(const SegmentGraph& graph) : adjacency_list<vecS, vecS, undirectedS, Point, Segment>(graph) , edge_count(0) {}
-  SegmentGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, Point, Segment>(size) , edge_count(0){}
+  SegmentGraph() : adjacency_list<vecS, vecS, undirectedS, PointProperty, SegmentProperty>() , edge_count(0){}
+  SegmentGraph(const SegmentGraph& graph) : adjacency_list<vecS, vecS, undirectedS, PointProperty, SegmentProperty>(graph) , edge_count(0) {}
+  SegmentGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, PointProperty, SegmentProperty>(size) , edge_count(0){}
 
   bool findVertex(Vertex& v, const Point&  p);
   SegmentGraph::Vertex addVertex(const Point&  p);

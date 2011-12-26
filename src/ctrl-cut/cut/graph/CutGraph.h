@@ -16,7 +16,7 @@ struct is_free_edge_predicate {
   is_free_edge_predicate(const Graph& graph) : graph(&graph) {}
 
   bool operator()(const Edge& e) const {
-    return (*graph)[e].hasParent();
+    return !(*graph)[e].owned;
   }
 };
 
@@ -33,7 +33,7 @@ struct is_free_vertex_predicate {
     EdgeIterator eit, eend;
 
     for(boost::tie(eit,eend) = boost::out_edges(v, *graph); eit != eend; ++eit) {
-      if((*graph)[*eit].hasParent())
+      if(!(*graph)[*eit].owned)
         return true;
     }
     return false;
@@ -62,7 +62,7 @@ const Vertex get_opposite(const Graph& graph, const Edge edge, const Vertex one)
 }
 
 template<typename Graph, typename _EdgeIterator>
-void find_steapest(typename boost::graph_traits<Graph>::edge_descriptor result, const Graph& graph, _EdgeIterator first, _EdgeIterator last) {
+void find_steapest(typename boost::graph_traits<Graph>::edge_descriptor& result, const Graph& graph, _EdgeIterator first, _EdgeIterator last) {
   // Find next clockwise segment
   typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
   float steapest = 2 * CC_PI;

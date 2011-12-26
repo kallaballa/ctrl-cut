@@ -1,4 +1,6 @@
-TARGET = gui
+TEMLATE = lib
+TARGET = libctrl-cut.so
+CONFIG += dll
 CONFIG += boost cups gsapi
 CONFIG += rsvg
 CONFIG += cairo-ps
@@ -6,6 +8,8 @@ CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
+QMAKE_LFLAGS += -shared -Wl,-soname,libctrl-cut.so
+QMAKE_CXXFLAGS += -fPIC
 
 INCLUDEPATH += 
 
@@ -24,10 +28,10 @@ HEADERS += ./encoder/HPGLEncoder.h \
            ./util/Util.h \
            ./cut/model/CutView.h \
            ./cut/model/Reduce.h \
-           ./cut/model/Factory.h \
            ./cut/model/CutModel.h \
            ./cut/model/Explode.h \
            ./cut/geom/Segment.h \
+           ./cut/geom/Route.h \
            ./cut/geom/SegmentTree.h \
            ./cut/geom/Geometry.h \
            ./cut/geom/SegmentString.h \
@@ -70,9 +74,10 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./cut/model/CutView.cpp \
            ./cut/model/Explode.cpp \
            ./cut/model/CutModel.cpp \
-           ./cut/model/Factory.cpp \
            ./cut/model/Reduce.cpp \
            ./cut/geom/Geometry.cpp \
+           ./cut/geom/Route.cpp \
+           ./cut/geom/SegmentString.cpp \
            ./cut/geom/Segment.cpp \
            ./cut/graph/SegmentGraph.cpp \
            ./cut/graph/Traverse.cpp \

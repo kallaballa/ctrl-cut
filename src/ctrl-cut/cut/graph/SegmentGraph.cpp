@@ -18,7 +18,7 @@ void SegmentGraph::createEdge(const Segment& seg) {
   if(hasEdge(inV,outV))
     return;
 
-  add_edge(inV, outV, seg, *this);
+  add_edge(inV, outV, SegmentProperty(seg), *this);
 }
 
 bool SegmentGraph::findVertex(Vertex& v, const Point&  p) {
@@ -33,7 +33,7 @@ bool SegmentGraph::findVertex(Vertex& v, const Point&  p) {
 SegmentGraph::Vertex SegmentGraph::addVertex(const Point&  p) {
   Vertex v;
   if (!findVertex(v,p)) {
-    Vertex new_vertex = add_vertex(*this);
+    Vertex new_vertex = add_vertex(PointProperty(p),*this);
     points[p] = new_vertex;
     return new_vertex;
   }
