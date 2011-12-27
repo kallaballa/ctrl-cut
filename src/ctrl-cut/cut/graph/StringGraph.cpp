@@ -13,9 +13,9 @@ StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const P
       vector<StringGraph::Vertex> siVertices;
       vector<StringGraph::Vertex> sjVertices;
 
-      graph.permutateEdges(s_i, v_origin, siVertices);
+      graph.permutateEdges(*s_i.beginPoints(),*s_i.endPoints(), v_origin, siVertices);
       if (it_si != it_sj) {
-        graph.permutateEdges(s_j, v_origin, sjVertices);
+        graph.permutateEdges(*s_j.beginPoints(),*s_j.endPoints(), v_origin, sjVertices);
 
         for (vector<StringGraph::Vertex>::iterator it_vi = siVertices.begin(); it_vi
             != siVertices.end(); ++it_vi) {
@@ -54,12 +54,12 @@ bool StringGraph::hasEdge(const Vertex& in, const Vertex& out) {
   return boost::edge(in, out, *this).second;
 }
 
-void StringGraph::permutateEdges(SegmentString& string, Vertex v_origin,
+void StringGraph::permutateEdges(const Point& front, const Point& back, Vertex v_origin,
     vector<Vertex>& outVertices) {
 //  std::cerr << "permutate" << std::endl;
 
-  StringGraph::Vertex frontV = addVertex(string.frontPoints());
-  StringGraph::Vertex backV = addVertex(string.backPoints());
+  StringGraph::Vertex frontV = addVertex(front);
+  StringGraph::Vertex backV = addVertex(back);
   outVertices.push_back(frontV);
   outVertices.push_back(backV);
 

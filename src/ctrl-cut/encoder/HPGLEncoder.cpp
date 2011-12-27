@@ -44,7 +44,7 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
   typedef SegmentSettings S_SET;
-  for (Route::StringConstIter it_ss = route.beginStrings(); it_ss != route.endStrings(); ++it_ss) {
+  for (Route::StringIter it_ss = route.beginStrings(); it_ss != route.endStrings(); ++it_ss) {
     const SegmentString& segString = *it_ss;
     for (CutModel::const_iterator it_s = segString.begin(); it_s != segString.end(); ++it_s) {
       const Segment &seg = *it_s;

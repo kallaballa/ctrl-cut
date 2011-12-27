@@ -56,7 +56,7 @@ public:
   void createWorkEdge(const Vertex& in, const Vertex& out);
   void createMoveEdge(const Vertex& in, const Vertex& out);
   bool hasEdge(const Vertex& in, const Vertex& out);
-  void permutateEdges(SegmentString& string, Vertex v_origin, vector<Vertex>& outVertices);
+  void permutateEdges(const Point& front, const Point& back, Vertex v_origin, vector<Vertex>& outVertices);
 private:
   PointMap points;
 };

@@ -20,34 +20,34 @@ struct compound_list_iterator : public Tbase {
   Tbase begin2;
   Tbase end1;
   Tbase end2;
-  Tbase current;
+  Tbase targetIter;
 
   bool first;
 
   compound_list_iterator() :
-    begin1(), begin2(), end1(), end2(), current(), first(true) {
+    begin1(), begin2(), end1(), end2(), targetIter(), first(true) {
   }
 
-  explicit compound_list_iterator(Tbase begin1, Tbase begin2, Tbase end1, Tbase end2, Tbase current, bool first) :
-        begin1(begin1), begin2(begin2), end1(end1), end2(end2), current(current), first(first) {
+  explicit compound_list_iterator(Tbase begin1, Tbase begin2, Tbase end1, Tbase end2, Tbase targetIter, bool first) :
+        begin1(begin1), begin2(begin2), end1(end1), end2(end2), targetIter(targetIter), first(first) {
   }
 
   reference operator*() const {
-    return *current;
+    return *targetIter;
   }
 
   pointer operator->() const {
-    return current;
+    return targetIter;
   }
 
   _Self&
   operator++() {
-    if(first && current == end1){
-      current = begin2;
+    if(first && targetIter == end1){
+      targetIter = begin2;
       first = false;
     }
 
-    current++;
+    targetIter++;
     return *this;
   }
 
@@ -59,11 +59,11 @@ struct compound_list_iterator : public Tbase {
 
   _Self&
   operator--() {
-    if(!first && current == begin2){
-      current = end1;
+    if(!first && targetIter == begin2){
+      targetIter = end1;
     }
 
-    current--;
+    targetIter--;
     return *this;
   }
 
@@ -74,11 +74,11 @@ struct compound_list_iterator : public Tbase {
   }
 
   bool operator==(const _Self& __x) const {
-    return current == __x.current;
+    return targetIter == __x.targetIter;
   }
 
   bool operator!=(const _Self& __x) const {
-    return current != __x.current;
+    return targetIter != __x.targetIter;
   }
 };
 

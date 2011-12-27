@@ -24,7 +24,9 @@ struct SegmentNode {
   SegmentNode(SegmentList::iterator& it, BaseOrientation orientation) : it(new SegmentList::iterator(it)), owner(*it), orientation(orientation) {}
 
   bool operator==(const SegmentNode& other) const {
-      return this->owner == other.owner && this->getBasePoint() == other.getBasePoint();
+    std::cerr << this->owner << "==" << other.owner << std::endl;
+      return this->getBasePoint() == other.getBasePoint() &&
+          this->owner == other.owner;
   }
 
   Point getBasePoint() const {

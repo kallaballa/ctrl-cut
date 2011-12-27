@@ -116,19 +116,14 @@ bool CutModel::create(const Point&  p1, const Point&  p2) {
   return true;
 }
 
-bool CutModel::create(Segment& seg, bool doclip) {
-  if(doclip)
-    clip(seg);
-  if (seg.first == seg.second) {
+bool CutModel::create(const Segment& seg) {
+  Segment clipped(seg);
+  clip(clipped);
+  if (clipped.first == clipped.second) {
     this->clipped++;
     return false;
   }
-  create(seg);
-  return true;
-}
-
-bool CutModel::create(const Segment& seg) {
-  segmentIndex.push_back(seg);
+  this->push_back(clipped);
   return true;
 }
 
@@ -137,17 +132,17 @@ bool CutModel::create(const int32_t& inX,const int32_t& inY,const int32_t& outX,
   return create(Point(inX, inY), Point(outX, outY));
 }
 
-
 void CutModel::push_front(const Segment& seg) {
-  segmentIndex.push_front(seg);
+  this->segmentIndex.push_front(seg);
 }
 
 void CutModel::push_back(const Segment& seg) {
-  segmentIndex.push_back(seg);
+  this->segmentIndex.push_back(seg);
+  this->segmentIndex.reverse();
 }
 
-void CutModel::insert(iterator pos, const Segment& seg) {
-  segmentIndex.insert(pos,seg);
+void CutModel::splice(CutModel::iterator pos, CutModel& other, CutModel::iterator begin, CutModel::iterator end) {
+  this->segmentIndex.splice(pos, other.segmentIndex, begin, end);
 }
 
 void CutModel::clip(Segment& seg) {
@@ -244,8 +239,5 @@ void CutModel::copy(const CutModel& other) {
     this->parent = other.getParent();
 
   this->settings = other.getSettings();
-
-  for(CutModel::const_iterator it = other.begin(); it != other.end(); it++) {
-    this->create(*it);
-  }
+  this->segmentIndex = other.segmentIndex;
 }

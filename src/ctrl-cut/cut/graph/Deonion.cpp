@@ -22,7 +22,7 @@
 #include "cut/graph/Traverse.h"
 #include "cut/geom/SegmentTree.h"
 
-void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV)
+void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV, bool forward)
 {
   SegmentGraph::Edge nextEdge;
   Segment& lastSegment = graph[lastEdge];
@@ -36,8 +36,15 @@ void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const 
   else
     assert(false);
 
-  if(skins.append(lastSegment)) {
-    segTree.remove(lastSegment);
+  if(!graph[lastEdge].owned) {
+    if(skins.append(lastSegment)) {
+      segTree.remove(lastSegment);
+      graph[lastEdge].owned = true;
+    } else if(!forward) {
+      skins.create(lastSegment);
+      segTree.remove(lastSegment);
+      graph[lastEdge].owned = true;
+    }
   } else {
     return;
   }
@@ -79,7 +86,7 @@ void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const 
   }
 
   if (found) {
-    walkTheEdge(skins, segTree, graph, nextEdge, get_opposite(graph, nextEdge, outV));
+    walkTheEdge(skins, segTree, graph, nextEdge, get_opposite(graph, nextEdge, outV), !forward);
   }
 
   //polyline fully consumed
@@ -125,10 +132,11 @@ void traverse_onion(Route& skins, SegmentList::iterator first, SegmentList::iter
     const Point& outPoint = graph[outVertex];
 
     if(outPoint.y < startPoint.y || (outPoint.y == startPoint.y && outPoint.x > startPoint.x))
-      walkTheEdge(skins, segTree, graph, steapest, outVertex);
+      walkTheEdge(skins, segTree, graph, steapest, outVertex, true);
     else
-      walkTheEdge(skins, segTree, graph, steapest, startVertex);
+      walkTheEdge(skins, segTree, graph, steapest, startVertex, true);
   }
 
-  reverse(skins.begin(), skins.end());
+  // refactor
+  //reverse(skins.begin(), skins.end());
 }
