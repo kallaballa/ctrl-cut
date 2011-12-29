@@ -20,7 +20,6 @@
 #include <list>
 #include "Document.h"
 #include "util/Measurement.h"
-#include "cut/model/CutModel.h"
 #include "cut/model/Explode.h"
 #include "cut/model/Reduce.h"
 #include "cut/graph/Traverse.h"
@@ -114,11 +113,12 @@ void Document::write(std::ostream &out) {
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
     // of the output files. See corresponding FIXME in LaserJob.cpp.
+    /* REFACTOR
     for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
       CutModel *cut = *it;
       if (cut && cut->wasClipped())
         out << "LT";
-    }
+    }*/
 
     out << PCL_SECTION_END;
 
@@ -141,8 +141,11 @@ void Document::write(std::ostream &out) {
 Document& Document::preprocess() {
    for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
      CutModel& model = **it;
-     explode_segments(model);
-     reduce_linestrings(model, model.get(CutSettings::REDUCE));
+     CutModel exploded(model);
+     explode_segments(exploded, model.segmentView().begin(), model.segmentView().end());
+     CutModel reduced(model);
+     reduce(reduced, exploded.begin(), exploded.end());
+     model = reduced;
    }
 
    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
@@ -294,12 +297,12 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   CutModel *cut = NULL;
   if (load == CUT || load == BOTH) {
     if (docFormat == VECTOR) {
-      cut = new CutModel(*this);
+      cut = new CutModel(this->settings);
       if(!cut->load(filename))
         return false;
     }
     else if (parser) {
-      cut = new CutModel(*this);
+      cut = new CutModel(this->settings);
       if(!cut->load(parser->getVectorData()))
           return false;
     }

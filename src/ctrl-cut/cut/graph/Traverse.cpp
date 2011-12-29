@@ -37,39 +37,37 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void next_edge(SegmentGraph::Edge e) {
     Segment& seg = graph[e];
     if(strings.append(seg))
-      strings.create(seg);
+      strings.push_back(seg);
   }
 };
 
-void check_linestrings(Route::StringIter first, Route::StringIter last) {
-  std::set<Segment> segments;
+void check(CutModel::SegmentConstIter first, CutModel::SegmentConstIter last) {
+  std::set<Segment> uniq_segments;
 
-  for(Route::StringIter it = first; it != last; ++it) {
-    const SegmentString& string = *it;
-
-    for(SegmentString::const_iterator it_s =  string.begin(); it_s != string.end(); ++it_s) {
-      const Segment& seg = *it_s;
-      // assert the segments are globally unique
-      assert(segments.find(seg) == segments.end() && segments.find(Segment(seg.second, seg.first, seg)) == segments.end());
-      segments.insert(seg);
-    }
+  for (CutModel::SegmentConstIter it_s = first; it_s != last; ++it_s) {
+    const Segment& seg = *it_s;
+    // assert the segments are globally unique
+    assert(uniq_segments.find(seg) == uniq_segments.end() && uniq_segments.find(Segment(seg.second, seg.first)) == uniq_segments.end());
+    uniq_segments.insert(seg);
   }
 }
 
-void dump_linestrings(const std::string &filename, Route::StringIter first, Route::StringIter last) {
+void dump(const std::string &filename, CutModel::iterator first, CutModel::iterator last) {
   std::ofstream os(filename.c_str(), std::ios_base::out);
-  dump_linestrings(os, first,last);
+  dump(os, first,last);
   os.close();
 }
 
-void dump_linestrings(std::ostream& os, Route::StringIter first, Route::StringIter last) {
+void dump(std::ostream& os, CutModel::iterator first, CutModel::iterator last) {
   os << "<cut>" << std::endl;
-  for(Route::StringIter it = first; it != last; ++it)
+  /* FIXME
+  for(CutModel::iterator it = first; it != last; ++it)
     os << *it;
+    */
   os << "</cut>" << std::endl;
 }
 
-void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator  last, SegmentGraph& segGraph) {
+/*void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator  last, SegmentGraph& segGraph) {
   LOG_INFO_STR("make linestrings");
   LOG_DEBUG_MSG("strings before", strings.size());
   create_planar_graph(segGraph, first, last);
@@ -86,32 +84,35 @@ void make_linestrings(Route& strings, SegmentList::const_iterator first, Segment
   SegmentGraph segGraph;
   make_linestrings(strings, first, last, segGraph);
 }
+*/
 
 #include "boost/function_output_iterator.hpp"
 #include "boost/bind.hpp"
 
-void travel_linestrings(Route& route, Route::StringIter first, Route::StringIter last) {
+void travel_linestrings(Route& route, Route::iterator first, Route::iterator last) {
   using namespace boost;
   LOG_INFO_STR("travel linestrings");
   LOG_DEBUG_MSG("strings before", route.size());
 
-  StringGraph graph;
-  StringGraph::Vertex v_origin = create_complete_graph_from_point(graph, Point(0,0),first, last);
+  DistanceGraph graph;
+  DistanceGraph::Vertex v_origin = create_complete_graph_from_point(graph, Point(0,0),first, last);
 
-  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, StringProperty>, double StringProperty::*>::type WeightMap;
-  WeightMap weight_map(get(&StringProperty::weight, graph));
+  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, WeightProperty>, double WeightProperty::*>::type WeightMap;
+  WeightMap weight_map(get(&WeightProperty::weight, graph));
 
-  vector<StringGraph::Vertex> tour;
+  vector<DistanceGraph::Vertex> tour;
   double len = 0.0;
-  RouteBuilder<StringGraph> rb(graph, route);
-  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map, boost::make_tsp_tour_visitor(make_function_output_iterator(boost::bind<void>(rb, _1))));
+  RouteBuilder<DistanceGraph> rb(graph, route);
+  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map,
+      boost::make_tsp_tour_visitor(
+          make_function_output_iterator(boost::bind<void>(rb, _1))
+      )
+  );
 
   LOG_DEBUG_MSG("strings after", route.size());
   LOG_INFO_MSG("Tour length", len);
 
 #ifdef DEBUG
-  check_linestrings(route.beginStrings(), route.endStrings());
+  check(route.segmentView().begin(), route.segmentView().end());
 #endif
 }
-
-

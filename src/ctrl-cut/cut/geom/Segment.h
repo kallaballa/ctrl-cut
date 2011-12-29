@@ -1,9 +1,22 @@
 /*
- * Segment.h
+ * Ctrl-Cut - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
  *
- *  Created on: Dec 26, 2011
- *      Author: elchaschab
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
@@ -11,32 +24,29 @@
 #include "Geometry.h"
 #include "config/SegmentSettings.h"
 
-class CutModel;
-
-class Segment: public SegmentSettings {
+class Segment {
 public:
   Point first;
   Point second;
 
-  Segment();
-  Segment(CutModel& parent);
-  Segment(const Point&  first, const Point&  second, CutModel& parent);
-  Segment(const Point&  first, const Point&  second, const Segment& seg);
+//FIXME REFEREMCE!
+  Segment() {};
+  Segment(Point first, Point second) : first(first), second(second)  {}
 
   const Point& operator[](size_t idx) const {
     assert(idx < 2);
     if (idx == 0)
-      return first;
+      return this->first;
     else
-      return second;
+      return this->second;
   }
 
   Point& operator[](size_t idx) {
     assert(idx < 2);
     if (idx == 0)
-      return first;
+      return this->first;
     else
-      return second;
+      return this->second;
   }
 
   bool operator<(const Segment& other) const {
@@ -67,17 +77,7 @@ public:
     Returns angle to the positive Y axis
   */
   float getSlope(bool invert = false) const;
-
-  CutModel& getParent() const {
-    assert(hasParent());
-    return *parent;
-  }
-
-  bool hasParent() const {
-    return parent != NULL;
-  }
 private:
-  CutModel* parent;
   Box* box;
   Sphere* sphere;
 
@@ -88,11 +88,12 @@ private:
       this->box = new Box(second, first);
 
     Point& diff = this->box->max_corner - this->box->min_corner;
-    Point center = (* new Point(this->box->min_corner.x + (diff.x / 2), this->box->min_corner.y + (diff.y / 2)));
+    Point center(this->box->min_corner.x + (diff.x / 2), this->box->min_corner.y + (diff.y / 2));
     uint32_t radius = boost::math::hypot((diff.x / 2), (diff.y / 2));
     this->sphere = new Sphere(center, radius);
   }
 };
+
 
 typedef std::list<Segment> SegmentList;
 
@@ -127,9 +128,8 @@ inline intersection_result intersects(const Segment& s1, const Segment&s2, Point
   float ub = nume_b / denom;
 
   if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
-    intersection.x = s1[0][0] + ua * (s1[1][0] - s1[0][0]);
-    intersection.y = s1[0][1] + ua * (s1[1][1] - s1[0][1]);
-
+    intersection[0] = (s1[0][0] + ua * (s1[1][0] - s1[0][0]));
+    intersection[1] = (s1[0][1] + ua * (s1[1][1] - s1[0][1]));
     return ALIGN_INTERSECT;
   }
 

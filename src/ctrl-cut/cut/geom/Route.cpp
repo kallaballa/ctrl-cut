@@ -1,80 +1,6 @@
 #include "Route.h"
-#include "cut/graph/Traverse.h"
-#include "util/Measurement.h"
 
-
-Route::Route(const CutModel& model) : CutModel (model){}
-
-bool Route::append(const Segment& seg) {
-  std::cerr << *this << std::endl;
-  if (this->empty()) {
-    return this->create(seg);
-  } else if(!this->frontStrings().append(seg) && !this->backStrings().append(seg)) {
-    for(StringIter it = beginStrings(); it != endStrings(); it++) {
-      if((*it).append(seg))
-        return true;
-    }
-    return false;
-  }
-  return true;
-}
-
-CutModel::iterator Route::begin() {
-  return Route::iterator(this->beginStrings());
-}
-
-CutModel::const_iterator Route::begin() const  {
-  return Route::const_iterator(this->beginStrings());
-}
-
-void Route::push_front(const Segment& seg) {
-  //FIXME CutModel::create(seg);
-  SegmentString* string = new SegmentString(*this);
-  string->append(seg);
-  strings.push_front(string);
-}
-
-void Route::push_back(const Segment& seg) {
-  //FIXME CutModel::create(seg);
-  SegmentString* string = new SegmentString(*this);
-  string->create(seg);
-  strings.push_back(string);
-}
-
-void Route::remove(Segment& seg) {
-  assert(!"not implemented");
-}
-
-CutModel::iterator Route::erase(iterator it) {
-  assert(!"not implemented");
-  return it;
-}
-
-bool Route::empty() const {
-  if(emptyStrings())
-    return true;
-
-  for(StringConstIter it = beginStrings(); it != endStrings(); it++) {
-    if(!(*it).empty())
-      return false;
-  }
-
-  return true;
-}
-
-void Route::clear() {
-  for(StringIter it = beginStrings(); it != endStrings(); it++) {
-    delete &*it;
-  }
-}
-
-void Route::copy(const Route& other) {
-  CutModel::copy(other);
-  for(StringConstIter it = other.beginStrings(); it != other.endStrings(); it++) {
-    this->strings.push_back(new SegmentString(*it));
-  }
-}
-
+/* REFACTOR
 Route& Route::make(CutModel& model) {
   Route& route = * new Route(model);
   const Point&  pos = model.get(CutSettings::CPOS);
@@ -111,5 +37,5 @@ Route& Route::make(CutModel& model) {
     assert(false);
 
   return route;
-}
+}*/
 

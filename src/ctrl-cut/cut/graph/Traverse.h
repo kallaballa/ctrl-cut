@@ -33,7 +33,7 @@ public:
   void operator()(typename Graph::Vertex v) {
     Point& current = (*graph)[v];
     if(!first) {
-      route->append(Segment(this->last,current, *route));
+      route->append(Segment(this->last,current));
     }
     this->last = current;
   }
@@ -42,11 +42,11 @@ private:
   Point last;
 };
 
-void dump_linestrings(const std::string &filename, Route::StringIter first, Route::StringIter last);
-void dump_linestrings(std::ostream& os, Route::StringIter first, Route::StringIter last);
-void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
-void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);
-void travel_linestrings(Route& strings, Route::StringIter first, Route::StringIter last);
+void dump(const std::string &filename, CutModel::iterator first, CutModel::iterator last);
+void dump(std::ostream& os,CutModel::iterator first, CutModel::iterator last);
+/*void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
+void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);*/
+void travel_linestrings(Route& route, Route::iterator first, Route::iterator last);
 
 template<typename Graph>
 bool build_planar_embedding(typename Graph::Embedding& embedding, Graph& graph) {

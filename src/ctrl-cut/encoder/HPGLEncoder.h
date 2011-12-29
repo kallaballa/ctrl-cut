@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include "cut/model/CutModel.h"
-#include "cut/geom/SegmentString.h"
 
 class HPGLEncoder {
 

@@ -12,6 +12,7 @@
 
 #include "util/PJL.h"
 #include "engrave/Engrave.h"
+#include "cut/model/CutModel.h"
 #include "config/DocumentSettings.h"
 
 #include "util/Util.h"
@@ -24,7 +25,6 @@
 
 using std::string;
 
-class CutModel;
 class Document{
 public:
   enum Format {

@@ -1,368 +1,283 @@
+/*
+ * Ctrl-Cut - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef ROUTE_H_
 #define ROUTE_H_
 
 #include <algorithm>
 #include "Geometry.h"
-#include "cut/geom/SegmentString.h"
+#include "Views.h"
+#include "cut/geom/LineString.h"
+#include "config/CutSettings.h"
 
-class CutModel;
+template<
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+>
+struct MultiLineString : Tcontainer<LineStringImpl<Tcontainer, Tallocator>, Tallocator<LineStringImpl<Tcontainer, Tallocator> > >
+{};
 
-template<typename T>
-struct pointer_list_iterator : public std::list<T>::iterator {
-  typedef typename std::list<T*> PointerList;
-  typedef typename PointerList::iterator PointerListIt;
-  typedef pointer_list_iterator _Self;
-  typedef ptrdiff_t difference_type;
-  typedef std::bidirectional_iterator_tag iterator_category;
+template<
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+>
+struct MultiSegmentViewContainer :
+  Tcontainer<
+    SegmentViewImpl<Tcontainer, Tallocator>,
+    Tallocator<
+    SegmentViewImpl<Tcontainer, Tallocator>
+    >
+  >
+{};
 
-  const PointerList& pointerList;
-  PointerListIt currentListIt;
-  bool isEnd;
+template<
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+>
+struct MultiSegmentViewImpl :
+  public View<
+    MultiIter<
+      SegmentViewImpl<Tcontainer, Tallocator>,
+      Segment,
+      Tcontainer,
+      Tallocator
+    >,
+    MultiConstIter<
+      SegmentViewImpl<Tcontainer, Tallocator>,
+      Segment,
+      Tcontainer,
+      Tallocator
+    >,
+    MultiSegmentViewContainer<Tcontainer,Tallocator>
+  > {
 
-  pointer_list_iterator() : pointerList(PointerList()), isEnd(true) {}
-
-  explicit pointer_list_iterator(PointerList& pointerList) :
-    pointerList(pointerList), currentListIt(pointerList.begin()), isEnd(pointerList.empty()) {}
-
-  typename std::list<T>::iterator::reference operator*() const {
-    return **currentListIt;
-  }
-
-  typename std::list<T>::iterator::pointer operator->() const {
-    return *currentListIt;
-  }
-
-  _Self&
-  operator++() {
-    currentListIt++;
-    if(currentListIt == pointerList.end()) {
-      isEnd=true;
-    }
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    currentListIt++;
-    if(currentListIt == pointerList.end()) {
-      isEnd=true;
-    }
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    currentListIt--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    currentListIt--;
-    return __tmp;
-  }
-
-  bool operator==(const _Self& __x) const {
-    return (isEnd==true && __x.isEnd== true) || currentListIt == __x.currentListIt;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return !(isEnd == true && __x.isEnd == true) && currentListIt != __x.currentListIt;
-  }
+    MultiSegmentViewImpl(MultiSegmentViewContainer<Tcontainer,Tallocator>& container) : View<
+          MultiIter<
+            SegmentViewImpl<Tcontainer, Tallocator>,
+            Segment,
+            Tcontainer,
+            Tallocator
+          >,
+          MultiConstIter<
+            SegmentViewImpl<Tcontainer, Tallocator>,
+            Segment,
+            Tcontainer,
+            Tallocator
+          >,
+          MultiSegmentViewContainer<Tcontainer,Tallocator>
+        >(container)
+    {};
 };
 
-template<typename T>
-struct const_pointer_list_iterator : public std::list<T>::iterator {
-  typedef typename std::list<T*> PointerList;
-  typedef typename PointerList::const_iterator PointerListIt;
-  typedef const_pointer_list_iterator _Self;
-  typedef ptrdiff_t difference_type;
-  typedef std::bidirectional_iterator_tag iterator_category;
+template<
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+>
+struct MultiPointViewImpl :
+  public View<
+    MultiIter<
+    LineStringImpl<Tcontainer, Tallocator>,
+      Point,
+      Tcontainer,
+      Tallocator
+    >,
+    MultiConstIter<
+    LineStringImpl<Tcontainer, Tallocator>,
+      Point,
+      Tcontainer,
+      Tallocator
+    >,
+    MultiLineString<Tcontainer, Tallocator>
+  > {
 
-  const PointerList& pointerList;
-  const PointerListIt currentListIt;
-  bool isEnd;
-
-  const_pointer_list_iterator() : pointerList(PointerList()), isEnd(true) {}
-
-  explicit const_pointer_list_iterator(const PointerList& pointerList) :
-    pointerList(pointerList), currentListIt(pointerList.begin()), isEnd(pointerList.empty()) {}
-
-  typename std::list<T>::iterator::reference operator*() const {
-    return **currentListIt;
-  }
-
-  typename std::list<T>::iterator::pointer operator->() const {
-    return *currentListIt;
-  }
-
-  _Self&
-  operator++() {
-    currentListIt++;
-    if(currentListIt == pointerList.end()) {
-      isEnd=true;
-    }
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    (*this)++;
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    currentListIt--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    (*this)--;
-    return __tmp;
-  }
-
-  bool operator==(const _Self& __x) const {
-    return currentListIt == __x.currentListIt;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return currentListIt != __x.currentListIt;
-  }
-};
-template<typename TParent, typename T>
-struct compound_iterator : public pointer_list_iterator<T> {
-  typedef compound_iterator _Self;
-  typedef ptrdiff_t difference_type;
-  typedef std::bidirectional_iterator_tag iterator_category;
-
-  typedef typename std::list<T>::iterator TargetIt;
-  typedef pointer_list_iterator<TParent> ParentIt;
-
-  ParentIt parentIter;
-  TargetIt targetIter;
-
-  compound_iterator() {
-  }
-
-  explicit compound_iterator(pointer_list_iterator<TParent> parentIter) :
-    parentIter(parentIter) {
-  }
-
-  typename std::list<T>::reference operator*() const {
-    return *targetIter;
-  }
-
-  typename std::list<T>::pointer operator->() const {
-    return targetIter;
-  }
-
-  void nextParent() {
-    parentIter++;
-    targetIter = getCurrentBegin();
-  }
-
-  void prevParent() {
-    parentIter--;
-    targetIter = getCurrentEnd();
-  }
-
-  _Self&
-  operator++() {
-    if(targetIter == getCurrentEnd()){
-      nextParent();
-    }
-
-    targetIter++;
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    (*this)++;
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    if(targetIter == getCurrentBegin()){
-      prevParent();
-    }
-
-    targetIter--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    (*this)--;
-    return __tmp;
-  }
-
-  bool operator==(const _Self& __x) const {
-    return targetIter == __x.targetIter;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return targetIter != __x.targetIter;
-  }
-
-  TargetIt getCurrentIter() {
-    return targetIter;
-  }
-
-  TargetIt getCurrentBegin() {
-    return (*parentIter).begin();
-  }
-
-  TargetIt getCurrentEnd() {
-    return (*parentIter).end();
-  }
+    MultiPointViewImpl(MultiLineString<Tcontainer, Tallocator>& strings) : View<
+        MultiIter<
+        LineStringImpl<Tcontainer, Tallocator>,
+          Point,
+          Tcontainer,
+          Tallocator
+        >,
+        MultiConstIter<
+        LineStringImpl<Tcontainer, Tallocator>,
+          Point,
+          Tcontainer,
+          Tallocator
+        >,
+        MultiLineString<Tcontainer, Tallocator>
+      > (strings)
+    {};
 };
 
-template<typename TParent, typename T>
-struct const_compound_iterator : public const_pointer_list_iterator<T> {
-  typedef const_compound_iterator _Self;
-  typedef ptrdiff_t difference_type;
-  typedef std::bidirectional_iterator_tag iterator_category;
-
-  typedef typename std::list<T>::iterator TargetIt;
-  typedef const_pointer_list_iterator<TParent> ParentIt;
-
-  ParentIt parentIter;
-  TargetIt targetIter;
-
-  const_compound_iterator() {
-  }
-
-  explicit const_compound_iterator(const_pointer_list_iterator<TParent> parentIter) :
-    parentIter(parentIter) {
-  }
-
-  typename std::list<T>::reference operator*() const {
-    return *targetIter;
-  }
-
-  typename std::list<T>::pointer operator->() const {
-    return targetIter;
-  }
-
-  void nextParent() {
-    parentIter++;
-    targetIter = getCurrentBegin();
-  }
-
-  void prevParent() {
-    parentIter--;
-    targetIter = getCurrentEnd();
-  }
-
-  _Self&
-  operator++() {
-    if(targetIter == getCurrentEnd()){
-      nextParent();
-    }
-
-    targetIter++;
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    (*this)++;
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    if(targetIter == getCurrentBegin()){
-      prevParent();
-    }
-
-    targetIter--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    (*this)--;
-    return __tmp;
-  }
-
-  bool operator==(const _Self& __x) const {
-    return targetIter == __x.targetIter;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return targetIter != __x.targetIter;
-  }
-
-  TargetIt getCurrentIter() {
-    return targetIter;
-  }
-
-  TargetIt getCurrentBegin() {
-    return (*parentIter).begin();
-  }
-
-  TargetIt getCurrentEnd() {
-    return (*parentIter).end();
-  }
-};
-
-class Route : public CutModel {
+template<
+  template<typename,typename> class Tcontainer = std::list,
+  template<typename> class Tallocator = std::allocator
+>
+class RouteImpl {
+private:
+  typedef RouteImpl<Tcontainer, Tallocator> _Self;
+  typedef LineStringImpl<Tcontainer, Tallocator> _LineString;
+  typedef MultiLineString<Tcontainer, Tallocator> _MultiLineStrings;
+  _MultiLineStrings strings;
+  CutSettings settings;
 public:
-  typedef compound_iterator<SegmentString,Segment> iterator;
-  typedef const_compound_iterator<SegmentString,Segment> const_iterator;
-  typedef std::list<SegmentString* > StringList;
-  typedef pointer_list_iterator<SegmentString> StringIter;
-  typedef const_pointer_list_iterator<SegmentString> StringConstIter;
+  typedef typename Tcontainer<Point, Tallocator<Point> >::iterator PointIter;
+  typedef typename Tcontainer<Point, Tallocator<Point> >::const_iterator PointConstIter;
+  typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator SegmentIter;
+  typedef typename Tcontainer<Segment, Tallocator<Segment> >::const_iterator SegmentConstIter;
+  typedef typename _MultiLineStrings::iterator iterator;
+  typedef typename _MultiLineStrings::const_iterator const_iterator;
 
-  Route(const CutModel& model);
+  RouteImpl() {}
+  RouteImpl(DocumentSettings& parentSettings) : settings(parentSettings) {}
 
-  StringIter beginStrings() { return StringIter(this->strings); }
-  StringIter endStrings() { return StringIter(); }
-  StringConstIter beginStrings() const { return StringConstIter(this->strings); }
-  StringConstIter endStrings() const { return StringConstIter(); }
-  StringIter::reference frontStrings()  { return *this->strings.front(); }
-  StringIter::reference backStrings()  { return *this->strings.back(); }
-  size_t numStrings() const { return this->strings.size(); }
-  bool emptyStrings() const { return this->strings.empty(); }
-  void splice(iterator pos, iterator begin, iterator end) {
-    assert(!"not implemented");
+  iterator begin() {
+    return this->strings.begin();
   }
-  bool append(const Segment& seg);
-  CutModel::iterator begin();
-  CutModel::const_iterator begin() const;
-  void push_front(const Segment& seg);
-  void push_back(const Segment& seg);
-  void remove(Segment& seg);
-  CutModel::iterator erase(iterator it);
-  void clear();
-  void copy(const Route& other);
-  bool empty() const;
+  const_iterator begin() const {
+    return this->strings.begin();
+  }
+  iterator end()  {
+    return this->strings.end();
+  }
+  const_iterator end() const {
+    return this->strings.end();
+  }
+  typename iterator::reference front() {
+    return this->strings.front();
+  }
+  typename iterator::reference back() {
+    return this->strings.back();
+  }
+  typename iterator::reference front() const {
+    return this->strings.front();
+  }
+  typename iterator::reference back() const {
+    return this->strings.back();
+  }
+  MultiPointViewImpl<Tcontainer,Tallocator> pointView() {
+    return MultiPointViewImpl<Tcontainer,Tallocator>(strings);
+  }
 
-  CutModel::iterator end() { return this->strings.back()->end(); }
-  CutModel::const_iterator end() const  { return this->strings.back()->end(); }
-  CutModel::reference front() { return this->strings.front()->front(); }
-  CutModel::reference back() { return this->strings.back()->back(); }
-  CutModel::const_reference front() const { return this->strings.front()->front(); }
-  CutModel::const_reference back() const { return this->strings.back()->back(); }
+  MultiSegmentViewImpl<Tcontainer,Tallocator> segmentView() {
+    //FIXME
+    MultiSegmentViewContainer<Tcontainer,Tallocator> container = *new MultiSegmentViewContainer<Tcontainer,Tallocator>();
+    for (iterator it = strings.begin(); it != strings.end(); ++it) {
+      container.push_back(SegmentViewImpl<Tcontainer,Tallocator>(*it));
+    }
+    return MultiSegmentViewImpl<Tcontainer,Tallocator>(container);
+  }
 
-  friend std::ostream& operator<<(std::ostream &os, Route& route)  {
+
+  void push_front(const Segment& seg) {
+    _LineString string(this->settings);
+    string.append(seg);
+    strings.push_front(string);
+  }
+
+  void push_back(const Segment& seg) {
+    _LineString string(this->settings);
+    string.append(seg);
+    strings.push_back(string);
+  }
+
+  bool append(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY) {
+    return this->append(Point(inX, inY), Point(outX, outY));
+  }
+
+  bool append(const Point&  p1, const Point&  p2) {
+    return this->append(Segment(p1,p2));
+  }
+
+  virtual bool append(const Segment& seg) {
+    if (this->empty()) {
+      this->push_back(seg);
+      return true;
+    } else if(! (this->appendFront(seg) || this->appendBack(seg))) {
+      for(iterator it = strings.begin(); it != strings.end(); ++it) {
+        if((*it).append(seg))
+          return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  bool appendFront(const Segment& seg) {
+    if (this->empty()) {
+      this->push_front(seg);
+      return true;
+    } else  {
+      return strings.front().appendFront(seg);
+    }
+  }
+
+  bool appendBack(const Segment& seg) {
+    if (this->empty()) {
+      this->push_front(seg);
+      return true;
+    } else  {
+      return strings.back().appendBack(seg);
+    }
+  }
+
+  void clear() {
+    strings.clear();
+  }
+
+  void copy(const RouteImpl& other) {
+    this->settings = other.getSettings();
+    for(iterator it = strings.begin(); it != strings.end(); ++it) {
+      this->strings.push_back(*it);
+    }
+  }
+
+  bool empty() const {
+    return strings.empty();
+  }
+
+  size_t size() const {//FIXME
+    return strings.size();
+  }
+
+  template<typename T, typename V>
+  void put(const Settings::Key<T>& key, V value) {
+    settings.put(key,value);
+  }
+
+  template<typename T>
+  const T get(const Settings::Key<T>& key) const {
+    return settings.get(key);
+  }
+
+/*REFACTOR
+  friend std::ostream& operator<<(std::ostream &os, RouteImpl& route)  {
     os << "<route>" << std::endl;
-    for(Route::StringIter it=route.beginStrings(); it != route.endStrings(); ++it)
+    for(RouteImpl::iterator it=route.beginStrings(); it != route.endStrings(); ++it)
       os << (*it) << std::endl;
     os << std::endl;
     os << "</route>" << std::endl;
     return os;
-  }
-  static Route& make(CutModel& model);
-private:
-
-
-  StringList strings;
+  }*/
 };
 
 #endif
+
+typedef RouteImpl<std::list, std::allocator> Route;
+typedef MultiSegmentViewImpl<std::list, std::allocator> MultiSegmentView;
+typedef MultiPointViewImpl<std::list, std::allocator> MultiPointView;

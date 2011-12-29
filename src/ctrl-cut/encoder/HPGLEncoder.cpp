@@ -17,17 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "HPGLEncoder.h"
-#include "cut/graph/Traverse.h"
 #include "boost/format.hpp"
 #include "util/PJL.h"
 #include "cut/model/CutModel.h"
-#include "cut/geom/Route.h"
 
 using boost::format;
 
 void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
-  Route& route = Route::make(model);
-
   bool firstOperation = true;
   bool writingPolyline = false;
 
@@ -44,12 +40,13 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
   typedef SegmentSettings S_SET;
-  for (Route::StringIter it_ss = route.beginStrings(); it_ss != route.endStrings(); ++it_ss) {
-    const SegmentString& segString = *it_ss;
-    for (CutModel::const_iterator it_s = segString.begin(); it_s != segString.end(); ++it_s) {
+  for (CutModel::iterator it_ss = model.begin(); it_ss != model.end(); ++it_ss) {
+    SegmentView segments(*it_ss);
+
+    for (SegmentView::iterator it_s = segments.begin(); it_s != segments.end(); ++it_s) {
       const Segment &seg = *it_s;
 //FIXME
-      int power = (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
+      int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
       if (power != lastPower) {
         if (writingPolyline) {
           out << SEP;
@@ -98,8 +95,8 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
           // Check if any clipping has been done in any of the passes, and
           // inject the stray "LT" string. This has no function, just for bug compatibility
           // of the output files. See corresponding FIXME in LaserJob.cpp.
-          if (!model.wasClipped())
-            out << HPGL_LINE_TYPE;
+/*REFACTOR          if (!model.wasClipped())
+            out << HPGL_LINE_TYPE; */
           firstOperation = false;
         } else {
           out << SEP;

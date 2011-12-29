@@ -3,6 +3,6 @@
 
 #include "cut/model/CutModel.h"
 
-void reduce_linestrings(CutModel &cut, float epsilon = 3);
+void reduce(Route &route, Route::iterator begin, Route::iterator end);
 
 #endif

@@ -5,95 +5,191 @@
 #include <stdio.h>
 #include <list>
 
+#include "config/DocumentSettings.h"
 #include "config/CutSettings.h"
-#include "cut/geom/Segment.h"
+#include "cut/geom/Route.h"
 
-class Document;
-class CutModel {
+template<
+template<typename,typename> class Tcontainer = std::list,
+template<typename> class Tallocator = std::allocator
+>
+class CutModelImpl : public RouteImpl<Tcontainer, Tallocator> {
 public:
-  typedef std::list<Segment> SegmentList;
-  typedef SegmentList::iterator iterator;
-  typedef SegmentList::const_iterator const_iterator;
-  typedef SegmentList::reference reference;
-  typedef SegmentList::const_reference const_reference;
-
-  CutModel(Document& parent);
+  typedef RouteImpl<Tcontainer, Tallocator> Route_t;
+  CutModelImpl(DocumentSettings& parentSettings) :
+    Route_t(parentSettings)
+  { }
 
   //shallow copy
-  CutModel(const CutModel& other) : parent(other.getParent()), settings(other.getSettings()), clipped(0), zerolength(0) {
+  CutModelImpl(const CutModelImpl& other) :
+    Route_t(other) {
   }
 
-  ~CutModel() {
+  ~CutModelImpl() {
     this->clear();
   }
 
-  CutSettings& getSettings() {
-    return settings;
+  bool append(const Segment& seg) {
+    Segment clipped(seg);
+    this->clip(clipped);
+    if(clipped.first == clipped.second)
+      return false;
+    return Route_t::append(clipped);
   }
 
-  const CutSettings getSettings() const {
-    return settings;
+
+  /*!
+   Loads vector data from EPS/Ghostscript output
+   */
+  bool load(std::istream &input) {
+    std::string line;
+    char first;
+    int power, x, y;
+    int lx = 0, ly = 0;
+    int mx = 0, my = 0;
+    LOG_INFO_STR("Load vector data");
+    int segmentCnt = 0;
+    while (std::getline(input, line)) {
+      first = line[0];
+
+      if (first == 'X') { // End of output
+        break;
+      }
+
+      if (isalpha(first)) {
+        switch (first) {
+        case 'M': // move to
+          if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
+            lx = x;
+            ly = y;
+            mx = x;
+            my = y;
+          }
+          break;
+        case 'C': // close
+          if (lx != mx || ly != my) {
+            segmentCnt++;
+            Route::append(lx, ly, mx, my);
+          }
+          break;
+        case 'P': // power
+          if (sscanf(line.c_str() + 1, "%d", &x) == 1) {
+            // FIXME: While testing, ignore the strange color-intensity-is-power convension
+            //          power = x;
+            power = -1;
+          }
+          break;
+        case 'L': // line to
+          if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
+            segmentCnt++;
+            Route::append(lx, ly, x, y);
+            lx = x;
+            ly = y;
+          }
+          break;
+        }
+      }
+    }
+
+    LOG_DEBUG_MSG("loaded segments", segmentCnt);
+
+    if (this->empty()) {
+      return false;
+    }
+
+    return true;
   }
 
-  virtual iterator begin() { return this->segmentIndex.begin(); }
-  virtual const_iterator begin() const  { return this->segmentIndex.begin(); }
-  virtual iterator end() { return this->segmentIndex.end(); }
-  virtual const_iterator end() const  { return this->segmentIndex.end(); }
-  virtual reference front() { return this->segmentIndex.front(); }
-  virtual reference back() { return this->segmentIndex.back(); }
-  virtual const_reference front() const { return this->segmentIndex.front(); }
-  virtual const_reference back() const { return this->segmentIndex.back(); }
-  virtual size_t size() const { return this->segmentIndex.size(); }
-  virtual bool empty() const { return this->segmentIndex.empty(); }
-
-  virtual void push_front(const Segment& seg);
-  virtual void push_back(const Segment& seg);
-  virtual void splice(iterator pos, CutModel& other, iterator begin, iterator end);
-  virtual iterator find(const Segment& seg) { return std::find(begin(),end(), seg); };
-  virtual void remove(Segment& seg);
-  virtual iterator erase(iterator it);
-  virtual void clear();
-  virtual void copy(const CutModel& other);
-
-  bool create(const Segment& segment);
-  bool create(const Point&  p1, const Point&  p2);
-  bool create(const Point&  p1, const Point&  p2, const Segment& seg);
-  bool create(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY);
-
-  bool wasClipped() const {
-    return this->clipped > 0;
+  /*!
+   Loads vector data from EPS/Ghostscript output from the given file
+   */
+  bool load(const std::string &filename) {
+    std::ifstream infile(filename.c_str(), std::ios_base::in);
+    return this->load(infile);
   }
 
-  bool load(const std::string &filename);
-  bool load(std::istream &input);
-  void clip(Segment& seg);
-  void operator=(const CutModel& other);
+  void clip(Segment& seg) {
+    typedef DocumentSettings ds;
+    int resolution = this->get(ds::RESOLUTION);
+    double width = this->get(ds::WIDTH).in(PX, resolution);
+    double height = this->get(ds::HEIGHT).in(PX, resolution);
 
-  bool hasParent() const {
-    return parent != NULL;
-  }
+    Segment leftBedBorder(Point(0, 0),Point(0, height-1));
+    Segment bottomBedBorder(Point(0, height-1),Point(width-1, height-1));
+    Segment rightBedBorder(Point(width-1, height-1),Point(width-1, 0));
+    Segment topBedBorder(Point(width-1, 0),Point(0, 0));
 
-  Document* getParent() const {
-    return parent;
-  }
+    Point intersection;
+    Segment clipped;
 
-  template<typename T, typename V>
-  void put(const Settings::Key<T>& key, V value) {
-    settings.put(key,value);
-  }
+    if(seg.first.x < 0 || seg.second.x < 0) {
+      // out of bounds;
+      if(seg.first.x < 0 && seg.second.x < 0) {
+        return;
+      }
 
-  template<typename T>
-  const T get(const Settings::Key<T>& key) const {
-    return settings.get(key);
+      if(intersects(seg, leftBedBorder, intersection) == ALIGN_INTERSECT) {
+        if(seg.first.x < seg.second.x)
+          seg.first = intersection;
+        else
+          seg.second = seg.first;
+          seg.first = intersection;
+
+        intersection = Point();
+      }
+    }
+
+    if(seg.first.y < 0 || seg.second.y < 0) {
+      if(seg.first.y < 0 && seg.second.y < 0) {
+        return;
+      }
+
+      if(intersects(seg, topBedBorder, intersection) == ALIGN_INTERSECT) {
+        if(seg.first.y < seg.second.y)
+          seg.first = intersection;
+        else
+          seg.second = seg.first;
+          seg.first = intersection;
+
+        intersection = Point();
+      }
+    }
+
+    if(greater_than(seg.first.x,width - 1) || greater_than(seg.second.x,width - 1)) {
+      if(greater_than(seg.first.x, width - 1) && greater_than(seg.second.x,width - 1)) {
+        return;
+      }
+
+      if(intersects(seg, rightBedBorder, intersection) == ALIGN_INTERSECT) {
+        if(seg.first.x > seg.second.x)
+          seg.first = intersection;
+        else
+          seg.second = seg.first;
+          seg.first = intersection;
+
+        intersection = Point();
+      }
+    }
+
+    if(greater_than(seg.first.y, height - 1) || greater_than(seg.second.y,height - 1)) {
+      if(greater_than(seg.first.y, height - 1) && greater_than(seg.second.y,height - 1)) {
+        return;
+      }
+      if(intersects(seg, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
+        if(seg.first.y > seg.second.y)
+          seg.first = intersection;
+        else
+          seg.second = seg.first;
+          seg.first = intersection;
+      }
+    }
   }
 protected:
-  //FIXME should be managed by settings
-  Document* parent;
-  CutSettings settings;
+  /* REFACTOR
   uint64_t clipped;
   uint64_t zerolength;
-  SegmentList segmentIndex;
+  */
 };
 
-
+typedef CutModelImpl<std::list, std::allocator> CutModel;
 #endif /* CUTMODEL_H_ */

@@ -22,7 +22,7 @@
 #include "cut/graph/Traverse.h"
 #include "cut/geom/SegmentTree.h"
 
-void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV, bool forward)
+void walkTheEdge(Route& skins, SegmentGraph& graph, const SegmentGraph::Edge lastEdge, const SegmentGraph::Vertex outV)
 {
   SegmentGraph::Edge nextEdge;
   Segment& lastSegment = graph[lastEdge];
@@ -37,14 +37,9 @@ void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const 
     assert(false);
 
   if(!graph[lastEdge].owned) {
-    if(skins.append(lastSegment)) {
-      segTree.remove(lastSegment);
-      graph[lastEdge].owned = true;
-    } else if(!forward) {
-      skins.create(lastSegment);
-      segTree.remove(lastSegment);
-      graph[lastEdge].owned = true;
-    }
+    if(!skins.append(lastSegment))
+      skins.push_back(lastSegment);
+    graph[lastEdge].owned = true;
   } else {
     return;
   }
@@ -86,20 +81,20 @@ void walkTheEdge(Route& skins, SegmentTree& segTree, SegmentGraph& graph, const 
   }
 
   if (found) {
-    walkTheEdge(skins, segTree, graph, nextEdge, get_opposite(graph, nextEdge, outV), !forward);
+    walkTheEdge(skins, graph, nextEdge, get_opposite(graph, nextEdge, outV));
   }
 
   //polyline fully consumed
 }
 
-bool pop_mostleft_free_vertex(SegmentGraph::Vertex& v, SegmentGraph::PointMap& point2Vertex, const SegmentGraph freeGeometryView) {
+bool pop_mostleft_free_vertex(SegmentGraph::Vertex& v, SegmentGraph::PointMap& point2Vertex, const SegmentGraph& graph) {
   boost::graph_traits<SegmentGraph>::out_edge_iterator eit, eend;
   for(SegmentGraph::PointMap::iterator it = point2Vertex.begin(); it != point2Vertex.end(); ++it) {
     SegmentGraph::Vertex& candidate = (*it).second;
     point2Vertex.erase(it);
 
-    boost::tie(eit, eend) = boost::out_edges(candidate, freeGeometryView);
-    if(eit != eend) {
+    boost::tie(eit, eend) = boost::out_edges(candidate, graph);
+    if(eit != eend && !graph[*eit].owned) {
       // found vertex of a free edge
       v = candidate;
       return true;
@@ -113,16 +108,10 @@ void traverse_onion(Route& skins, SegmentList::iterator first, SegmentList::iter
   LOG_INFO_STR("Deonion");
   SegmentGraph graph;
   create_planar_graph(graph, first, last);
-  SegmentTree& segTree = SegmentTree::build(first,last);
   SegmentGraph::PointMap point2Vertex = graph.getPointMap();
   boost::graph_traits<SegmentGraph>::out_edge_iterator eit, eend;
-
-  while (!segTree.empty()) {
-    SegmentGraph::Vertex startVertex;
-    // no more vertices with free edges
-    if(!pop_mostleft_free_vertex(startVertex, point2Vertex, graph))
-      break;
-
+  SegmentGraph::Vertex startVertex;
+  while (pop_mostleft_free_vertex(startVertex, point2Vertex, graph)) {
     const Point& startPoint = graph[startVertex];
     boost::tie(eit, eend) = boost::out_edges(startVertex, graph);
     SegmentGraph::Edge steapest;
@@ -132,11 +121,10 @@ void traverse_onion(Route& skins, SegmentList::iterator first, SegmentList::iter
     const Point& outPoint = graph[outVertex];
 
     if(outPoint.y < startPoint.y || (outPoint.y == startPoint.y && outPoint.x > startPoint.x))
-      walkTheEdge(skins, segTree, graph, steapest, outVertex, true);
+      walkTheEdge(skins, graph, steapest, outVertex);
     else
-      walkTheEdge(skins, segTree, graph, steapest, startVertex, true);
+      walkTheEdge(skins, graph, steapest, startVertex);
   }
 
-  // refactor
-  //reverse(skins.begin(), skins.end());
+  reverse(skins.begin(), skins.begin());
 }

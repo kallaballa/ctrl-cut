@@ -11,26 +11,35 @@
 #include <boost/math/special_functions.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include <iostream>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/linestring.hpp>
+
 static const float CC_PI = atan2(0,-1);
 
-struct OpParams {
-  int power;
-  int speed;
-  int frequency;
+#include <iostream>
 
-  OpParams(): power(0), speed(0), frequency(0) {};
-  OpParams(int power, int speed, int frequency = 5000): power(power), speed(speed), frequency(frequency) {}
-};
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/register/point.hpp>
 
+typedef int32_t Coord_t;
 class Point {
 public:
-  int32_t x;
-  int32_t y;
+  Coord_t x;
+  Coord_t y;
 
   Point(): x(0), y(0) {}
-  Point(int32_t x, int32_t y): x(x), y(y) {}
+  Point(Coord_t x, Coord_t y): x(x), y(y) {}
 
-  const int32_t &operator[](size_t idx) const {
+  Coord_t &operator[](size_t idx) {
+    assert(idx < 2);
+    if (idx == 0)
+      return x;
+    else
+      return y;
+  }
+
+  const Coord_t &operator[](size_t idx) const {
     assert(idx < 2);
     if (idx == 0)
       return x;
@@ -51,8 +60,8 @@ public:
   }
 
   Point& operator-(const Point&  other) const {
-    int32_t x_diff = this->x - other.x;
-    int32_t y_diff = this->y - other.y;
+    Coord_t x_diff = this->x - other.x;
+    Coord_t y_diff = this->y - other.y;
     return (* new Point(x_diff, y_diff));
   }
 
@@ -65,6 +74,8 @@ public:
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
 };
+
+BOOST_GEOMETRY_REGISTER_POINT_2D(Point, Coord_t, cs::cartesian, x, y)
 
 class Box {
 public:
@@ -83,13 +94,13 @@ public:
 };
 
 // explicit mixed sign comparison to prevent warnings
-inline bool greater_than(int32_t s, uint32_t us) {
-  return s > (int32_t)us;
+inline bool greater_than(Coord_t s, uint32_t us) {
+  return s > (Coord_t)us;
 }
 
 // explicit mixed sign comparison to prevent warnings
-inline bool lesser_than(int32_t s, uint32_t us) {
-  return s < (int32_t)us;
+inline bool lesser_than(Coord_t s, uint32_t us) {
+  return s < (Coord_t)us;
 }
 
 #endif /* GEOMETRY_H_ */

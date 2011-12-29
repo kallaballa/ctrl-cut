@@ -21,18 +21,15 @@
 #include "cut/graph/Traverse.h"
 #include "cut/model/CutModel.h"
 
-bool isShared(SegmentGraph& graph, Point&  p) {
+bool isCrossing(SegmentGraph& graph, Point&  p) {
   SegmentGraph::Vertex v;
+  typedef typename boost::graph_traits<SegmentGraph>::edge_descriptor Edge;
+
   if(graph.findVertex(v,p)) {
     boost::graph_traits<SegmentGraph>::out_edge_iterator oe_it, oe_end;
-    CutModel* last_owner = NULL;
-    for(boost::tie(oe_it,oe_end) = boost::out_edges(v, graph); oe_it != oe_end; ++oe_it) {
-      Segment& current = graph[*oe_it];
-      if(last_owner != NULL && current.hasParent() && last_owner != &current.getParent())
-        return true;
-      else
-        last_owner = &current.getParent();
-    }
+    boost::tie(oe_it,oe_end) = boost::out_edges(v, graph);
+    if(std::distance(oe_it,oe_end) > 2)
+      return true;
   }
   return false;
 }
@@ -40,82 +37,17 @@ bool isShared(SegmentGraph& graph, Point&  p) {
 /*!
  * Reduce number of vertices in polylines by approximating the polylines with fewer line segments.
  */
-void reduce_linestrings(CutModel &model, float epsilon)
-{
+void reduce(Route &route, Route::iterator begin, Route::iterator end) {
   // FIxME reduce seems to cause memory corruption when called twice on a model
-  epsilon = 0.0f;
-
-  if(epsilon == 0.0f)
+  if(1)
     return;
 
   LOG_INFO_STR("Reduce");
-  LOG_DEBUG_MSG("Segments before", model.size());
-  SegmentGraph graph;
-  Route join(model);
-  make_linestrings(join, model.begin(), model.end(), graph);
-  CutModel newModel(model);
-
-  // Reduce each polyline separately
-  for (Route::StringIter it = join.beginStrings(); it != join.endStrings(); ++it) {
-    SegmentString& string = *it;
-    // Select a start iterator
-    SegmentString::iterator startit = string.begin();
-
-    // Walk the entire string
-    SegmentString::iterator  pit;
-    for (pit = startit; ++pit != string.end(); ) {
-      const Segment& startSegment = *startit;
-      float largest = 0;
-      SegmentString::iterator largestit;
-      if (!string.isClosed()) {
-        // Span a segment to the current vertex for testing
-        Segment consider(startSegment.first, (*pit).second, startSegment);
-
-        // Check distance from every intermediate vertex
-        for (SegmentString::iterator pit2 = startit; pit2 != pit; pit2++) {
-          float d = consider.distance((*pit2)[1]);
-          if (d > largest) {
-            largest = d;
-            largestit = pit2;
-          }
-
-          if(isShared(graph,(*pit2)[1])) {
-            largest = epsilon + 1;
-            largestit = pit2;
-            break;
-          }
-        }
-      }
-      else {
-        // If we span a closed polygon (start == end), we still check whether we should collapse
-        // it to a line. FIXME: This might not be desirable in the end.
-
-        // Check distance from every intermediate vertex to this vertex
-        for (SegmentString::iterator pit2 = startit; pit2 != pit; pit2++) {
-          float d = startSegment.first.distance((*pit2).second);
-          if (d > largest) {
-            largest = d;
-            largestit = pit2;
-          }
-
-          if(isShared(graph,(*pit2)[1])) {
-            largest = epsilon + 1;
-            largestit = pit2;
-            break;
-          }
-        }
-      }
-
-      // We exceeded the epsilon, split the edge and continue
-      if (largest > epsilon) {
-        newModel.create(startSegment.first, (*largestit).second, startSegment);
-        startit = ++largestit;
-      }
-    }
-    // Add last line
-    newModel.create((*startit).first, string.back().second, *startit);
+  LOG_DEBUG_MSG("Strings before", route.pointView().size());
+  //LineString simplified;
+  for(Route::iterator it = begin; it != end; ++it) {
+//    boost::geometry::simplify(*it, simplified, 0.5);
   }
 
-  model = newModel;
-  LOG_DEBUG_MSG("Segments after", model.size());
+  LOG_DEBUG_MSG("Strings after",  route.pointView().size());
 }

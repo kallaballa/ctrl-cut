@@ -23,38 +23,41 @@
 #include "cut/geom/SegmentTree.h"
 #include <list>
 
-void findWithinRange(SegmentTree& segTree, CutModel::iterator it_s, std::list<SegmentNode>& in_range) {
+void findWithinRange(std::list<SegmentNode>& in_range, const SegmentTree& segTree, const Segment& seg) {
   if(!in_range.empty())
     in_range.clear();
-  segTree.findWithinRange(it_s, in_range);
+  segTree.findWithinRange(seg, in_range);
 }
 
 /*
  * Split segments at intersection points.
  */
-void explode_segments(CutModel& model) {
+void explode_segments(Route& route, SegmentList::iterator, SegmentList::iterator) {
   LOG_INFO_STR("Explode");
-  LOG_DEBUG_MSG("Segments before", model.size());
-  SegmentTree& segTree = SegmentTree::build(model.begin(), model.end());
+  LOG_DEBUG_MSG("Segments before", route.size());
+  SegmentTree segTree;
+  SegmentTree::build(segTree, route.segmentView().begin(), route.segmentView().end());
 
   std::list<SegmentNode> in_range;
   Point intersection;
-  CutModel::iterator it_s = model.begin();
 
-  while (it_s != model.end()) {
+  SegmentList::iterator it_s = route.segmentView().begin();
+
+  while (it_s != route.segmentView().end()) {
     Segment& pick = (*it_s);
 
     bool remove_pick = false;
     bool remove_candidate = false;
 
-    findWithinRange(segTree, it_s, in_range);
+    findWithinRange(in_range, segTree, pick);
     std::list<SegmentNode>::iterator it_o = in_range.begin();
 
     while(it_o != in_range.end()) {
       remove_candidate = false;
-      Segment& candidate = *(*it_o).getIterator();
+      Segment& candidate = (*it_o).owner;
 
-      if(&pick == &candidate) {
+      if(pick == candidate) {
+        //FIXME duplicate line leak;
         ++it_o;
         continue;
       }
@@ -64,14 +67,14 @@ void explode_segments(CutModel& model) {
       if (is_res == ALIGN_INTERSECT) {
        if(pick[0] != intersection && pick[1] != intersection) {
          remove_pick = true;
-         model.create(pick[0], intersection, pick);
-         model.create(pick[1], intersection, pick);
+         route.append(pick[0], intersection);
+         route.append(pick[1], intersection);
         }
 
         if(candidate[0] != intersection && candidate[1] != intersection) {
           remove_candidate = true;
-          model.create(candidate[0], intersection, candidate);
-          model.create(candidate[1], intersection, candidate);
+          route.append(candidate[0], intersection);
+          route.append(candidate[1], intersection);
         }
       } else if(is_res == ALIGN_COINCIDENCE) {
         bool firstMatches = pick[0] == candidate[0] || pick[0] == candidate[1];
@@ -83,68 +86,66 @@ void explode_segments(CutModel& model) {
           }
         } else {
           //coincidental but neither tip connected nor identical
-          Point* pick_min;
-          Point* pick_max;
-          Point* candidate_min;
-          Point* candidate_max;
+          Point pick_min;
+          Point pick_max;
+          Point candidate_min;
+          Point candidate_max;
 
           if(pick.first < pick.second) {
-            pick_min = &pick.first;
-            pick_max = &pick.second;
+            pick_min = pick.first;
+            pick_max = pick.second;
           } else {
-            pick_min = &pick.second;
-            pick_max = &pick.first;
+            pick_min = pick.second;
+            pick_max = pick.first;
           }
 
           if(candidate.first < candidate.second) {
-            candidate_min = &candidate.first;
-            candidate_max = &candidate.second;
+            candidate_min = candidate.first;
+            candidate_max = candidate.second;
           } else {
-            candidate_min = &candidate.second;
-            candidate_max = &candidate.first;
+            candidate_min = candidate.second;
+            candidate_max = candidate.first;
           }
 
           // FIXME which gets which settings?
-          if((*candidate_min) < (*pick_max)) {
-            if((*pick_min) < (*candidate_min)) {
+          if(candidate_min < pick_max) {
+            if(pick_min < candidate_min) {
               remove_pick = true;
               remove_candidate = true;
-              if((*pick_max) < (*candidate_max)) {
-                model.create(*pick_min, *candidate_min, pick);
-                model.create(*candidate_min, *pick_max, pick);
-                model.create(*pick_max, *candidate_max, candidate);
+              if(pick_max < candidate_max) {
+                route.append(pick_min, candidate_min);
+                route.append(candidate_min, pick_max);
+                route.append(pick_max, candidate_max);
               } else {
-                model.create(*pick_min, *candidate_min, pick);
-                model.create(*candidate_min, *candidate_max, candidate);
-                model.create(*candidate_max, *pick_max, pick);
+                route.append(pick_min, candidate_min);
+                route.append(candidate_min, candidate_max);
+                route.append(candidate_max, pick_max);
               }
-            } else if((*pick_min) < (*candidate_max)) {
+            } else if(pick_min < candidate_max) {
               remove_pick = true;
               remove_candidate = true;
-              model.create(*candidate_min, *pick_min, candidate);
-              model.create(*pick_min, *candidate_max, candidate);
-              model.create(*candidate_max, *pick_max, pick);
+              route.append(candidate_min, pick_min);
+              route.append(pick_min, candidate_max);
+              route.append(candidate_max, pick_max);
             }
           }
         }
       }
 
       if(remove_candidate) {
-        segTree.remove((*it_o).getIterator());
-        model.erase((*it_o).getIterator());
+        segTree.remove((*it_o).owner);
 
         //FIXME find out why maintaining the in_range list incrementally produces invalid iterators
         if(!remove_pick) {
           //don't search again if the loop is going to break*/
-          findWithinRange(segTree,it_s, in_range);
+          findWithinRange(in_range,segTree,pick);
           it_o = in_range.begin();
         }
       } else
         ++it_o;
 
       if(remove_pick) {
-        segTree.remove(it_s);
-        it_s = model.erase(it_s);
+        segTree.remove(pick);
         break;
       }
     };
@@ -152,6 +153,5 @@ void explode_segments(CutModel& model) {
     if(!remove_pick)
       ++it_s;
   }
-  LOG_DEBUG_MSG("Segments after", model.size());
-  delete &segTree;
+  LOG_DEBUG_MSG("Segments after", route.size());
 }

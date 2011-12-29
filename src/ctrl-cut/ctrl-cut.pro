@@ -26,15 +26,15 @@ HEADERS += ./encoder/HPGLEncoder.h \
            ./util/Eps.h \
            ./util/Logger.h \
            ./util/Util.h \
-           ./cut/model/CutView.h \
            ./cut/model/Reduce.h \
            ./cut/model/CutModel.h \
            ./cut/model/Explode.h \
+           ./cut/geom/Views.h \
            ./cut/geom/Segment.h \
            ./cut/geom/Route.h \
            ./cut/geom/SegmentTree.h \
            ./cut/geom/Geometry.h \
-           ./cut/geom/SegmentString.h \
+           ./cut/geom/LineString.h \
            ./cut/graph/StringGraph.h \
            ./cut/graph/Traverse.h \
            ./cut/graph/SegmentGraph.h \
@@ -64,20 +64,16 @@ HEADERS += ./encoder/HPGLEncoder.h \
            ./svg/SvgFix.h \
            ./svg/SvgDocument.h \
            ./svg/Svg2Ps.h
-
 SOURCES += ./encoder/HPGLEncoder.cpp \
            ./encoder/PclEncoder.cpp \
            ./PostscriptParser.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
-           ./cut/model/CutView.cpp \
            ./cut/model/Explode.cpp \
-           ./cut/model/CutModel.cpp \
            ./cut/model/Reduce.cpp \
            ./cut/geom/Geometry.cpp \
            ./cut/geom/Route.cpp \
-           ./cut/geom/SegmentString.cpp \
            ./cut/geom/Segment.cpp \
            ./cut/graph/SegmentGraph.cpp \
            ./cut/graph/Traverse.cpp \

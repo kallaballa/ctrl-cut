@@ -3,6 +3,6 @@
 
 #include "CutModel.h"
 
-void explode_segments(CutModel& cut);
+void explode_segments(Route& route, SegmentList::iterator, SegmentList::iterator);
 
 #endif

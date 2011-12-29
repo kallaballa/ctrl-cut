@@ -1,16 +1,24 @@
+/*
+ * Ctrl-Cut - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "Segment.h"
 #include "cut/model/CutModel.h"
-
-Segment::Segment() : SegmentSettings(), parent(NULL) {};
-Segment::Segment(CutModel& parent) : SegmentSettings(parent.getSettings()), parent(&parent) {};
-Segment::Segment(const Point&  first, const Point&  second, const Segment& seg)
-: SegmentSettings(seg), first(first), second(second), parent(NULL), box(NULL), sphere(NULL) {
-  make_box_and_sphere(first,second);
-}
-Segment::Segment(const Point&  first, const Point&  second, CutModel& parent)
-: SegmentSettings(parent.getSettings()), first(first), second(second), parent(&parent),  box(NULL), sphere(NULL) {
-  make_box_and_sphere(first,second);
-}
 
 float Segment::distance(const Point& p) const
 {
@@ -43,7 +51,7 @@ float Segment::getSlope(bool invert) const
   // We also negate the Y axis since positive Y points downwards (left handed)
   return CC_PI - ((float)atan2(d_x, -d_y));
 }
-
+/*REFACTOR
 void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point&  translation) {
   Segment seg;
   int32_t fx;
@@ -62,3 +70,4 @@ void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::
     segments.push_back(Segment(Point(fx,fy),Point(sx,sy), seg));
   }
 }
+*/

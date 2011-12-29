@@ -22,37 +22,32 @@ using std::vector;
 using std::map;
 using std::pair;
 
-struct StringProperty {
+struct WeightProperty {
   double weight;
 
-  StringProperty(double weight=0) : weight(weight) {}
-/*
-  bool operator<(const StringProperty& other) const {
-    return this->string < other.string;
-  }*/
+  WeightProperty(double weight=0) : weight(weight) {}
 };
 
-class StringGraph : public adjacency_list<vecS, vecS, undirectedS, Point, StringProperty> {
+class DistanceGraph : public adjacency_list<vecS, vecS, undirectedS, Point, WeightProperty> {
 public:
+  boost::graph_traits<DistanceGraph>::edges_size_type edge_count;
 
-  boost::graph_traits<StringGraph>::edges_size_type edge_count;
-
-  typedef boost::graph_traits<StringGraph>
+  typedef boost::graph_traits<DistanceGraph>
     ::vertex_descriptor Vertex;
-  typedef boost::graph_traits<StringGraph>
+  typedef boost::graph_traits<DistanceGraph>
     ::edge_descriptor Edge;
-  typedef boost::graph_traits<StringGraph>
+  typedef boost::graph_traits<DistanceGraph>
       ::vertices_size_type v_size;
-    typedef std::vector<std::vector< StringGraph::Edge > > Embedding;
+    typedef std::vector<std::vector< DistanceGraph::Edge > > Embedding;
 
   typedef map<const Point, Vertex> PointMap;
 
-  StringGraph() : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>() , edge_count(0){}
-  StringGraph(const StringGraph& graph) : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>(graph) , edge_count(0) {}
-  StringGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, Point, StringProperty>(size) , edge_count(0){}
+  DistanceGraph() : adjacency_list<vecS, vecS, undirectedS, Point, WeightProperty>() , edge_count(0){}
+  DistanceGraph(const DistanceGraph& graph) : adjacency_list<vecS, vecS, undirectedS, Point, WeightProperty>(graph) , edge_count(0) {}
+  DistanceGraph(v_size size) : adjacency_list<vecS, vecS, undirectedS, Point, WeightProperty>(size) , edge_count(0){}
 
-  bool findVertex(StringGraph::Vertex& v, const Point& map);
-  StringGraph::Vertex addVertex(const Point& p);
+  bool findVertex(DistanceGraph::Vertex& v, const Point& map);
+  DistanceGraph::Vertex addVertex(const Point& p);
   void createWorkEdge(const Vertex& in, const Vertex& out);
   void createMoveEdge(const Vertex& in, const Vertex& out);
   bool hasEdge(const Vertex& in, const Vertex& out);
@@ -61,6 +56,6 @@ private:
   PointMap points;
 };
 
-StringGraph::Vertex create_complete_graph_from_point(StringGraph& graph, const Point& origin, Route::StringIter start, Route::StringIter end);
+DistanceGraph::Vertex create_complete_graph_from_point(DistanceGraph& graph, const Point& origin, Route::iterator start, Route::iterator end);
 
 #endif

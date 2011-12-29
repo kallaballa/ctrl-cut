@@ -41,7 +41,7 @@ public:
   static Key<float> REDUCE;
 
   CutSettings() : Settings() {}
-  CutSettings(const DocumentSettings& docSettings) : Settings(docSettings) {}
+  CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {}
   ~CutSettings() {}
 };
 
