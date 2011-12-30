@@ -43,11 +43,11 @@ void reduce(Route &route, Route::iterator begin, Route::iterator end) {
     return;
 
   LOG_INFO_STR("Reduce");
-  LOG_DEBUG_MSG("Strings before", route.pointView().size());
+  LOG_DEBUG_MSG("Strings before", route.size());
   //LineString simplified;
   for(Route::iterator it = begin; it != end; ++it) {
 //    boost::geometry::simplify(*it, simplified, 0.5);
   }
 
-  LOG_DEBUG_MSG("Strings after",  route.pointView().size());
+  LOG_DEBUG_MSG("Strings after",  route.size());
 }

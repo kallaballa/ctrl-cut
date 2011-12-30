@@ -21,8 +21,6 @@
 #include "CutGraph.h"
 #include "Traverse.h"
 #include "util/Logger.h"
-#include <boost/graph/properties.hpp>
-#include <boost/graph/metric_tsp_approx.hpp>
 
 struct join_strings_visitor: public planar_face_traversal_visitor {
   SegmentGraph& graph;
@@ -41,29 +39,18 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   }
 };
 
-void check(CutModel::SegmentConstIter first, CutModel::SegmentConstIter last) {
-  std::set<Segment> uniq_segments;
-
-  for (CutModel::SegmentConstIter it_s = first; it_s != last; ++it_s) {
-    const Segment& seg = *it_s;
-    // assert the segments are globally unique
-    assert(uniq_segments.find(seg) == uniq_segments.end() && uniq_segments.find(Segment(seg.second, seg.first)) == uniq_segments.end());
-    uniq_segments.insert(seg);
-  }
-}
-
-void dump(const std::string &filename, CutModel::iterator first, CutModel::iterator last) {
+void dump(const std::string &filename, Route::iterator first, Route::iterator last) {
   std::ofstream os(filename.c_str(), std::ios_base::out);
   dump(os, first,last);
   os.close();
 }
 
-void dump(std::ostream& os, CutModel::iterator first, CutModel::iterator last) {
+void dump(std::ostream& os, Route::iterator first, Route::iterator last) {
   os << "<cut>" << std::endl;
-  /* FIXME
-  for(CutModel::iterator it = first; it != last; ++it)
+
+  for(Route::iterator it = first; it != last; ++it)
     os << *it;
-    */
+
   os << "</cut>" << std::endl;
 }
 
@@ -85,34 +72,3 @@ void make_linestrings(Route& strings, SegmentList::const_iterator first, Segment
   make_linestrings(strings, first, last, segGraph);
 }
 */
-
-#include "boost/function_output_iterator.hpp"
-#include "boost/bind.hpp"
-
-void travel_linestrings(Route& route, Route::iterator first, Route::iterator last) {
-  using namespace boost;
-  LOG_INFO_STR("travel linestrings");
-  LOG_DEBUG_MSG("strings before", route.size());
-
-  DistanceGraph graph;
-  DistanceGraph::Vertex v_origin = create_complete_graph_from_point(graph, Point(0,0),first, last);
-
-  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, WeightProperty>, double WeightProperty::*>::type WeightMap;
-  WeightMap weight_map(get(&WeightProperty::weight, graph));
-
-  vector<DistanceGraph::Vertex> tour;
-  double len = 0.0;
-  RouteBuilder<DistanceGraph> rb(graph, route);
-  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map,
-      boost::make_tsp_tour_visitor(
-          make_function_output_iterator(boost::bind<void>(rb, _1))
-      )
-  );
-
-  LOG_DEBUG_MSG("strings after", route.size());
-  LOG_INFO_MSG("Tour length", len);
-
-#ifdef DEBUG
-  check(route.segmentView().begin(), route.segmentView().end());
-#endif
-}

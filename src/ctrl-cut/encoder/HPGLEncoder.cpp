@@ -40,10 +40,8 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
   typedef SegmentSettings S_SET;
-  for (CutModel::iterator it_ss = model.begin(); it_ss != model.end(); ++it_ss) {
-    SegmentView segments(*it_ss);
-
-    for (SegmentView::iterator it_s = segments.begin(); it_s != segments.end(); ++it_s) {
+  MultiSegmentView msv(model);
+    for (MultiSegmentView::iterator it_s = msv.begin(); it_s != msv.end(); ++it_s) {
       const Segment &seg = *it_s;
 //FIXME
       int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
@@ -122,7 +120,6 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
       if (beginX == lastX && beginY == lastY)
         out << format(",%d,%d") % beginX % beginY;
     }
-  }
 
   if (writingPolyline) out << SEP;
   out << HPGL_END;

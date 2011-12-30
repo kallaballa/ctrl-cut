@@ -4,48 +4,114 @@
 #include <list>
 #include "Geometry.h"
 #include "Segment.h"
+#include "boost/function_output_iterator.hpp"
+
+template <class X>
+struct SegmentInputIterator
+  : boost::InputIteratorConcept<X>
+{
+ private:
+    typedef std::iterator_traits<X> t;
+ public:
+    typedef typename t::value_type value_type;
+    BOOST_CONCEPT_ASSERT((boost::Convertible<value_type, Segment>));
+};
+
+template <class x>
+struct SegmentOutputIterator
+  : boost::OutputIteratorConcept<x,Segment>
+{
+
+};
+
+template <class Tgeom>
+struct SegmentAppender
+{
+  Tgeom* geom;
+
+  SegmentAppender()
+      : geom(NULL) {}
+  SegmentAppender(Tgeom& geom)
+      : geom(&geom) {}
+
+  void operator()(const Segment& seg) const {
+    geom->append(seg);
+  }
+};
+
+template <typename Tgeom>
+class SegmentAppendIterator : public boost::function_output_iterator<SegmentAppender<Tgeom> > {
+public:
+  typedef boost::function_output_iterator<SegmentAppender<Tgeom> > _Base;
+  typedef std::output_iterator_tag iterator_category;
+  typedef void value_type;
+  typedef void difference_type;
+  typedef void pointer;
+  typedef void reference;
+
+  explicit SegmentAppendIterator() :
+      boost::function_output_iterator<SegmentAppender<Tgeom> >(),
+      geom(NULL) {};
+
+  SegmentAppendIterator(Tgeom& geom) :
+      boost::function_output_iterator<SegmentAppender<Tgeom> >(SegmentAppender<Tgeom>(geom)),
+      geom(&geom)
+      {};
+
+  SegmentAppendIterator(const SegmentAppendIterator& other) :
+      boost::function_output_iterator<SegmentAppender<Tgeom> >(SegmentAppender<Tgeom>(*other.geom)),
+      geom(other.geom)
+      {};
+
+  void operator+=(const Segment& seg) {
+      geom->push_back(seg);
+  }
+private:
+  Tgeom* geom;
+};
 
 template<
   typename Tparent,
-  typename Tbase,
   template<typename,typename> class Tcontainer = std::list,
   template<typename> class Tallocator = std::allocator
 >
-struct MultiIter : public Tcontainer<Tbase, Tallocator<Tbase> >::iterator {
+struct MultiIterBase {
   typedef Tparent _Parent;
-  typedef MultiIter<Tparent,Tbase,Tcontainer,Tallocator> _Self;
+  typedef MultiIterBase<Tparent,Tcontainer,Tallocator> _Self;
+  typedef typename _Parent::iterator _ValueIter;
+  typedef typename Tcontainer<Tparent, Tallocator<Tparent> >::iterator _SuperIter;
 
-  typedef typename _Parent::iterator _BaseIter;
-  typedef typename Tcontainer<Tparent, Tallocator<Tparent> >::iterator _MultiIter;
+  _SuperIter parentBegin;
+  _SuperIter parentEnd;
+  _SuperIter parentCurrent;
+  _ValueIter current;
+  bool isEnd;
 
-  typedef typename _BaseIter::difference_type difference_type;;
-  typedef typename _BaseIter::iterator_category iterator_category;
-  typedef typename _BaseIter::value_type value_type;
-  typedef typename _BaseIter::pointer pointer;
-  typedef typename _BaseIter::reference reference;
+  explicit MultiIterBase(_SuperIter begin, _SuperIter end) :
+    parentBegin(begin), parentEnd(end), parentCurrent(begin), isEnd(begin == end) {
+    if(!isEnd)
+      current = getCurrentBegin();
+  }
 
-  _MultiIter parentBegin;
-  _MultiIter parentEnd;
-  _MultiIter parentCurrent;
-  _BaseIter current;
+  MultiIterBase(const _SuperIter& other) :
+    parentBegin(other.parentBegin), parentEnd(other.parentEnd), current(other.current), isEnd(other.isEnd){}
 
-  explicit MultiIter(_MultiIter begin, _MultiIter end) :
-    parentBegin(begin), parentEnd(end), current(getCurrentBegin()) {}
-
-  MultiIter(const _MultiIter& other) :
-    parentBegin(other.parentBegin), parentEnd(other.parentEnd), current(other.current) {}
-
-  typename _Self::reference operator*() const {
+  typename _ValueIter::reference operator*() const {
     return *current;
   }
 
-  typename _Self::pointer operator->() const {
+  typename _ValueIter::pointer operator->() const {
     return &*current;
   }
 
   void nextParent() {
-    parentCurrent++;
-    current = getCurrentBegin();
+    if(!isEnd) {
+      if(++parentCurrent == parentEnd) {
+        isEnd = true;
+      } else {
+        current = getCurrentBegin();
+      }
+    }
   }
 
   void prevParent() {
@@ -55,10 +121,9 @@ struct MultiIter : public Tcontainer<Tbase, Tallocator<Tbase> >::iterator {
 
   _Self&
   operator++() {
+    current++;
     if(current == getCurrentEnd())
       nextParent();
-
-    current++;
     return *this;
   }
 
@@ -70,10 +135,9 @@ struct MultiIter : public Tcontainer<Tbase, Tallocator<Tbase> >::iterator {
 
   _Self&
   operator--() {
+    current--;
     if(current == getCurrentBegin())
       prevParent();
-
-    current--;
     return *this;
   }
 
@@ -84,115 +148,68 @@ struct MultiIter : public Tcontainer<Tbase, Tallocator<Tbase> >::iterator {
   }
 
   bool operator==(const _Self& __x) const {
-    return current == __x.current;
+    return this->isEnd == __x.isEnd || this->current == __x.current;
   }
 
   bool operator!=(const _Self& __x) const {
-    return current != __x.current;
+    return !this->operator ==(__x);
   }
 
-  _BaseIter getCurrentBegin() {
+  _ValueIter getCurrentBegin() {
     return (*parentCurrent).begin();
   }
 
-  _BaseIter getCurrentEnd() {
+  _ValueIter getCurrentEnd() {
     return (*parentCurrent).end();
   }
 };
 
 template<
   typename Tparent,
-  typename Tbase,
   template<typename,typename> class Tcontainer = std::list,
   template<typename> class Tallocator = std::allocator
 >
-struct MultiConstIter : public Tcontainer<Tbase, Tallocator<Tbase> >::const_iterator {
+struct MultiIter : public MultiIterBase<Tparent, Tcontainer, Tallocator> {
   typedef Tparent _Parent;
-  typedef MultiConstIter<Tparent,Tbase,Tcontainer,Tallocator> _Self;
+  typedef MultiIterBase<_Parent, Tcontainer,Tallocator> _Base;
 
-  typedef typename Tparent::const_iterator _BaseIter;
-  typedef typename Tcontainer<Tparent, Tallocator<Tparent> >::const_iterator _MultiIter;
+  typedef typename _Parent::iterator _ValueIter;
+  typedef typename Tcontainer<Tparent, Tallocator<Tparent> >::iterator _SuperIter;
 
-  typedef typename _BaseIter::difference_type difference_type;;
-  typedef typename _BaseIter::iterator_category iterator_category;
-  typedef typename _BaseIter::value_type value_type;
-  typedef typename _BaseIter::pointer pointer;
-  typedef typename _BaseIter::reference reference;
+  typedef typename _ValueIter::difference_type difference_type;
+  typedef typename _ValueIter::iterator_category iterator_category;
+  typedef typename _ValueIter::value_type value_type;
+  typedef typename _ValueIter::pointer pointer;
+  typedef typename _ValueIter::reference reference;
 
-  _MultiIter parentBegin;
-  _MultiIter parentEnd;
-  _MultiIter parentCurrent;
-  _BaseIter current;
+  explicit MultiIter(_SuperIter begin, _SuperIter end) :
+    _Base(begin,end) {}
 
-  explicit MultiConstIter(_MultiIter begin, _MultiIter end) :
-    parentBegin(begin), parentEnd(end), current(getCurrentBegin()) {}
+  MultiIter(const MultiIter& other) : _Base(other) {}
+};
 
-  MultiConstIter(const _Self& other) :
-    parentBegin(other.parentBegin), parentEnd(other.parentEnd), current(other.current) {}
+template<
+  typename Tparent,
+  template<typename,typename> class Tcontainer = std::list,
+  template<typename> class Tallocator = std::allocator
+>
+struct MultiConstIter : public MultiIterBase<Tparent, Tcontainer, Tallocator> {
+  typedef Tparent _Parent;
+  typedef MultiIterBase<_Parent, Tcontainer,Tallocator> _Base;
 
-  typename _Self::reference operator*() const {
-    return *current;
-  }
+  typedef typename _Parent::iterator _ValueIter;
+  typedef typename Tcontainer<Tparent, Tallocator<Tparent> >::iterator _SuperIter;
 
-  typename _Self::pointer operator->() const {
-    return &*current;
-  }
+  typedef typename _ValueIter::difference_type difference_type;
+  typedef typename _ValueIter::iterator_category iterator_category;
+  typedef typename _ValueIter::value_type value_type;
+  typedef typename _ValueIter::pointer pointer;
+  typedef typename _ValueIter::reference reference;
 
-  void nextParent() {
-    parentCurrent++;
-    current = getCurrentBegin();
-  }
+  explicit MultiConstIter(_SuperIter begin, _SuperIter end) :
+    _Base(begin,end) {}
 
-  void prevParent() {
-    parentCurrent--;
-    current = getCurrentEnd();
-  }
-
-  _Self&
-  operator++() {
-    if(current == getCurrentEnd())
-      nextParent();
-
-    current++;
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    if(current == getCurrentBegin())
-      prevParent();
-
-    current--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    --(*this);
-    return __tmp;
-  }
-
-  bool operator==(const _Self& __x) const {
-    return current == __x.current;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return current != __x.current;
-  }
-
-  _BaseIter getCurrentBegin() {
-    return (*parentCurrent).begin();
-  }
-
-  _BaseIter getCurrentEnd() {
-    return (*parentCurrent).end();
-  }
+  MultiConstIter(const MultiConstIter& other) : _Base(other) {}
 };
 
 template<
@@ -200,18 +217,60 @@ template<
   template<typename> class Tallocator = std::allocator
 >
 struct SegmentWise {
-  typedef typename Tcontainer<Point, Tallocator<Point> >::const_iterator _ParentIter;
+  typedef typename Tcontainer<Point, Tallocator<Point> >::iterator _ParentIter;
   typedef SegmentWise<Tcontainer, Tallocator> _Self;
 
   _ParentIter begin;
   _ParentIter end;
   _ParentIter last;
   _ParentIter current;
+  bool isEnd;
+
+  explicit SegmentWise() : isEnd(true) {
+  }
 
   explicit SegmentWise(_ParentIter parentBegin, _ParentIter parentEnd) :
-    begin(parentBegin), end(parentEnd), last(parentBegin), current(++parentBegin){
+    begin(parentBegin), end(parentEnd), last(parentBegin), isEnd(parentBegin == parentEnd){
     // check we are having either no or at least 2 points
-    assert(begin != end && current == end);
+    if(!isEnd)
+      current = ++parentBegin;
+    else
+      current = parentEnd;
+    if(current == parentEnd)
+      isEnd = true;
+  }
+
+  _Self& operator++() {
+    last = current++;
+    if(current == end)
+      isEnd= true;
+    return *this;
+  }
+
+  _Self operator++(int) {
+    _Self __tmp = *this;
+    //FIXME track end only once
+    ++(*this);
+    return __tmp;
+  }
+
+  _Self& operator--() {
+    last = current--;
+    return *this;
+  }
+
+  _Self operator--(int) {
+    _Self __tmp = *this;
+    ++(*this);
+    return __tmp;
+  }
+
+  bool operator==(const _Self& __x) const {
+    return this->isEnd == __x.isEnd || this->current == __x.current;
+  }
+
+  bool operator!=(const _Self& __x) const {
+    return !this->operator ==(__x);
   }
 };
 
@@ -220,57 +279,34 @@ template<
   template<typename> class Tallocator = std::allocator
 >
 struct SegmentWiseIterator :
-  public Tcontainer<Segment, Tallocator<Segment> >::iterator,
   public SegmentWise<Tcontainer,Tallocator> {
     typedef SegmentWiseIterator<Tcontainer,Tallocator> _Self;
-    typedef SegmentWise<Tcontainer,Tallocator> _Wise;
-    typedef typename Tcontainer<Point, Tallocator<Point> >::iterator _ParentIter;
-    typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator _ChildIter;
+    typedef SegmentWise<Tcontainer,Tallocator> _Base;
 
+    typedef typename Tcontainer<Point, Tallocator<Point> >::iterator _ParentIter;
+    typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator _ValueIter;
+
+    typedef typename _ValueIter::difference_type difference_type;
+    typedef typename _ValueIter::iterator_category iterator_category;
+    typedef typename _ValueIter::value_type value_type;
+    typedef typename _ValueIter::pointer pointer;
+    typedef typename _ValueIter::reference reference;
+
+  explicit SegmentWiseIterator() :
+    _Base()
+     {}
   explicit SegmentWiseIterator(_ParentIter parentBegin, _ParentIter  parentEnd) :
-    SegmentWise<Tcontainer,Tallocator> (parentBegin, parentEnd)
+    _Base(parentBegin, parentEnd)
      {}
 
-  typename _ChildIter::reference operator*() const {
+  reference operator*() const {
     //FIXME
-    return * new Segment(*_Wise::last, *_Wise::current);
+    return * new Segment(*_Base::last, *_Base::current);
   }
 
-  typename _ChildIter::pointer operator->() const {
-    return &Segment(*_Wise::last, *_Wise::current);
-  }
-
-  _Self&
-  operator++() {
-    _Wise::last = _Wise::current++;
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    _Wise::last = _Wise::current--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-//FIXME concept check
-  virtual bool operator==(const _Self& __x) const {
-    return _Wise::current == __x.current;
-  }
-
-  virtual bool operator!=(const _Self& __x) const {
-    return _Wise::current != __x.current;
+  pointer const operator->() const {
+    //FIXME
+    return new Segment(*_Base::last, *_Base::current);
   }
 };
 
@@ -279,60 +315,36 @@ template<
   template<typename> class Tallocator = std::allocator
 >
 struct SegmentWiseConstIterator :
-  public Tcontainer<Segment, Tallocator<Segment> >::const_iterator,
   public SegmentWise<Tcontainer,Tallocator> {
-    typedef SegmentWiseConstIterator<Tcontainer,Tallocator> _Self;
-    typedef SegmentWise<Tcontainer,Tallocator> _Wise;
+    typedef SegmentWiseIterator<Tcontainer,Tallocator> _Self;
+    typedef SegmentWise<Tcontainer,Tallocator> _Base;
+
     typedef typename Tcontainer<Point, Tallocator<Point> >::const_iterator _ParentIter;
-    typedef typename Tcontainer<Segment, Tallocator<Segment> >::const_iterator _ChildIter;
+    typedef typename Tcontainer<Segment, Tallocator<Segment> >::const_iterator _ValueIter;
 
+    typedef typename _ValueIter::difference_type difference_type;
+    typedef typename _ValueIter::iterator_category iterator_category;
+    typedef typename _ValueIter::value_type value_type;
+    typedef typename _ValueIter::pointer pointer;
+    typedef typename _ValueIter::reference reference;
+
+  explicit SegmentWiseConstIterator() :
+      _Base()
+  {}
   explicit SegmentWiseConstIterator(_ParentIter parentBegin, _ParentIter  parentEnd) :
-    SegmentWise<Tcontainer,Tallocator> (parentBegin, parentEnd)
-     {}
+      _Base(parentBegin, parentEnd)
+  {}
 
-  typename _ChildIter::reference operator*() const {
+  reference operator*() const {
     //FIXME
-    return * new Segment(*_Wise::last, *_Wise::current);
+    return * new Segment(*_Base::last, *_Base::current);
   }
 
-  typename _ChildIter::pointer const operator->() const {
-    return &Segment(*_Wise::last, *_Wise::current);
-  }
-
-  _Self&
-  operator++() {
-    _Wise::last = _Wise::current++;
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-  _Self&
-  operator--() {
-    _Wise::last = _Wise::current--;
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-//FIXME concept check
-  virtual bool operator==(const _Self& __x) const {
-    return _Wise::current == __x.current;
-  }
-
-  virtual bool operator!=(const _Self& __x) const {
-    return _Wise::current != __x.current;
+  pointer const operator->() const {
+    //FIXME
+    return new Segment(*_Base::last, *_Base::current);
   }
 };
-
 template<
   typename Titer,
   typename TconstIter,

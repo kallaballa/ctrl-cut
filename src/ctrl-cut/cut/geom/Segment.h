@@ -31,7 +31,9 @@ public:
 
 //FIXME REFEREMCE!
   Segment() {};
-  Segment(Point first, Point second) : first(first), second(second)  {}
+  Segment(Point first, Point second) : first(first), second(second)  {
+    make_box_and_sphere(first,second);
+  }
 
   const Point& operator[](size_t idx) const {
     assert(idx < 2);

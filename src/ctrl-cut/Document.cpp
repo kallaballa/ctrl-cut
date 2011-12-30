@@ -141,11 +141,19 @@ void Document::write(std::ostream &out) {
 Document& Document::preprocess() {
    for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
      CutModel& model = **it;
+     dump("input.txt", model.begin(), model.end());
+
      CutModel exploded(model);
-     explode_segments(exploded, model.segmentView().begin(), model.segmentView().end());
+     MultiSegmentView sv(model);
+     explode_segments(SegmentAppendIterator<CutModel>(exploded), sv.begin(), sv.end());
+     dump("exploded.txt", exploded.begin(), exploded.end());
+
      CutModel reduced(model);
      reduce(reduced, exploded.begin(), exploded.end());
+     dump("reduced.txt", reduced.begin(), reduced.end());
+
      model = reduced;
+     dump("after-copy.txt", model.begin(), model.end());
    }
 
    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {

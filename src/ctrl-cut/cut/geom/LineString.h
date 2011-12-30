@@ -53,17 +53,11 @@ public:
   typedef Tcontainer<Point, Tallocator<Point> > _BaseClass;
   typedef typename Tcontainer<Point, Tallocator<Point> >::iterator iterator;
   typedef typename Tcontainer<Point, Tallocator<Point> >::const_iterator const_iterator;
-  typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator SegmentIter;
-  typedef typename Tcontainer<Segment, Tallocator<Segment> >::const_iterator SegmentConstIter;
 
   //only copy settings and inherit the parent settings
   LineStringImpl(CutSettings& parentSettings) : settings(parentSettings) {}
 
   LineStringImpl(const LineStringImpl& other) : _BaseClass(other), settings(other.settings) {
-  }
-
-  SegmentViewImpl<Tcontainer, Tallocator> segmentView() {
-    return SegmentViewImpl<Tcontainer, Tallocator>(*this);
   }
 
   bool append(const int32_t& inX,const int32_t& inY,const int32_t& outX,const int32_t& outY) {
@@ -120,6 +114,23 @@ public:
   void copy(const LineStringImpl& other) {
     (*static_cast<_BaseClass*>(this)) = other;
     this->settings = other.settings;
+  }
+
+  friend std::ostream& operator<<(std::ostream &os, LineStringImpl& string)  {
+    os << "<string>" << std::endl;
+    os << "  <points>" << std::endl;
+    for(LineStringImpl::iterator it=string.begin(); it != string.end(); ++it)
+      os << (*it) << std::endl;
+    os << std::endl;
+    os << "  </points>" << std::endl;
+    os << "  <segments>" << std::endl;
+    SegmentViewImpl<std::list> sv(string);
+    for(SegmentViewImpl<std::list>::iterator it=sv.begin(); it != sv.end(); ++it)
+      os << (*it) << std::endl;
+    os << std::endl;
+    os << "  </segments>" << std::endl;
+    os << "</route>" << std::endl;
+    return os;
   }
 private:
   SegmentSettings settings;

@@ -11,6 +11,9 @@
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
+#include "boost/function_output_iterator.hpp"
+#include <boost/graph/properties.hpp>
+#include <boost/graph/metric_tsp_approx.hpp>
 
 #include "cut/geom/Geometry.h"
 
@@ -21,19 +24,23 @@ using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
 
-template<typename Graph>
-class RouteBuilder {
+template<typename Tgraph, typename TsegmentOutputIterator>
+class VertexAppender {
 public:
-  Graph* graph;
-  Route* route;
+  Tgraph* graph;
+  TsegmentOutputIterator* sink;
 
-  RouteBuilder(Graph& graph, Route& route) : graph(&graph), route(&route), first(true) {}
-  RouteBuilder(const RouteBuilder& rb) : graph(rb.graph), route(rb.route), first(rb.first) {}
+  VertexAppender(Tgraph& graph, TsegmentOutputIterator& sink) : graph(&graph), sink(&sink), first(true) {
+    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
+  }
+  VertexAppender(const VertexAppender& rb) : graph(rb.graph), sink(rb.sink), first(rb.first) {
+    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
+  }
 
-  void operator()(typename Graph::Vertex v) {
-    Point& current = (*graph)[v];
+  void operator()(typename Tgraph::Vertex v) {
+    const Point& current = (*graph)[v];
     if(!first) {
-      route->append(Segment(this->last,current));
+      sink++ = Segment(this->last,current);
     }
     this->last = current;
   }
@@ -42,11 +49,55 @@ private:
   Point last;
 };
 
-void dump(const std::string &filename, CutModel::iterator first, CutModel::iterator last);
-void dump(std::ostream& os,CutModel::iterator first, CutModel::iterator last);
+template<typename TsegmentInputIterator>
+void check(TsegmentInputIterator first, TsegmentInputIterator last) {
+  BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
+
+  std::set<Segment> uniq_segments;
+
+  for (TsegmentInputIterator it_s = first; it_s != last; ++it_s) {
+    const Segment& seg = *it_s;
+    // assert the segments are globally unique
+    assert(uniq_segments.find(seg) == uniq_segments.end() && uniq_segments.find(Segment(seg.second, seg.first)) == uniq_segments.end());
+    uniq_segments.insert(seg);
+  }
+}
+
+void dump(const std::string &filename, Route::iterator first, Route::iterator last);
+void dump(std::ostream& os,Route::iterator first, Route::iterator last);
 /*void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last, SegmentGraph& graph);
 void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last);*/
-void travel_linestrings(Route& route, Route::iterator first, Route::iterator last);
+
+
+template<typename TsegmentOutputIterator, typename TsegmentInputIterator>
+void travel_linestrings(TsegmentOutputIterator sink, TsegmentInputIterator begin, TsegmentInputIterator end) {
+  BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
+  BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
+  using namespace boost;
+  LOG_INFO_STR("travel linestrings");
+
+  DistanceGraph graph;
+  DistanceGraph::Vertex v_origin = create_complete_graph_from_point(graph, Point(0,0),begin, end);
+
+  typedef boost::property_map<boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, Point, WeightProperty>, double WeightProperty::*>::type WeightMap;
+  WeightMap weight_map(get(&WeightProperty::weight, graph));
+
+  vector<DistanceGraph::Vertex> tour;
+  double len = 0.0;
+  VertexAppender<DistanceGraph, TsegmentOutputIterator> rb(graph, sink);
+
+  boost::metric_tsp_approx_from_vertex(graph, v_origin, weight_map,
+      boost::make_tsp_tour_visitor(
+          make_function_output_iterator(boost::bind<void>(rb, _1))
+      )
+  );
+
+  LOG_INFO_MSG("Tour length", len);
+
+#ifdef DEBUG
+  check(begin, end);
+#endif
+}
 
 template<typename Graph>
 bool build_planar_embedding(typename Graph::Embedding& embedding, Graph& graph) {

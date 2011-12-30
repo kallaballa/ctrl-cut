@@ -54,35 +54,37 @@ struct MultiSegmentViewImpl :
   public View<
     MultiIter<
       SegmentViewImpl<Tcontainer, Tallocator>,
-      Segment,
       Tcontainer,
       Tallocator
     >,
     MultiConstIter<
       SegmentViewImpl<Tcontainer, Tallocator>,
-      Segment,
       Tcontainer,
       Tallocator
     >,
     MultiSegmentViewContainer<Tcontainer,Tallocator>
   > {
+    MultiSegmentViewContainer<Tcontainer,Tallocator> views;
 
-    MultiSegmentViewImpl(MultiSegmentViewContainer<Tcontainer,Tallocator>& container) : View<
+    template<typename Trange>
+    MultiSegmentViewImpl(Trange& strings) : View<
           MultiIter<
             SegmentViewImpl<Tcontainer, Tallocator>,
-            Segment,
             Tcontainer,
             Tallocator
           >,
           MultiConstIter<
             SegmentViewImpl<Tcontainer, Tallocator>,
-            Segment,
             Tcontainer,
             Tallocator
           >,
           MultiSegmentViewContainer<Tcontainer,Tallocator>
-        >(container)
-    {};
+        >(views)
+    {
+      for (typename Trange::iterator it = strings.begin(); it != strings.end(); ++it) {
+        views.push_back(SegmentViewImpl<Tcontainer,Tallocator>(*it));
+      }
+    };
 };
 
 template<
@@ -92,14 +94,12 @@ template<
 struct MultiPointViewImpl :
   public View<
     MultiIter<
-    LineStringImpl<Tcontainer, Tallocator>,
-      Point,
+      LineStringImpl<Tcontainer, Tallocator>,
       Tcontainer,
       Tallocator
     >,
     MultiConstIter<
-    LineStringImpl<Tcontainer, Tallocator>,
-      Point,
+      LineStringImpl<Tcontainer, Tallocator>,
       Tcontainer,
       Tallocator
     >,
@@ -108,14 +108,12 @@ struct MultiPointViewImpl :
 
     MultiPointViewImpl(MultiLineString<Tcontainer, Tallocator>& strings) : View<
         MultiIter<
-        LineStringImpl<Tcontainer, Tallocator>,
-          Point,
+          LineStringImpl<Tcontainer, Tallocator>,
           Tcontainer,
           Tallocator
         >,
         MultiConstIter<
-        LineStringImpl<Tcontainer, Tallocator>,
-          Point,
+          LineStringImpl<Tcontainer, Tallocator>,
           Tcontainer,
           Tallocator
         >,
@@ -136,10 +134,6 @@ private:
   _MultiLineStrings strings;
   CutSettings settings;
 public:
-  typedef typename Tcontainer<Point, Tallocator<Point> >::iterator PointIter;
-  typedef typename Tcontainer<Point, Tallocator<Point> >::const_iterator PointConstIter;
-  typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator SegmentIter;
-  typedef typename Tcontainer<Segment, Tallocator<Segment> >::const_iterator SegmentConstIter;
   typedef typename _MultiLineStrings::iterator iterator;
   typedef typename _MultiLineStrings::const_iterator const_iterator;
 
@@ -170,19 +164,6 @@ public:
   typename iterator::reference back() const {
     return this->strings.back();
   }
-  MultiPointViewImpl<Tcontainer,Tallocator> pointView() {
-    return MultiPointViewImpl<Tcontainer,Tallocator>(strings);
-  }
-
-  MultiSegmentViewImpl<Tcontainer,Tallocator> segmentView() {
-    //FIXME
-    MultiSegmentViewContainer<Tcontainer,Tallocator> container = *new MultiSegmentViewContainer<Tcontainer,Tallocator>();
-    for (iterator it = strings.begin(); it != strings.end(); ++it) {
-      container.push_back(SegmentViewImpl<Tcontainer,Tallocator>(*it));
-    }
-    return MultiSegmentViewImpl<Tcontainer,Tallocator>(container);
-  }
-
 
   void push_front(const Segment& seg) {
     _LineString string(this->settings);
@@ -265,15 +246,14 @@ public:
     return settings.get(key);
   }
 
-/*REFACTOR
   friend std::ostream& operator<<(std::ostream &os, RouteImpl& route)  {
     os << "<route>" << std::endl;
-    for(RouteImpl::iterator it=route.beginStrings(); it != route.endStrings(); ++it)
+    for(RouteImpl::iterator it=route.begin(); it != route.end(); ++it)
       os << (*it) << std::endl;
     os << std::endl;
     os << "</route>" << std::endl;
     return os;
-  }*/
+  }
 };
 
 #endif
