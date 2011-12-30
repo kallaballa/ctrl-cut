@@ -37,6 +37,17 @@ public:
     return Route_t::append(clipped);
   }
 
+  bool add(Coord_t x1, Coord_t y1, Coord_t x2, Coord_t y2) {
+    Segment clipped(Point(x1, y1), Point(x2, y2));
+    this->clip(clipped);
+    if(clipped.first == clipped.second)
+      return false;
+    else if(!Route_t::append(clipped)) {
+      Route_t::push_back(clipped);
+      return true;
+    }
+    return false;
+  }
 
   /*!
    Loads vector data from EPS/Ghostscript output
@@ -50,6 +61,7 @@ public:
     LOG_INFO_STR("Load vector data");
     int segmentCnt = 0;
     while (std::getline(input, line)) {
+      std::cerr << line << std::endl;
       first = line[0];
 
       if (first == 'X') { // End of output
@@ -69,7 +81,7 @@ public:
         case 'C': // close
           if (lx != mx || ly != my) {
             segmentCnt++;
-            Route::append(lx, ly, mx, my);
+            add(lx, ly, mx, my);
           }
           break;
         case 'P': // power
@@ -82,7 +94,7 @@ public:
         case 'L': // line to
           if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
             segmentCnt++;
-            Route::append(lx, ly, x, y);
+            add(lx, ly, x, y);
             lx = x;
             ly = y;
           }

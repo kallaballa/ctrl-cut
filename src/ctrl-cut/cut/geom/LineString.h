@@ -83,10 +83,14 @@ public:
       return true;
     } else {
       const Point& last = this->back();
-      if (last == seg.first)
+      if (last == seg.first) {
         this->push_back(seg.second);
-      else if (last == seg.second)
+        return true;
+      }
+      else if (last == seg.second) {
         this->push_back(seg.first);
+        return true;
+      }
     }
     return false;
   }
@@ -98,10 +102,14 @@ public:
       return true;
     } else {
       const Point& first = this->front();
-      if (first == seg.first)
+      if (first == seg.first) {
         this->push_front(seg.second);
-      else if (first == seg.second)
+        return true;
+      }
+      else if (first == seg.second) {
         this->push_front(seg.first);
+        return true;
+      }
     }
     return false;
   }

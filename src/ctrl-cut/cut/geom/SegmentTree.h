@@ -8,66 +8,49 @@
 namespace kdt = KDTree;
 
 struct SegmentNode : public Segment {
-  enum BaseOrientation {
-    FIRST,
-    SECOND
-  };
+  Point center;
+  uint32_t range;
 
-  BaseOrientation orientation;
-
-  SegmentNode(const Point& base_point) : Segment(base_point, Point()), orientation(FIRST) {}
-  SegmentNode(const Segment& seg, BaseOrientation orientation) : Segment(seg), orientation(orientation) {}
+  SegmentNode(const Point& center) : center(center) {}
+  SegmentNode(const Segment& seg) : Segment(seg) {
+    Sphere sphere(seg);
+    center = sphere.center;
+    range = sphere.radius;
+  }
 
   bool operator==(const SegmentNode& other) const {
-    return this->getBasePoint() == other.getBasePoint()
-        && this->getDanglingPoint() == other.getDanglingPoint();
-      return true;
-  }
-
-  Point getBasePoint() const {
-    if(orientation == FIRST) {
-      return this->first;
-    } else {
-      return this->second;
-    }
-  }
-
-  Point getDanglingPoint() const {
-    if(orientation == FIRST) {
-      return this->first;
-    } else {
-      return this->second;
-    }
+    return Segment::operator==(other);
   }
 };
 
 inline int32_t segment_node_ac( SegmentNode item, int k ) {
-  return (item.getBasePoint())[k];
+  return (item.center)[k];
 }
 
 class SegmentTree: public kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
 public:
+  typedef  kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > _Parent;
+
   SegmentTree(): kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
   virtual ~SegmentTree() {};
 
-  void add(const Segment& seg) {
-    this->insert(SegmentNode(seg, SegmentNode::FIRST));
-    this->insert(SegmentNode(seg, SegmentNode::SECOND));
+  void findWithinRange(const SegmentNode& seg, std::list<SegmentNode>& v) const {
+    this->find_within_range(seg.center, seg.range, std::back_inserter(v));
   }
 
-  void remove(const Segment& seg) {
-    this->erase_exact(SegmentNode(seg, SegmentNode::FIRST));
-    this->erase_exact(SegmentNode(seg, SegmentNode::SECOND));
+  void insert(const SegmentNode& seg) {
+    if(seg[0] == seg[1])
+        return;
+
+    _Parent::insert(seg);
   }
 
-  const Point findNearest(const Point&  p) const {
-    SegmentNode pos(p);
-    return (*(this->find_nearest(pos).first)).getBasePoint();
-  }
+  void erase_exact(const SegmentNode& seg) {
+    //FIxME find out why exploded can't find picks always via exact search
+    const_iterator it = this->find_exact(seg);
 
-  void findWithinRange(const Segment& seg, std::list<Segment>& v) const {
-    const Sphere& bsphere = seg.getSphere();
-    this->find_within_range(SegmentNode(bsphere.center), bsphere.radius, std::back_inserter(v));
+    if(it != end())
+      this->erase(it);
   }
 };
 
@@ -75,7 +58,10 @@ template<typename _SegmentInputIterator>
 void build(SegmentTree& tree, _SegmentInputIterator first, _SegmentInputIterator last) {
   BOOST_CONCEPT_ASSERT((SegmentInputIterator<_SegmentInputIterator>));
   for(_SegmentInputIterator it = first; it != last; ++it) {
-    tree.add(*it);
+    const Segment& seg = *it;
+    if(seg[0] == seg[1])
+        return;
+    tree.insert(SegmentNode(seg));
   }
 }
 

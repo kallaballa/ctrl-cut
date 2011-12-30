@@ -189,14 +189,15 @@ public:
     if (this->empty()) {
       this->push_back(seg);
       return true;
-    } else if(! (this->appendFront(seg) || this->appendBack(seg))) {
+    } else if(this->appendBack(seg) || this->appendFront(seg)) {
+      return true;
+    } else {
       for(iterator it = strings.begin(); it != strings.end(); ++it) {
         if((*it).append(seg))
           return true;
       }
-      return false;
     }
-    return true;
+    return false;
   }
 
   bool appendFront(const Segment& seg) {
@@ -210,7 +211,7 @@ public:
 
   bool appendBack(const Segment& seg) {
     if (this->empty()) {
-      this->push_front(seg);
+      this->push_back(seg);
       return true;
     } else  {
       return strings.back().appendBack(seg);
