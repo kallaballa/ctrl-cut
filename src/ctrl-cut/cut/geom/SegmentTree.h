@@ -4,65 +4,153 @@
 #include <kdtree++/kdtree.hpp>
 #include "Geometry.h"
 #include "Segment.h"
+#include "boost/range.hpp"
 
 namespace kdt = KDTree;
 
-struct SegmentNode : public Segment {
+struct SegmentNodeImpl: public Segment {
   Point center;
   uint32_t range;
 
-  SegmentNode(const Point& center) : center(center) {}
-  SegmentNode(const Segment& seg) : Segment(seg) {
+  SegmentNodeImpl(const Point& center) :
+    Segment(), center(center)
+  {}
+
+  SegmentNodeImpl(const Segment& seg) : Segment(seg) {
     Sphere sphere(seg);
     center = sphere.center;
     range = sphere.radius;
   }
 
-  bool operator==(const SegmentNode& other) const {
+  bool operator==(const SegmentNodeImpl& other) const {
     return Segment::operator==(other);
   }
+
+  static inline Coord_t centerComponent(SegmentNodeImpl item, int k) {
+    return item.center[k];
+  }
 };
 
-inline int32_t segment_node_ac( SegmentNode item, int k ) {
-  return (item.center)[k];
-}
+template<
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+>
+struct IndexedSegmentNodeImpl: public Tcontainer<Segment, Tallocator<Segment> >::iterator {
+  typedef typename Tcontainer<Segment, Tallocator<Segment> >::iterator _Base;
+  Point center;
+  uint32_t range;
 
-class SegmentTree: public kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > {
+  IndexedSegmentNodeImpl(const Point& center) :
+    _Base(), center(center) {
+  }
+  IndexedSegmentNodeImpl(const _Base it) :
+    _Base(it) {
+    Sphere sphere(*it);
+    center = sphere.center;
+    range = sphere.radius;
+  }
+
+  bool operator==(const IndexedSegmentNodeImpl& other) const {
+    return **this == *other;
+  }
+
+  static inline Coord_t centerComponent(IndexedSegmentNodeImpl item, int k) {
+    return item.center[k];
+  }
+};
+
+template<
+  typename TsegmentNode,
+  typename Taccessor
+>
+class SegmentTreeImpl {
+private:
+  typedef kdt::KDTree<2, TsegmentNode, Taccessor> KDTree_t;
+  typedef TsegmentNode _SegmentNode;
+  KDTree_t kdtree;
 public:
-  typedef  kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > _Parent;
+  SegmentTreeImpl() :
+    kdtree(std::ptr_fun(_SegmentNode::centerComponent))
+  {}
 
-  SegmentTree(): kdt::KDTree<2, SegmentNode, std::pointer_to_binary_function<SegmentNode,int,int32_t> > (std::ptr_fun(segment_node_ac)) {}
-  virtual ~SegmentTree() {};
-
-  void findWithinRange(const SegmentNode& seg, std::list<SegmentNode>& v) const {
-    this->find_within_range(seg.center, seg.range, std::back_inserter(v));
+  template<typename ToutIter>
+  void findWithinRange(const _SegmentNode& node, ToutIter outIter) const {
+    kdtree.find_within_range(node.center, node.range, outIter);
   }
 
-  void insert(const SegmentNode& seg) {
-    if(seg[0] == seg[1])
-        return;
-
-    _Parent::insert(seg);
+  void insert(const _SegmentNode& node) {
+    kdtree.insert(node);
   }
 
-  void erase_exact(const SegmentNode& seg) {
+  void erase_exact(const _SegmentNode& node) {
     //FIxME find out why exploded can't find picks always via exact search
-    const_iterator it = this->find_exact(seg);
+    kdtree.erase_exact(node);
+  }
+};
+template<
+  typename TsegmentNode,
+  typename Taccessor,
+  template<typename , typename > class Tcontainer = std::list,
+  template<typename > class Tallocator = std::allocator
+  >
+class IndexedSegmentTreeImpl: public SegmentTreeImpl<TsegmentNode, Taccessor> {
+private:
+  typedef SegmentTreeImpl<TsegmentNode, Taccessor> _Parent;
+  typedef Tcontainer<Segment, Tallocator<Segment> > _SegmentIndex;
+  _SegmentIndex index;
+public:
+  typedef IndexedSegmentNodeImpl<Tcontainer, Tallocator> iterator;
+  typedef Tcontainer<iterator, Tallocator<iterator> > Result;
 
-    if(it != end())
-      this->erase(it);
+  IndexedSegmentTreeImpl() : _Parent()
+  {}
+
+  Result findWithinRange(const iterator& node) const {
+    Result r;
+    _Parent::findWithinRange(node, std::back_inserter(r));
+    return r;
+  }
+
+  void push_back(const Segment& seg) {
+    index.push_back(seg);
+    _Parent::insert(--(index.end()));
+  }
+
+  iterator erase(iterator& node) {
+    _Parent::erase_exact(node);
+   return index.erase(node);
+  }
+
+  iterator begin() {
+    return index.begin();
+  }
+
+  iterator end() {
+    return index.end();
+  }
+
+  template<typename _SegmentInputIterator>
+  void build(_SegmentInputIterator begin, _SegmentInputIterator end) {
+    BOOST_CONCEPT_ASSERT((SegmentInputIterator<_SegmentInputIterator>));
+    for (_SegmentInputIterator it = begin; it != end; ++it) {
+      this->push_back(*it);
+    }
   }
 };
 
-template<typename _SegmentInputIterator>
-void build(SegmentTree& tree, _SegmentInputIterator first, _SegmentInputIterator last) {
-  BOOST_CONCEPT_ASSERT((SegmentInputIterator<_SegmentInputIterator>));
-  for(_SegmentInputIterator it = first; it != last; ++it) {
-    const Segment& seg = *it;
-    if(seg[0] == seg[1])
-        return;
-    tree.insert(SegmentNode(seg));
-  }
-}
+typedef SegmentTreeImpl<
+    SegmentNodeImpl,
+    std::pointer_to_binary_function<SegmentNodeImpl, int, int32_t>
+> SegmentTree;
+typedef IndexedSegmentTreeImpl<
+    IndexedSegmentNodeImpl<std::list, std::allocator>,
+    std::pointer_to_binary_function<
+      IndexedSegmentNodeImpl<std::list,std::allocator>,
+      int,
+      int32_t
+    >,
+    std::list,
+    std::allocator
+> IndexedSegmentTree;
 
 #endif

@@ -145,7 +145,7 @@ Document& Document::preprocess() {
 
      CutModel exploded(model);
      MultiSegmentView sv(model);
-     explode_segments(SegmentAppendIterator<CutModel>(exploded), sv.begin(), sv.end());
+     explode(sv.begin(), sv.end(), SegmentAppendIterator<CutModel>(exploded));
      dump("exploded.txt", exploded.begin(), exploded.end());
 
      CutModel reduced(model);

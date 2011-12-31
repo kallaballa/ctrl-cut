@@ -10,135 +10,160 @@
 /*
  * Split segments at intersection points.
  */
+template<
+  typename TsegmentInputIterator,
+  typename TsegmentOutputIterator
+>
+class Explode {
+private:
+  TsegmentInputIterator begin;
+  TsegmentInputIterator end;
+  TsegmentOutputIterator sink;
 
-void insert(SegmentTree& segTree, std::list<Segment>& segmentList, const Segment& seg) {
-  if(seg[0] == seg[1])
-    return;
+  IndexedSegmentTree tree;
 
-  segTree.insert(seg);
-  segmentList.push_back(seg);
-}
+  typedef IndexedSegmentTree::iterator TreeIter;
+  typedef IndexedSegmentTree::Result Result;
+  typedef IndexedSegmentTree::Result::const_iterator ResultIter;
 
-template<typename TsegmentOutputIterator, typename TsegmentInputIterator>
-void explode_segments(TsegmentOutputIterator sink, TsegmentInputIterator begin,
-    TsegmentInputIterator end) {
-  BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
-  BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
-
-  LOG_INFO_STR("Explode");
-
-  Point intersection;
-  SegmentTree segTree;
-  build(segTree,begin,end);
-  std::list<Segment> segmentList;
-
-  for (TsegmentInputIterator it_copy = begin; it_copy != end; ++it_copy) {
-    segmentList.push_back(*it_copy);
+public:
+  Explode(TsegmentInputIterator begin, TsegmentInputIterator end, TsegmentOutputIterator sink) : begin(begin), end(end), sink(sink) {
+    BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
+    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
+    for (TsegmentInputIterator it_copy = begin; it_copy != end; ++it_copy) {
+      tree.push_back(*it_copy);
+    }
   }
-  long i = 0;
-  for (std::list<Segment>::iterator it_pick = segmentList.begin(); it_pick != segmentList.end(); ++it_pick) {
-    const Segment& pick = (*it_pick);
-    if(pick[0] == pick[1])
-      continue;
 
-    std::list<SegmentNode> in_range;
-    segTree.findWithinRange(pick, in_range);
+  Explode(const Explode& other) :
+    begin(other.begin), end(other.end), sink(other.sink)
+  {}
 
-    for (std::list<SegmentNode>::iterator it_candidate = in_range.begin(); it_candidate != in_range.end(); ++it_candidate) {
-      const SegmentNode& candidate = *it_candidate;
-      if(candidate[0] == candidate[1])
-          continue;
-      if (pick == candidate) {
-        continue;
+  void push_back(const Point& first, const Point& second) {
+    this->push_back(Segment(first,second));
+  }
+
+  void push_back(const Segment& seg) {
+    if(seg[0] != seg[1]) //ignore zero length segments produced by intersections
+      this->tree.push_back(seg);
+  }
+
+  TreeIter erase(TreeIter& it) {
+    return this->tree.erase(it);
+  }
+
+  void intersect(const Point& intersection, TreeIter& it_pick, TreeIter& it_candidate) {
+    const Segment& pick = *it_pick;
+    const Segment& candidate = *it_candidate;
+    if (candidate[0] != intersection && candidate[1] != intersection) {
+      this->push_back(candidate[0], intersection);
+      this->push_back(candidate[1], intersection);
+      it_candidate = this->erase(it_candidate);
+    }
+
+    if (pick[0] != intersection && pick[1] != intersection) {
+      this->push_back(pick[0], intersection);
+      this->push_back(pick[1], intersection);
+      it_pick = this->erase(it_pick);
+    }
+  }
+
+  void intersectCoincidence (const Point& intersection, TreeIter& it_pick, TreeIter& it_candidate) {
+    const Segment& pick = *it_pick;
+    const Segment& candidate = *it_candidate;
+
+    //coincidental but neither tip connected nor identical
+    Point pick_min;
+    Point pick_max;
+    Point candidate_min;
+    Point candidate_max;
+
+    if (pick.first < pick.second) {
+      pick_min = pick.first;
+      pick_max = pick.second;
+    } else {
+      pick_min = pick.second;
+      pick_max = pick.first;
+    }
+
+    if (candidate.first < candidate.second) {
+      candidate_min = candidate.first;
+      candidate_max = candidate.second;
+    } else {
+      candidate_min = candidate.second;
+      candidate_max = candidate.first;
+    }
+
+    // FIXME which gets which settings?
+    if (candidate_min < pick_max) {
+      if (pick_min < candidate_min) {
+        if (pick_max < candidate_max) {
+          this->push_back(pick_min, candidate_min);
+          this->push_back(candidate_min, pick_max);
+          this->push_back(pick_max, candidate_max);
+          it_pick = this->erase(it_pick);
+          it_candidate = this->erase(it_candidate);
+        } else {
+          this->push_back(pick_min, candidate_min);
+          this->push_back(candidate_min, candidate_max);
+          this->push_back(candidate_max, pick_max);
+          it_candidate = this->erase(it_candidate);
+        }
+      } else if (pick_min < candidate_max) {
+        this->push_back(candidate_min, pick_min);
+        this->push_back(pick_min, candidate_max);
+        this->push_back(candidate_max, pick_max);
+
+        it_pick = this->erase(it_pick);
+        it_candidate = this->erase(it_candidate);
       }
+    }
+  }
 
-      intersection_result is_res = intersects(pick, candidate, intersection);
+  void operator()() {
+    LOG_INFO_STR("Explode");
 
-      // check if pick does intersect candidate
-      if (is_res == ALIGN_INTERSECT) {
-        if (candidate[0] != intersection && candidate[1] != intersection) {
-          insert(segTree,segmentList,Segment(candidate[0], intersection));
-          insert(segTree,segmentList,Segment(candidate[1], intersection));
+    Point intersection;
+    tree.build(begin, end);
 
-          segmentList.remove(candidate);
-          segTree.erase_exact(candidate);
+
+    for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
+      std::cerr << *it_pick << std::endl;
+
+      const Segment& pick = (*it_pick);
+      assert(pick[0] != pick[1]);
+
+     const Result& in_range = tree.findWithinRange(it_pick);
+
+      for (ResultIter it_result = in_range.begin(); it_result != in_range.end(); ++it_result) {
+        TreeIter it_candidate = *it_result;
+        const Segment& candidate = *it_candidate;
+        assert(candidate[0] != candidate[1]);
+
+        if (pick == candidate) {
+          continue;
         }
 
-        if (pick[0] != intersection && pick[1] != intersection) {
-          insert(segTree,segmentList,Segment(pick[0], intersection));
-          insert(segTree,segmentList,Segment(pick[1], intersection));
+        intersection_result is_res = intersects(pick, candidate, intersection);
 
-          it_pick = segmentList.erase(it_pick);
-          segTree.erase_exact(pick);
-          break;
-        }
-
-      } else if (is_res == ALIGN_COINCIDENCE) {
-        //coincidental but neither tip connected nor identical
-        Point pick_min;
-        Point pick_max;
-        Point candidate_min;
-        Point candidate_max;
-
-        if (pick.first < pick.second) {
-          pick_min = pick.first;
-          pick_max = pick.second;
-        } else {
-          pick_min = pick.second;
-          pick_max = pick.first;
-        }
-
-        if (candidate.first < candidate.second) {
-          candidate_min = candidate.first;
-          candidate_max = candidate.second;
-        } else {
-          candidate_min = candidate.second;
-          candidate_max = candidate.first;
-        }
-
-        // FIXME which gets which settings?
-        if (candidate_min < pick_max) {
-          if (pick_min < candidate_min) {
-            if (pick_max < candidate_max) {
-              insert(segTree,segmentList,Segment(pick_min, candidate_min));
-              insert(segTree,segmentList,Segment(candidate_min, pick_max));
-              insert(segTree,segmentList,Segment(pick_max, candidate_max));
-
-              it_pick = segmentList.erase(it_pick);
-              segmentList.remove(candidate);
-
-              segTree.erase_exact(pick);
-              segTree.erase_exact(candidate);
-              break;
-            } else {
-              insert(segTree,segmentList,Segment(pick_min, candidate_min));
-              insert(segTree,segmentList,Segment(candidate_min, candidate_max));
-              insert(segTree,segmentList,Segment(candidate_max, pick_max));
-
-              segmentList.remove(candidate);
-              segTree.erase_exact(candidate);
-            }
-          } else if (pick_min < candidate_max) {
-            insert(segTree,segmentList,Segment(candidate_min, pick_min));
-            insert(segTree,segmentList,Segment(pick_min, candidate_max));
-            insert(segTree,segmentList,Segment(candidate_max, pick_max));
-
-            it_pick = segmentList.erase(it_pick);
-            segmentList.remove(candidate);
-
-            segTree.erase_exact(pick);
-            segTree.erase_exact(candidate);
-            break;
-          }
-
+        // check if pick does intersect candidate
+        if (is_res == ALIGN_INTERSECT) {
+          intersect(intersection, it_pick, it_candidate);
+        } else if (is_res == ALIGN_COINCIDENCE) {
+          intersectCoincidence(intersection, it_pick, it_candidate);
         }
       }
     }
-    std::cerr << segTree.size() << "\t" << i++ << std::endl;
-    if(it_pick == segmentList.end())
-      break;
+    std::copy(tree.begin(), tree.end(), sink);
   }
-  std::copy(segTree.begin(),segTree.end(), sink);
 };
 
+template<
+  typename TsegmentOutputIterator,
+  typename TsegmentInputIterator
+>
+void explode(TsegmentInputIterator begin, TsegmentInputIterator end, TsegmentOutputIterator sink) {
+  Explode<TsegmentInputIterator, TsegmentOutputIterator> exploder(begin,end,sink);
+  exploder();
+}
 #endif
