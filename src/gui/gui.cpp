@@ -1,8 +1,8 @@
 #include <QApplication>
 #include "MainWindow.h"
 #include "EventFilter.h"
-#include "util/Logger.h"
-#include "config/DocumentSettings.h"
+#include "util/Logger.hpp"
+#include "config/DocumentSettings.hpp"
 
 int main(int argc, char **argv)
 {

@@ -87,9 +87,11 @@ void SimulatorDialog::simulate() {
 
   Document& preprocessed = this->documentItem->doc.preprocess();
   preprocessed.write(*tmpfile);
+  tmpfile->close();
   preprocessed.put(DocumentSettings::ENABLE_RASTER, oldWriteEngraving);
 
   ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);
+  PclIntConfig::singleton()->debugLevel = LVL_DEBUG;
   RtlPlot* plot = new RtlPlot(infile);
   Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
   Interpreter& intr = * new Interpreter(plot, this);

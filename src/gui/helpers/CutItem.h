@@ -19,8 +19,8 @@
 #ifndef CUTITEM_H_
 #define CUTITEM_H_
 
-#include "cut/model/CutModel.h"
-#include "config/CutSettings.h"
+#include "cut/model/Cut.hpp"
+#include "config/CutSettings.hpp"
 #include "Qt.h"
 
 class CutItem: public AbstractCtrlCutItem {

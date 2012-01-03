@@ -19,7 +19,7 @@
 
 #include <qgraphicsitem.h>
 #include <qimage.h>
-#include "engrave/image/Image.h"
+#include "engrave/image/Image.hpp"
 
 #ifndef QTMAKE_H_
 #define QTMAKE_H_

@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "ui_LaserDialog.h"
-#include "Document.h"
+#include "Document.hpp"
 
 class LaserDialog : public QDialog, private Ui::LaserDialog
 {

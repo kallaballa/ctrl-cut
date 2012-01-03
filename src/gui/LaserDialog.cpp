@@ -1,7 +1,7 @@
 #include "LaserDialog.h"
-#include "config/EngraveSettings.h"
-#include "config/CutSettings.h"
-#include "config/DocumentSettings.h"
+#include "config/EngraveSettings.hpp"
+#include "config/CutSettings.hpp"
+#include "config/DocumentSettings.hpp"
 #include <assert.h>
 
 typedef DocumentSettings DS;

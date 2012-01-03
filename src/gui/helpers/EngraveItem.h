@@ -21,8 +21,8 @@
 #ifndef ENGRAVINGITEM_H_
 #define ENGRAVINGITEM_H_
 
-#include "engrave/Engrave.h"
-#include "config/EngraveSettings.h"
+#include "engrave/Engrave.hpp"
+#include "config/EngraveSettings.hpp"
 #include <qgraphicsitem.h>
 #include "helpers/Qt.h"
 

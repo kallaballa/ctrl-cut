@@ -22,7 +22,7 @@
 #define DOCUMENTITEM_H_
 
 #include <vector>
-#include "Document.h"
+#include "Document.hpp"
 #include "CutItem.h"
 #include "EngraveItem.h"
 #include "../CtrlCutScene.h"

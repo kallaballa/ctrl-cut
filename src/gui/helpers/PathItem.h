@@ -16,18 +16,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "CutItem.h"
-#include "DocumentItem.h"
-#include "PathItem.h"
-#include "cut/model/Translate.hpp"
-#include <qgraphicsitem.h>
+#ifndef PATHITEM_H_
+#define PATHITEM_H_
 
+#include "cut/model/Cut.hpp"
+#include "config/SegmentSettings.hpp"
+#include "Qt.h"
 
-CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
-  QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
+class PathItem: public AbstractCtrlCutItem {
+public:
+  Path& path;
 
-  BOOST_FOREACH(Path& p, cut) {
-    PathItem* pi = new PathItem(p);
-    QGraphicsItemGroup::addToGroup(pi);
+  PathItem(Path& path);
+  ~PathItem(){};
+
+  void commit() {
+
   }
-}
+};
+
+#endif /* PATHITEM_H_ */

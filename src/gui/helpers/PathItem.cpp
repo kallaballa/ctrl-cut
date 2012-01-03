@@ -16,18 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "CutItem.h"
-#include "DocumentItem.h"
 #include "PathItem.h"
-#include "cut/model/Translate.hpp"
+#include "DocumentItem.h"
 #include <qgraphicsitem.h>
 
-
-CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
+PathItem::PathItem(Path& path) : AbstractCtrlCutItem(), path(path) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
 
-  BOOST_FOREACH(Path& p, cut) {
-    PathItem* pi = new PathItem(p);
-    QGraphicsItemGroup::addToGroup(pi);
+  BOOST_FOREACH(const Segment& segment, segmentConstView(path)) {
+    QGraphicsLineItem *line = new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1], this);
+    QGraphicsItemGroup::addToGroup(line);
   }
 }
+
