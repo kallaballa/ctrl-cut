@@ -1,7 +1,7 @@
-#include "FileParser.h"
-#include "util/Logger.h"
-#include "util/Eps.h"
-#include <util/Measurement.h>
+#include "FileParser.hpp"
+#include "util/Logger.hpp"
+#include "util/Eps.hpp"
+#include <util/Measurement.hpp>
 #include <cups/cups.h>
 #include <cups/file.h>
 

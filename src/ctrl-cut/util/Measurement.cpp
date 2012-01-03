@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "Measurement.h"
+#include "Measurement.hpp"
 
 const Measurement Measurement::convert(const Unit& target, const uint16_t& dpi) const {
   double spx = -1;

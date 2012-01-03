@@ -64,6 +64,10 @@ int main(int argc, char *argv[]) {
   Debugger::create(canvas);
 
   intr.render();
+  if (config->debugLevel >= LVL_INFO) {
+    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
+    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
+  }
 
   BoundingBox& vBox = intr.vectorPlotter->getBoundingBox();
   if (vBox.isValid()) {
@@ -81,10 +85,6 @@ int main(int argc, char *argv[]) {
     trace->warn("Bitmap image is empty.");
   }
 
-  if (config->debugLevel >= LVL_INFO) {
-    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
-    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
-  }
 
   return 0;
 }

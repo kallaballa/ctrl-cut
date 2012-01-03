@@ -16,10 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "HPGLEncoder.h"
+#include "HPGLEncoder.hpp"
+#include "util/PJL.hpp"
+#include "cut/model/CutModel.hpp"
+
 #include "boost/format.hpp"
-#include "util/PJL.h"
-#include "cut/model/CutModel.h"
 
 using boost::format;
 
@@ -39,9 +40,10 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
-  typedef SegmentSettings S_SET;
-  MultiSegmentView msv(model);
-    for (MultiSegmentView::iterator it_s = msv.begin(); it_s != msv.end(); ++it_s) {
+  typedef PathSettings S_SET;
+
+  MultiSegmentView<CutModel> msv(model);
+    for (MultiSegmentView<CutModel>::iterator it_s = msv.begin(); it_s != msv.end(); ++it_s) {
       const Segment &seg = *it_s;
 //FIXME
       int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;

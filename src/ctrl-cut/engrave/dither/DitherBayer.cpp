@@ -18,7 +18,7 @@
  */
 
 
-#include "DitherBayer.h"
+#include "DitherBayer.hpp"
 
 static const float bayer_matrix[8][8] = {
     { 0, 32,  8, 40,  2, 34, 10, 42},

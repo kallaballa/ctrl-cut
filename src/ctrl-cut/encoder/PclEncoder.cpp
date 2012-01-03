@@ -17,14 +17,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+
+#include "util/PJL.hpp"
+#include "util/2D.hpp"
+#include "engrave/Engrave.hpp"
+#include "engrave/image/MMapMatrix.hpp"
+#include "config/EngraveSettings.hpp"
+#include "PclEncoder.hpp"
+
 #include <boost/format.hpp>
 #include <math.h>
-#include "util/PJL.h"
-#include "util/2D.h"
-#include "engrave/Engrave.h"
-#include "engrave/image/MMapMatrix.h"
-#include "config/EngraveSettings.h"
-#include "PclEncoder.h"
 
 using boost::format;
 

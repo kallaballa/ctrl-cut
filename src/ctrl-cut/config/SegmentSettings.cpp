@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "SegmentSettings.h"
+#include "SegmentSettings.hpp"
 
-SegmentSettings::Key<uint16_t> SegmentSettings::S_SPEED = "s_speed";
-SegmentSettings::Key<uint16_t> SegmentSettings::S_POWER = "s_power";
-SegmentSettings::Key<uint16_t> SegmentSettings::S_FREQUENCY = "s_freq";
+PathSettings::Key<uint16_t> PathSettings::S_SPEED = "s_speed";
+PathSettings::Key<uint16_t> PathSettings::S_POWER = "s_power";
+PathSettings::Key<uint16_t> PathSettings::S_FREQUENCY = "s_freq";
 
 

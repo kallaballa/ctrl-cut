@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "CupsOptions.h"
-#include "CupsGetOpt.h"
+#include "CupsOptions.hpp"
+#include "CupsGetOpt.hpp"
 
 
 void CupsGetOpt::print_usage(const string &name) {
@@ -36,7 +36,7 @@ Document& CupsGetOpt::load_document(int argc, char *argv[]) {
   Document* doc = new Document();
   // use gs dithering as default for the cups-filter
   doc->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
-
+  doc->put(DocumentSettings::LOAD_ENGRAVING, true);
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
     switch (c) {

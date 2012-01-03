@@ -18,15 +18,15 @@
  */
 
 
-#include "Dither.h"
-#include "DitherThreshold.h"
-#include "DitherBayer.h"
-#include "DitherFloydSteinberg.h"
-#include "DitherJarvis.h"
-#include "DitherBurke.h"
-#include "DitherStucki.h"
-#include "DitherSierra2.h"
-#include "DitherSierra3.h"
+#include "Dither.hpp"
+#include "DitherThreshold.hpp"
+#include "DitherBayer.hpp"
+#include "DitherFloydSteinberg.hpp"
+#include "DitherJarvis.hpp"
+#include "DitherBurke.hpp"
+#include "DitherStucki.hpp"
+#include "DitherSierra2.hpp"
+#include "DitherSierra3.hpp"
 
 Dither& Dither::create(GrayscaleImage& img, EngraveSettings::Dithering dithering){
   switch (dithering) {

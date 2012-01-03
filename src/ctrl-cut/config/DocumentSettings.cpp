@@ -17,11 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "DocumentSettings.h"
-#include "EngraveSettings.h"
-#include "SegmentSettings.h"
-#include "CutSettings.h"
-#include "util/Measurement.h"
+#include "DocumentSettings.hpp"
+#include "EngraveSettings.hpp"
+#include "SegmentSettings.hpp"
+#include "CutSettings.hpp"
+#include "util/Measurement.hpp"
 
 const DocumentSettings::Key<LaserCutter::Driver>  DocumentSettings::DRIVER = "driver";
 const DocumentSettings::Key<string> DocumentSettings::USER = "user";
@@ -73,7 +73,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::REDUCE, 3.0f);
   this->put(CutSettings::CPOS, Point());
 
-  this->put(SegmentSettings::S_SPEED, 33);
-  this->put(SegmentSettings::S_POWER, 80);
-  this->put(SegmentSettings::S_FREQUENCY, 5000);
+  this->put(PathSettings::S_SPEED, 33);
+  this->put(PathSettings::S_POWER, 80);
+  this->put(PathSettings::S_FREQUENCY, 5000);
 }

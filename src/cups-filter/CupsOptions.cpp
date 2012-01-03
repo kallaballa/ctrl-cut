@@ -1,4 +1,4 @@
-#include "CupsOptions.h"
+#include "CupsOptions.hpp"
 
 const string CupsOptions::OPTION_STRINGS[]= {
     "Driver",

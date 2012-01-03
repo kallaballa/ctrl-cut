@@ -17,14 +17,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #define PJL_PARAM
-#include <list>
-#include "Document.h"
-#include "util/Measurement.h"
-#include "cut/model/Explode.h"
-#include "cut/model/Reduce.h"
-#include "cut/graph/Traverse.h"
-#include "encoder/HPGLEncoder.h"
-#include "encoder/PclEncoder.h"
+#include <vector>
+#include "Document.hpp"
+#include "util/Measurement.hpp"
+#include "cut/model/Clip.hpp"
+#include "cut/model/Reduce.hpp"
+#include "cut/model/Explode.hpp"
+#include "cut/geom/sink/AddSink.hpp"
+/* REFACTOR
+ * #include "cut/model/Reduce.h"
+ * */
+#include "cut/graph/Traverse.hpp"
+#include "encoder/HPGLEncoder.hpp"
+#include "encoder/PclEncoder.hpp"
 
 using boost::format;
 using std::list;
@@ -141,18 +146,25 @@ void Document::write(std::ostream &out) {
 Document& Document::preprocess() {
    for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
      CutModel& model = **it;
+     Coord_t dpi = model.get(DocumentSettings::RESOLUTION);
+     Coord_t width = model.get(DocumentSettings::WIDTH).in(PX, dpi);
+     Coord_t height = model.get(DocumentSettings::HEIGHT).in(PX, dpi);
+
      dump("input.txt", model.begin(), model.end());
 
-     CutModel exploded(model);
-     MultiSegmentView sv(model);
-     explode(sv.begin(), sv.end(), SegmentAppendIterator<CutModel>(exploded));
-     dump("exploded.txt", exploded.begin(), exploded.end());
+     CutModel clipped(model.settings);
+     clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
+     dump("clipped.txt", clipped.begin(), clipped.end());
 
-     CutModel reduced(model);
-     reduce(reduced, exploded.begin(), exploded.end());
+     CutModel reduced(model.settings);
+     reduce(clipped, reduced, Measurement(0.1, MM).in(PX, dpi));
      dump("reduced.txt", reduced.begin(), reduced.end());
 
-     model = reduced;
+     CutModel exploded(model.settings);
+     explode(MultiSegmentView<CutModel>(reduced), AddSink<CutModel>(exploded));
+     dump("exploded.txt", exploded.begin(), exploded.end());
+
+     model = exploded;
      dump("after-copy.txt", model.begin(), model.end());
    }
 

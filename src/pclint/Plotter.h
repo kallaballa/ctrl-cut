@@ -257,8 +257,11 @@ public:
          }
         }
       }*/
-      this->canvas->dumpRasterImage(filename.c_str());
-
+      if (PclIntConfig::singleton()->autocrop) {
+        this->canvas->dumpRasterImage(filename.c_str(), &getBoundingBox());
+      } else {
+        this->canvas->dumpRasterImage(filename.c_str());
+      }
     }
   }
 };

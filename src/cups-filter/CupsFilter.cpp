@@ -17,9 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "util/Logger.h"
-#include "Document.h"
-#include "CupsGetOpt.h"
+#include "util/Logger.hpp"
+#include "Document.hpp"
+#include "CupsGetOpt.hpp"
 
 /**
  * Cups filter entry point.

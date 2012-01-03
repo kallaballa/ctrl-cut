@@ -18,7 +18,8 @@
  */
 
 
-#include "DitherSierra3.h"
+#include "DitherSierra3.hpp"
+
 void DitherSierra3::ditherPixel(const uint32_t x, const uint32_t y, Pixel<uint8_t>& newpixel, const uint32_t colors) {
     Pixel<uint8_t> tmppix;
 

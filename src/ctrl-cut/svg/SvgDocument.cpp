@@ -18,7 +18,7 @@
  */
 
 
-#include "SvgDocument.h"
+#include "SvgDocument.hpp"
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 
