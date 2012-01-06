@@ -30,15 +30,20 @@
 #include "cut/graph/Traverse.hpp"
 #include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
+#include "cut/graph/Planar.hpp"
+#include "CtrlCutException.h"
+#include "boost/filesystem.hpp"
 
 using boost::format;
 using std::list;
 
-void Document::addCut(CutModel* cut) {
+namespace bfs = boost::filesystem3;
+
+void Document::push_back(CutModel* cut) {
   this->cutList.push_back(cut);
 }
 
-void Document::addRaster(Engraving* raster) {
+void Document::push_back(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
@@ -144,33 +149,35 @@ void Document::write(std::ostream &out) {
 }
 
 Document& Document::preprocess() {
-   for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
-     CutModel& model = **it;
-     Coord_t dpi = model.get(DocumentSettings::RESOLUTION);
-     Coord_t width = model.get(DocumentSettings::WIDTH).in(PX, dpi);
-     Coord_t height = model.get(DocumentSettings::HEIGHT).in(PX, dpi);
+  typedef DocumentSettings D_SET;
 
-     dump("input.txt", model.begin(), model.end());
+ for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
+   CutModel& model = **it;
+   Coord_t dpi = model.get(DocumentSettings::RESOLUTION);
+   Coord_t width = model.get(DocumentSettings::WIDTH).in(PX, dpi);
+   Coord_t height = model.get(DocumentSettings::HEIGHT).in(PX, dpi);
 
-     CutModel clipped(model.settings);
-     clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
-     dump("clipped.txt", clipped.begin(), clipped.end());
+   dump("input.txt", model.begin(), model.end());
 
-     CutModel reduced(model.settings);
-     reduce(clipped, reduced, Measurement(0.1, MM).in(PX, dpi));
-     dump("reduced.txt", reduced.begin(), reduced.end());
+   CutModel clipped(model.settings);
+   clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
+   dump("clipped.txt", clipped.begin(), clipped.end());
 
-     CutModel exploded(model.settings);
-     explode(MultiSegmentView<CutModel>(reduced), AddSink<CutModel>(exploded));
-     dump("exploded.txt", exploded.begin(), exploded.end());
+   CutModel exploded(model.settings);
+   explode(MultiSegmentView<CutModel>(clipped), AddSink<CutModel>(exploded));
+   dump("exploded.txt", exploded.begin(), exploded.end());
 
-     model = exploded;
-     dump("after-copy.txt", model.begin(), model.end());
-   }
+   CutModel planared(model.settings);
+   makePlanar(exploded, planared);
+   dump("planared.txt", planared.begin(), planared.end());
 
-   for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
-     (*it)->dither();
-   }
+   CutModel reduced(model.settings);
+   reduce(exploded, reduced, Measurement(0.1, MM).in(PX, dpi));
+   dump("reduced.txt", reduced.begin(), reduced.end());
+
+   model = reduced;
+   dump("after-copy.txt", model.begin(), model.end());
+ }
 
    return *this;
 }
@@ -206,6 +213,10 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   if (docFormat == POSTSCRIPT || docFormat == SVG) {
     if (docFormat == SVG) {
       int convertPipe[2];
+
+      if(!bfs::exists(filename))
+        CtrlCutException::fileNotFoundException(filename);
+
       FILE *svgIn = fopen(filename.c_str(), "r");
       int svgFd = fileno (svgIn);
 
@@ -296,21 +307,42 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   }
 
   if (load == ENGRAVING || load == BOTH) {
-    Engraving *raster = NULL;
+    Engraving* engraving = new Engraving(this->settings);
     if (docFormat == PBM) {
-      raster = new Engraving(filename, *this);
+      std::string suffix = filename.substr(filename.rfind(".") + 1);
+      engraving->push_back(loadpbm(filename));
+      this->settings.put(EngraveSettings::EPOS, Point(392, 516));
     }
     else if (parser) {
-      if (parser->hasBitmapData()) {
+      if (parser->hasImageData()) {
         LOG_DEBUG_STR("Processing bitmap data from memory");
-        raster = new Engraving(*parser->getImage(), *this);
+
+        if(parser->hasGrayscaleImage()) {
+          GrayscaleImage gs = parser->getGrayscaleImage();
+          Dither& dither = Dither::create(gs, this->get(ES::DITHERING));
+          BitmapImage bm = dither.dither(this->get(EngraveSettings::EPOS));
+          engraving->push_back(bm);
+        } else if(parser->hasBitmapImage()) {
+          engraving->push_back(parser->getBitmapImage());
+        }
       }
       else if (!parser->getBitmapFile().empty()) {
-        raster = new Engraving(parser->getBitmapFile(), *this);
+        std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
+        if (suffix == "ppm" || suffix == "pgm") {
+          GrayscaleImage gs = loadppm(filename);
+          Dither& dither = Dither::create(gs, this->get(ES::DITHERING));
+          BitmapImage bm = dither.dither(this->get(EngraveSettings::EPOS));
+          engraving->push_back(bm);
+        }
+        else {
+          engraving->push_back(loadpbm(filename));
+        }
+
+        this->settings.put(EngraveSettings::EPOS, Point(392, 516));
       }
     }
-    if (raster) {
-      this->addRaster(raster);
+    if (engraving) {
+      this->push_back(engraving);
     }
   }
 
@@ -326,7 +358,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
       if(!cut->load(parser->getVectorData()))
           return false;
     }
-    if (cut) this->addCut(cut);
+    if (cut) this->push_back(cut);
   }
 
   return true;

@@ -3,7 +3,7 @@
 
 #include "util/PJL.hpp"
 #include "engrave/Engrave.hpp"
-#include "cut/model/CutModel.hpp"
+#include "cut/model/Cut.hpp"
 #include "config/DocumentSettings.hpp"
 #include "svg/Svg2Ps.hpp"
 #include "FileParser.hpp"
@@ -72,15 +72,16 @@ public:
   bool empty_engrave() const { return this->engraveList.empty(); }
 
   void optimize();
-  void addCut(CutModel* cut);
-  void addRaster(Engraving* raster);
-  CutList getCuts() { return cutList; }
 
+  void push_back(CutModel* cut);
+  void push_back(Engraving* engraving);
   void write(std::ostream &out);
   Document& preprocess();
 
   Format findFormat(const string& filename);
+
   bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED);
+
   DocumentSettings& getSettings() {
     return settings;
   };
