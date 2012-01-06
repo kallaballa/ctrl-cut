@@ -13,5 +13,8 @@ int main(int argc, char **argv)
   MainWindow::instance()->setGeometry(100, 100, 800, 500);
   MainWindow::instance()->show();
 
+  for(int i = 0; i < argc; i++) {
+    MainWindow::instance()->openFile(argv[i]);
+  }
   return app.exec();
 }
