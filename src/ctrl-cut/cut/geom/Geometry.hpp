@@ -77,6 +77,10 @@ public:
   double distance(const Point&  other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
+
+  Point make() const {
+    return Point();
+  }
 };
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(Point, Coord_t, cs::cartesian, x, y)
@@ -128,6 +132,10 @@ public:
 
   Segment swap() const {
     return Segment(second,first);
+  }
+
+  Segment make() const {
+    return Segment();
   }
 
   /*!
@@ -184,6 +192,17 @@ inline intersection_result intersects(const Segment& s1, const Segment&s2, Point
 inline std::ostream& operator<<(std::ostream &os, const Point& p)  {
   os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" key=\"" << p.x << "/" << p.y << "\" />";
   return os;
+}
+
+inline std::istream& operator>>(std::istream &is, Point& p)  {
+  Coord_t x,y;
+  char comma;
+  is >> x;
+  is >> comma;
+  is >> y;
+
+  p = Point(x,y);
+  return is;
 }
 
 inline std::ostream& operator<<(std::ostream &os, const Segment& segment) {

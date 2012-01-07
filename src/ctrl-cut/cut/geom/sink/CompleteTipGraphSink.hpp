@@ -20,11 +20,12 @@
 #ifndef COMPLETETIPGRAPH_HPP_
 #define COMPLETETIPGRAPH_HPP_
 
+#include "cut/geom/Path.hpp"
 #include <boost/function_output_iterator.hpp>
 #include <boost/foreach.hpp>
 
-template<typename TpointRange, typename Tgraph>
-class BuildCompleteTipGraphFunc {
+template<typename Tgraph, typename TpointRange>
+struct BuildCompleteTipGraphFunc {
   Tgraph* graph;
   const Point origin;
   std::vector<Segment> tips;
@@ -60,10 +61,10 @@ class BuildCompleteTipGraphFunc {
   }
 };
 
-template <class TpointRange, class Tgraph>
-class CompleteTipGraphSink : public boost::function_output_iterator<BuildCompleteTipGraphFunc<TpointRange, Tgraph> > {
+template <class Tgraph,class TpointRange>
+class CompleteTipGraphSink : public boost::function_output_iterator<BuildCompleteTipGraphFunc<Tgraph,TpointRange> > {
 public:
-  typedef boost::function_output_iterator<BuildCompleteTipGraphFunc<TpointRange,Tgraph> > _Base;
+  typedef boost::function_output_iterator<BuildCompleteTipGraphFunc<Tgraph, TpointRange> > _Base;
   typedef std::output_iterator_tag iterator_category;
   typedef void value_type;
   typedef void difference_type;
@@ -74,7 +75,7 @@ public:
     _Base() {};
 
   CompleteTipGraphSink(Tgraph& graph) :
-    _Base(ConcatFunc<TgeomContainer>(graph))
+    _Base(ConcatFunc<TpointRange>(graph))
       {};
 
   CompleteTipGraphSink(const CompleteTipGraphSink& other) :
@@ -83,12 +84,12 @@ public:
 };
 
 template<
-  typename TinputRange,
+  typename TmultiPointRange,
   typename Tgraph
 >
-void buildComleteTipGraph(const TinputRange& geomRange, Tgraph& graph) {
-  CompleteTipGraphSink<typename TinputRange::value_type> sink;
-  std::copy(geomRange.begin(), geomRange.end(), sink);
+void buildComleteTipGraph(const TmultiPointRange& multiPointRange, Tgraph& graph) {
+  CompleteTipGraphSink<Tgraph,typename TmultiPointRange::value_type> sink(graph);
+  std::copy(multiPointRange.begin(), multiPointRange.end(), sink);
 }
 
 #endif /* COMPLETETIPGRAPH_HPP_ */

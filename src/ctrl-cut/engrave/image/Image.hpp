@@ -32,34 +32,32 @@
 
 class BitmapImage : public AbstractImage {
 public:
-  BitmapImage(uint32_t width, uint32_t height, uint8_t *buf = NULL) : AbstractImage(width, height, buf) {
+  BitmapImage() : AbstractImage(0, 0, NULL) {}
+
+  BitmapImage(uint32_t width, uint32_t height, void *buf = NULL) : AbstractImage(width, height, buf) {
     this->row_stride = width / 8; // Natural rowstride
   }
+
+  BitmapImage(const BitmapImage& other) : AbstractImage(other) {}
 
   /*!
     Returns the given subrectangle of this image as a new image.
   */
-  AbstractImage *copy(const Rectangle &rect) const {
+  void copy(BitmapImage& into, const Rectangle &rect) const {
     int w,h;
     rect.getSize(w, h);
-    if (h == 0 || w == 0) return NULL;
+    if(h == 0 || w == 0)
+      return;
+    assert(!into.isAllocated());
     assert(w % 8 == 0);
     assert(rect.ul[0] % 8 == 0);
-    BitmapImage *bitmapcopy = new BitmapImage(w, h);
-
-    this->performcopy(bitmapcopy, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
-    return bitmapcopy;
+    into = BitmapImage(w, h);
+    this->performcopy(into, w / 8, h, rect.ul[0] / 8, rect.ul[1]);
   }
 
   Rectangle autocrop() const {
     Rectangle byterect = AbstractImage::autocrop(this->w / 8);
     return Rectangle(byterect.ul[0]*8, byterect.ul[1], byterect.lr[0] * 8, byterect.lr[1]);
-  }
-
-  void *allocData() {
-    this->setData(malloc(this->h * this->w / 8));
-    this->shouldfree = true;
-    return this->data();
   }
 
   bool saveAsPBM(const std::string &filename) {
@@ -68,7 +66,7 @@ public:
     std::ofstream out(filename.c_str());
     out << "P4\n" << width() << " " << height() << "\n";
     uint8_t *invertedline = new uint8_t[width()/8];
-    uint8_t *scanlineptr = (uint8_t *)addr;
+    uint8_t *scanlineptr = (uint8_t *)this->data();
     for (uint32_t j=0;j<height();j++) {
       for (uint32_t i=0;i<width()/8;i++) {
         invertedline[i] = ~(scanlineptr[i]);
@@ -79,6 +77,10 @@ public:
     delete invertedline;
     return true;
   }
+private:
+  void allocData() {
+    this->setData(malloc(this->h * this->w / 8));
+  }
 };
 
 
@@ -88,6 +90,8 @@ public:
   uint8_t bytes_per_pixel;
   uint8_t comp;
 
+  Image() : AbstractImage(0, 0, NULL), comp(0) {}
+
   Image(uint32_t width, uint32_t height, uint8_t components, void *pixelbuffer = NULL) :
     AbstractImage(width, height, pixelbuffer), comp(components) {
     this->row_stride = width;
@@ -95,32 +99,22 @@ public:
     LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
-  /*!
-    Create sub tile using the same pixel buffer as the parent image
-  */
-  Image(Image *parent, uint32_t width, uint32_t height, uint32_t offsetx, uint32_t offsety) :
-    AbstractImage(width, height) {
-    this->row_stride = parent->row_stride;
-    this->comp = parent->components();
-    this->bytes_per_pixel = sizeof(T) * components;
-    this->addr = (static_cast<T*>(parent->addr)) + 
-      (offsety * this->row_stride + offsetx) * this->comp;
-  }
+  Image(const Image& other) : AbstractImage(other), comp(other.comp) {}
 
   virtual ~Image() {}
   
   /*!
     Returns the given subrectangle of this image as a new image.
   */
-  AbstractImage *copy(const Rectangle &rect) const {
+  void copy(Image<T>& into, const Rectangle &rect) const {
+    assert(!into.isAllocated());
+
     int w,h;
     rect.getSize(w, h);
-    if (h == 0 || w == 0) return NULL;
-
-    Image<T> *imgcopy = new Image<T>(w, h, this->comp);
-
-    this->performcopy(imgcopy, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
-    return imgcopy;
+    if (h == 0 || w == 0)
+      return;
+    into = Image<T>(w,h,this->comp);
+    this->performcopy(into, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
   }
 
   Rectangle autocrop() const {
@@ -129,24 +123,19 @@ public:
                      byterect.lr[0] / sizeof(T), byterect.lr[1]);
   }
 
-  void *allocData() {
-    this->setData(malloc(this->h * this->w * sizeof(T)));
-    this->shouldfree = true;
-    return this->data();
-  }
-
   uint8_t components() const { return this->comp; }
   
   virtual void readPixel(const uint32_t x, const uint32_t y, Pixel<T>& pix) const {
     assert(x < this->w && y < this->h);
-    T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
+    assert(isAllocated());
+    T* sample = (static_cast<T*> (this->addr)) + ((y * this->row_stride + x) * this->comp);
     if (this->comp == 1) pix.setGray(*sample);
     else pix.setRGB(sample);
   }
 
   virtual void writePixel(uint32_t x, uint32_t y, const Pixel<T>& pix) {
     assert(x < this->w && y < this->h);
-    T* sample = (static_cast<T*> (addr)) + ((y * this->row_stride + x) * this->comp);
+    T* sample = (static_cast<T*> (this->data())) + ((y * this->row_stride + x) * this->comp);
     for (uint8_t i=0;i<this->comp;i++) {
       *(sample + i) = pix.i;
     }
@@ -159,7 +148,7 @@ public:
     out << "P5\n" << width() << " " << height() << "\n";
     out << "255\n";
     uint8_t *invertedline = new uint8_t[width()];
-    uint8_t *scanlineptr = (uint8_t *)addr;
+    uint8_t *scanlineptr = (uint8_t *)this->data();
     for (uint32_t j=0;j<height();j++) {
       for (uint32_t i=0;i<width();i++) {
         invertedline[i] = ~(scanlineptr[i]);
@@ -169,6 +158,11 @@ public:
     }
     delete invertedline;
     return true;
+  }
+
+private:
+  void allocData() {
+    this->setData(malloc(this->h * this->w * sizeof(T)));
   }
 };
 

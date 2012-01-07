@@ -21,13 +21,15 @@
 
 EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
   QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  QImage& img = QtMake::make_QImage(engraving.getSourceImage());
-  img.bits();
-  QPixmap pixmap = QPixmap::fromImage(img);
-  Point pos = engraving.settings.get(EngraveSettings::EPOS);
-  if (!pixmap.isNull()) {
-    QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);
-    pixmapItem->setPos(QPointF(pos.x, pos.y));
-    QGraphicsItemGroup::addToGroup(pixmapItem);
+  for(Engraving::iterator it = engraving.begin(); it != engraving.end(); it++) {
+    QImage& img = QtMake::make_QImage(*it);
+    img.bits();
+    QPixmap pixmap = QPixmap::fromImage(img);
+    Point pos = engraving.settings.get(EngraveSettings::EPOS);
+    if (!pixmap.isNull()) {
+      QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);
+      pixmapItem->setPos(QPointF(pos.x, pos.y));
+      QGraphicsItemGroup::addToGroup(pixmapItem);
+    }
   }
 }

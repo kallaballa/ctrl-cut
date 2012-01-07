@@ -24,6 +24,8 @@
 #include "cut/model/Reduce.hpp"
 #include "cut/model/Explode.hpp"
 #include "cut/geom/sink/AddSink.hpp"
+#include "config/CutSettings.hpp"
+
 /* REFACTOR
  * #include "cut/model/Reduce.h"
  * */
@@ -39,6 +41,10 @@ using std::list;
 
 namespace bfs = boost::filesystem3;
 
+typedef EngraveSettings E_SET;
+typedef DocumentSettings D_SET;
+typedef CutSettings C_SET;
+
 void Document::push_back(CutModel* cut) {
   this->cutList.push_back(cut);
 }
@@ -47,24 +53,23 @@ void Document::push_back(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
-typedef EngraveSettings ES;
-typedef DocumentSettings DS;
+
 void Document::write(std::ostream &out) {
-  string title = this->get(DS::TITLE);
-  int resolution = this->get(DS::RESOLUTION);
+  string title = this->get(D_SET::TITLE);
+  int resolution = this->get(D_SET::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  bool enable_raster = this->get(DocumentSettings::ENABLE_RASTER);
-  bool enable_vector = this->get(DocumentSettings::ENABLE_VECTOR);
+  bool enable_raster = this->get(D_SET::ENABLE_RASTER);
+  bool enable_vector = this->get(D_SET::ENABLE_VECTOR);
 
   if(enable_raster && !this->engraveList.empty()) {
-    raster_power = this->front_engrave()->settings.get(ES::EPOWER);
-    raster_speed = this->front_engrave()->settings.get(ES::ESPEED);
+    raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
+    raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
   }
 
-  double width = this->get(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->get(DocumentSettings::HEIGHT).in(PX, resolution);
-  int focus = this->get(DocumentSettings::AUTO_FOCUS);
+  double width = this->get(D_SET::WIDTH).in(PX, resolution);
+  double height = this->get(D_SET::HEIGHT).in(PX, resolution);
+  int focus = this->get(D_SET::AUTO_FOCUS);
 
   /* Print the printer job language header. */
   out << format(PJL_HEADER) % title;
@@ -149,13 +154,14 @@ void Document::write(std::ostream &out) {
 }
 
 Document& Document::preprocess() {
-  typedef DocumentSettings D_SET;
+
 
  for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
    CutModel& model = **it;
-   Coord_t dpi = model.get(DocumentSettings::RESOLUTION);
-   Coord_t width = model.get(DocumentSettings::WIDTH).in(PX, dpi);
-   Coord_t height = model.get(DocumentSettings::HEIGHT).in(PX, dpi);
+   Coord_t dpi = model.get(D_SET::RESOLUTION);
+   Coord_t width = model.get(D_SET::WIDTH).in(PX, dpi);
+   Coord_t height = model.get(D_SET::HEIGHT).in(PX, dpi);
+   Measurement reduceMax = model.get(C_SET::REDUCE);
 
    dump("input.txt", model.begin(), model.end());
 
@@ -172,11 +178,11 @@ Document& Document::preprocess() {
    dump("planared.txt", planared.begin(), planared.end());
 
    CutModel reduced(model.settings);
-   reduce(exploded, reduced, Measurement(0.1, MM).in(PX, dpi));
+   reduce(exploded, reduced, reduceMax.in(PX, dpi));
    dump("reduced.txt", reduced.begin(), reduced.end());
 
    model = reduced;
-   dump("after-copy.txt", model.begin(), model.end());
+   dump("after-copy.txt", exploded.begin(), exploded.end());
  }
 
    return *this;
@@ -198,14 +204,13 @@ Document::Format Document::findFormat(const string& filename) {
 }
 
 bool Document::load(const string& filename, LoadType load, Format docFormat) {
-  typedef DocumentSettings DS;
   if(docFormat == UNSPECIFIED)
     docFormat = findFormat(filename);
 
   string base = basename(strdup(filename.c_str()));
 
-  this->put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
-  this->put(DS::BASENAME,base.erase(base.rfind(".")));
+  this->put(D_SET::DATA_DIR, string(dirname(strdup(filename.c_str()))));
+  this->put(D_SET::BASENAME,base.erase(base.rfind(".")));
 
   cups_file_t* input_file;
   FileParser *parser = NULL;
@@ -238,7 +243,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
         return false;
       }
     }
-    string file_basename = this->get(DS::TEMP_DIR)+ "/" + this->get(DS::BASENAME);
+    string file_basename = this->get(D_SET::TEMP_DIR)+ "/" + this->get(D_SET::BASENAME);
 
     // Write out the incoming cups data if debug is enabled.
     // FIXME: This is disabled for now since it has a bug:
@@ -279,18 +284,18 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
     if (load == ENGRAVING || load == BOTH) {
-      switch (this->get(EngraveSettings::DITHERING)) {
-      case EngraveSettings::DEFAULT_DITHERING:
+      switch (this->get(E_SET::DITHERING)) {
+      case E_SET::DEFAULT_DITHERING:
         psparser->setRasterFormat(PostscriptParser::BITMAP);
         break;
-      case EngraveSettings::BAYER:
-      case EngraveSettings::FLOYD_STEINBERG:
-      case EngraveSettings::JARVIS:
-      case EngraveSettings::BURKE:
-      case EngraveSettings::STUCKI:
-      case EngraveSettings::SIERRA2:
-      case EngraveSettings::SIERRA3:
-        psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
+      case E_SET::BAYER:
+      case E_SET::FLOYD_STEINBERG:
+      case E_SET::JARVIS:
+      case E_SET::BURKE:
+      case E_SET::STUCKI:
+      case E_SET::SIERRA2:
+      case E_SET::SIERRA3: // FIXME psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
+        psparser->setRasterFormat(PostscriptParser::BITMAP);
         break;
 
       default:
@@ -311,7 +316,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     if (docFormat == PBM) {
       std::string suffix = filename.substr(filename.rfind(".") + 1);
       engraving->push_back(loadpbm(filename));
-      this->settings.put(EngraveSettings::EPOS, Point(392, 516));
+      this->settings.put(E_SET::EPOS, Point(392, 516));
     }
     else if (parser) {
       if (parser->hasImageData()) {
@@ -319,8 +324,8 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
 
         if(parser->hasGrayscaleImage()) {
           GrayscaleImage gs = parser->getGrayscaleImage();
-          Dither& dither = Dither::create(gs, this->get(ES::DITHERING));
-          BitmapImage bm = dither.dither(this->get(EngraveSettings::EPOS));
+          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
+          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
           engraving->push_back(bm);
         } else if(parser->hasBitmapImage()) {
           engraving->push_back(parser->getBitmapImage());
@@ -330,15 +335,15 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
         std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
         if (suffix == "ppm" || suffix == "pgm") {
           GrayscaleImage gs = loadppm(filename);
-          Dither& dither = Dither::create(gs, this->get(ES::DITHERING));
-          BitmapImage bm = dither.dither(this->get(EngraveSettings::EPOS));
+          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
+          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
           engraving->push_back(bm);
         }
         else {
           engraving->push_back(loadpbm(filename));
         }
 
-        this->settings.put(EngraveSettings::EPOS, Point(392, 516));
+        this->settings.put(E_SET::EPOS, Point(392, 516));
       }
     }
     if (engraving) {

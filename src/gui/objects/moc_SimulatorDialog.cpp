@@ -23,7 +23,7 @@ static const uint qt_meta_data_SimulatorDialog[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-      10,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -33,21 +33,28 @@ static const uint qt_meta_data_SimulatorDialog[] = {
  // slots: signature, parameters, type, tag, flags
       17,   16,   16,   16, 0x0a,
       41,   16,   16,   16, 0x0a,
-      64,   52,   16,   16, 0x0a,
-     123,  111,   16,   16, 0x0a,
-     157,  111,   16,   16, 0x0a,
-     190,   16,   16,   16, 0x0a,
-     213,  199,   16,   16, 0x0a,
-     259,  250,   16,   16, 0x2a,
-     283,  199,   16,   16, 0x0a,
-     320,  250,   16,   16, 0x2a,
+      60,   52,   16,   16, 0x0a,
+     102,   52,   16,   16, 0x0a,
+     148,  136,   16,   16, 0x0a,
+     198,  136,   16,   16, 0x0a,
+     257,  245,   16,   16, 0x0a,
+     291,  245,   16,   16, 0x0a,
+     324,   16,   16,   16, 0x0a,
+     347,  333,   16,   16, 0x0a,
+     393,  384,   16,   16, 0x2a,
+     417,  333,   16,   16, 0x0a,
+     454,  384,   16,   16, 0x2a,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_SimulatorDialog[] = {
     "SimulatorDialog\0\0sceneSelectionChanged()\0"
-    "simulate()\0x0,y0,r,g,b\0"
+    "simulate()\0img,x,y\0"
+    "createPixmapItem(QImage&,Coord_t,Coord_t)\0"
+    "addImage(QImage&,Coord_t,Coord_t)\0"
+    "x0,y0,r,g,b\0"
+    "engravePixel(coord,coord,uint8_t,uint8_t,uint8_t)\0"
     "drawPixel(coord,coord,uint8_t,uint8_t,uint8_t)\0"
     "x0,y0,x1,y1\0drawMove(coord,coord,coord,coord)\0"
     "drawCut(coord,coord,coord,coord)\0"
@@ -91,17 +98,20 @@ int SimulatorDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         switch (_id) {
         case 0: sceneSelectionChanged(); break;
         case 1: simulate(); break;
-        case 2: drawPixel((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< uint8_t(*)>(_a[3])),(*reinterpret_cast< uint8_t(*)>(_a[4])),(*reinterpret_cast< uint8_t(*)>(_a[5]))); break;
-        case 3: drawMove((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< coord(*)>(_a[3])),(*reinterpret_cast< coord(*)>(_a[4]))); break;
-        case 4: drawCut((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< coord(*)>(_a[3])),(*reinterpret_cast< coord(*)>(_a[4]))); break;
-        case 5: update(); break;
-        case 6: dumpVectorImage((*reinterpret_cast< const string(*)>(_a[1])),(*reinterpret_cast< BoundingBox*(*)>(_a[2]))); break;
-        case 7: dumpVectorImage((*reinterpret_cast< const string(*)>(_a[1]))); break;
-        case 8: dumpRasterImage((*reinterpret_cast< const string(*)>(_a[1])),(*reinterpret_cast< BoundingBox*(*)>(_a[2]))); break;
-        case 9: dumpRasterImage((*reinterpret_cast< const string(*)>(_a[1]))); break;
+        case 2: createPixmapItem((*reinterpret_cast< QImage(*)>(_a[1])),(*reinterpret_cast< Coord_t(*)>(_a[2])),(*reinterpret_cast< Coord_t(*)>(_a[3]))); break;
+        case 3: addImage((*reinterpret_cast< QImage(*)>(_a[1])),(*reinterpret_cast< Coord_t(*)>(_a[2])),(*reinterpret_cast< Coord_t(*)>(_a[3]))); break;
+        case 4: engravePixel((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< uint8_t(*)>(_a[3])),(*reinterpret_cast< uint8_t(*)>(_a[4])),(*reinterpret_cast< uint8_t(*)>(_a[5]))); break;
+        case 5: drawPixel((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< uint8_t(*)>(_a[3])),(*reinterpret_cast< uint8_t(*)>(_a[4])),(*reinterpret_cast< uint8_t(*)>(_a[5]))); break;
+        case 6: drawMove((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< coord(*)>(_a[3])),(*reinterpret_cast< coord(*)>(_a[4]))); break;
+        case 7: drawCut((*reinterpret_cast< coord(*)>(_a[1])),(*reinterpret_cast< coord(*)>(_a[2])),(*reinterpret_cast< coord(*)>(_a[3])),(*reinterpret_cast< coord(*)>(_a[4]))); break;
+        case 8: update(); break;
+        case 9: dumpVectorImage((*reinterpret_cast< const string(*)>(_a[1])),(*reinterpret_cast< BoundingBox*(*)>(_a[2]))); break;
+        case 10: dumpVectorImage((*reinterpret_cast< const string(*)>(_a[1]))); break;
+        case 11: dumpRasterImage((*reinterpret_cast< const string(*)>(_a[1])),(*reinterpret_cast< BoundingBox*(*)>(_a[2]))); break;
+        case 12: dumpRasterImage((*reinterpret_cast< const string(*)>(_a[1]))); break;
         default: ;
         }
-        _id -= 10;
+        _id -= 13;
     }
     return _id;
 }

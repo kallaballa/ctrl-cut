@@ -27,7 +27,7 @@
 #include "util/Logger.hpp"
 #include "MMapMatrix.hpp"
 
-GrayscaleImage *loadppm(std::string filename)
+static inline GrayscaleImage loadppm(std::string filename)
 {
   LOG_DEBUG_MSG("loading PPM..", filename);
 
@@ -37,38 +37,37 @@ GrayscaleImage *loadppm(std::string filename)
   int data_offset = 0;
   FILE* pf = fopen(filename.c_str(), "r");
 
-  if (pf == NULL) return NULL;
+  assert (pf != NULL);
   t = fgets(buf, PPMREADBUFLEN, pf);
-  if (t == NULL) return NULL;
+  assert (t != NULL);
 
   uint8_t components;
   if (!strncmp(buf, "P6\n", 3)) components = 3;
   else if (!strncmp(buf, "P5\n", 3)) components = 1;
-  else return NULL;
+  else assert(false);
 
   data_offset += 4;
 
   do { /* Px formats can have # comments after first line */
     t = fgets(buf, PPMREADBUFLEN, pf);
-    if (t == NULL) return NULL;
+    assert (t != NULL);
     data_offset += strlen(buf);
   } while (strncmp(buf, "#", 1) == 0);
   r = sscanf(buf, "%u %u", &w, &h);
 
-  if (r < 2) return NULL;
+  assert(r >= 2);
   // The program fails if the first byte of the image is equal to 32. because
   // the fscanf eats the space and the image is read with some bit less
   r = fscanf(pf, "%u\n", &d);
   data_offset += 3;
-  if ((r < 1) || (d != 255)) return NULL;
+  assert ((r >= 1) && (d == 255));
   fpos_t pos;
 
   fgetpos(pf, &pos);
-
-  return new MappedImage(filename, w, h, components, data_offset);
+  return MappedImage(filename, w, h, components, data_offset);
 }
 
-BitmapImage *loadpbm(std::string filename)
+static inline BitmapImage loadpbm(std::string filename)
 {
   LOG_DEBUG_MSG("loading PBM..", filename);
 
@@ -78,38 +77,37 @@ BitmapImage *loadpbm(std::string filename)
   int data_offset = 0;
   FILE* pf = fopen(filename.c_str(), "r");
 
-  if (pf == NULL) return NULL;
+  assert (pf != NULL);
   t = fgets(buf, PPMREADBUFLEN, pf);
-  if (t == NULL) return NULL;
+  assert (t != NULL);
 
-  if (strncmp(buf, "P4\n", 3)) return NULL;
+  assert (!strncmp(buf, "P4\n", 3));
 
   data_offset += 4;
 
   do { /* Px formats can have # comments after first line */
     t = fgets(buf, PPMREADBUFLEN, pf);
-    if (t == NULL) return NULL;
+    assert (t != NULL);
     data_offset += strlen(buf);
   } while (strncmp(buf, "#", 1) == 0);
   r = sscanf(buf, "%u %u", &w, &h);
 
-  if (r < 2) return NULL;
+  assert (r >= 2);
   fpos_t pos;
   fgetpos(pf, &pos);
 
-  BitmapImage *bitmap = NULL;
   size_t bufsize = w*h/8;
   uint8_t *imgbuf = new uint8_t[bufsize];
   size_t items = fread(imgbuf, bufsize, 1, pf);
   if (items == 1) {
-    bitmap = new BitmapImage(w, h);
     for (uint32_t i=0;i<bufsize;i++) imgbuf[i] = ~imgbuf[i];
-    bitmap->setData(imgbuf);
+    BitmapImage img(w,h,imgbuf);
+    return img;
   }
   else {
     delete[] imgbuf;
+    assert(false);
   }
-  return bitmap;
 }
 
 #endif /* PPMFILE_H_ */

@@ -46,11 +46,13 @@ HEADERS +=  ./MainWindow.h \
            ./CtrlCutView.h \
            ./LaserDialog.h \
            ./StreamUtils.h \
+           ./SettingsTableModel.h \
            ./helpers/Qt.h \
            ./helpers/CutItem.h \
            ./helpers/PathItem.h \
            ./helpers/DocumentItem.h \
            ./helpers/EngraveItem.h \
+           ./helpers/EngraveCanvas.h \
            ./SimulatorView.h \
            ./SimulatorScene.h \
            ../pclint/Pcl.h \
@@ -77,6 +79,7 @@ SOURCES +=  ./gui.cpp \
            ./helpers/CutItem.cpp \
 	   ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
+           ./helpers/EngraveCanvas.cpp \
            ./helpers/EngraveItem.cpp \
            ./CtrlCutScene.cpp \
            ./LpdClient.cpp \

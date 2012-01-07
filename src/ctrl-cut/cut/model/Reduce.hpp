@@ -19,7 +19,7 @@
 //#include "Reduce.hpp"
 #include "util/Logger.hpp"
 #include "cut/graph/Traverse.hpp"
-#include "cut/model/CutModel.hpp"
+#include "cut/model/Cut.hpp"
 #include <boost/foreach.hpp>
 /*!
  * Reduce number of vertices in polylines by approximating the polylines with fewer line segments.

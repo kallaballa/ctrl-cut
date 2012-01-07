@@ -28,7 +28,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./util/PJL.hpp \
            ./util/Util.hpp \
            ./cut/model/Explode.hpp \
-           ./cut/model/CutModel.hpp \
+           ./cut/model/Cut.hpp \
            ./cut/geom/Views.hpp \
            ./cut/geom/Geometry.hpp \
            ./cut/geom/SegmentTree.hpp \
@@ -36,7 +36,6 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./cut/geom/Iterators.hpp \
            ./cut/geom/Route.hpp \
            ./cut/geom/Concepts.hpp \
-           ./cut/Processor.hpp \
            ./cut/graph/WeightedGraph.hpp \
            ./cut/graph/SegmentGraph.hpp \
            ./cut/graph/GeometryGraph.hpp \
@@ -61,7 +60,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./tri_logger/tri_logger.hpp \
            ./config/CutSettings.hpp \
            ./config/DocumentSettings.hpp \
-           ./config/SegmentSettings.hpp \
+           ./config/PathSettings.hpp \
            ./config/LaserCutter.hpp \
            ./config/Settings.hpp \
            ./config/EngraveSettings.hpp \
@@ -75,7 +74,6 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
-           ./engrave/Engrave.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \
            ./engrave/dither/DitherBurke.cpp \
@@ -88,7 +86,8 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./Document.cpp \
            ./tri_logger/tri_logger.cpp \
            ./config/EngraveSettings.cpp \
-           ./config/SegmentSettings.cpp \
+	   ./config/BitmapSettings.cpp \
+           ./config/PathSettings.cpp \
            ./config/CutSettings.cpp \
            ./config/DocumentSettings.cpp \
            ./svg/SvgFix.cpp \

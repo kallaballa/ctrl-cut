@@ -1,9 +1,11 @@
 #include "FileParser.hpp"
 #include "util/Logger.hpp"
 #include "util/Eps.hpp"
+#include "cut/geom/Geometry.hpp"
 #include <util/Measurement.hpp>
 #include <cups/cups.h>
 #include <cups/file.h>
+#include "config/EngraveSettings.hpp"
 
 #ifdef USE_GHOSTSCRIPT_API
 #include <sstream>
@@ -221,8 +223,8 @@ bool PostscriptParser::execute_ghostscript_cmd(const std::vector<std::string> &a
 }
 #endif
 
-PostscriptParser::PostscriptParser(const DocumentSettings &conf)
-  : FileParser(conf), rendertofile(false), rasterformat(BITMAP), gsimage(NULL), image(NULL)
+PostscriptParser::PostscriptParser(DocumentSettings &conf)
+  : FileParser(conf), rendertofile(false), rasterformat(BITMAP), gsimage(0,0,1), bmimage(0,0)
 {
   PostscriptParser::inst = this;
 }
@@ -240,9 +242,9 @@ PostscriptParser::~PostscriptParser()
       }
     }
   }
-  // FIXME: because of the gui depending on the data we can't delete right now. auto_ptr?
- // delete gsimage;
-  //delete image;
+
+  delete (uint8_t*)this->gsimage.data();
+  delete (uint8_t*)this->bmimage.data();
 
   PostscriptParser::inst = NULL;
 }
@@ -386,19 +388,29 @@ void PostscriptParser::printStatistics()
 }
 #endif
 
-void PostscriptParser::copyPage()
-{
-  Rectangle cropbox = this->gsimage->autocrop();
-  this->image = this->gsimage->copy(cropbox);
+void PostscriptParser::copyPage() {
+  if(this->gsimage.isAllocated()) {
+    Rectangle cropbox = this->gsimage.autocrop();
+    GrayscaleImage cropped;
+
+    this->gsimage.copy(cropped,cropbox);
+    this->gsimage = cropped;
+    this->conf.put(EngraveSettings::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
+  }
+
+  if(this->bmimage.isAllocated()) {
+    Rectangle cropbox = this->bmimage.autocrop();
+    BitmapImage cropped;
+
+    this->bmimage.copy(cropped,cropbox);
+    this->bmimage = cropped;
+    this->conf.put(EngraveSettings::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
+  }
 
   // For debugging, we can export the image here:
-#if 0
-  BitmapImage *bitmap = dynamic_cast<BitmapImage*>(this->gsimage);
-  if (bitmap) bitmap->saveAsPBM("/tmp/out.pbm");
-  else {
-    GrayscaleImage *gimage = dynamic_cast<GrayscaleImage*>(this->gsimage);
-    if (gimage) gimage->saveAsPGM("/tmp/out.pgm");
-  }
+#if 1
+  if (bmimage.isAllocated()) bmimage.saveAsPBM("/tmp/out.pbm");
+  if (gsimage.isAllocated()) gsimage.saveAsPGM("/tmp/out.pgm");
 #endif
 }
 
@@ -407,16 +419,13 @@ void PostscriptParser::copyPage()
 */
 void PostscriptParser::createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride)
 {
-// FIXME: because of the gui depending on the data we can't delete right now. auto_ptr?
-//  delete this->gsimage;
-//  delete this->image;
   if (this->rasterformat == BITMAP) {
-    this->gsimage = new BitmapImage(width, height, (uint8_t *)pimage);
-    if (rowstride != 0) this->gsimage->setRowstride(rowstride);
+    this->bmimage = BitmapImage(width, height, (uint8_t *)pimage);
+    if (rowstride != 0) this->bmimage.setRowstride(rowstride);
   }
   else if (this->rasterformat == GRAYSCALE) {
-    this->gsimage = new GrayscaleImage(width, height, 1, (uint8_t *)pimage);
-    if (rowstride != 0) this->gsimage->setRowstride(rowstride);
+    this->gsimage = GrayscaleImage(width, height, 1, (uint8_t *)pimage);
+    if (rowstride != 0) this->gsimage.setRowstride(rowstride);
   }
   else {
     LOG_FATAL_MSG("Raster format not implemented", this->rasterformat);

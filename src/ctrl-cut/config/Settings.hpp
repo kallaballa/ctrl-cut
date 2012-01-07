@@ -34,6 +34,9 @@
 
 #include <boost/any.hpp>
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
+#include "util/Measurement.hpp"
+#include "cut/geom/Geometry.hpp"
 
 using std::string;
 
@@ -55,22 +58,39 @@ public:
       }
   };
 
-  template<typename T>
-  class Key {
-  public:
-    const string id;
+  struct KeyBase {
+    const string name;
 
-    Key(const char* id): id(id) {};
+    KeyBase(const char* name):
+      name(name)
+    {};
+
+    KeyBase(const string& name):
+       name(name)
+     {};
+
+    bool operator<(const KeyBase& other) const{
+      return this->name < other.name;
+    }
 
     operator std::string() const{
-      return this->id;
+      return this->name;
     }
   };
 
+  template<typename T>
+  class Key : public KeyBase {
+  public:
+    Key(const char* name): KeyBase(name) {};
+    Key(const string& name): KeyBase(name) {};
+  };
+
   typedef boost::any Value;
-  typedef std::map<string,Value>  SettingsMap;
+  typedef std::map<KeyBase,Value>  SettingsMap;
   typedef SettingsMap::iterator iterator;
   typedef SettingsMap::const_iterator const_iterator;
+  typedef SettingsMap::reference reference;
+  typedef SettingsMap::const_reference const_reference;
 
   Settings(Settings& parent) : parent(&parent)  {};
   Settings(const Settings& other) : parent(NULL)  {
@@ -83,14 +103,70 @@ public:
 
   Settings() : parent(NULL)  {};
 
-  ~Settings() {}
+  string key(int i) {
+    iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    return (*it).first;
+  }
+
+  string value(int i) {
+    iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    boost::any prop = (*it).second;
+
+    if(prop.type() == typeid(Measurement)) {
+      return boost::lexical_cast<string>(boost::any_cast<Measurement>(prop));
+    } else if(prop.type() == typeid(Point)) {
+      return boost::lexical_cast<string>(boost::any_cast<Point>(prop));
+    } else if(prop.type() == typeid(string)){
+      return boost::lexical_cast<string>(boost::any_cast<string>(prop));
+    } else if(prop.type() == typeid(float)){
+      return boost::lexical_cast<string>(boost::any_cast<float>(prop));
+    } else if(prop.type() == typeid(bool)){
+      return boost::lexical_cast<string>(boost::any_cast<bool>(prop));
+    } else if(prop.type() == typeid(uint16_t)){
+      return boost::lexical_cast<string>(boost::any_cast<uint16_t>(prop));
+    } else if(prop.type() == typeid(uint32_t)){
+      return boost::lexical_cast<string>(boost::any_cast<uint32_t>(prop));
+    }
+    return "unknown" + i;
+  }
+
+  void set(int i, const string& val) {
+    iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    KeyBase key = (*it).first;
+    boost::any prop = (*it).second;
+    if(prop.type() == typeid(Measurement)) {
+      this->put(Key<Measurement>(key.name), boost::lexical_cast<Measurement>(val));
+    } else if(prop.type() == typeid(Point)) {
+      this->put(Key<Point>(key.name), boost::lexical_cast<Point>(val));
+    } else if(prop.type() == typeid(string)){
+      this->put(Key<string>(key.name), val);
+    } else if(prop.type() == typeid(float)){
+      this->put(Key<float>(key.name), boost::lexical_cast<float>(val));
+    } else if(prop.type() == typeid(bool)){
+      this->put(Key<bool>(key.name), boost::lexical_cast<bool>(val));
+    } else if(prop.type() == typeid(uint16_t)){
+      this->put(Key<uint16_t>(key.name), boost::lexical_cast<uint16_t>(val));
+    } else if(prop.type() == typeid(uint32_t)){
+      this->put(Key<uint32_t>(key.name), boost::lexical_cast<uint32_t>(val));
+    }
+    std::cerr << "unkown type for: " << key.name << std::endl;
+  }
 
   void clear() { return this->properties.clear(); }
   size_t size() const { return this->properties.size(); }
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
-    properties[key.id] = boost::any(static_cast<T>(value));
+    properties[key] = boost::any(static_cast<T>(value));
   }
 
   template<typename T>
@@ -102,7 +178,7 @@ public:
       return parent->get(key);
     }
 
-    boost::throw_exception(setting_not_found(key.id));
+    boost::throw_exception(setting_not_found(key));
   }
 
   bool hasParent() const {

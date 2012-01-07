@@ -14,11 +14,13 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QStatusBar>
+#include <QtGui/QTableView>
 #include <QtGui/QToolBar>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
@@ -37,7 +39,9 @@ public:
     QAction *simulateAction;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
     CtrlCutView *graphicsView;
+    QTableView *settingsTable;
     QMenuBar *menubar;
     QMenu *fileMenu;
     QMenu *menuTools;
@@ -49,7 +53,12 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(710, 545);
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
+        MainWindow->setSizePolicy(sizePolicy);
         MainWindow->setUnifiedTitleAndToolBarOnMac(true);
         fileOpenAction = new QAction(MainWindow);
         fileOpenAction->setObjectName(QString::fromUtf8("fileOpenAction"));
@@ -68,18 +77,48 @@ public:
         simulateAction->setObjectName(QString::fromUtf8("simulateAction"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(centralwidget->sizePolicy().hasHeightForWidth());
+        centralwidget->setSizePolicy(sizePolicy1);
         verticalLayout = new QVBoxLayout(centralwidget);
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setSizeConstraint(QLayout::SetMaximumSize);
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         graphicsView = new CtrlCutView(centralwidget);
         graphicsView->setObjectName(QString::fromUtf8("graphicsView"));
+        sizePolicy.setHeightForWidth(graphicsView->sizePolicy().hasHeightForWidth());
+        graphicsView->setSizePolicy(sizePolicy);
 
-        verticalLayout->addWidget(graphicsView);
+        horizontalLayout->addWidget(graphicsView);
+
+        settingsTable = new QTableView(centralwidget);
+        settingsTable->setObjectName(QString::fromUtf8("settingsTable"));
+        sizePolicy.setHeightForWidth(settingsTable->sizePolicy().hasHeightForWidth());
+        settingsTable->setSizePolicy(sizePolicy);
+        settingsTable->setMinimumSize(QSize(200, 300));
+        settingsTable->setMaximumSize(QSize(200, 16777215));
+        settingsTable->setAutoScrollMargin(0);
+        settingsTable->setEditTriggers(QAbstractItemView::AllEditTriggers);
+        settingsTable->setAlternatingRowColors(true);
+        settingsTable->setSelectionMode(QAbstractItemView::SingleSelection);
+        settingsTable->setSelectionBehavior(QAbstractItemView::SelectItems);
+        settingsTable->setSortingEnabled(true);
+        settingsTable->setCornerButtonEnabled(false);
+        settingsTable->verticalHeader()->setVisible(false);
+
+        horizontalLayout->addWidget(settingsTable);
+
+        horizontalLayout->setStretch(0, 1);
+
+        verticalLayout->addLayout(horizontalLayout);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 800, 23));
+        menubar->setGeometry(QRect(0, 0, 710, 23));
         fileMenu = new QMenu(menubar);
         fileMenu->setObjectName(QString::fromUtf8("fileMenu"));
         menuTools = new QMenu(menubar);
@@ -92,6 +131,11 @@ public:
         MainWindow->setStatusBar(statusbar);
         toolBar = new QToolBar(MainWindow);
         toolBar->setObjectName(QString::fromUtf8("toolBar"));
+        QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(toolBar->sizePolicy().hasHeightForWidth());
+        toolBar->setSizePolicy(sizePolicy2);
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menubar->addAction(fileMenu->menuAction());

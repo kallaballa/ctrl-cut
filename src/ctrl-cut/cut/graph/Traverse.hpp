@@ -7,7 +7,6 @@
 #include <set>
 
 #include "cut/geom/Geometry.hpp"
-#include "cut/Processor.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 
 #include <boost/graph/planar_face_traversal.hpp>
@@ -21,7 +20,7 @@ using boost::planar_face_traversal;
 using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
-
+/*
 template<typename TsegmentInputIterator>
 void check(TsegmentInputIterator first, TsegmentInputIterator last) {
   BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
@@ -35,7 +34,7 @@ void check(TsegmentInputIterator first, TsegmentInputIterator last) {
     uniq_segments.insert(seg);
   }
 }
-
+*/
 void dump(std::ostream& os, Route::iterator first, Route::iterator last) {
   os << "<route>" << std::endl;
 

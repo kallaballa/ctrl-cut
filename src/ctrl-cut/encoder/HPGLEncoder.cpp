@@ -18,13 +18,18 @@
  */
 #include "HPGLEncoder.hpp"
 #include "util/PJL.hpp"
-#include "cut/model/CutModel.hpp"
+#include "cut/model/Cut.hpp"
+#include "cut/model/Translate.hpp"
 
-#include "boost/format.hpp"
+#include <boost/format.hpp>
 
 using boost::format;
 
-void HPGLEncoder::encode(std::ostream &out, CutModel& model) {
+void HPGLEncoder::encode(std::ostream &out, CutModel& encode) {
+  CutModel model = encode.make();
+  const Point&  pos = model.get(CutSettings::CPOS);
+  translate(encode,model, pos);
+
   bool firstOperation = true;
   bool writingPolyline = false;
 

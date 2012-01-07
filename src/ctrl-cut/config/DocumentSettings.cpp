@@ -19,7 +19,8 @@
 
 #include "DocumentSettings.hpp"
 #include "EngraveSettings.hpp"
-#include "SegmentSettings.hpp"
+#include "BitmapSettings.hpp"
+#include "PathSettings.hpp"
 #include "CutSettings.hpp"
 #include "util/Measurement.hpp"
 
@@ -66,11 +67,13 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(EngraveSettings::ESPEED, 100);
   this->put(EngraveSettings::EPOS, Point());
 
+  this->put(BitmapSettings::BPOS, Point());
+
   this->put(CutSettings::OPTIMIZE, CutSettings::INNER_OUTER);
   this->put(CutSettings::CSPEED, 33);
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);
-  this->put(CutSettings::REDUCE, 3.0f);
+  this->put(CutSettings::REDUCE, Measurement(0.1,MM));
   this->put(CutSettings::CPOS, Point());
 
   this->put(PathSettings::S_SPEED, 33);

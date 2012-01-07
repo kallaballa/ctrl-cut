@@ -45,12 +45,12 @@ public:
 
   void load(Document& doc) {
     for(Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-      this->doc.addCut(*it);
+      this->doc.push_back(*it);
       this->scene.addItem(new CutItem(**it));
     }
 
     for(Document::EngraveIt it = doc.begin_engrave(); it != doc.end_engrave(); it++) {
-      this->doc.addRaster(*it);
+      this->doc.push_back(*it);
       this->scene.addItem(new EngraveItem(**it));
     }
   }

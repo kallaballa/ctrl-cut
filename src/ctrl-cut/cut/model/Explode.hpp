@@ -142,19 +142,18 @@ public:
     tree.build(src);
 
     for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
-      std::cerr << *it_pick << std::endl;
 
       const Segment& pick = (*it_pick);
-      assert(pick[0] != pick[1]);
+      if(pick[0] == pick[1])
+        continue;
 
      const Result& in_range = tree.findWithinRange(it_pick);
 
       for (ResultIter it_result = in_range.begin(); it_result != in_range.end(); ++it_result) {
         TreeIter it_candidate = *it_result;
         const Segment& candidate = *it_candidate;
-        assert(candidate[0] != candidate[1]);
 
-        if (pick == candidate) {
+        if (pick == candidate || candidate[0] == candidate[1]) {
           continue;
         }
 

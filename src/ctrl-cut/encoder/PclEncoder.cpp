@@ -20,7 +20,6 @@
 
 #include "util/PJL.hpp"
 #include "util/2D.hpp"
-#include "engrave/Engrave.hpp"
 #include "engrave/image/MMapMatrix.hpp"
 #include "config/EngraveSettings.hpp"
 #include "PclEncoder.hpp"
@@ -34,11 +33,15 @@ typedef EngraveSettings ES;
 
 void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
-  BitmapImage* image = dynamic_cast<BitmapImage*>(&raster.getProcessedImage());
+  return;
+  // REFACTOR
+  BitmapImage* image = &raster.front();
   if(!image) {
     LOG_WARN_STR("Engraving is not processed. Can't encode");
     return;
   }
+  const Point& pos = raster.settings.get(EngraveSettings::EPOS);
+
   LOG_DEBUG_STR("Encode raster");
   ES::Direction direction = raster.settings.get(ES::DIRECTION);
   // Raster direction (1 = up)
@@ -75,7 +78,7 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
       for (r = width - 1; r > l && (scanline[r] == 0xff); r--) { }
       r++;
 
-      uint32_t ypos = image->yPos() + y;
+      uint32_t ypos = pos.y + y;
 
       // Epilog somehow outputs and END-DIR-START sequence for each 388 scanlines.
       // We'll do the same for now.
@@ -88,7 +91,7 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
       lasty = ypos;
 
       out << format(PCL_POS_Y) % ypos;
-      out << format(PCL_POS_X) % (image->xPos() + (l * 8));
+      out << format(PCL_POS_X) % (pos.x + (l * 8));
 
       int n;
       if (dir) {

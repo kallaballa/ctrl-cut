@@ -82,6 +82,8 @@ Document& CupsGetOpt::load_document(int argc, char *argv[]) {
   cups_option_t *cups_options;
   size_t numCupsOptions = cupsParseOptions(options.c_str(), 0, &cups_options);
   CupsOptions::parseSettings(doc->getSettings(), cups_options, numCupsOptions);
+
+  doc->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
   doc->load(filename);
   return *doc;
 }

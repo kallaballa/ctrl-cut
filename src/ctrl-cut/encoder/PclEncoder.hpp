@@ -20,11 +20,13 @@
 #ifndef PCL_RENDERER_H_
 #define PCL_RENDERER_H_
 
+#include "engrave/Engrave.hpp"
+
 #include <map>
 
 class PclEncoder {
 public:
-	static void encode(std::ostream &out, class Engraving& raster);
+	static void encode(std::ostream &out, Engraving& raster);
 };
 
 #endif /* PCL_RENDERER_H_ */

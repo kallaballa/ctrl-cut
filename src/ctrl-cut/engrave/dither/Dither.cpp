@@ -65,9 +65,9 @@ void Dither::carryOver(const uint32_t x, const uint32_t y, const int8_t carryove
   }
 }
 
-BitmapImage &Dither::dither() {
+BitmapImage Dither::dither(Point translate) {
   Pixel<uint8_t> pix;
-  uint8_t byteAlignOff = (8 - this->img.xPos() % 8) % 8;
+  uint8_t byteAlignOff = (8 - translate.x % 8) % 8;
   uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
   scanlineBreak -= scanlineRem;
@@ -75,13 +75,11 @@ BitmapImage &Dither::dither() {
   uint32_t width = this->img.width() + (byteAlignOff ? 8 - byteAlignOff: 0);
   // Bitmaps width must be divisible by 8, so we pad to align it
   if (width % 8 != 0) width += (8 - width % 8);
-  BitmapImage& result = *(new BitmapImage(width, this->img.height()));
-  result.translate(this->img.xPos(), this->img.yPos());
+
   size_t size = this->img.height() * width / 8;
   void *dataptr = malloc(size);
   assert(dataptr);
-  result.setData(dataptr);
-
+  BitmapImage result(width, this->img.height(), dataptr);
   uint8_t *data = (uint8_t *)result.data();
 
   uint8_t bitmap;

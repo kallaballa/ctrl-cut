@@ -1,4 +1,5 @@
 #include "CupsOptions.hpp"
+#include "util/Measurement.hpp"
 
 const string CupsOptions::OPTION_STRINGS[]= {
     "Driver",
@@ -106,7 +107,7 @@ void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, in
     ds.put(CS::FREQUENCY, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    ds.put(CS::REDUCE, lexical_cast<uint16_t> (v));
+    ds.put(CS::REDUCE, Measurement(lexical_cast<uint16_t> (v), MM));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_OPTIMIZE, v)) {
     if (v == "Simple")

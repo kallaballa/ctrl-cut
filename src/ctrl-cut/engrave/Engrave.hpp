@@ -22,44 +22,91 @@
 
 #include "cut/geom/Geometry.hpp"
 #include "image/MMapMatrix.hpp"
+#include "config/DocumentSettings.hpp"
 #include "config/EngraveSettings.hpp"
 #include "engrave/dither/Dither.hpp"
+#include "image/PPMFile.hpp"
+#include <list>
 
-class Document;
-
-class Engraving
+template<typename Timage>
+class EngravingImpl
 {
+private:
+  typedef std::list<Timage> ImageList;
+  ImageList images;
+
 public:
+  typedef typename ImageList::iterator iterator;
+  typedef typename ImageList::const_iterator const_iterator;
+
   EngraveSettings settings;
 
-  Engraving(AbstractImage& sourceImage, Document& doc);
-  Engraving(const std::string&filename, Document& doc);
+  EngravingImpl(DocumentSettings& parentSettings)
+  : settings(parentSettings)
+  {}
 
-  virtual ~Engraving() {}
+  EngravingImpl(const EngraveSettings& settings)
+  : settings(settings) {}
 
-  AbstractImage& getSourceImage() { return *this->sourceImage; }
-  AbstractImage& getProcessedImage() {
-    //copy the source if no processing took place
-    if(!this->processedImage) {
-      this->processedImage = this->sourceImage->copy(Rectangle(0,0,this->sourceImage->width(), this->sourceImage->height()));
-    }
 
-    return *this->processedImage;
+  void load(const string& filename) {
+    std::string suffix = filename.substr(filename.rfind(".") + 1);
+    const BitmapImage& newBitmap = loadpbm(filename);
+    this->settings.put(EngraveSettings::EPOS, Point(392, 516));
+    this->push_back(newBitmap);
   }
 
-  void dither() {
-    GrayscaleImage *gsimage =  dynamic_cast<GrayscaleImage*>(this->sourceImage);
-    if (gsimage) {
-      EngraveSettings::Dithering dithering = this->settings.get(EngraveSettings::DITHERING);
-      Dither& dither = Dither::create(*gsimage, dithering);
-      this->processedImage = &dither.dither();
-    } else {
-      this->processedImage = this->sourceImage;
+  ~EngravingImpl() {
+    for(iterator it = begin(); it != end(); it++) {
+      delete (*it).data();
     }
   }
-private:
-  AbstractImage* sourceImage;
-  AbstractImage *processedImage;
+
+  iterator begin() {
+    return this->images.begin();
+  }
+  const_iterator begin() const {
+    return this->images.begin();
+  }
+  iterator end()  {
+    return this->images.end();
+  }
+  const_iterator end() const {
+    return this->images.end();
+  }
+  typename iterator::reference front() {
+    return this->images.front();
+  }
+  typename iterator::reference back() {
+    return this->images.back();
+  }
+  typename const_iterator::reference front() const {
+    return this->images.front();
+  }
+  typename const_iterator::reference back() const {
+    return this->images.back();
+  }
+
+  void clear() {
+    images.clear();
+  }
+
+  void insert(iterator pos, const Timage& image) {
+    images.insert(pos, image);
+  }
+
+  void erase(iterator pos) {
+    images.erase(pos);
+  }
+
+  void push_front(const Timage& image) {
+    images.push_front(image);
+  }
+
+  void push_back(const Timage& image) {
+    images.push_back(image);
+  }
 };
 
+typedef EngravingImpl<BitmapImage> Engraving;
 #endif

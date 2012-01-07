@@ -65,7 +65,7 @@ public:
 
   RouteImpl() {}
   RouteImpl(DocumentSettings& parentSettings) : settings(parentSettings) {}
-  RouteImpl(CutSettings& settings) : settings(settings) {}
+  RouteImpl(const CutSettings& settings) : settings(settings) {}
 
   iterator begin() {
     return this->paths.begin();
@@ -148,6 +148,10 @@ public:
     os << std::endl;
     os << "</route>" << std::endl;
     return os;
+  }
+
+  RouteImpl make() const {
+    return RouteImpl(this->settings);
   }
 };
 

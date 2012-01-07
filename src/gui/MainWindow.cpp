@@ -1,5 +1,24 @@
+/*
+ * Ctrl-Cut - A laser cutter CUPS driver
+ * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #include "MainWindow.h"
-
+#include "SettingsTableModel.h"
+#include <qapplication.h>
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : rawDocItem(NULL), processDocItem(NULL), laserdialog(NULL), simdialog(NULL)
@@ -108,8 +127,25 @@ void MainWindow::on_lpdclient_progress(int done, int total)
 void MainWindow::sceneSelectionChanged()
 {
   printf("selectionChanged\n");
-  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    printf("item: %p\n", item);
+  if(this->scene->selectedItems().empty()) {
+    SettingsTableModel* model = new SettingsTableModel();
+    model->setSettings(this->rawDocItem->doc.getSettings());
+    settingsTable->setModel(model);
+  } else {
+    foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+      EngraveItem* ei;
+      CutItem* ci;
+      if((ei = dynamic_cast<EngraveItem*>(item))) {
+        SettingsTableModel* model = new SettingsTableModel();
+        model->setSettings(ei->engraving.settings);
+        settingsTable->setModel(model);
+      } else if((ci = dynamic_cast<CutItem*>(item))) {
+        SettingsTableModel* model = new SettingsTableModel();
+        model->setSettings(ci->cut.settings);
+        settingsTable->setModel(model);
+      }
+      printf("item: %p\n", item);
+    }
   }
 }
 

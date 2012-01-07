@@ -21,7 +21,7 @@
 #define PATH_H_
 
 #include "Views.hpp"
-#include "config/SegmentSettings.hpp"
+#include "config/PathSettings.hpp"
 #include "config/CutSettings.hpp"
 
 #include <boost/geometry/geometry.hpp>
@@ -75,6 +75,10 @@ public:
     os << "  </segments>" << std::endl;
     os << "<path>" << std::endl;
     return os;
+  }
+
+  PathImpl make() const {
+    return PathImpl(this->settings);
   }
 };
 

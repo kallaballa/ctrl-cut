@@ -20,7 +20,7 @@
 #define PATHITEM_H_
 
 #include "cut/model/Cut.hpp"
-#include "config/SegmentSettings.hpp"
+#include "config/PathSettings.hpp"
 #include "Qt.h"
 
 class PathItem: public AbstractCtrlCutItem {

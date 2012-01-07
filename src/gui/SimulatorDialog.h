@@ -5,9 +5,10 @@
 #include <qdialog.h>
 #include "ui_SimulatorDialog.h"
 #include <QtGui>
+#include "qgraphicsitem.h"
 #include <assert.h>
-#include "SimulatorScene.h"
 #include "helpers/Qt.h"
+#include "SimulatorScene.h"
 #include "helpers/DocumentItem.h"
 #include "Canvas.h"
 
@@ -17,10 +18,14 @@ class SimulatorDialog : public QDialog, public Canvas, private Ui::SimulatorDial
 public:
   SimulatorDialog(DocumentItem& documentItem, QWidget *parent = NULL);
   ~SimulatorDialog();
+  DocumentItem* documentItem;
 public slots:
   void sceneSelectionChanged();
   void simulate();
-  void drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b){};
+  void createPixmapItem(QImage& img, Coord_t x, Coord_t y);
+  void addImage(QImage& img, Coord_t x, Coord_t y);
+  void engravePixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b);
+  void drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b);
   void drawMove(coord x0, coord y0, coord x1, coord y1);
   void drawCut(coord x0, coord y0, coord x1, coord y1);
   void update(){};
@@ -28,7 +33,7 @@ public slots:
   void dumpRasterImage(const string& filename, BoundingBox* clip = NULL){};
 private:
   SimulatorScene *scene;
-  DocumentItem* documentItem;
+  class EngraveCanvas* engraveCanvas;
   QPen movePen;
   QPen cutPen;
 };

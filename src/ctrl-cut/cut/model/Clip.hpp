@@ -44,7 +44,7 @@ public:
   }
 
   Clip(const Clip& other) :
-    src(other.src), sink(other.sink), bounds(bounds)
+    src(other.src), sink(other.sink), bounds(other.bounds)
   {}
 
   void operator()() {

@@ -14,25 +14,28 @@
 class FileParser
 {
 public:
-  FileParser(const DocumentSettings &conf) : conf(conf) {}
+  FileParser(DocumentSettings &conf) : conf(conf) {}
   virtual ~FileParser() {}
 
   //  bool parse(const string &filename) = 0;
   virtual std::istream &getVectorData() = 0;
 
   // Bitmap methods
-  virtual bool hasBitmapData() = 0;
-  virtual AbstractImage *getImage() = 0;
+  virtual bool hasImageData() = 0;
+  virtual BitmapImage getBitmapImage() = 0;
+  virtual GrayscaleImage getGrayscaleImage() = 0;
+  virtual bool hasBitmapImage() = 0;
+  virtual bool hasGrayscaleImage() = 0;
   virtual const std::string &getBitmapFile() = 0;
 
 protected:
-  const DocumentSettings &conf;
+  DocumentSettings& conf;
 };
 
 class PostscriptParser : public FileParser
 {
 public:
-  PostscriptParser(const DocumentSettings &conf);
+  PostscriptParser(DocumentSettings &conf);
   ~PostscriptParser();
 
   enum RasterFormat {
@@ -50,14 +53,20 @@ public:
   bool parse(cups_file_t *ps_file);
   std::istream &getVectorData();
 
-  virtual bool hasBitmapData() {return (this->image != NULL);}
+  virtual bool hasImageData() {return this->bmimage.isAllocated() ||  this->gsimage.isAllocated(); }
   const std::string &getBitmapFile() {return filename_bitmap;}
 
   void copyPage();
 
   void createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride = 0);
-  AbstractImage *getImage() {return this->image;}
-
+  virtual BitmapImage getBitmapImage() { return bmimage; }
+  virtual GrayscaleImage getGrayscaleImage() { return gsimage; }
+  virtual bool hasBitmapImage() {
+    return bmimage.isAllocated();
+  }
+  virtual bool hasGrayscaleImage() {
+    return gsimage.isAllocated();
+  }
   void printStatistics();
 
   // FIXME: Singleton for now since ghostscript callbacks don't provide a userdata pointer.
@@ -81,9 +90,8 @@ private:
   RasterFormat rasterformat;
   uint8_t components;
 
-  AbstractImage *gsimage;
-  AbstractImage *image;
-
+  GrayscaleImage gsimage;
+  BitmapImage bmimage;
 #endif
 };
 

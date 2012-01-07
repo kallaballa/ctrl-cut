@@ -41,11 +41,44 @@ public:
   double value;
   Unit unit;
 
+  Measurement() : value(0), unit(PX) {};
   Measurement(double value, Unit unit) : value(value), unit(unit) {};
   virtual ~Measurement() {};
   const Measurement convert(const Unit& target, const uint16_t& dpi=72) const;
   double in(const Unit& target, const uint16_t& dpi=72) const;
+
 };
 
+
+inline std::ostream& operator<<(std::ostream &os, const Measurement& m)  {
+  os << m.value;
+
+  if (m.unit == MM)
+    os << "mm";
+  else if (m.unit == IN)
+    os << "in";
+  else if (m.unit == PX)
+    os << "px";
+
+  return os;
+}
+
+inline std::istream& operator>>(std::istream &is, Measurement& m)  {
+  double value;
+  string unit;
+
+  is >> value;
+  is >> unit;
+
+  m.value = value;
+  if (unit == "mm")
+    m.unit = MM;
+  else if (unit == "in")
+    m.unit = IN;
+  else if (unit == "px")
+    m.unit = PX;
+
+  return is;
+}
 
 #endif /* UNITS_H_ */

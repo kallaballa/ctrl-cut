@@ -202,7 +202,8 @@ public:
     int delta = len * 8 - 1 * dir;
     if (int(from.x) + delta < 0) {
       Debugger::getInstance()->waitSteps();
-      if (!Debugger::getInstance()->isInteractive()) assert(false);
+      if (!Debugger::getInstance()->isInteractive())
+        assert(false);
     }
     to.x += delta;
 

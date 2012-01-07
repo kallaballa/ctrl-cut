@@ -23,17 +23,16 @@
 #include <stdint.h>
 #include "util/2D.hpp"
 #include "util/Logger.hpp"
-
+#include <iostream>
 class AbstractImage {
 public:
   AbstractImage(uint32_t width, uint32_t height, void *addr = NULL) : 
-    w(width), h(height), addr(addr), shouldfree(false), xpos(0), ypos(0) {
-  }
-  virtual ~AbstractImage() {
-    if (this->addr && shouldfree) free(this->addr);
+    w(width), h(height), addr(addr) {
   }
 
-  virtual AbstractImage *copy(const Rectangle &rect) const = 0;
+  AbstractImage(const AbstractImage& other) :
+    w(other.w), h(other.h), addr(other.addr), row_stride(other.row_stride) {
+  }
 
   void setSize(uint32_t width, uint32_t height) {
     this->w = width;
@@ -41,13 +40,14 @@ public:
   }
   uint32_t width() const { return this->w; }
   uint32_t height() const { return this->h; }
-  uint32_t xPos() const { return this->xpos; }
-  uint32_t yPos() const { return this->ypos; }
 
   void setRowstride(uint32_t stride) { this->row_stride = stride; }
   uint32_t rowstride() const { return this->row_stride; }
 
   virtual Rectangle autocrop(size_t bytewidth) const {
+    if(!this->isAllocated())
+      return Rectangle(0,0,0,0);
+
     uint8_t *gsaddr = (uint8_t *)this->addr;
 
     unsigned int i,j;
@@ -90,45 +90,36 @@ public:
 
   virtual Rectangle autocrop() const = 0;
 
-  void translate(uint32_t x, uint32_t y) {
-    this->xpos += x;
-    this->ypos += y;
-  }
-  void setTranslation(uint32_t x, uint32_t y) {
-    this->xpos = x;
-    this->ypos = y;
-  }
-  
   void setData(void *addr) { this->addr = addr; }
-  void *data() { return this->addr; }
-  virtual void *allocData() = 0;
 
+  void *data() {
+    if(!isAllocated())
+      allocData();
+    return this->addr;
+  }
+
+  bool isAllocated() const {
+    return w > 0 && h > 0 && this->addr != NULL;
+  }
 protected:
-  /*!
-    Copy from this to dest. x coordinates are given in in bytes, not pixels
-  */
-  void performcopy(AbstractImage *dest,  
-                   int bytewidth, int height, int xoffset, int yoffset) const {
-    const uint8_t *sourcedata = (uint8_t *)this->addr;
-    uint8_t *destdata = (uint8_t *)dest->allocData();
+  virtual void allocData() = 0;
+
+  void performcopy(AbstractImage& dest, int bytewidth, int height, int xoffset, int yoffset) const {
+    assert(isAllocated());
+    const uint8_t *sourcedata = (uint8_t *) this->addr;
+    uint8_t *destdata = (uint8_t *) dest.data();
     for (int j=0;j<height;j++) {
       for (int i=0;i<bytewidth;i++) {
-        destdata[j*bytewidth + i] = sourcedata[(j + yoffset) * this->row_stride + 
-                                               i + xoffset];
+        destdata[j*bytewidth + i] = sourcedata[(j + yoffset) * this->row_stride + i + xoffset];
       }
     }
-    dest->addr = destdata;
-    dest->xpos = xoffset;
-    dest->ypos = yoffset;
+    dest.setData(destdata);
   }
 
   uint32_t w;
   uint32_t h;
-  void * addr;
-  bool shouldfree;
 
-  uint32_t xpos;
-  uint32_t ypos;
+  void * addr;
   uint32_t row_stride;
 };
 

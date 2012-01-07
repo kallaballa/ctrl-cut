@@ -33,23 +33,23 @@ template<
 template<typename,typename> class Tcontainer = std::vector,
 template<typename> class Tallocator = std::allocator
 >
-class CutModelImpl : public RouteImpl<Tcontainer, Tallocator> {
+class CutImpl : public RouteImpl<Tcontainer, Tallocator> {
 public:
   typedef RouteImpl<Tcontainer, Tallocator> Route_t;
-  CutModelImpl(DocumentSettings& parentSettings) :
+  CutImpl(DocumentSettings& parentSettings) :
     Route_t(parentSettings)
   { }
 
-  CutModelImpl(CutSettings& settings) :
+  CutImpl(const CutSettings& settings) :
     Route_t(settings)
   { }
 
   //shallow copy
-  CutModelImpl(const CutModelImpl& other) :
+  CutImpl(const CutImpl& other) :
     Route_t(other) {
   }
 
-  ~CutModelImpl() {
+  ~CutImpl() {
     this->clear();
   }
 
@@ -64,7 +64,7 @@ public:
     int mx = 0, my = 0;
     LOG_INFO_STR("Load vector data");
     int segmentCnt = 0;
-    AddSink<CutModelImpl> sink(*this);
+    AddSink<CutImpl> sink(*this);
 
     while (std::getline(input, line)) {
       std::cerr << line << std::endl;
@@ -126,6 +126,9 @@ public:
     return this->load(infile);
   }
 
+  CutImpl make() const {
+    return CutImpl(this->settings);
+  }
 
 protected:
   /* REFACTOR
@@ -134,5 +137,5 @@ protected:
   */
 };
 
-typedef CutModelImpl<std::vector, std::allocator> CutModel;
+typedef CutImpl<std::vector, std::allocator> CutModel;
 #endif /* CUTMODEL_H_ */

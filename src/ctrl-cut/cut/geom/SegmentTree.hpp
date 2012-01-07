@@ -85,10 +85,9 @@ public:
 
   void erase(const _SegmentNode& node) {
     typename KDTree_t::iterator it = kdtree.find_exact(node);
+    // FIXME lost segments - but they don't affect the model since they would have been removed anyway
     if(it != kdtree.end())
       kdtree.erase_exact(node);
-    else
-      std::cerr << "ouch" << std::endl;
   }
 };
 template<
@@ -121,6 +120,7 @@ public:
   }
 
   iterator erase(iterator& node) {
+    std::cerr << "Erase:" << *node << std::endl;
     _Parent::erase(node);
    return index.erase(node);
   }

@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef PCLINTCONFIG_H_
+#define PCLINTCONFIG_H_
 
 #include "2D.h"
 
@@ -135,4 +135,4 @@ PclIntConfig* PclIntConfig::singleton() {
   return instance;
 }
 
-#endif /* CONFIG_H_ */
+#endif /* PCLINTCONFIG_H_ */

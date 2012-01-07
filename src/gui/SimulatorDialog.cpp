@@ -1,20 +1,40 @@
 #include "SimulatorDialog.h"
-#include "qgraphicsitem.h"
+#include "helpers/EngraveCanvas.h"
 
+typedef DocumentSettings DS;
 SimulatorDialog::SimulatorDialog(DocumentItem& documentItem, QWidget *parent) :
-QDialog(parent), Canvas(1,1), documentItem(&documentItem), movePen(Qt::white), cutPen(Qt::red)
+QDialog(parent),
+Canvas(documentItem.doc.get(DS::WIDTH).in(PX, documentItem.doc.get(DS::RESOLUTION)),documentItem.doc.get(DocumentSettings::HEIGHT).in(PX, documentItem.doc.get(DS::RESOLUTION))),
+documentItem(&documentItem),
+movePen(Qt::white),
+cutPen(Qt::red)
 {
   setupUi(this);
+ // this->engraveCanvas = new EngraveCanvas(21600);
   this->scene = new SimulatorScene(this);
   this->graphicsView->setScene(this->scene);
 
   connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(sceneSelectionChanged()));
   connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
           this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
+//  this->scene->addItem(this->engraveCanvas);
 }
 
-SimulatorDialog::~SimulatorDialog()
-{}
+
+void SimulatorDialog::createPixmapItem(QImage& img, Coord_t x, Coord_t y) {
+  QPixmap pixmap = QPixmap::fromImage(img);
+  if (!pixmap.isNull()) {
+    QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap);
+    pixmapItem->setPos(x,y);
+    this->scene->addItem(pixmapItem);
+  }
+}
+
+void SimulatorDialog::addImage(QImage& img, Coord_t x, Coord_t y) {
+  emit createPixmapItem(img,x,y);
+}
+
+SimulatorDialog::~SimulatorDialog(){}
 
 void SimulatorDialog::sceneSelectionChanged()
 {
@@ -70,10 +90,19 @@ void SimulatorDialog::drawMove(coord x0, coord y0, coord x1, coord y1) {
   this->scene->addItem(line);
 }
 
+void SimulatorDialog::engravePixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b) {
+ // engraveCanvas->drawPixel(x0,y0, r,g,b);
+}
+void SimulatorDialog::drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b) {
+  //emit engravePixel(x0,y0, r,g,b);
+}
 
 void SimulatorDialog::simulate() {
   this->scene->reset();
+
   this->documentItem->commit();
+  Document doc = this->documentItem->doc;
+
   PclIntConfig* config = PclIntConfig::singleton();
   config->autocrop = true;
   config->clip = NULL;
@@ -82,13 +111,11 @@ void SimulatorDialog::simulate() {
   config->screenSize =BoundingBox::createFromGeometryString("1024x768");
 
   ofstream *tmpfile = new ofstream("pclint.tmp", ios::out | ios::binary);
-  bool oldWriteEngraving = this->documentItem->doc.get(DocumentSettings::ENABLE_RASTER);
-  this->documentItem->doc.put(DocumentSettings::ENABLE_RASTER, true);
+  doc.put(DocumentSettings::ENABLE_RASTER, true);
 
-  Document& preprocessed = this->documentItem->doc.preprocess();
+  Document& preprocessed = doc.preprocess();
   preprocessed.write(*tmpfile);
   tmpfile->close();
-  preprocessed.put(DocumentSettings::ENABLE_RASTER, oldWriteEngraving);
 
   ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);
   PclIntConfig::singleton()->debugLevel = LVL_DEBUG;
@@ -99,8 +126,8 @@ void SimulatorDialog::simulate() {
   Debugger::create(this);
   Debugger::getInstance()->autoupdate = true;
 
-  boost::thread render_thread(&Interpreter::render, intr);
-  render_thread.join();
+  intr.render();
+
 
   if (config->debugLevel >= LVL_INFO) {
     Statistic::singleton()->printSlot(cout, SLOT_VECTOR);

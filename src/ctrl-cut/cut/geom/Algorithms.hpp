@@ -21,7 +21,7 @@
 
 #include "Path.hpp"
 #include "Route.hpp"
-#include "cut/model/CutModel.hpp"
+#include "cut/model/Cut.hpp"
 #include <boost/foreach.hpp>
 #include <boost/geometry/algorithms/append.hpp>
 
