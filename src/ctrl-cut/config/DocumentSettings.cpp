@@ -73,7 +73,6 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::CSPEED, 33);
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);
-  this->put(CutSettings::REDUCE, Measurement(0.1,MM));
   this->put(CutSettings::CPOS, Point());
 
   this->put(PathSettings::S_SPEED, 33);

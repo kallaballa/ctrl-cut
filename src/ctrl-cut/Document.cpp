@@ -20,20 +20,9 @@
 #include <vector>
 #include "Document.hpp"
 #include "util/Measurement.hpp"
-#include "cut/model/Clip.hpp"
-#include "cut/model/Reduce.hpp"
-#include "cut/model/Explode.hpp"
-#include "cut/geom/sink/AddSink.hpp"
-#include "cut/graph/Traveller.hpp"
 #include "config/CutSettings.hpp"
-
-/* REFACTOR
- * #include "cut/model/Reduce.h"
- * */
-#include "cut/graph/Traverse.hpp"
 #include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
-#include "cut/graph/Planar.hpp"
 #include "CtrlCutException.h"
 #include "boost/filesystem.hpp"
 
@@ -153,7 +142,7 @@ void Document::write(std::ostream &out) {
   }
   out << "Mini]";
 }
-
+/*
 Document& Document::preprocess() {
  for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
    CutModel& model = **it;
@@ -190,7 +179,7 @@ Document& Document::preprocess() {
 
    return *this;
 }
-
+*/
 Document::Format Document::findFormat(const string& filename) {
   string base = basename(strdup(filename.c_str()));
   string suffix = base.substr(base.rfind(".") + 1);

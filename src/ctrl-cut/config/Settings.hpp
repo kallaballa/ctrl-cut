@@ -59,7 +59,11 @@ public:
   };
 
   struct KeyBase {
-    const string name;
+    string name;
+
+    KeyBase():
+      name("")
+    {};
 
     KeyBase(const char* name):
       name(name)
@@ -69,8 +73,16 @@ public:
        name(name)
      {};
 
+    KeyBase(const KeyBase& other):
+       name(other.name)
+     {};
+
     bool operator<(const KeyBase& other) const{
       return this->name < other.name;
+    }
+
+    void operator==(const KeyBase& other){
+      this->name = other.name;
     }
 
     operator std::string() const{
@@ -103,19 +115,12 @@ public:
 
   Settings() : parent(NULL)  {};
 
-  string key(int i) {
-    iterator it;
-    for(it = properties.begin(); i > 0; --i) {
-      it++;
-    }
+
+  string key(const_iterator it) const {
     return (*it).first;
   }
 
-  string value(int i) {
-    iterator it;
-    for(it = properties.begin(); i > 0; --i) {
-      it++;
-    }
+  string value(const_iterator it) const {
     boost::any prop = (*it).second;
 
     if(prop.type() == typeid(Measurement)) {
@@ -133,14 +138,10 @@ public:
     } else if(prop.type() == typeid(uint32_t)){
       return boost::lexical_cast<string>(boost::any_cast<uint32_t>(prop));
     }
-    return "unknown" + i;
+    return "unknown type: " + (*it).first.name;
   }
 
-  void set(int i, const string& val) {
-    iterator it;
-    for(it = properties.begin(); i > 0; --i) {
-      it++;
-    }
+  void set(iterator it, const string& val) {
     KeyBase key = (*it).first;
     boost::any prop = (*it).second;
     if(prop.type() == typeid(Measurement)) {
@@ -159,6 +160,40 @@ public:
       this->put(Key<uint32_t>(key.name), boost::lexical_cast<uint32_t>(val));
     }
     std::cerr << "unkown type for: " << key.name << std::endl;
+  }
+
+
+  string key(int i) const {
+    const_iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    return this->key(it);
+  }
+
+  string value(int i) const {
+    const_iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    return this->value(it);
+  }
+
+  void set(int i, const string& val) {
+    iterator it;
+    for(it = properties.begin(); i > 0; --i) {
+      it++;
+    }
+    set(it,val);
+  }
+
+  string value(const KeyBase& key) const {
+    const_iterator it = this->properties.find(key);
+    if (it != this->properties.end()) {
+      return this->value(it);
+    }
+
+    boost::throw_exception(setting_not_found(key));
   }
 
   void clear() { return this->properties.clear(); }

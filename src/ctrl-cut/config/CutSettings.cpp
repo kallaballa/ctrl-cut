@@ -24,4 +24,3 @@ CutSettings::Key<Point> CutSettings::CPOS = "cpos";
 CutSettings::Key<uint16_t> CutSettings::CSPEED = "cspeed";
 CutSettings::Key<uint16_t> CutSettings::CPOWER = "cpower";
 CutSettings::Key<uint16_t> CutSettings::FREQUENCY = "frequency";
-CutSettings::Key<Measurement> CutSettings::REDUCE = "reduce";

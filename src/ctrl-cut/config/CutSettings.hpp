@@ -38,7 +38,6 @@ public:
   static Key<uint16_t> CSPEED;
   static Key<uint16_t> CPOWER;
   static Key<uint16_t> FREQUENCY;
-  static Key<Measurement> REDUCE;
 
   CutSettings() : Settings() {}
   CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {
@@ -46,7 +45,6 @@ public:
     this->put(CutSettings::CSPEED, 33);
     this->put(CutSettings::CPOWER, 80);
     this->put(CutSettings::FREQUENCY, 5000);
-    this->put(CutSettings::REDUCE, Measurement(0.1,MM));
     this->put(CutSettings::CPOS, Point());
   }
   CutSettings(const CutSettings& settings) : Settings(settings) {}

@@ -87,7 +87,6 @@ public:
   void push_back(CutModel* cut);
   void push_back(Engraving* engraving);
   void write(std::ostream &out);
-  Document& preprocess();
 
   Format findFormat(const string& filename);
 
