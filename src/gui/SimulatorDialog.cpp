@@ -101,7 +101,8 @@ void SimulatorDialog::simulate() {
   this->scene->reset();
 
   this->documentItem->commit();
-  Document doc = this->documentItem->doc;
+  Document doc;
+  doc.copy(this->documentItem->doc);
 
   PclIntConfig* config = PclIntConfig::singleton();
   config->autocrop = true;
