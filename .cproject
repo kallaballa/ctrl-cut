@@ -18,9 +18,9 @@
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.exe.debug.377733518" name="Debug" parent="cdt.managedbuild.config.gnu.exe.debug" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518." name="/" resourcePath="">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1703556739" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1703556739" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" resourceTypeBasedDiscovery="true" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.141540329" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/ctrl-cut/src/gui}" id="cdt.managedbuild.target.gnu.builder.exe.debug.1081722244" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/ctrl-cut/}" id="cdt.managedbuild.target.gnu.builder.exe.debug.2095173870" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1483022190" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1607083553" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -115,8 +115,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518.598700962" name="SegmentTree.h" rcbsApplicability="disable" resourcePath="src/ctrl-cut/cut/geom/SegmentTree.hpp" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="test-code|src/librsvg|src/pclint|src/objects|src/cups-filter/test|src/svg2pdf|tmp|src/ctrl-cut/test|src/ctrl-cut/raster/filter|src/lpd-epilog|src/cli|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="test-code|src/test|src/librsvg|src/objects|src/cups-filter/test|src/svg2pdf|tmp|src/ctrl-cut/test|src/ctrl-cut/raster/filter|src/lpd-epilog|src/cli|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -582,7 +583,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="src/svg2pdf|tmp|src/gui|src/cups-filter/Ctrl-Cut.cpp|test-code|src/lpd-epilog|src/librsvg|src/pclint|src/objects|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/cups-filter/Ctrl-Cut.cpp|test-code|src/test|src/librsvg|src/pclint|src/objects|src/svg2pdf|tmp|src/gui|src/lpd-epilog|src/cups-filter|src/cups-filter/raster/filter|src/imgtools" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
