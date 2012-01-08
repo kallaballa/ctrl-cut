@@ -35,25 +35,23 @@ struct BuildCompleteTipGraphFunc {
   }
 
   void operator()(const TpointRange& geom) {
-      const Point& front = geom.front();
-      const Point& back = geom.back();
-      const Segment seg(front,back);
+      const Segment seg(geom.back(), geom.front());
 
-      graph.add(seg,0);
-      graph.create(seg.first, origin);
-      graph.create(seg.second, origin);
+      graph->add(geom);
+      graph->create(Segment(seg[0], origin));
+      graph->create(Segment(seg[1], origin));
 
       for (std::vector<Segment>::iterator it = tips.begin(); it != tips.end(); ++it) {
         Segment t = *it;
         if(seg != t) {
           if(seg[0] != t[0])
-            graph.create(seg[0], t[0]);
+            graph->create(Segment(seg[0], t[0]));
           if(seg[0] != t[1])
-            graph.create(seg[0], t[1]);
+            graph->create(Segment(seg[0], t[1]));
           if(seg[1] != t[0])
-            graph.create(seg[1], t[0]);
+            graph->create(Segment(seg[0], t[0]));
           if(seg[1] != t[1])
-            graph.create(seg[1], t[1]);
+            graph->create(Segment(seg[0], t[1]));
         }
       }
 
@@ -75,7 +73,7 @@ public:
     _Base() {};
 
   CompleteTipGraphSink(Tgraph& graph) :
-    _Base(ConcatFunc<TpointRange>(graph))
+    _Base(BuildCompleteTipGraphFunc<Tgraph, TpointRange>(graph))
       {};
 
   CompleteTipGraphSink(const CompleteTipGraphSink& other) :
@@ -88,7 +86,7 @@ template<
   typename Tgraph
 >
 void buildComleteTipGraph(const TmultiPointRange& multiPointRange, Tgraph& graph) {
-  CompleteTipGraphSink<Tgraph,typename TmultiPointRange::value_type> sink(graph);
+  CompleteTipGraphSink<Tgraph,typename TmultiPointRange::iterator::value_type> sink(graph);
   std::copy(multiPointRange.begin(), multiPointRange.end(), sink);
 }
 

@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef COMPLETETIPGRAPH_HPP_
-#define COMPLETETIPGRAPH_HPP_
+#ifndef CREATESINK_HPP_
+#define CREATESINK_HPP_
 
 #include <boost/function_output_iterator.hpp>
 #include <boost/foreach.hpp>
@@ -71,4 +71,4 @@ void createGeometryGraph(const TmultiPointRange& multiPointRange, Tgraph& graph)
   }
 }
 
-#endif /* COMPLETETIPGRAPH_HPP_ */
+#endif /* CREATESINK_HPP_ */

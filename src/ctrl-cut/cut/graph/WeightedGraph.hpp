@@ -36,10 +36,10 @@ class WeightedGraph :
     boost::vecS,
     boost::undirectedS,
     Point,
-    double
+    WeightProperty
 > {
 public:
-  typedef GeometryGraph<boost::setS,boost::vecS,boost::undirectedS,Point,double> _Base;
+  typedef GeometryGraph<boost::setS,boost::vecS,boost::undirectedS,Point,WeightProperty> _Base;
 
   WeightedGraph() :
     _Base() {}
@@ -50,8 +50,8 @@ public:
 
   void create(const Tgeom& geom, double weight = 0) {
     bool first = true;
-    const Point& front;
-    const Point& back;
+    const Point front;
+    const Point back;
 
     BOOST_FOREACH(const Point& p, geom) {
       if(first) {
@@ -66,8 +66,15 @@ public:
   }
 
   void add(const Tgeom& geom, double weight = 0) {
-    add_edge(add_vertex(geom.front()), add_vertex(geom.back()), weight, *this);
+    add_edge(addVertex(geom.front()), addVertex(geom.back()), WeightProperty(weight), *this);
   }
 };
+
+template<>
+void WeightedGraph<Segment>::create(const Segment& seg, double weight)
+{
+   this->add(seg, weight);
+ }
+
 
 #endif /* WEIGHTEDGRAPH_HPP_ */

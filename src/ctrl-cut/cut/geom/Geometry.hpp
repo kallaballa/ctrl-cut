@@ -110,11 +110,11 @@ public:
       return this->second;
   }
 
-  const Point& back() {
+  const Point& back() const {
     return this->first;
   };
 
-  const Point& front() {
+  const Point& front() const {
     return this->second;
   };
 

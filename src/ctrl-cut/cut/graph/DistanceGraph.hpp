@@ -49,6 +49,14 @@ public:
   void add(const Tgeom& geom) {
     _Base::add(Segment(geom.front(), geom.back()), 0);
   }
+
+  void create(const Segment& seg) {
+    _Base::create(seg, seg[0].distance(seg[1]));
+  }
+
+  void add(const Segment& seg) {
+    _Base::add(seg, 0);
+  }
 };
 
 
