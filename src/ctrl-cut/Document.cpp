@@ -24,6 +24,7 @@
 #include "cut/model/Reduce.hpp"
 #include "cut/model/Explode.hpp"
 #include "cut/geom/sink/AddSink.hpp"
+#include "cut/graph/Traveller.hpp"
 #include "config/CutSettings.hpp"
 
 /* REFACTOR
@@ -154,8 +155,6 @@ void Document::write(std::ostream &out) {
 }
 
 Document& Document::preprocess() {
-
-
  for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
    CutModel& model = **it;
    Coord_t dpi = model.get(D_SET::RESOLUTION);
@@ -181,8 +180,12 @@ Document& Document::preprocess() {
    reduce(exploded, reduced, reduceMax.in(PX, dpi));
    dump("reduced.txt", reduced.begin(), reduced.end());
 
-   model = reduced;
-   dump("after-copy.txt", exploded.begin(), exploded.end());
+   CutModel travelled = model.make();
+   travel(reduced, travelled);
+   dump("travelled.txt", travelled.begin(), travelled.end());
+
+   model = travelled;
+   dump("after-copy.txt", model.begin(), model.end());
  }
 
    return *this;

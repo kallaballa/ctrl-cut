@@ -50,6 +50,17 @@ public:
   Document() {}
   virtual ~Document() {};
 
+  void copy(const Document& other) {
+    settings = other.settings;
+    for (CutConstIt it = other.begin_cut(); it != other.end_cut(); it++) {
+      this->push_back(new CutModel(**it));
+    }
+
+    for (EngraveConstIt it = other.begin_engrave(); it != other.end_engrave(); it++) {
+      this->push_back(new Engraving(**it));
+    }
+  }
+
   CutList cutList;
   EngraveList engraveList;
 
