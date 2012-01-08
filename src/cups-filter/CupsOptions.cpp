@@ -27,7 +27,7 @@ typedef EngraveSettings ES;
 /*!
  Translate supported options into the supplied DocumentSettings
  */
-void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, int numOptions) {
+CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, int numOptions) {
   string v;
   CupsOptions cupsOpts(options, numOptions);
 
@@ -106,9 +106,6 @@ void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, in
   if (cupsOpts.get(CupsOptions::VECTOR_FREQUENCY, v)) {
     ds.put(CS::FREQUENCY, lexical_cast<uint16_t> (v));
   }
-  if (cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    ds.put(CS::REDUCE, Measurement(lexical_cast<uint16_t> (v), MM));
-  }
   if (cupsOpts.get(CupsOptions::VECTOR_OPTIMIZE, v)) {
     if (v == "Simple")
       ds.put(CS::OPTIMIZE, CS::SIMPLE);
@@ -138,4 +135,6 @@ void CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *options, in
   if (ds.get(DS::RESOLUTION) <= 0) {
     LOG_FATAL_STR("Resolution not specified.");
   }
+
+  return cupsOpts;
 }

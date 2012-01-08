@@ -17,7 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "MainWindow.h"
-#include "SettingsTableModel.h"
+#include "settings/CutSettingsTableModel.h"
+#include "settings/EngraveSettingsTableModel.h"
+#include "settings/DocumentSettingsTableModel.h"
 #include <qapplication.h>
 MainWindow *MainWindow::inst = NULL;
 
@@ -128,7 +130,7 @@ void MainWindow::sceneSelectionChanged()
 {
   printf("selectionChanged\n");
   if(this->scene->selectedItems().empty()) {
-    SettingsTableModel* model = new SettingsTableModel();
+    DocumentSettingsTableModel* model = new DocumentSettingsTableModel();
     model->setSettings(this->rawDocItem->doc.getSettings());
     settingsTable->setModel(model);
   } else {
@@ -136,11 +138,11 @@ void MainWindow::sceneSelectionChanged()
       EngraveItem* ei;
       CutItem* ci;
       if((ei = dynamic_cast<EngraveItem*>(item))) {
-        SettingsTableModel* model = new SettingsTableModel();
+        EngraveSettingsTableModel* model = new EngraveSettingsTableModel();
         model->setSettings(ei->engraving.settings);
         settingsTable->setModel(model);
       } else if((ci = dynamic_cast<CutItem*>(item))) {
-        SettingsTableModel* model = new SettingsTableModel();
+        CutSettingsTableModel* model = new CutSettingsTableModel();
         model->setSettings(ci->cut.settings);
         settingsTable->setModel(model);
       }

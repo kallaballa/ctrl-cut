@@ -46,7 +46,10 @@ HEADERS +=  ./MainWindow.h \
            ./CtrlCutView.h \
            ./LaserDialog.h \
            ./StreamUtils.h \
-           ./SettingsTableModel.h \
+           ./settings/SettingsTableModel.h \
+	   ./settings/CutSettingsTableModel.h \
+	   ./settings/EngravingSettingsTableModel.h \
+	   ./settings/DocumentSettingsTableModel.h \
            ./helpers/Qt.h \
            ./helpers/CutItem.h \
            ./helpers/PathItem.h \

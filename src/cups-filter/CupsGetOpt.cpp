@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "CupsOptions.hpp"
+
 #include "CupsGetOpt.hpp"
 
 
@@ -30,18 +30,17 @@ void CupsGetOpt::print_usage(const string &name) {
   exit(1);
 }
 
-Document& CupsGetOpt::load_document(int argc, char *argv[]) {
+CupsOptions CupsGetOpt::load_document(Document& doc, int argc, char *argv[]) {
   // Extract non-CUPS cmd-line parameters
   typedef DocumentSettings DS;
-  Document* doc = new Document();
   // use gs dithering as default for the cups-filter
-  doc->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
-  doc->put(DocumentSettings::LOAD_ENGRAVING, true);
+  doc.put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
+  doc.put(DocumentSettings::LOAD_ENGRAVING, true);
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
     switch (c) {
     case 'x':
-      doc->put(DS::DUMP_XML, true);
+      doc.put(DS::DUMP_XML, true);
       break;
     case ':':
       print_usage(argv[0]);
@@ -75,17 +74,15 @@ Document& CupsGetOpt::load_document(int argc, char *argv[]) {
   string copies = argv[optind + 3];
   string options = argv[optind + 4];
   string filename = (cupsargs == 6) ? argv[optind + 5] : NULL;
-  doc->put(DS::USER, user);
-  doc->put(DS::TITLE, title);
+  doc.put(DS::USER, user);
+  doc.put(DS::TITLE, title);
 
   // Handle CUPS options
   cups_option_t *cups_options;
   size_t numCupsOptions = cupsParseOptions(options.c_str(), 0, &cups_options);
-  CupsOptions::parseSettings(doc->getSettings(), cups_options, numCupsOptions);
-
-  doc->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
-  doc->load(filename);
-  return *doc;
+  CupsOptions cupsOpts = CupsOptions::parseSettings(doc.getSettings(), cups_options, numCupsOptions);
+  doc.load(filename);
+  return cupsOpts;
 }
 
 void CupsGetOpt::dumpEnv() const {

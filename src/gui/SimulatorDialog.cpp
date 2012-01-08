@@ -101,9 +101,7 @@ void SimulatorDialog::simulate() {
   this->scene->reset();
 
   this->documentItem->commit();
-  Document doc;
-  doc.copy(this->documentItem->doc);
-
+  Document& doc = this->documentItem->doc;
   PclIntConfig* config = PclIntConfig::singleton();
   config->autocrop = true;
   config->clip = NULL;
@@ -114,8 +112,7 @@ void SimulatorDialog::simulate() {
   ofstream *tmpfile = new ofstream("pclint.tmp", ios::out | ios::binary);
   doc.put(DocumentSettings::ENABLE_RASTER, true);
 
-  Document& preprocessed = doc.preprocess();
-  preprocessed.write(*tmpfile);
+  doc.write(*tmpfile);
   tmpfile->close();
 
   ifstream *infile = new ifstream("pclint.tmp", ios::in | ios::binary);

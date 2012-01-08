@@ -18,9 +18,17 @@
  */
 
 #include "util/Logger.hpp"
-#include "Document.hpp"
+#include "cut/model/Cut.hpp"
 #include "CupsGetOpt.hpp"
+#include "Document.hpp"
 
+#include "cut/model/Clip.hpp"
+#include "cut/model/Reduce.hpp"
+#include "cut/model/Explode.hpp"
+#include "cut/geom/sink/AddSink.hpp"
+#include "cut/graph/Traveller.hpp"
+#include "cut/graph/Traverse.hpp"
+#include "cut/graph/Planar.hpp"
 /**
  * Cups filter entry point.
  *
@@ -38,8 +46,46 @@ int main(int argc, char *argv[]) {
   // Make sure status messages are not buffered
   setbuf(stderr, NULL);
 
-  Document& doc = CupsGetOpt::load_document(argc, argv);
-  doc.preprocess();
+  Document doc;
+  CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
+
+  Coord_t dpi = doc.get(DocumentSettings::RESOLUTION);
+  Coord_t width = doc.get(DocumentSettings::WIDTH).in(PX, dpi);
+  Coord_t height = doc.get(DocumentSettings::HEIGHT).in(PX, dpi);
+  string v;
+  Measurement reduceMax(0.1,MM);
+  if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
+    reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM);
+  }
+
+  for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
+    CutModel& model = **it;
+    dump("input.txt", model.begin(), model.end());
+
+    CutModel clipped(model.settings);
+    clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
+    dump("clipped.txt", clipped.begin(), clipped.end());
+
+    CutModel exploded(model.settings);
+    explode(MultiSegmentView<CutModel>(clipped), AddSink<CutModel>(exploded));
+    dump("exploded.txt", exploded.begin(), exploded.end());
+
+    CutModel planared(model.settings);
+    makePlanar(exploded, planared);
+    dump("planared.txt", planared.begin(), planared.end());
+
+    CutModel reduced(model.settings);
+    reduce(exploded, reduced, reduceMax.in(PX, dpi));
+    dump("reduced.txt", reduced.begin(), reduced.end());
+/*
+    CutModel travelled = model.make();
+    travel(reduced, travelled);
+    dump("travelled.txt", travelled.begin(), travelled.end());
+
+    model = travelled;*/
+    model = reduced;
+    dump("after-copy.txt", model.begin(), model.end());
+  }
 
   std::stringstream ss;
   doc.write(ss);
