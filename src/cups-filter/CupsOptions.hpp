@@ -69,7 +69,7 @@ public:
   /*!
    Copy supported options into the supplied DocumentSettings
    */
-  static void parseSettings(DocumentSettings& ds, cups_option_t *options, int numOptions);
+  static CupsOptions parseSettings(DocumentSettings& ds, cups_option_t *options, int numOptions);
 };
 
 #endif /* CUPSOPTIONS_H_ */

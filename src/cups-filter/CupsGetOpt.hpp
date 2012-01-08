@@ -26,6 +26,7 @@
 #include <cups/cups.h>
 #include "util/Logger.hpp"
 #include "Document.hpp"
+#include "CupsOptions.hpp"
 
 using std::string;
 using std::cerr;
@@ -61,7 +62,7 @@ public:
   void dumpEnv() const;
 
   static void print_usage(const string &name);
-  static Document& load_document(int argc, char *argv[]);
+  static CupsOptions load_document(Document& doc, int argc, char *argv[]);
 };
 
 #endif /* CUPSGETOPS_H_ */
