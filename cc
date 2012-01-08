@@ -27,6 +27,7 @@ shift $(($OPTIND - 1))
 [ -z "$CUPS_SERVER_DATA" ] && export CUPS_SERVER_DATA="`cups-config --databin`"
 [ -z "$CC_BASE" ] && export CC_BASE="`pwd`"
 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:src/ctrl-cut/"
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
 export CC_TEST_CHROOT="$CC_BASE/chroot"
