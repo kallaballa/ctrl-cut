@@ -7,3 +7,5 @@ Makefile
 /tmp/*
 *.dSYM
 *.o
+*.dylib
+*.so

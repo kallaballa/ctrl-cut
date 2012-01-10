@@ -4,6 +4,10 @@ boost_thread {
   macx {
     LIBS += -L/opt/local/lib
   }
+  else {
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib64
+  }
   LIBS += -lboost_thread-mt
   LIBS += -lboost_iostreams-mt
   LIBS += -lboost_regex-mt
@@ -11,8 +15,6 @@ boost_thread {
   LIBS += -lboost_system
 
   QMAKE_CXXFLAGS += -DBOOST_IOSTREAMS_USE_DEPRECATED
-  INCLUDEPATH += /usr/local/inclue
-  LIBS += -L/usr/local/lib64
 }
 
 boost {

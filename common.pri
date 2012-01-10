@@ -22,6 +22,7 @@ macx {
   }
 }
 
+CONFIG += link_pkgconfig
 include(boost.pri)
 include(ghostscript.pri)
 include(X11.pri)
