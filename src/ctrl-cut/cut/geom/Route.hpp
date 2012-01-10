@@ -143,7 +143,7 @@ public:
 
   friend std::ostream& operator<<(std::ostream &os, RouteImpl& route)  {
     os << "<route>" << std::endl;
-    for(RouteImpl::iterator it=route.begin(); it != route.end(); ++it)
+    for(typename RouteImpl::iterator it=route.begin(); it != route.end(); ++it)
       os << (*it) << std::endl;
     os << std::endl;
     os << "</route>" << std::endl;

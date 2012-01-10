@@ -1,5 +1,4 @@
-TEMLATE = lib
-TARGET = libctrl-cut.so
+TEMPLATE = lib
 CONFIG += dll
 CONFIG += boost cups gsapi
 CONFIG += rsvg
@@ -8,7 +7,6 @@ CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
-QMAKE_LFLAGS += -shared -Wl,-soname,libctrl-cut.so
 QMAKE_CXXFLAGS += -fPIC
 
 INCLUDEPATH += 

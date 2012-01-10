@@ -60,16 +60,16 @@ public:
     this->settings = other.settings;
   }
 
-  friend std::ostream& operator<<(std::ostream &os, PathImpl& path)  {
+  friend std::ostream& operator<<(std::ostream &os, PathImpl& path) {
     os << "<path>" << std::endl;
     os << "  <points>" << std::endl;
-    for(PathImpl::iterator it=path.begin(); it != path.end(); ++it)
+    for(typename PathImpl::const_iterator it=path.begin(); it != path.end(); ++it)
       os << (*it) << std::endl;
     os << std::endl;
     os << "  </points>" << std::endl;
     os << "  <segments>" << std::endl;
     SegmentView<PathImpl> sv(path);
-    for(typename SegmentView<PathImpl>::iterator it=sv.begin(); it != sv.end(); ++it)
+    for(typename SegmentView<PathImpl>::const_iterator it=sv.begin(); it != sv.end(); ++it)
       os << (*it) << std::endl;
     os << std::endl;
     os << "  </segments>" << std::endl;
