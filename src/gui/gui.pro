@@ -9,9 +9,13 @@ CONFIG += magick++
 CONFIG += X11
 CONFIG += libpng
 CONFIG += libctrl-cut
-!macx:CONFIG += SDL
+CONFIG += SDL
+
+# Prefer our files over system includes which happens to have the same filenames
+INCLUDEPATH += .. ../lpd-epilog ../ctrl-cut
 
 include(common.pri)
+
 CONFIG += qt gio
 CONFIG += app_bundle
 QT += network
@@ -28,8 +32,6 @@ macx {
 }
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
-
-INCLUDEPATH += ../lpd-epilog ../pclint ../ctrl-cut
 
 FORMS += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
 
@@ -48,7 +50,7 @@ HEADERS +=  ./MainWindow.h \
            ./StreamUtils.h \
            ./settings/SettingsTableModel.h \
 	   ./settings/CutSettingsTableModel.h \
-	   ./settings/EngravingSettingsTableModel.h \
+	   ./settings/EngraveSettingsTableModel.h \
 	   ./settings/DocumentSettingsTableModel.h \
            ./helpers/Qt.h \
            ./helpers/CutItem.h \

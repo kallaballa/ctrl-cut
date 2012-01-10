@@ -10,7 +10,7 @@
 #include "helpers/Qt.h"
 #include "SimulatorScene.h"
 #include "helpers/DocumentItem.h"
-#include "Canvas.h"
+#include "pclint/Canvas.h"
 
 class SimulatorDialog : public QDialog, public Canvas, private Ui::SimulatorDialog
 {
