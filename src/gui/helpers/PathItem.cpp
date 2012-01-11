@@ -17,15 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "PathItem.h"
-#include "DocumentItem.h"
+#include "config/PathSettings.hpp"
 #include <qgraphicsitem.h>
 
-PathItem::PathItem(Path& path) : AbstractCtrlCutItem(), path(path) {
-  QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
-
-  BOOST_FOREACH(const Segment& segment, segmentConstView(path)) {
-    QGraphicsLineItem *line = new QGraphicsLineItem(segment[0][0], segment[0][1], segment[1][0], segment[1][1], this);
-    QGraphicsItemGroup::addToGroup(line);
+PathItem::PathItem(Path& path) : QGraphicsPolygonItem(), path(path) {
+  QPolygonF polygon;
+  BOOST_FOREACH(const Point& p, path) {
+    polygon << QPointF(p.x, p.y);
   }
+
+  QGraphicsPolygonItem::setPolygon(polygon);
 }
 

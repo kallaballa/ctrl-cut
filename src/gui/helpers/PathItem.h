@@ -22,8 +22,9 @@
 #include "cut/model/Cut.hpp"
 #include "config/PathSettings.hpp"
 #include "Qt.h"
+#include <QGraphicsPolygonItem>
 
-class PathItem: public AbstractCtrlCutItem {
+class PathItem: public QGraphicsPolygonItem {
 public:
   Path& path;
 
@@ -31,7 +32,6 @@ public:
   ~PathItem(){};
 
   void commit() {
-
   }
 };
 

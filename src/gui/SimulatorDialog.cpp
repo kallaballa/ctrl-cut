@@ -1,11 +1,12 @@
 #include "SimulatorDialog.h"
 #include "helpers/EngraveCanvas.h"
+#include <Document.hpp>
 
 typedef DocumentSettings DS;
-SimulatorDialog::SimulatorDialog(DocumentItem& documentItem, QWidget *parent) :
+SimulatorDialog::SimulatorDialog(Document& doc, QWidget *parent) :
 QDialog(parent),
-Canvas(documentItem.doc.get(DS::WIDTH).in(PX, documentItem.doc.get(DS::RESOLUTION)),documentItem.doc.get(DocumentSettings::HEIGHT).in(PX, documentItem.doc.get(DS::RESOLUTION))),
-documentItem(&documentItem),
+doc(&doc),
+Canvas(doc.get(DS::WIDTH).in(PX, doc.get(DS::RESOLUTION)),doc.get(DocumentSettings::HEIGHT).in(PX, doc.get(DS::RESOLUTION))),
 movePen(Qt::white),
 cutPen(Qt::red)
 {
@@ -20,7 +21,8 @@ cutPen(Qt::red)
 //  this->scene->addItem(this->engraveCanvas);
 }
 
-
+SimulatorDialog::~SimulatorDialog(){}
+/*
 void SimulatorDialog::createPixmapItem(QImage& img, Coord_t x, Coord_t y) {
   QPixmap pixmap = QPixmap::fromImage(img);
   if (!pixmap.isNull()) {
@@ -29,12 +31,13 @@ void SimulatorDialog::createPixmapItem(QImage& img, Coord_t x, Coord_t y) {
     this->scene->addItem(pixmapItem);
   }
 }
-
+*/
+/*
 void SimulatorDialog::addImage(QImage& img, Coord_t x, Coord_t y) {
   emit createPixmapItem(img,x,y);
 }
 
-SimulatorDialog::~SimulatorDialog(){}
+*/
 
 void SimulatorDialog::sceneSelectionChanged()
 {
@@ -99,9 +102,9 @@ void SimulatorDialog::drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t 
 
 void SimulatorDialog::simulate() {
   this->scene->reset();
-
-  this->documentItem->commit();
-  Document& doc = this->documentItem->doc;
+  // REFACTOR
+  //this->doc->commit();
+  Document& doc = *this->doc;
   PclIntConfig* config = PclIntConfig::singleton();
   config->autocrop = true;
   config->clip = NULL;

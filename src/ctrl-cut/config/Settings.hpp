@@ -31,6 +31,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <boost/function.hpp>
 
 #include <boost/any.hpp>
 #include <boost/bind.hpp>
@@ -38,13 +39,13 @@
 #include "util/Measurement.hpp"
 #include "cut/geom/Geometry.hpp"
 
+
 using std::string;
 
 typedef uint64_t CtrlCutID_t;
 class Settings
 {
 public:
-
   class setting_not_found : public std::exception
   {
   public:
@@ -97,6 +98,20 @@ public:
     Key(const string& name): KeyBase(name) {};
   };
 
+  class Trigger {
+  private:
+    boost::function<void (const KeyBase&)> func;
+  public:
+    Trigger()  {}
+    Trigger(boost::function<void (const KeyBase&)> func) : func(func) {}
+    Trigger(const Trigger& other) : func(other.func) {}
+
+    void operator()(KeyBase key) {
+      if(func.empty())
+        func(key);
+    }
+  };
+
   typedef boost::any Value;
   typedef std::map<KeyBase,Value>  SettingsMap;
   typedef SettingsMap::iterator iterator;
@@ -104,8 +119,8 @@ public:
   typedef SettingsMap::reference reference;
   typedef SettingsMap::const_reference const_reference;
 
-  Settings(Settings& parent) : parent(&parent)  {};
-  Settings(const Settings& other) : parent(NULL)  {
+  Settings(Settings& parent) : parent(&parent) {};
+  Settings(const Settings& other) : parent(NULL) {
     if(other.hasParent()) {
       this->parent = &other.getParent();
     }
@@ -113,7 +128,7 @@ public:
     this->properties = other.properties;
   };
 
-  Settings() : parent(NULL)  {};
+  Settings() : parent(NULL), updateTrigger(NULL)  {};
 
 
   string key(const_iterator it) const {
@@ -202,6 +217,7 @@ public:
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
     properties[key] = boost::any(static_cast<T>(value));
+    this->updateTrigger(key);
   }
 
   template<typename T>
@@ -214,6 +230,10 @@ public:
     }
 
     boost::throw_exception(setting_not_found(key));
+  }
+
+  void onUpdate(boost::function<void (const KeyBase&)> triggerFunc) {
+    this->updateTrigger = Trigger(triggerFunc);
   }
 
   bool hasParent() const {
@@ -234,6 +254,7 @@ public:
 protected:
   Settings* parent;
   SettingsMap properties;
+  Trigger updateTrigger;
 };
 
 #endif /* SETTINGS_H_ */

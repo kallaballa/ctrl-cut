@@ -32,7 +32,8 @@
 #include "SimulatorDialog.h"
 #include "LaserDialog.h"
 #include "helpers/Qt.h"
-#include "helpers/DocumentItem.h"
+
+class Document;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -43,6 +44,8 @@ public:
   static MainWindow *instance() { 
     if (!MainWindow::inst) MainWindow::inst = new MainWindow(); return MainWindow::inst; 
   }
+
+
 public slots:
   void on_helpAboutAction_triggered();
   void on_fileOpenAction_triggered();
@@ -52,6 +55,8 @@ public slots:
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
   void on_simulateAction_triggered();
+  void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
+  void on_deleteItem();
 
   void sceneSelectionChanged();
 
@@ -61,13 +66,20 @@ public slots:
 private:
   static MainWindow *inst;
   MainWindow();
+  void createUndoView();
+  void createActions();
 
   LpdClient *lpdclient;
   CtrlCutScene *scene;
-  DocumentItem *rawDocItem;
-  DocumentItem *processDocItem;
+
   LaserDialog *laserdialog;
   SimulatorDialog *simdialog;
+
+  QAction *undoAction;
+  QAction *redoAction;
+
+  QUndoStack *undoStack;
+  QUndoView *undoView;
 };
 
 #endif

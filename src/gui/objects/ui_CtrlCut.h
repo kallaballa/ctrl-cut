@@ -37,6 +37,7 @@ public:
     QAction *toolsMoveToOriginAction;
     QAction *helpAboutAction;
     QAction *simulateAction;
+    QAction *deleteItem;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -46,6 +47,7 @@ public:
     QMenu *fileMenu;
     QMenu *menuTools;
     QMenu *menuHelp;
+    QMenu *editMenu;
     QStatusBar *statusbar;
     QToolBar *toolBar;
 
@@ -53,7 +55,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(710, 545);
+        MainWindow->resize(875, 663);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -75,6 +77,8 @@ public:
         helpAboutAction->setObjectName(QString::fromUtf8("helpAboutAction"));
         simulateAction = new QAction(MainWindow);
         simulateAction->setObjectName(QString::fromUtf8("simulateAction"));
+        deleteItem = new QAction(MainWindow);
+        deleteItem->setObjectName(QString::fromUtf8("deleteItem"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -118,13 +122,15 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 710, 23));
+        menubar->setGeometry(QRect(0, 0, 875, 23));
         fileMenu = new QMenu(menubar);
         fileMenu->setObjectName(QString::fromUtf8("fileMenu"));
         menuTools = new QMenu(menubar);
         menuTools->setObjectName(QString::fromUtf8("menuTools"));
         menuHelp = new QMenu(menubar);
         menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
+        editMenu = new QMenu(menubar);
+        editMenu->setObjectName(QString::fromUtf8("editMenu"));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
@@ -139,6 +145,7 @@ public:
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         menubar->addAction(fileMenu->menuAction());
+        menubar->addAction(editMenu->menuAction());
         menubar->addAction(menuTools->menuAction());
         menubar->addAction(menuHelp->menuAction());
         fileMenu->addAction(fileOpenAction);
@@ -148,9 +155,11 @@ public:
         menuTools->addAction(toolsMoveToOriginAction);
         menuTools->addAction(simulateAction);
         menuHelp->addAction(helpAboutAction);
+        editMenu->addAction(deleteItem);
         toolBar->addAction(fileOpenAction);
 
         retranslateUi(MainWindow);
+        QObject::connect(deleteItem, SIGNAL(triggered()), MainWindow, SLOT(on_deleteItem()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -167,9 +176,12 @@ public:
         toolsMoveToOriginAction->setText(QApplication::translate("MainWindow", "&Move to origin", 0, QApplication::UnicodeUTF8));
         helpAboutAction->setText(QApplication::translate("MainWindow", "About...", 0, QApplication::UnicodeUTF8));
         simulateAction->setText(QApplication::translate("MainWindow", "Simulate", 0, QApplication::UnicodeUTF8));
+        deleteItem->setText(QApplication::translate("MainWindow", "&Delete", 0, QApplication::UnicodeUTF8));
+        deleteItem->setShortcut(QApplication::translate("MainWindow", "Del", 0, QApplication::UnicodeUTF8));
         fileMenu->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
         menuTools->setTitle(QApplication::translate("MainWindow", "Tools", 0, QApplication::UnicodeUTF8));
         menuHelp->setTitle(QApplication::translate("MainWindow", "Help", 0, QApplication::UnicodeUTF8));
+        editMenu->setTitle(QApplication::translate("MainWindow", "&Edit", 0, QApplication::UnicodeUTF8));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

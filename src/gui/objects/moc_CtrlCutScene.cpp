@@ -23,18 +23,22 @@ static const uint qt_meta_data_CtrlCutScene[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       0,    0, // methods
+       1,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      42,   14,   13,   13, 0x05,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_CtrlCutScene[] = {
-    "CtrlCutScene\0"
+    "CtrlCutScene\0\0movedItem,movedFromPosition\0"
+    "itemMoved(QGraphicsItem*,QPointF)\0"
 };
 
 const QMetaObject CtrlCutScene::staticMetaObject = {
@@ -64,6 +68,20 @@ int CtrlCutScene::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     _id = QGraphicsScene::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: itemMoved((*reinterpret_cast< QGraphicsItem*(*)>(_a[1])),(*reinterpret_cast< const QPointF(*)>(_a[2]))); break;
+        default: ;
+        }
+        _id -= 1;
+    }
     return _id;
+}
+
+// SIGNAL 0
+void CtrlCutScene::itemMoved(QGraphicsItem * _t1, const QPointF & _t2)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 QT_END_MOC_NAMESPACE

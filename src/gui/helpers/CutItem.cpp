@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "CutItem.h"
-#include "DocumentItem.h"
 #include "PathItem.h"
 #include "cut/model/Translate.hpp"
 #include <qgraphicsitem.h>
@@ -25,9 +24,15 @@
 
 CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
+  Point pos = this->cut.get(CutSettings::CPOS);
+  this->setPos(QPointF(pos.x, pos.y));
 
   BOOST_FOREACH(Path& p, cut) {
     PathItem* pi = new PathItem(p);
     QGraphicsItemGroup::addToGroup(pi);
   }
+}
+
+void CutItem::setPos(const QPointF &pos) {
+  QGraphicsItem::setPos(pos);
 }

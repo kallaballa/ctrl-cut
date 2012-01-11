@@ -23,7 +23,7 @@ static const uint qt_meta_data_MainWindow[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-      12,   14, // methods
+      14,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -39,10 +39,12 @@ static const uint qt_meta_data_MainWindow[] = {
      181,  175,   11,   11, 0x0a,
      216,  205,   11,   11, 0x0a,
      247,   11,   11,   11, 0x0a,
-     277,   11,   11,   11, 0x0a,
-     310,  301,   11,   11, 0x0a,
-     328,  301,   11,   11, 0x0a,
-     348,   11,   11,   11, 0x0a,
+     300,  277,   11,   11, 0x0a,
+     337,   11,   11,   11, 0x0a,
+     353,   11,   11,   11, 0x0a,
+     386,  377,   11,   11, 0x0a,
+     404,  377,   11,   11, 0x0a,
+     424,   11,   11,   11, 0x0a,
 
        0        // eod
 };
@@ -56,9 +58,11 @@ static const char qt_meta_stringdata_MainWindow[] = {
     "error\0on_lpdclient_done(bool)\0done,total\0"
     "on_lpdclient_progress(int,int)\0"
     "on_simulateAction_triggered()\0"
-    "sceneSelectionChanged()\0filename\0"
-    "openFile(QString)\0importFile(QString)\0"
-    "simulate()\0"
+    "item,moveStartPosition\0"
+    "on_itemMoved(QGraphicsItem*,QPointF)\0"
+    "on_deleteItem()\0sceneSelectionChanged()\0"
+    "filename\0openFile(QString)\0"
+    "importFile(QString)\0simulate()\0"
 };
 
 const QMetaObject MainWindow::staticMetaObject = {
@@ -98,13 +102,15 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 5: on_lpdclient_done((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 6: on_lpdclient_progress((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 7: on_simulateAction_triggered(); break;
-        case 8: sceneSelectionChanged(); break;
-        case 9: openFile((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 10: importFile((*reinterpret_cast< const QString(*)>(_a[1]))); break;
-        case 11: simulate(); break;
+        case 8: on_itemMoved((*reinterpret_cast< QGraphicsItem*(*)>(_a[1])),(*reinterpret_cast< const QPointF(*)>(_a[2]))); break;
+        case 9: on_deleteItem(); break;
+        case 10: sceneSelectionChanged(); break;
+        case 11: openFile((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 12: importFile((*reinterpret_cast< const QString(*)>(_a[1]))); break;
+        case 13: simulate(); break;
         default: ;
         }
-        _id -= 12;
+        _id -= 14;
     }
     return _id;
 }

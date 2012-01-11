@@ -172,8 +172,8 @@ function pclintFail() {
   failed  1>&2;
 }
 
-RES1=`trycat "rendering $F1" "$CC_PCLINT -dinfo -a -r \"$F1R\" -v \"$F1V\" \"$F1\" | grep \"|\""`
-RES2=`trycat "rendering $F2" "$CC_PCLINT -dinfo -a -r \"$F2R\" -v \"$F2V\" \"$F2\" | grep \"|\""`
+RES1=`trycat "rendering $F1" "$CC_PCLINT -ddebug -a -r \"$F1R\" -v \"$F1V\" \"$F1\" | grep \"|\""`
+RES2=`trycat "rendering $F2" "$CC_PCLINT -ddebug -a -r \"$F2R\" -v \"$F2V\" \"$F2\" | grep \"|\""`
 
 [ -f "$F1R" -a ! -f "$F2R" ] && pclintFail "$RES1" "$RES2";
 [ -f "$F1V" -a ! -f "$FO2" ] && pclintFail "$RES1" "$RES2";

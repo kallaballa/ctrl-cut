@@ -88,11 +88,9 @@ inline static SegmentView<Path> segmentView(Path& path) {
   return SegmentView<Path>(path);
 }
 
-
-inline SegmentConstView<Path> segmentConstView(const Path& path) {
+inline static SegmentConstView<Path> segmentConstView(const Path& path) {
   return SegmentConstView<Path>(path);
 }
-
 
 BOOST_GEOMETRY_REGISTER_LINESTRING(Path)
 #endif /* PATH_H_ */

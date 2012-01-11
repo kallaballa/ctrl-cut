@@ -25,6 +25,9 @@
 #include "encoder/PclEncoder.hpp"
 #include "CtrlCutException.h"
 #include "boost/filesystem.hpp"
+/* undef gtk signals right after the svg pass - it interferes with Qt */
+#include "svg/Svg2Ps.hpp"
+
 
 using boost::format;
 using std::list;
@@ -43,6 +46,13 @@ void Document::push_back(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
+void Document::remove(CutModel* cut) {
+  this->cutList.remove(cut);
+}
+
+void Document::remove(Engraving* engraving) {
+  this->engraveList.remove(engraving);
+}
 
 void Document::write(std::ostream &out) {
   string title = this->get(D_SET::TITLE);

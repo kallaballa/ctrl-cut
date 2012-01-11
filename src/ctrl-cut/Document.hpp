@@ -5,7 +5,7 @@
 #include "engrave/Engrave.hpp"
 #include "cut/model/Cut.hpp"
 #include "config/DocumentSettings.hpp"
-#include "svg/Svg2Ps.hpp"
+
 #include "FileParser.hpp"
 #include "util/Util.hpp"
 
@@ -86,6 +86,8 @@ public:
 
   void push_back(CutModel* cut);
   void push_back(Engraving* engraving);
+  void remove(CutModel* cut);
+  void remove(Engraving* engraving);
   void write(std::ostream &out);
 
   Format findFormat(const string& filename);

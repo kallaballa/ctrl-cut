@@ -16,7 +16,6 @@ public:
     addKey(C_SET::CPOWER);
     addKey(C_SET::CSPEED);
     addKey(C_SET::FREQUENCY);
-    addKey(C_SET::REDUCE);
   }
 };
 

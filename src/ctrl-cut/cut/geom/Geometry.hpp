@@ -190,7 +190,7 @@ inline intersection_result intersects(const Segment& s1, const Segment&s2, Point
   return ALIGN_NONE;
 }
 inline std::ostream& operator<<(std::ostream &os, const Point& p)  {
-  os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\" key=\"" << p.x << "/" << p.y << "\" />";
+  os << p.x << "," << p.y;
   return os;
 }
 

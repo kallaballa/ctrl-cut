@@ -35,29 +35,34 @@ FORMS += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
-HEADERS +=  ./MainWindow.h \
+HEADERS += ./MainWindow.h \
            ./SimulatorDialog.h \
            ./event/CtrlCutEvent.h \
            ./CtrlCutScene.h \
            ./NavigationView.h \
+           ./Commands.h \
            ./GroupItem.h \
            ./EventFilter.h \
            ./LpdClient.h \
            ./CtrlCutView.h \
            ./LaserDialog.h \
            ./StreamUtils.h \
-           ./settings/SettingsTableModel.h \
-	   ./settings/CutSettingsTableModel.h \
-	   ./settings/EngravingSettingsTableModel.h \
-	   ./settings/DocumentSettingsTableModel.h \
+           ./objects/ui_CtrlCut.h \
+           ./objects/ui_SimulatorDialog.h \
+           ./objects/ui_LaserDialog.h \
            ./helpers/Qt.h \
-           ./helpers/CutItem.h \
            ./helpers/PathItem.h \
-           ./helpers/DocumentItem.h \
-           ./helpers/EngraveItem.h \
+           ./helpers/CutItem.h \
            ./helpers/EngraveCanvas.h \
+           ./helpers/EngraveItem.h \
+           ./helpers/DocumentHolder.h \
+           ./settings/CutSettingsTableModel.h \
+           ./settings/EngraveSettingsTableModel.h \
+           ./settings/DocumentSettingsTableModel.h \
+           ./settings/SettingsTableModel.h \
            ./SimulatorView.h \
            ./SimulatorScene.h \
+           ../ctrl-cut/CtrlCutException.h \
            ../pclint/Pcl.h \
            ../pclint/CLI.h \
            ../pclint/HPGL.h \
@@ -71,23 +76,24 @@ HEADERS +=  ./MainWindow.h \
            ../pclint/Raster.h \
            ../pclint/CImg.h \
            ../pclint/Canvas.h
-
-SOURCES +=  ./gui.cpp \
+SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \
-           ./SimulatorDialog.cpp \
+           ./Commands.cpp \
+	   ./SimulatorDialog.cpp \
            ./LaserDialog.cpp \
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \
            ./SimulatorView.cpp \
            ./helpers/CutItem.cpp \
-	   ./helpers/PathItem.cpp \
+           ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
            ./helpers/EngraveCanvas.cpp \
            ./helpers/EngraveItem.cpp \
+           ./helpers/DocumentHolder.cpp \
            ./CtrlCutScene.cpp \
            ./LpdClient.cpp \
            ./MainWindow.cpp \
            ./StreamUtils.cpp \
            ./SimulatorScene.cpp \
            ../pclint/SDLCanvas.cpp \
-           ../pclint/Canvas.cpp \
+           ../pclint/Canvas.cpp

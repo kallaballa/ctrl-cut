@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>710</width>
-    <height>545</height>
+    <width>875</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -100,7 +100,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>710</width>
+     <width>875</width>
      <height>23</height>
     </rect>
    </property>
@@ -126,7 +126,14 @@
     </property>
     <addaction name="helpAboutAction"/>
    </widget>
+   <widget class="QMenu" name="editMenu">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="deleteItem"/>
+   </widget>
    <addaction name="fileMenu"/>
+   <addaction name="editMenu"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -192,6 +199,14 @@
     <string>Simulate</string>
    </property>
   </action>
+  <action name="deleteItem">
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -203,5 +218,22 @@
  <resources>
   <include location="ctrl-cut.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>deleteItem</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_deleteItem()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

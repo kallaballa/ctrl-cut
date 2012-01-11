@@ -21,57 +21,72 @@
 #include "settings/EngraveSettingsTableModel.h"
 #include "settings/DocumentSettingsTableModel.h"
 #include <qapplication.h>
+#include "Commands.h"
+#include <QGraphicsItem>
+
 MainWindow *MainWindow::inst = NULL;
 
-MainWindow::MainWindow() : rawDocItem(NULL), processDocItem(NULL), laserdialog(NULL), simdialog(NULL)
-{
+MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
+  this->undoStack = new QUndoStack(this);
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
+
+  createActions();
+  createUndoView();
 
   setupUi(this);
 
   this->scene = new CtrlCutScene(this);
   this->graphicsView->setScene(this->scene);
 
-  connect(this->scene, SIGNAL(selectionChanged()), this, SLOT(sceneSelectionChanged()));
+  connect(this->scene, SIGNAL(selectionChanged()), this,
+      SLOT(sceneSelectionChanged()));
   connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
-          this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
+      this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
 
-  connect(this->graphicsView, SIGNAL(fileDropped(const QString &)), 
-          this, SLOT(openFile(const QString &)));
+  connect(this->graphicsView, SIGNAL(fileDropped(const QString &)), this,
+      SLOT(openFile(const QString &)));
+
+  connect(scene, SIGNAL(itemMoved(QGraphicsItem*,QPointF)), this,
+      SLOT(on_itemMoved(QGraphicsItem*,QPointF)));
 }
 
 MainWindow::~MainWindow()
 {}
 
-void MainWindow::openFile(const QString &filename)
+void MainWindow::createUndoView()
 {
-  if (!filename.isEmpty()) {
-    if(this->rawDocItem != NULL) {
-      delete this->rawDocItem;
-    }
-    Document& loading = * new Document();
-    loading.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-    loading.put(DocumentSettings::LOAD_ENGRAVING, true);
-    loading.load(filename.toStdString());
-    this->rawDocItem = new DocumentItem(*this->scene,loading);
-  }
+    undoView = new QUndoView(undoStack);
+    undoView->setWindowTitle(tr("Command List"));
+    undoView->show();
+    undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
 
-void MainWindow::importFile(const QString &filename)
+void MainWindow::createActions()
 {
-  if (!filename.isEmpty()) {
-    Document& loading = * new Document();
-    loading.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-    loading.put(DocumentSettings::LOAD_ENGRAVING, true);
+    undoAction = undoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
 
-    loading.load(filename.toStdString());
-    if(this->rawDocItem == NULL) {
-      this->rawDocItem = new DocumentItem(*this->scene,loading);
-    } else {
-      this->rawDocItem->load(loading);
-    }
-  }
+    redoAction = undoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+}
+
+void MainWindow::on_deleteItem() {
+  if (this->scene->selectedItems().isEmpty())
+    return;
+
+  QUndoCommand *deleteCommand = new DeleteCommand(this->scene);
+  undoStack->push(deleteCommand);
+}
+
+void MainWindow::openFile(const QString &filename) {
+  QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
+  undoStack->push(openCommand);
+}
+
+void MainWindow::importFile(const QString &filename) {
+  QUndoCommand *importCommand = new ImportCommand(this->scene, filename);
+  undoStack->push(importCommand);
 }
 
 void MainWindow::on_fileOpenAction_triggered()
@@ -86,17 +101,11 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  if (!this->rawDocItem) {
-    fprintf(stderr, "No document loaded\n");
-    return;
-  }
-
   if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
-  this->laserdialog->updateLaserConfig(this->rawDocItem->doc);
-  this->rawDocItem->doc.put(DocumentSettings::TITLE, "Default Title");
-  this->rawDocItem->doc.put(DocumentSettings::USER, "Default User");
+  this->laserdialog->updateLaserConfig(*this->scene->getDocumentHolder().doc);
+
  /* QStringList items;
   items << "Lazzzor" << "localhost";
   bool ok;
@@ -131,7 +140,7 @@ void MainWindow::sceneSelectionChanged()
   printf("selectionChanged\n");
   if(this->scene->selectedItems().empty()) {
     DocumentSettingsTableModel* model = new DocumentSettingsTableModel();
-    model->setSettings(this->rawDocItem->doc.getSettings());
+    model->setSettings(this->scene->getDocumentHolder().doc->getSettings());
     settingsTable->setModel(model);
   } else {
     foreach (QGraphicsItem *item, this->scene->selectedItems()) {
@@ -179,18 +188,17 @@ MainWindow::on_helpAboutAction_triggered()
 }
 
 void
-MainWindow::on_simulateAction_triggered()
-{
+MainWindow::on_simulateAction_triggered() {
   simulate();
+}
+
+void MainWindow::on_itemMoved(QGraphicsItem *movedItem,
+                           const QPointF &oldPosition) {
+    undoStack->push(new MoveCommand(this->scene, movedItem, oldPosition));
 }
 
 
 void MainWindow::simulate() {
-  if (!this->rawDocItem) {
-    fprintf(stderr, "No document loaded\n");
-    return;
-  }
-
-  if (!this->simdialog) this->simdialog = new SimulatorDialog(*this->rawDocItem,this);
+  if (!this->simdialog) this->simdialog = new SimulatorDialog(*this->scene->getDocumentHolder().doc,this);
   this->simdialog->setVisible(true);
 }
