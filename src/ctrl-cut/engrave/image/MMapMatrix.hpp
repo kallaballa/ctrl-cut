@@ -52,6 +52,8 @@ public:
     this->addr = m_region.get_address();
     this->size = m_region.get_size();
   }
+
+  MMapMatrix(const MMapMatrix& other);
 };
 
 

@@ -52,9 +52,9 @@ void SimulatorDialog::sceneSelectionChanged()
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-#include "Interpreter.h"
-#include "PclIntConfig.h"
-#include "Plotter.h"
+#include "pclint/Interpreter.h"
+#include "pclint/PclIntConfig.h"
+#include "pclint/Plotter.h"
 #include <stdlib.h>
 #ifdef PCLINT_USE_SDL
 #include <SDL.h>
@@ -69,6 +69,7 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
+#ifdef PCLINT_USE_SDL
 void sdl_wait(Interpreter* intr) {
   SDL_Event event;
   do {
@@ -76,6 +77,7 @@ void sdl_wait(Interpreter* intr) {
   } while(event.type == 4 || event.type == 1);
   intr->abort();
 }
+#endif
 
 void intr_render_sqlquit(Interpreter* intr) {
   intr->render();

@@ -9,7 +9,8 @@
 #include <assert.h>
 #include "helpers/Qt.h"
 #include "SimulatorScene.h"
-#include "Canvas.h"
+#include "helpers/DocumentItem.h"
+#include "pclint/Canvas.h"
 
 class Document;
 class SimulatorDialog : public QDialog, public Canvas, private Ui::SimulatorDialog

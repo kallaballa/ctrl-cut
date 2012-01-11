@@ -53,7 +53,7 @@ public:
   typedef typename boost::graph_traits<_Self>::vertex_descriptor Vertex;
   typedef typename boost::graph_traits<_Self>::edge_descriptor Edge;
   typedef typename boost::graph_traits<_Self>::vertices_size_type v_size;
-  typedef std::vector<std::vector< _Self::Edge > > Embedding;
+  typedef std::vector<std::vector< typename _Self::Edge > > Embedding;
 
   GeometryGraph() : _Base(){}
   GeometryGraph(const GeometryGraph& graph) : _Base(graph) {}
