@@ -45,12 +45,13 @@ protected:
   int v[2];
 };
 
+static const float rf = 0.2989f;
+static const float gf = 0.5870f;
+static const float bf = 0.1140f;
+
 template<class T> class Pixel {
 public:
   T i;
-  static const float rf = 0.2989f;
-  static const float gf = 0.5870f;
-  static const float bf = 0.1140f;
 
   Pixel(){}
 

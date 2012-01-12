@@ -8,7 +8,6 @@ CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
 QMAKE_CXXFLAGS += -fPIC
-
 INCLUDEPATH += 
 
 include(common.pri)
@@ -69,6 +68,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
 SOURCES += ./encoder/HPGLEncoder.cpp \
            ./encoder/PclEncoder.cpp \
            ./PostscriptParser.cpp \
+           ./util/2D.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \

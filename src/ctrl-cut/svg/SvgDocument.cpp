@@ -22,7 +22,10 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 
-const Unit SvgDocument::parseUnit(const string unit) {
+const double SvgDocument::SVG_DEFAULT_RES = 72;
+const double SvgDocument::INKSCAPE_DEFAULT_RES = 90;
+
+Unit SvgDocument::parseUnit(const string unit) {
   stringstream sUnit;
   string::const_iterator it;
   char c = ' ';
@@ -89,13 +92,13 @@ Measurement SvgDocument::parseMeasurement(string dimension) {
     if(unit.size() > 0) {
       std::transform ( unit.begin(), unit.end(), unit.begin(), lower_case );
       if(unit == "in") {
-        return Measurement(val,IN);
+        return Measurement(val,IN, this->dpi);
       } else if(unit == "mm") {
-        return Measurement(val,MM);
+        return Measurement(val,MM, this->dpi);
       } else
         assert(false);
     } else {
-      return Measurement(val,PX);
+      return Measurement(val,PX, this->dpi);
     }
   } else
     assert(false);
@@ -103,7 +106,7 @@ Measurement SvgDocument::parseMeasurement(string dimension) {
 
 const string SvgDocument::make_viewboxstring(const double& x, const double& y, const Measurement& w, const Measurement& h) const {
   stringstream sVB;
-  sVB << " viewBox=\"" << x << " " << y << " " << w.in(PX,this->dpi) << " " <<  h.in(PX,this->dpi) << "\"";
+  sVB << " viewBox=\"" << x << " " << y << " " << w.in(PX) << " " <<  h.in(PX) << "\"";
   return sVB.str();
 }
 

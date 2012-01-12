@@ -26,7 +26,7 @@
 #include <ctype.h>
 #include <string>
 #include <sstream>
-;
+
 using std::string;
 using std::stringstream;
 using std::pair;
@@ -37,18 +37,17 @@ enum Unit {
 
 class Measurement {
 public:
-  static const double MM_TO_INCH = 25.4;
+  static const double MM_TO_INCH;
   double value;
   Unit unit;
+  uint16_t resolution;
 
-  Measurement() : value(0), unit(PX) {};
-  Measurement(double value, Unit unit) : value(value), unit(unit) {};
+  Measurement() : value(0), unit(PX), resolution(0) {};
+  Measurement(double value, Unit unit, uint16_t resolution) : value(value), unit(unit), resolution(resolution) {};
   virtual ~Measurement() {};
-  const Measurement convert(const Unit& target, const uint16_t& dpi=72) const;
-  double in(const Unit& target, const uint16_t& dpi=72) const;
-
+  const Measurement convert(const Unit& target, const uint16_t dpi) const;
+  double in(const Unit& target) const;
 };
-
 
 inline std::ostream& operator<<(std::ostream &os, const Measurement& m)  {
   os << m.value;

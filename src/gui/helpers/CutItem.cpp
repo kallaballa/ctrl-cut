@@ -23,7 +23,7 @@
 
 
 CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
-  QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable | ItemIsFocusable);
+  QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
   Point pos = this->cut.get(CutSettings::CPOS);
   this->setPos(QPointF(pos.x, pos.y));
 

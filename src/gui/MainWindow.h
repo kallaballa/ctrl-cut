@@ -57,6 +57,7 @@ public slots:
   void on_simulateAction_triggered();
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_deleteItem();
+  void on_simplifyItem();
 
   void sceneSelectionChanged();
 

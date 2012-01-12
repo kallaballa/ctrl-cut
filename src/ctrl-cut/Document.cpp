@@ -67,8 +67,8 @@ void Document::write(std::ostream &out) {
     raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
   }
 
-  double width = this->get(D_SET::WIDTH).in(PX, resolution);
-  double height = this->get(D_SET::HEIGHT).in(PX, resolution);
+  double width = this->get(D_SET::WIDTH).in(PX);
+  double height = this->get(D_SET::HEIGHT).in(PX);
   int focus = this->get(D_SET::AUTO_FOCUS);
 
   /* Print the printer job language header. */

@@ -79,6 +79,14 @@ void MainWindow::on_deleteItem() {
   undoStack->push(deleteCommand);
 }
 
+void MainWindow::on_simplifyItem() {
+  if (this->scene->selectedItems().isEmpty())
+    return;
+
+  QUndoCommand *simplifyCommand = new SimplifyCommand(this->scene);
+  undoStack->push(simplifyCommand);
+}
+
 void MainWindow::openFile(const QString &filename) {
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);

@@ -45,21 +45,21 @@ public:
   typedef SaxParser::Attribute Attribute;
   typedef SaxParser::AttributeList AttributeList;
 
-  const static double SVG_DEFAULT_RES = 72;
-  const static double INKSCAPE_DEFAULT_RES = 90;
+  const static double SVG_DEFAULT_RES;
+  const static double INKSCAPE_DEFAULT_RES;
 
   Measurement width;
   Measurement height;
   double dpi;
 
-  static const Unit parseUnit(const string unit);
-  static Measurement parseMeasurement(string dimension);
+  Unit parseUnit(const string unit);
+  Measurement parseMeasurement(string dimension);
 
   const string make_viewboxstring(const double& x, const double& y, const Measurement& w, const Measurement& h) const;
   const string make_attriburestring(const Attribute& attr) const;
   const string make_attriburestring(const string& name, const string& value) const;
 
-  SvgDocument() : width(*(new Measurement(-1, PX))) , height(*(new Measurement(-1, PX))), dpi(SVG_DEFAULT_RES) { }
+  SvgDocument() : width(*(new Measurement(-1, PX, SVG_DEFAULT_RES))) , height(*(new Measurement(-1, PX, SVG_DEFAULT_RES))), dpi(SVG_DEFAULT_RES) { }
   virtual ~SvgDocument(){}
 };
 

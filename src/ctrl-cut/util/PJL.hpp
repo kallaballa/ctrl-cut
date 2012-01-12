@@ -7,17 +7,17 @@
 #  define PJL_STRING(_name, _text) extern const char *_name;
 #endif
 
-PJL_STRING(SEP, ";");
+PJL_STRING(SEP, ";")
 
 /**
  * PJL COMMANDS
  */
 
 /* Print the printer job language header. */
-PJL_STRING(PJL_HEADER, "\e%%-12345X@PJL JOB NAME=%s\r\n\eE@PJL ENTER LANGUAGE=PCL \r\n");
+PJL_STRING(PJL_HEADER, "\x1B%%-12345X@PJL JOB NAME=%s\r\n\x1B\x45@PJL ENTER LANGUAGE=PCL \r\n")
 
 /* End job -> go back to PJL */
-PJL_STRING(PJL_FOOTER, "\e%-12345X@PJL EOJ \r\n")
+PJL_STRING(PJL_FOOTER, "\x1B%-12345X@PJL EOJ \r\n")
 
 
 /**
@@ -25,81 +25,81 @@ PJL_STRING(PJL_FOOTER, "\e%-12345X@PJL EOJ \r\n")
  * **/
 
 /* Set autofocus on or off. */
-PJL_STRING(PCL_AUTOFOCUS, "\e&y%dA");
+PJL_STRING(PCL_AUTOFOCUS, "\x1B&y%dA")
 
 /* Left (long-edge) offset registration.  Adjusts the position of the
  * logical page across the width of the page.
  */
-PJL_STRING(PCL_OFF_X, "\e&l%dU");
+PJL_STRING(PCL_OFF_X, "\x1B&l%dU")
 
 /* Top (short-edge) offset registration.  Adjusts the position of the
  * logical page across the length of the page.
  */
-PJL_STRING(PCL_OFF_Y, "\e&l%dZ");
+PJL_STRING(PCL_OFF_Y, "\x1B&l%dZ")
 
 /* Resolution of the print. */
-PJL_STRING(PCL_PRINT_RESOLUTION, "\e&u%dD");
+PJL_STRING(PCL_PRINT_RESOLUTION, "\x1B&u%dD")
 
 /* PCL resolution. */
-PJL_STRING(PCL_RESOLUTION, "\e*t%dR");
+PJL_STRING(PCL_RESOLUTION, "\x1B*t%dR")
 
 /* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO, "\e&y0C");
+PJL_STRING(PCL_UNKNOWN_BLAFOO, "\x1B&y0C")
 
 /* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO2, "\e&y0Z");
+PJL_STRING(PCL_UNKNOWN_BLAFOO2, "\x1B&y0Z")
 
 /* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO3, "\e&z2A");
+PJL_STRING(PCL_UNKNOWN_BLAFOO3, "\x1B&z2A")
 
 /* Position cursor absolute on the X-axis */
-PJL_STRING(PCL_POS_X, "\e*p%dX");
+PJL_STRING(PCL_POS_X, "\x1B*p%dX")
 
 /* Position cursor absolute on the Y-axis */
-PJL_STRING(PCL_POS_Y, "\e*p%dY");
+PJL_STRING(PCL_POS_Y, "\x1B*p%dY")
 
 /* PCL section end */
-PJL_STRING(PCL_SECTION_END, "\e%1B");
+PJL_STRING(PCL_SECTION_END, "\x1B%1B")
 
 /* Reset PCL */
-PJL_STRING(PCL_RESET, "\eE");
+PJL_STRING(PCL_RESET, "\x1B\x45")
 
 /**
  * PCL RASTER COMMANDS
  * **/
 
 /* Raster Orientation */
-PJL_STRING(R_ORIENTATION, "\e*r%dF");
+PJL_STRING(R_ORIENTATION, "\x1B*r%dF")
 
 /* Raster power */
-PJL_STRING(R_POWER, "\e&y%dP");
+PJL_STRING(R_POWER, "\x1B&y%dP")
 
 /* Raster speed */
-PJL_STRING(R_SPEED, "\e&z%dS");
+PJL_STRING(R_SPEED, "\x1B&z%dS")
 
 /* Raster height */
-PJL_STRING(R_HEIGHT, "\e*r%dT");
+PJL_STRING(R_HEIGHT, "\x1B*r%dT")
 
 /* Raster width */
-PJL_STRING(R_WIDTH, "\e*r%dS");
+PJL_STRING(R_WIDTH, "\x1B*r%dS")
 
 /* Raster compression */
-PJL_STRING(R_COMPRESSION, "\e*b%dM");
+PJL_STRING(R_COMPRESSION, "\x1B*b%dM")
 
 /* Raster direction (0 = down, 1 = up) */
-PJL_STRING(R_DIRECTION, "\e&y%dO");
+PJL_STRING(R_DIRECTION, "\x1B&y%dO")
 
 /* Start raster job */
-PJL_STRING(R_START, "\e*r1A");
+PJL_STRING(R_START, "\x1B*r1A")
 
 /* End raster job */
-PJL_STRING(R_END, "\e*rC");
+PJL_STRING(R_END, "\x1B*rC")
 
 /* The number of unpacked bytes in the raster row */
-PJL_STRING(R_ROW_UNPACKED_BYTES, "\e*b%dA");
+PJL_STRING(R_ROW_UNPACKED_BYTES, "\x1B*b%dA")
 
 /* The number of packed bytes in the raster row */
-PJL_STRING(R_ROW_PACKED_BYTES, "\e*b%dW");
+PJL_STRING(R_ROW_PACKED_BYTES, "\x1B*b%dW")
 
 
 
@@ -108,16 +108,16 @@ PJL_STRING(R_ROW_PACKED_BYTES, "\e*b%dW");
  * **/
 
 /* Initialize vector mode */
-PJL_STRING(V_INIT, "IN");
+PJL_STRING(V_INIT, "IN")
 
 /* Set laser pulse frequency */
-PJL_STRING(V_FREQUENCY, "XR%04d");
+PJL_STRING(V_FREQUENCY, "XR%04d")
 
 /* Set laser power */
-PJL_STRING(V_POWER, "YP%03d");
+PJL_STRING(V_POWER, "YP%03d")
 
 /* Set laser speed */
-PJL_STRING(V_SPEED, "ZS%03d");
+PJL_STRING(V_SPEED, "ZS%03d")
 
 
 /**
@@ -133,15 +133,15 @@ PJL_STRING(V_SPEED, "ZS%03d");
  * also for the first issue, so I use it only because the windows
  * driver does.
  */
-PJL_STRING(HPGL_LINE_TYPE, "LT");
+PJL_STRING(HPGL_LINE_TYPE, "LT")
 
 /* Pen up */
-PJL_STRING(HPGL_PEN_UP, "PU");
+PJL_STRING(HPGL_PEN_UP, "PU")
 
 /* Pen down */
-PJL_STRING(HPGL_PEN_DOWN, "PD");
+PJL_STRING(HPGL_PEN_DOWN, "PD")
 
 /* HPGL section end */
-PJL_STRING(HPGL_END, "\e%0B");
+PJL_STRING(HPGL_END, "\x1B%0B")
 
 #endif /* PCL_H_ */

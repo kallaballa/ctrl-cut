@@ -67,7 +67,6 @@ public:
     AddSink<CutImpl> sink(*this);
 
     while (std::getline(input, line)) {
-      std::cerr << line << std::endl;
       first = line[0];
 
       if (first == 'X') { // End of output

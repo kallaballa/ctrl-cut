@@ -27,102 +27,107 @@
 #include <Document.hpp>
 #include <QGraphicsItem>
 
-CtrlCutScene::CtrlCutScene(QObject *parent)
-: QGraphicsScene(parent)
-{
+CtrlCutScene::CtrlCutScene(QObject *parent) :
+  QGraphicsScene(parent) {
   this->docHolder.doc = new Document();
   using namespace Qt;
 
-  QGraphicsPolygonItem *laserbed = new QGraphicsPolygonItem(QPolygonF(QRectF(QPointF(0,0), QSizeF(21600, 14400))));
+  QGraphicsPolygonItem *laserbed = new QGraphicsPolygonItem(
+      QPolygonF(QRectF(QPointF(0, 0), QSizeF(21600, 14400))));
   laserbed->setBrush(QBrush(Qt::white));
   laserbed->setZValue(-1000); // Render at the back
   this->addItem(laserbed);
 
   QPen gray(Qt::lightGray);
-  for (int j=1000;j<14400;j+=1000) {
+  for (int j = 1000; j < 14400; j += 1000) {
     this->addLine(0, j, 21600, j, gray);
   }
-  for (int i=1000;i<21600;i+=1000) {
+  for (int i = 1000; i < 21600; i += 1000) {
     this->addLine(i, 0, i, 14400, gray);
   }
 
-/*
-  typedef CtrlCutEvent CCE;
-  typedef CCE::MoveItems MoveItems;
-  typedef CCE::GroupItems GroupItems;
-  typedef CCE::UngroupItems UngroupItems;
+  /*
+   typedef CtrlCutEvent CCE;
+   typedef CCE::MoveItems MoveItems;
+   typedef CCE::GroupItems GroupItems;
+   typedef CCE::UngroupItems UngroupItems;
 
-  qreal step = 1;
-  CCE::registerAction(ControlModifier, Key_Up, MoveItems::UP(step));
-  CCE::registerAction(ControlModifier, Key_Left, MoveItems::LEFT(step));
-  CCE::registerAction(ControlModifier, Key_Down, MoveItems::DOWN(step));
-  CCE::registerAction(ControlModifier, Key_Right, MoveItems::RIGHT(step));
+   qreal step = 1;
+   CCE::registerAction(ControlModifier, Key_Up, MoveItems::UP(step));
+   CCE::registerAction(ControlModifier, Key_Left, MoveItems::LEFT(step));
+   CCE::registerAction(ControlModifier, Key_Down, MoveItems::DOWN(step));
+   CCE::registerAction(ControlModifier, Key_Right, MoveItems::RIGHT(step));
 
-  step = 10;
-  CCE::registerAction(Key_Up, MoveItems::UP(step));
-  CCE::registerAction(Key_Left, MoveItems::LEFT(step));
-  CCE::registerAction(Key_Down, MoveItems::DOWN(step));
-  CCE::registerAction(Key_Right, MoveItems::RIGHT(step));
+   step = 10;
+   CCE::registerAction(Key_Up, MoveItems::UP(step));
+   CCE::registerAction(Key_Left, MoveItems::LEFT(step));
+   CCE::registerAction(Key_Down, MoveItems::DOWN(step));
+   CCE::registerAction(Key_Right, MoveItems::RIGHT(step));
 
-  step = 100;
-  CCE::registerAction(ShiftModifier, Key_Up, MoveItems::UP(step));
-  CCE::registerAction(ShiftModifier, Key_Left, MoveItems::LEFT(step));
-  CCE::registerAction(ShiftModifier, Key_Down, MoveItems::DOWN(step));
-  CCE::registerAction(ShiftModifier, Key_Right, MoveItems::RIGHT(step));
+   step = 100;
+   CCE::registerAction(ShiftModifier, Key_Up, MoveItems::UP(step));
+   CCE::registerAction(ShiftModifier, Key_Left, MoveItems::LEFT(step));
+   CCE::registerAction(ShiftModifier, Key_Down, MoveItems::DOWN(step));
+   CCE::registerAction(ShiftModifier, Key_Right, MoveItems::RIGHT(step));
 
-  CCE::registerAction(ControlModifier, Key_G, GroupItems(*this));
-  CCE::registerAction(ShiftModifier, Key_G, UngroupItems(*this));*/
+   CCE::registerAction(ControlModifier, Key_G, GroupItems(*this));
+   CCE::registerAction(ShiftModifier, Key_G, UngroupItems(*this));*/
 }
 
-
 /*
-void CtrlCutScene::keyPressEvent(QKeyEvent *event) {
-  CtrlCutEvent::act(*event, this->selectedItems());
-}*/
+ void CtrlCutScene::keyPressEvent(QKeyEvent *event) {
+ CtrlCutEvent::act(*event, this->selectedItems());
+ }*/
 
 void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
-                    event->buttonDownScenePos(Qt::LeftButton).y());
-   std::cerr << "press: " << mousePos.x()<< ", " << mousePos.y() << std::endl;
+  QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
+      event->buttonDownScenePos(Qt::LeftButton).y());
+  std::cerr << "press: " << mousePos.x() << ", " << mousePos.y() << std::endl;
+  QList<QGraphicsItem* > selected = selectedItems();
+  if (!selected.empty()) {
+    movingItem = selected.first();
 
-   movingItem = itemAt(mousePos.x(), mousePos.y());
-   foreach(QGraphicsItem* item, this->selectedItems()) {
-     std::cerr << "item: " << item->pos().x()<< ", " << item->pos().y() << std::endl;
-   }
-   if (movingItem != 0 && event->button() == Qt::LeftButton) {
-     std::cerr << "press: " << movingItem->pos().x()<< ", " << movingItem->pos().y() << std::endl;
-     oldPos = movingItem->pos();
-   }
+    if (movingItem != 0 && event->button() == Qt::LeftButton) {
+      std::cerr << "press: " << movingItem->pos().x() << ", "
+          << movingItem->pos().y() << std::endl;
+      oldPos = movingItem->pos();
+    }
 
-
-   QGraphicsScene::mousePressEvent(event);
+    std::cerr << std::endl;
+  } else {
+    movingItem = NULL;
+  }
+  QGraphicsScene::mousePressEvent(event);
 }
 
 void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
-                   event->buttonDownScenePos(Qt::LeftButton).y());
-  std::cerr << "release: " << mousePos.x()<< ", " << mousePos.y() << std::endl;
+      event->buttonDownScenePos(Qt::LeftButton).y());
+  std::cerr << "release: " << mousePos.x() << ", " << mousePos.y() << std::endl;
 
-   if (movingItem != 0 && event->button() == Qt::LeftButton) {
-     std::cerr << "release: " << movingItem->pos().x()<< ", " << movingItem->pos().y() << std::endl;
-     if (oldPos != movingItem->pos())
-           emit itemMoved(movingItem,oldPos);
-       movingItem = 0;
-   }
-   QGraphicsScene::mouseReleaseEvent(event);
+  if (movingItem != 0 && event->button() == Qt::LeftButton) {
+    std::cerr << "release: " << movingItem->pos().x() << ", " << movingItem->pos().y() << std::endl;
+    if (oldPos != movingItem->pos())
+      emit itemMoved(movingItem, oldPos);
+    movingItem = 0;
+  }
+  std::cerr << std::endl;
+  QGraphicsScene::mouseReleaseEvent(event);
 }
 
 void CtrlCutScene::setDocumentHolder(DocumentHolder& docHolder) {
   this->reset();
   this->docHolder = docHolder;
 
-  foreach(CutItem* ci, docHolder.cutItems) {
-    this->addItem(ci);
-  }
+  foreach(CutItem* ci, docHolder.cutItems)
+    {
+      this->addItem(ci);
+    }
 
-  foreach(EngraveItem* ei, docHolder.engraveItems) {
-    this->addItem(ei);
-  }
+  foreach(EngraveItem* ei, docHolder.engraveItems)
+    {
+      this->addItem(ei);
+    }
 }
 
 void CtrlCutScene::open(const QString& filename) {
@@ -131,50 +136,77 @@ void CtrlCutScene::open(const QString& filename) {
 }
 
 void CtrlCutScene::load(const QString& filename) {
-  if(!this->docHolder.doc)
+  if (!this->docHolder.doc)
     this->docHolder.doc = new Document();
 
-  Document* doc = this->docHolder.doc;
+  Document doc;
 
   //FIXME make settings available through the gui
-  doc->put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-  doc->put(DocumentSettings::LOAD_ENGRAVING, true);
-  doc->load(filename.toStdString());
+  doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+  doc.put(DocumentSettings::LOAD_ENGRAVING, true);
+  doc.load(filename.toStdString());
 
-  for (Document::CutIt it = doc->begin_cut(); it != doc->end_cut(); it++) {
-    this->docHolder.cutItems.append(new CutItem(**it));
+  for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
+    CutItem* ci = new CutItem(**it);
+    this->docHolder.add(*ci);
+    this->addItem(ci);
   }
 
-  for (Document::EngraveIt it = doc->begin_engrave(); it != doc->end_engrave(); it++) {
-    this->docHolder.engraveItems.append(new EngraveItem(**it));
+  for (Document::EngraveIt it = doc.begin_engrave(); it != doc.end_engrave(); it++) {
+    EngraveItem* ei = new EngraveItem(**it);
+    this->docHolder.add(*ei);
+    this->addItem(ei);
   }
 }
 
-void CtrlCutScene::reset() {
-  foreach(CutItem* ci, docHolder.cutItems) {
-    this->removeItem(ci);
-  }
+void CtrlCutScene::add(CutItem& cutItem) {
+  this->docHolder.add(cutItem);
+  this->addItem(&cutItem);
+}
 
-  foreach(EngraveItem* ei, docHolder.engraveItems) {
-    this->removeItem(ei);
-  }
+void CtrlCutScene::remove(CutItem& cutItem) {
+  this->docHolder.remove(cutItem);
+  this->removeItem(&cutItem);
+}
+
+void CtrlCutScene::add(EngraveItem& engraveItem) {
+  this->docHolder.add(engraveItem);
+  this->addItem(&engraveItem);
+}
+
+void CtrlCutScene::remove(EngraveItem& engraveItem) {
+  this->docHolder.remove(engraveItem);
+  this->removeItem(&engraveItem);
+}
+
+void CtrlCutScene::reset() {
+  foreach(CutItem* ci, docHolder.cutItems)
+    {
+      this->removeItem(ci);
+    }
+
+  foreach(EngraveItem* ei, docHolder.engraveItems)
+    {
+      this->removeItem(ei);
+    }
 
   this->docHolder.doc = NULL;
 
-  while(!this->docHolder.cutItems.empty())
+  while (!this->docHolder.cutItems.empty())
     this->docHolder.cutItems.takeFirst();
 
-  while(!this->docHolder.engraveItems.empty())
+  while (!this->docHolder.engraveItems.empty())
     this->docHolder.engraveItems.takeFirst();
 }
 
 void CtrlCutScene::update() {
-  foreach (QGraphicsItem *sitem, this->items()){
-    AbstractCtrlCutItem* ccItem;
-    if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
-      ccItem->commit();
+  foreach (QGraphicsItem *sitem, this->items())
+    {
+      AbstractCtrlCutItem* ccItem;
+      if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
+        ccItem->commit();
+      }
     }
-  }
   QGraphicsScene::update();
 }
 

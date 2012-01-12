@@ -171,7 +171,7 @@ display_callback display_callbacks = {
 bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argstrings)
 {
   int gsargc = argstrings.size();
-  const char *gsargv[gsargc];
+  const char **gsargv = new const char*[gsargc];
   for (int i=0;i<gsargc;i++) {
     gsargv[i] = argstrings[i].c_str();
     LOG_DEBUG(gsargv[i]);
@@ -193,6 +193,8 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
     code = code1;
   }
 
+  if(gsargv)
+    delete gsargv;
   gsapi_delete_instance(minst);
 
   if ((code == 0) || (code == e_Quit)) {
@@ -252,8 +254,8 @@ PostscriptParser::~PostscriptParser()
 bool PostscriptParser::parse(cups_file_t *input_file)
 {
   uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);
-  double width = this->conf.get(DocumentSettings::WIDTH).in(PX, resolution);
-  double height = this->conf.get(DocumentSettings::HEIGHT).in(PX, resolution);
+  double width = this->conf.get(DocumentSettings::WIDTH).in(PX);
+  double height = this->conf.get(DocumentSettings::HEIGHT).in(PX);
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
   string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + this->conf.get(DocumentSettings::BASENAME);
   this->filename_eps = tmpbasepath + ".eps";

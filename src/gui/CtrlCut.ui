@@ -131,6 +131,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="deleteItem"/>
+    <addaction name="simplifyAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="editMenu"/>
@@ -207,6 +208,11 @@
     <string>Del</string>
    </property>
   </action>
+  <action name="simplifyAction">
+   <property name="text">
+    <string>Simplify</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -224,6 +230,22 @@
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>on_deleteItem()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>simplifyAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_simplifyItem()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

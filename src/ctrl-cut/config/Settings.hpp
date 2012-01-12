@@ -107,7 +107,7 @@ public:
     Trigger(const Trigger& other) : func(other.func) {}
 
     void operator()(KeyBase key) {
-      if(func.empty())
+      if(!func.empty())
         func(key);
     }
   };

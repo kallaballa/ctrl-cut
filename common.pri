@@ -23,6 +23,7 @@ macx {
 }
 
 CONFIG += link_pkgconfig
+QMAKE_CXXFLAGS += -std=c++98 -pedantic-errors -Wno-long-long
 include(boost.pri)
 include(ghostscript.pri)
 include(X11.pri)

@@ -32,7 +32,7 @@
  */
 
 #  include <cups/cups.h>
-
+#  include <cups/ppd.h>
 
 /*
  * C++ magic...

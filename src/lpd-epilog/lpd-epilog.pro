@@ -5,7 +5,7 @@ macx {
 include(common.pri)
 
 LIBS += -lcups
-
+QMAKE_CXXFLAGS += -I/usr/include/cups/
 SOURCES += lpd.c network.c runloop.c
 
 HEADERS  += \

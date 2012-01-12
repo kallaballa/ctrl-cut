@@ -40,16 +40,21 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
       LOG_WARN_MSG("Illegal value for Driver", v);
     }
   }
+  if (cupsOpts.get(CupsOptions::RESOLUTION, v)) {
+    ds.put(DS::RESOLUTION, lexical_cast<uint16_t> (v));
+  }
+
   if (cupsOpts.get(CupsOptions::BEDSIZE, v)) {
+    uint16_t res = ds.get(DS::RESOLUTION);
     if (v == "16x12") {
-      ds.put(DS::WIDTH, Measurement(16, IN));
-      ds.put(DS::HEIGHT, Measurement(12, IN));
+      ds.put(DS::WIDTH, Measurement(16, IN, res));
+      ds.put(DS::HEIGHT, Measurement(12, IN, res));
     } else if (v == "24x12") {
-      ds.put(DS::WIDTH, Measurement(24, IN));
-      ds.put(DS::HEIGHT, Measurement(12, IN));
+      ds.put(DS::WIDTH, Measurement(24, IN, res));
+      ds.put(DS::HEIGHT, Measurement(12, IN, res));
     } else if (v == "36x24") {
-      ds.put(DS::WIDTH, Measurement(36, IN));
-      ds.put(DS::HEIGHT, Measurement(24, IN));
+      ds.put(DS::WIDTH, Measurement(36, IN, res));
+      ds.put(DS::HEIGHT, Measurement(24, IN, res));
     } else {
       LOG_WARN_MSG("Illegal value for BedSize", v);
     }
@@ -58,9 +63,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
   if (cupsOpts.get(CupsOptions::AUTOFOCUS, v)) {
     ds.put(DS::AUTO_FOCUS, (v != "false"));
   }
-  if (cupsOpts.get(CupsOptions::RESOLUTION, v)) {
-    ds.put(DS::RESOLUTION, lexical_cast<uint16_t> (v));
-  }
+
   if (cupsOpts.get(CupsOptions::RASTER_SPEED, v)) {
     ds.put(ES::ESPEED, lexical_cast<uint16_t> (v));
   }

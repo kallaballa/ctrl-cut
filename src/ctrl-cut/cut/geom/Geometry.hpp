@@ -148,7 +148,7 @@ public:
   float getSlope(bool invert = false) const;
 };
 
-BOOST_GEOMETRY_REGISTER_SEGMENT(Segment, Point, first, second);
+BOOST_GEOMETRY_REGISTER_SEGMENT(Segment, Point, first, second)
 
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };
@@ -239,7 +239,7 @@ public:
   }
 };
 
-BOOST_GEOMETRY_REGISTER_BOX(Box, Point, min_corner, max_corner);
+BOOST_GEOMETRY_REGISTER_BOX(Box, Point, min_corner, max_corner)
 
 
 class Sphere {

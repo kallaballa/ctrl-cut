@@ -43,6 +43,10 @@ public:
   DocumentHolder getDocumentHolder() {
     return this->docHolder;
   }
+  void add(CutItem& cutItem);
+  void remove(CutItem& cutItem);
+  void add(EngraveItem& engraveItem);
+  void remove(EngraveItem& engraveItem);
   void open(const QString& filename);
   void load(const QString& filename);
   void reset();

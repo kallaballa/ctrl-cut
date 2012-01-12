@@ -128,9 +128,9 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
         viewBox = document.make_attriburestring(attr);
     } else {
       if (attr.name == "width")
-        document.width = SvgDocument::parseMeasurement(attr.value);
+        document.width = document.parseMeasurement(attr.value);
       else if (attr.name == "height")
-        document.height = SvgDocument::parseMeasurement(attr.value);
+        document.height = document.parseMeasurement(attr.value);
 
       writeSvg(document.make_attriburestring(attr));
     }

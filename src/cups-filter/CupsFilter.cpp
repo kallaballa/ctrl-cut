@@ -50,12 +50,12 @@ int main(int argc, char *argv[]) {
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
   Coord_t dpi = doc.get(DocumentSettings::RESOLUTION);
-  Coord_t width = doc.get(DocumentSettings::WIDTH).in(PX, dpi);
-  Coord_t height = doc.get(DocumentSettings::HEIGHT).in(PX, dpi);
+  Coord_t width = doc.get(DocumentSettings::WIDTH).in(PX);
+  Coord_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
   string v;
-  Measurement reduceMax(0.1,MM);
+  Measurement reduceMax(0.1,MM, dpi);
   if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM);
+    reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
 
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
     dump("planared.txt", planared.begin(), planared.end());
 
     CutModel reduced(model.settings);
-    reduce(exploded, reduced, reduceMax.in(PX, dpi));
+    reduce(exploded, reduced, reduceMax.in(PX));
     dump("reduced.txt", reduced.begin(), reduced.end());
 /*
     CutModel travelled = model.make();

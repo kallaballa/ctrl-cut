@@ -54,6 +54,8 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
   int width = image->width() / 8; // width in bytes
   int height = image->height();
 
+  char* pack = new char[width];
+
   // raster (basic)
   uint32_t lasty = 0;
   bool dir = false;
@@ -72,7 +74,6 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
     if (l < width) {
       // a line to print
       int packsize = width * 2; // To be on the safe side
-      char pack[packsize];
       // find left/right of data (dir==0 ? right : left )
       int r;
       for (r = width - 1; r > l && (scanline[r] == 0xff); r--) { }
@@ -159,6 +160,9 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
       }
     }
   }
+
+  if(pack)
+    delete pack;
 
   out << R_END; // end raster
 }

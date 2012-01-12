@@ -9,7 +9,6 @@
 #include <assert.h>
 #include "helpers/Qt.h"
 #include "SimulatorScene.h"
-#include "helpers/DocumentItem.h"
 #include "pclint/Canvas.h"
 
 class Document;

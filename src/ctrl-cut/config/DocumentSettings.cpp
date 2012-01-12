@@ -55,8 +55,8 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 
-  this->put(WIDTH, Measurement(21600,PX));
-  this->put(HEIGHT, Measurement(14400,PX));
+  this->put(WIDTH, Measurement(21600,PX,600));
+  this->put(HEIGHT, Measurement(14400,PX,600));
   this->put(DUMP_XML, false);
   //FIXME dont do empty defaults
   this->put(TITLE, "");
