@@ -5,8 +5,8 @@
 typedef DocumentSettings DS;
 SimulatorDialog::SimulatorDialog(Document& doc, QWidget *parent) :
 QDialog(parent),
-doc(&doc),
 Canvas(doc.get(DS::WIDTH).in(PX),doc.get(DocumentSettings::HEIGHT).in(PX)),
+doc(&doc),
 movePen(Qt::white),
 cutPen(Qt::red)
 {

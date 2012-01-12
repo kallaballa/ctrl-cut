@@ -5,7 +5,7 @@
 
 class SimulatorScene : public QGraphicsScene
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   SimulatorScene(QObject *parent = 0);
   ~SimulatorScene() {}

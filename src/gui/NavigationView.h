@@ -6,7 +6,7 @@
  
 class NavigationView : public QGraphicsView
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   NavigationView(QWidget* parent = NULL);
 

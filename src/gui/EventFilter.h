@@ -26,7 +26,7 @@
 
 class EventFilter : public QObject
 {
-	Q_OBJECT;
+	Q_OBJECT
 	
 public:
 	EventFilter(QObject *parent) : QObject(parent) {}

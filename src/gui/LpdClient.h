@@ -24,7 +24,7 @@
 
 class LpdClient : public QObject
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   LpdClient(QObject *parent = 0);
   ~LpdClient() {}

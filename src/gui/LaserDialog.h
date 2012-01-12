@@ -25,7 +25,7 @@
 
 class LaserDialog : public QDialog, private Ui::LaserDialog
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   LaserDialog(QWidget *parent = NULL);
   ~LaserDialog();

@@ -5,7 +5,7 @@
  
 class CtrlCutView : public NavigationView
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   CtrlCutView(QWidget* parent = NULL);
 

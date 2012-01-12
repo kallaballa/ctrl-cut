@@ -5,7 +5,7 @@
  
 class SimulatorView : public NavigationView
 {
-  Q_OBJECT;
+  Q_OBJECT
 public:
   SimulatorView(QWidget* parent = NULL);
 private:
