@@ -28,12 +28,7 @@
 #include "LpdClient.h"
 #include "StreamUtils.h"
 #include "GroupItem.h"
-#include "CtrlCutScene.h"
-#include "SimulatorDialog.h"
-#include "LaserDialog.h"
 #include "helpers/Qt.h"
-
-class Document;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -71,10 +66,10 @@ private:
   void createActions();
 
   LpdClient *lpdclient;
-  CtrlCutScene *scene;
+  class CtrlCutScene *scene;
 
-  LaserDialog *laserdialog;
-  SimulatorDialog *simdialog;
+  class LaserDialog *laserdialog;
+  class SimulatorDialog *simdialog;
 
   QAction *undoAction;
   QAction *redoAction;

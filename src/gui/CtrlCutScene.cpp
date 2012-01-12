@@ -17,14 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "CtrlCutScene.h"
+#include "Document.hpp"
 #include "helpers/CutItem.h"
+#include "helpers/EngraveItem.h"
 #include "event/CtrlCutEvent.h"
 #include "Commands.h"
 #include <QGraphicsItem>
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
 #include "helpers/DocumentHolder.h"
-#include <Document.hpp>
 #include <QGraphicsItem>
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :

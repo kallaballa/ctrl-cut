@@ -21,7 +21,6 @@
 
 #include <QDialog>
 #include "ui_LaserDialog.h"
-#include "Document.hpp"
 
 class LaserDialog : public QDialog, private Ui::LaserDialog
 {
@@ -30,7 +29,7 @@ public:
   LaserDialog(QWidget *parent = NULL);
   ~LaserDialog();
   
-  void applyLaserConfig(Document &document);
+  void applyLaserConfig(class Document &document);
   void updateLaserConfig(Document &document);
 
 private slots:
