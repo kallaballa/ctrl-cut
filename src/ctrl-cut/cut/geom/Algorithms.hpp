@@ -65,21 +65,12 @@ inline bool concat_back(Path& path, const Segment& seg) {
     append(path, seg);
     return true;
   } else {
-    const Point& first = path.front();
     const Point& last = path.back();
     if (last == seg.first) {
-      // paths may not be self intersecting and therefor they may not be closed
-      if(first == seg.second)
-        return false;
-
       append(path, seg.second);
       return true;
     }
     else if (last == seg.second) {
-      // paths may not be self intersecting and therefor they may not be closed
-      if(first == seg.first)
-        return false;
-
       append(path, seg.first);
       return true;
     }
@@ -96,21 +87,11 @@ inline bool concat_front(Path& path, const Segment& seg) {
     return true;
   } else {
     const Point& first = path.front();
-    const Point& last = path.back();
-
     if (first == seg.first) {
-      // paths may not be self intersecting
-      if(last == seg.second)
-        return false;
-
       prepend(path, seg.second);
       return true;
     }
     else if (first == seg.second) {
-      // paths may not be self intersecting
-      if(last == seg.first)
-        return false;
-
       prepend(path, seg.first);
       return true;
     }
