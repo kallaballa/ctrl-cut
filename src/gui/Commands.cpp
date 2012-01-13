@@ -32,7 +32,7 @@
      newPos = item->pos();
      myOldPos = oldPos;
  }
-
+/*
  bool MoveCommand::mergeWith(const QUndoCommand *command)
  {
      const MoveCommand *moveCommand = static_cast<const MoveCommand *>(command);
@@ -47,7 +47,7 @@
      this->scene->update();
      return true;
  }
-
+*/
  void MoveCommand::undo()
  {
    std::cerr << "move undo" << std::endl;
