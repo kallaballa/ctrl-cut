@@ -34,13 +34,8 @@ typedef EngraveSettings ES;
 void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
   return;
-  // REFACTOR
-  BitmapImage* image = &raster.front();
-  if(!image) {
-    LOG_WARN_STR("Engraving is not processed. Can't encode");
-    return;
-  }
-  const Point& pos = raster.settings.get(EngraveSettings::EPOS);
+  BitmapImage image = raster.getImage();
+  const Point& pos = raster.get(EngraveSettings::EPOS);
 
   LOG_DEBUG_STR("Encode raster");
   ES::Direction direction = raster.settings.get(ES::DIRECTION);
@@ -51,8 +46,8 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
 
   LOG_DEBUG_STR("Encoding bitmap image..");
 
-  int width = image->width() / 8; // width in bytes
-  int height = image->height();
+  int width = image.width() / 8; // width in bytes
+  int height = image.height();
 
   char* pack = new char[width];
 
@@ -65,7 +60,7 @@ void PclEncoder::encode(std::ostream &out, Engraving& raster)
     if (direction == ES::BOTTOMUP) y = height - i - 1;
     else y = i;
 
-    uint8_t *scanline = (uint8_t *)image->data() + y*image->rowstride(); // Pointer to a scanline
+    uint8_t *scanline = (uint8_t *)image.data() + y*image.rowstride(); // Pointer to a scanline
 
     // find left/right of data (dir==0 ? left : right)
     int l;

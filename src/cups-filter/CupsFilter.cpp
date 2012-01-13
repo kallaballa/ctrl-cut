@@ -63,11 +63,11 @@ int main(int argc, char *argv[]) {
     dump("input.txt", model.begin(), model.end());
 
     Cut clipped(model.settings);
-    clip(MultiSegmentView<Cut>(model), AddSink<Cut>(clipped), Box(Point(0,0),Point(width,height)));
+    clip(model, clipped, Box(Point(0,0),Point(width,height)));
     dump("clipped.txt", clipped.begin(), clipped.end());
 
     Cut exploded(model.settings);
-    explode(MultiSegmentView<Cut>(clipped), AddSink<Cut>(exploded));
+    explode(clipped, exploded);
     dump("exploded.txt", exploded.begin(), exploded.end());
 
     Cut planared(model.settings);

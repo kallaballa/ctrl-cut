@@ -390,23 +390,26 @@ void PostscriptParser::printStatistics()
 }
 #endif
 
+Rectangle PostscriptParser::getCropBox() {
+  return this->cropbox;
+}
+
 void PostscriptParser::copyPage() {
+
   if(this->gsimage.isAllocated()) {
-    Rectangle cropbox = this->gsimage.autocrop();
+    this->cropbox = this->gsimage.autocrop();
     GrayscaleImage cropped;
 
-    this->gsimage.copy(cropped,cropbox);
+    this->gsimage.copy(cropped,this->cropbox);
     this->gsimage = cropped;
-    this->conf.put(EngraveSettings::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
   }
 
   if(this->bmimage.isAllocated()) {
-    Rectangle cropbox = this->bmimage.autocrop();
+    this->cropbox = this->bmimage.autocrop();
     BitmapImage cropped;
 
-    this->bmimage.copy(cropped,cropbox);
+    this->bmimage.copy(cropped,this->cropbox);
     this->bmimage = cropped;
-    this->conf.put(EngraveSettings::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
   }
 
   // For debugging, we can export the image here:

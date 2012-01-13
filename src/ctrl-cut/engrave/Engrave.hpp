@@ -32,13 +32,9 @@ template<typename Timage>
 class EngravingImpl
 {
 private:
-  typedef std::list<Timage> ImageList;
-  ImageList images;
+  Timage image;
 
 public:
-  typedef typename ImageList::iterator iterator;
-  typedef typename ImageList::const_iterator const_iterator;
-
   EngraveSettings settings;
 
   EngravingImpl(DocumentSettings& parentSettings)
@@ -51,60 +47,29 @@ public:
 
   void load(const string& filename) {
     std::string suffix = filename.substr(filename.rfind(".") + 1);
-    const BitmapImage& newBitmap = loadpbm(filename);
-    this->settings.put(EngraveSettings::EPOS, Point(392, 516));
-    this->push_back(newBitmap);
+    this->image = loadpbm(filename);
   }
 
   ~EngravingImpl() {
-    for(iterator it = begin(); it != end(); it++) {
-      delete (*it).data();
-    }
+     delete image.data();
   }
 
-  iterator begin() {
-    return this->images.begin();
-  }
-  const_iterator begin() const {
-    return this->images.begin();
-  }
-  iterator end()  {
-    return this->images.end();
-  }
-  const_iterator end() const {
-    return this->images.end();
-  }
-  typename iterator::reference front() {
-    return this->images.front();
-  }
-  typename iterator::reference back() {
-    return this->images.back();
-  }
-  typename const_iterator::reference front() const {
-    return this->images.front();
-  }
-  typename const_iterator::reference back() const {
-    return this->images.back();
+  void setImage(const Timage& image) {
+    this->image = image;
   }
 
-  void clear() {
-    images.clear();
+  const Timage& getImage() {
+    return image;
   }
 
-  void insert(iterator pos, const Timage& image) {
-    images.insert(pos, image);
+  template<typename T, typename V>
+  void put(const Settings::Key<T>& key, V value) {
+    settings.put(key,value);
   }
 
-  void erase(iterator pos) {
-    images.erase(pos);
-  }
-
-  void push_front(const Timage& image) {
-    images.push_front(image);
-  }
-
-  void push_back(const Timage& image) {
-    images.push_back(image);
+  template<typename T>
+  const T get(const Settings::Key<T>& key) const {
+    return settings.get(key);
   }
 };
 

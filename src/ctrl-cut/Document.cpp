@@ -25,7 +25,6 @@
 #include "encoder/PclEncoder.hpp"
 #include "CtrlCutException.h"
 #include "boost/filesystem.hpp"
-/* undef gtk signals right after the svg pass - it interferes with Qt */
 #include "svg/Svg2Ps.hpp"
 
 
@@ -318,8 +317,8 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     Engraving* engraving = new Engraving(this->settings);
     if (docFormat == PBM) {
       std::string suffix = filename.substr(filename.rfind(".") + 1);
-      engraving->push_back(loadpbm(filename));
-      this->settings.put(E_SET::EPOS, Point(392, 516));
+      engraving->setImage(loadpbm(filename));
+      engraving->put(E_SET::EPOS, Point(392, 516));
     }
     else if (parser) {
       if (parser->hasImageData()) {
@@ -327,11 +326,15 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
 
         if(parser->hasGrayscaleImage()) {
           GrayscaleImage gs = parser->getGrayscaleImage();
+          Rectangle cropbox = parser->getCropBox();
           Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
           BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
-          engraving->push_back(bm);
+          engraving->setImage(bm);
+          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
         } else if(parser->hasBitmapImage()) {
-          engraving->push_back(parser->getBitmapImage());
+          Rectangle cropbox = parser->getCropBox();
+          engraving->setImage(parser->getBitmapImage());
+          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
         }
       }
       else if (!parser->getBitmapFile().empty()) {
@@ -340,13 +343,13 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
           GrayscaleImage gs = loadppm(filename);
           Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
           BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
-          engraving->push_back(bm);
+          engraving->setImage(bm);
         }
         else {
-          engraving->push_back(loadpbm(filename));
+          engraving->setImage(loadpbm(filename));
         }
 
-        this->settings.put(E_SET::EPOS, Point(392, 516));
+        engraving->put(E_SET::EPOS, Point(392, 516));
       }
     }
     if (engraving) {

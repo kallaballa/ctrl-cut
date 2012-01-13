@@ -20,16 +20,16 @@
 #include "EngraveItem.h"
 
 EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
-  QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  for(Engraving::iterator it = engraving.begin(); it != engraving.end(); it++) {
-    QImage& img = QtMake::make_QImage(*it);
-    img.bits();
-    QPixmap pixmap = QPixmap::fromImage(img);
-    Point pos = engraving.settings.get(EngraveSettings::EPOS);
-    if (!pixmap.isNull()) {
-      QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);
-      pixmapItem->setPos(QPointF(pos.x, pos.y));
-      QGraphicsItemGroup::addToGroup(pixmapItem);
-    }
+  QGraphicsItemGroup::setFlags(
+      QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+  BitmapImage bm = engraving.getImage();
+  QImage& img = QtMake::make_QImage(bm);
+  img.bits();
+  QPixmap pixmap = QPixmap::fromImage(img);
+  Point pos = engraving.get(EngraveSettings::EPOS);
+  this->setPos(QPointF(pos.x, pos.y));
+  if (!pixmap.isNull()) {
+    QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);
+    QGraphicsItemGroup::addToGroup(pixmapItem);
   }
 }

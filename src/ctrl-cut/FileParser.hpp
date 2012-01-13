@@ -20,6 +20,7 @@ public:
   //  bool parse(const string &filename) = 0;
   virtual std::istream &getVectorData() = 0;
 
+  virtual Rectangle getCropBox() = 0;
   // Bitmap methods
   virtual bool hasImageData() = 0;
   virtual BitmapImage getBitmapImage() = 0;
@@ -58,6 +59,7 @@ public:
 
   void copyPage();
 
+  Rectangle getCropBox();
   void createImage(uint32_t width, uint32_t height, void *pimage, uint32_t rowstride = 0);
   virtual BitmapImage getBitmapImage() { return bmimage; }
   virtual GrayscaleImage getGrayscaleImage() { return gsimage; }
@@ -90,6 +92,7 @@ private:
   RasterFormat rasterformat;
   uint8_t components;
 
+  Rectangle cropbox;
   GrayscaleImage gsimage;
   BitmapImage bmimage;
 #endif
