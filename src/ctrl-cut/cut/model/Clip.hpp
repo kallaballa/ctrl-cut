@@ -127,11 +127,14 @@ public:
 };
 
 template<
-  typename TsegmentInputRange,
-  typename TsegmentOutputIterator
+  typename TpointInputRange,
+  typename TpointOutputIterator
 >
-void clip(TsegmentInputRange segmentSrc, TsegmentOutputIterator segmentSink, Box box) {
-  Clip<TsegmentInputRange, TsegmentOutputIterator> clipper(segmentSrc,segmentSink,box);
+void clip(TpointInputRange src, TpointOutputIterator sink, Box box) {
+  MultiSegmentView<TpointInputRange> msv(src);
+  AddSink<TpointOutputIterator> addSink(sink);
+
+  Clip<MultiSegmentView<TpointInputRange>, AddSink<TpointOutputIterator> > clipper(msv,addSink,box);
   clipper();
 }
 #endif /* CLIP_HPP_ */

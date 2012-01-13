@@ -23,7 +23,7 @@
 
 #include "util/Logger.hpp"
 #include "cut/geom/SegmentTree.hpp"
-
+#include "cut/geom/Views.hpp"
 #include <boost/foreach.hpp>
 
 /*
@@ -31,12 +31,12 @@
  */
 template<
   typename TsegmentInputRange,
-  typename TsegmentOutputIterator
+  typename TpointOutputRange
 >
 class Explode {
 private:
   TsegmentInputRange src;
-  TsegmentOutputIterator sink;
+  TpointOutputRange sink;
 
   IndexedSegmentTree tree;
 
@@ -45,9 +45,9 @@ private:
   typedef IndexedSegmentTree::Result::const_iterator ResultIter;
 
 public:
-  Explode(TsegmentInputRange src, TsegmentOutputIterator sink) :
+  Explode(TsegmentInputRange src, TpointOutputRange sink) :
     src(src), sink(sink) {
-    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TsegmentOutputIterator>));
+    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TpointOutputRange>));
   }
 
   Explode(const Explode& other) :
@@ -109,7 +109,6 @@ public:
       candidate_max = candidate.first;
     }
 
-    // FIXME which gets which settings?
     if (candidate_min < pick_max) {
       if (pick_min < candidate_min) {
         if (pick_max < candidate_max) {
@@ -177,11 +176,14 @@ public:
 };
 
 template<
-  typename TsegmentInputRange,
-  typename TsegmentOutputIterator
+  typename TpointInputRange,
+  typename TpointOutputRange
 >
-void explode(TsegmentInputRange segmentSrc, TsegmentOutputIterator segmentSink) {
-  Explode<TsegmentInputRange, TsegmentOutputIterator> exploder(segmentSrc,segmentSink);
+void explode(TpointInputRange src, TpointOutputRange sink) {
+  MultiSegmentView<TpointInputRange> msv(src);
+  AddSink<TpointOutputRange> addSink(sink);
+
+  Explode<MultiSegmentView<TpointInputRange>, AddSink<TpointOutputRange> > exploder(msv,addSink);
   exploder();
 }
 

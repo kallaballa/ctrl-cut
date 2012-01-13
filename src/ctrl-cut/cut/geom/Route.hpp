@@ -123,7 +123,7 @@ public:
     return paths.empty();
   }
 
-  size_t size() const {//FIXME
+  size_t size() const {
     return paths.size();
   }
 
