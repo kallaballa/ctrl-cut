@@ -21,15 +21,12 @@
 #define DOCUMENTHOLDER_H_
 
 #include <QList>
-#include "CutItem.h"
-#include "EngraveItem.h"
 
-class Document;
 class DocumentHolder {
 public:
-  QList<CutItem* > cutItems;
-  QList<EngraveItem* > engraveItems;
-  Document* doc;
+  QList<class CutItem* > cutItems;
+  QList<class EngraveItem* > engraveItems;
+  class Document* doc;
 
   DocumentHolder();
   DocumentHolder(const DocumentHolder& holder);

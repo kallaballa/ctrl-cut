@@ -22,12 +22,7 @@
 #include <QGraphicsScene>
 #include <QObject>
 #include <QGraphicsItem>
-#include "helpers/CutItem.h"
-#include "helpers/EngraveItem.h"
-#include "helpers/Qt.h"
-#include "Commands.h"
-
-class DocumentHolder;
+#include "helpers/DocumentHolder.h"
 
 class CtrlCutScene : public QGraphicsScene
 {
@@ -43,9 +38,9 @@ public:
   DocumentHolder getDocumentHolder() {
     return this->docHolder;
   }
-  void add(CutItem& cutItem);
+  void add(class CutItem& cutItem);
   void remove(CutItem& cutItem);
-  void add(EngraveItem& engraveItem);
+  void add(class EngraveItem& engraveItem);
   void remove(EngraveItem& engraveItem);
   void open(const QString& filename);
   void load(const QString& filename);

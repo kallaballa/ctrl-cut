@@ -20,6 +20,12 @@
 #include "settings/CutSettingsTableModel.h"
 #include "settings/EngraveSettingsTableModel.h"
 #include "settings/DocumentSettingsTableModel.h"
+#include "LaserDialog.h"
+#include "SimulatorDialog.h"
+#include "Document.hpp"
+#include "CtrlCutScene.h"
+#include "helpers/CutItem.h"
+#include "helpers/EngraveItem.h"
 #include <qapplication.h>
 #include "Commands.h"
 #include <QGraphicsItem>
