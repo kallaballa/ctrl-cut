@@ -25,9 +25,9 @@
 
 class CutItem: public AbstractCtrlCutItem {
 public:
-  CutModel& cut;
+  Cut& cut;
 
-  CutItem(CutModel& cut);
+  CutItem(Cut& cut);
   ~CutItem(){};
 
   void commit() {

@@ -20,19 +20,16 @@
 #include "PathItem.h"
 #include "cut/model/Translate.hpp"
 #include <qgraphicsitem.h>
+#include <boost/foreach.hpp>
 
-
-CutItem::CutItem(CutModel& cut) : AbstractCtrlCutItem(), cut(cut) {
+CutItem::CutItem(Cut& cut) : AbstractCtrlCutItem(), cut(cut) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
   Point pos = this->cut.get(CutSettings::CPOS);
-  this->setPos(QPointF(pos.x, pos.y));
+  QGraphicsItemGroup::setPos(QPointF(pos.x, pos.y));
 
   BOOST_FOREACH(Path& p, cut) {
     PathItem* pi = new PathItem(p);
+    pi->setPos(QPointF(pos.x, pos.y));
     QGraphicsItemGroup::addToGroup(pi);
   }
-}
-
-void CutItem::setPos(const QPointF &pos) {
-  QGraphicsItem::setPos(pos);
 }
