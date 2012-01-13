@@ -108,10 +108,6 @@ public:
     paths.remove(path);
   }
 
-  void push_front(const Path& path) {
-    paths.push_front(path);
-  }
-
   void push_back(const Path& path) {
     paths.push_back(path);
   }

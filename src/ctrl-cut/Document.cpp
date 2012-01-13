@@ -38,7 +38,7 @@ typedef EngraveSettings E_SET;
 typedef DocumentSettings D_SET;
 typedef CutSettings C_SET;
 
-void Document::push_back(CutModel* cut) {
+void Document::push_back(Cut* cut) {
   this->cutList.push_back(cut);
 }
 
@@ -46,7 +46,7 @@ void Document::push_back(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
-void Document::remove(CutModel* cut) {
+void Document::remove(Cut* cut) {
   this->cutList.remove(cut);
 }
 
@@ -130,7 +130,7 @@ void Document::write(std::ostream &out) {
     // of the output files. See corresponding FIXME in LaserJob.cpp.
     /* REFACTOR
     for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      CutModel *cut = *it;
+      Cut *cut = *it;
       if (cut && cut->wasClipped())
         out << "LT";
     }*/
@@ -155,7 +155,7 @@ void Document::write(std::ostream &out) {
 /*
 Document& Document::preprocess() {
  for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
-   CutModel& model = **it;
+   Cut& model = **it;
    Coord_t dpi = model.get(D_SET::RESOLUTION);
    Coord_t width = model.get(D_SET::WIDTH).in(PX, dpi);
    Coord_t height = model.get(D_SET::HEIGHT).in(PX, dpi);
@@ -163,23 +163,23 @@ Document& Document::preprocess() {
 
    dump("input.txt", model.begin(), model.end());
 
-   CutModel clipped(model.settings);
-   clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
+   Cut clipped(model.settings);
+   clip(MultiSegmentView<Cut>(model), AddSink<Cut>(clipped), Box(Point(0,0),Point(width,height)));
    dump("clipped.txt", clipped.begin(), clipped.end());
 
-   CutModel exploded(model.settings);
-   explode(MultiSegmentView<CutModel>(clipped), AddSink<CutModel>(exploded));
+   Cut exploded(model.settings);
+   explode(MultiSegmentView<Cut>(clipped), AddSink<Cut>(exploded));
    dump("exploded.txt", exploded.begin(), exploded.end());
 
-   CutModel planared(model.settings);
+   Cut planared(model.settings);
    makePlanar(exploded, planared);
    dump("planared.txt", planared.begin(), planared.end());
 
-   CutModel reduced(model.settings);
+   Cut reduced(model.settings);
    reduce(exploded, reduced, reduceMax.in(PX, dpi));
    dump("reduced.txt", reduced.begin(), reduced.end());
 
-   CutModel travelled = model.make();
+   Cut travelled = model.make();
    travel(reduced, travelled);
    dump("travelled.txt", travelled.begin(), travelled.end());
 
@@ -302,6 +302,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
 
       default:
         assert(false);
+        break;
       }
     }
     if (!psparser->parse(input_file)) {
@@ -353,15 +354,15 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     }
   }
 
-  CutModel *cut = NULL;
+  Cut *cut = NULL;
   if (load == CUT || load == BOTH) {
     if (docFormat == VECTOR) {
-      cut = new CutModel(this->settings);
+      cut = new Cut(this->settings);
       if(!cut->load(filename))
         return false;
     }
     else if (parser) {
-      cut = new CutModel(this->settings);
+      cut = new Cut(this->settings);
       if(!cut->load(parser->getVectorData()))
           return false;
     }

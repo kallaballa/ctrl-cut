@@ -40,6 +40,23 @@ inline void append(Path& path, const TpointRange& pointRange) {
   boost::geometry::append(path, pointRange);
 }
 
+inline void prepend(Path& path, const Point& p) {
+  boost::geometry::reverse(path);
+  boost::geometry::append(path, p);
+}
+
+inline void prepend(Path& path, const Segment& seg) {
+  boost::geometry::reverse(path);
+  boost::geometry::append(path,seg.first);
+  boost::geometry::append(path,seg.second);
+}
+
+template<typename TpointRange>
+inline void prepand(Path& path, const TpointRange& pointRange) {
+  boost::geometry::reverse(path);
+  boost::geometry::append(path, pointRange);
+}
+
 inline bool concat_back(Path& path, const Segment& seg) {
   //FIXME where should we filter zero length segments
   if(seg.first == seg.second)
@@ -48,12 +65,21 @@ inline bool concat_back(Path& path, const Segment& seg) {
     append(path, seg);
     return true;
   } else {
+    const Point& first = path.front();
     const Point& last = path.back();
     if (last == seg.first) {
+      // paths may not be self intersecting and therefor they may not be closed
+      if(first == seg.second)
+        return false;
+
       append(path, seg.second);
       return true;
     }
     else if (last == seg.second) {
+      // paths may not be self intersecting and therefor they may not be closed
+      if(first == seg.first)
+        return false;
+
       append(path, seg.first);
       return true;
     }
@@ -70,12 +96,22 @@ inline bool concat_front(Path& path, const Segment& seg) {
     return true;
   } else {
     const Point& first = path.front();
+    const Point& last = path.back();
+
     if (first == seg.first) {
-      append(path, seg.second);
+      // paths may not be self intersecting
+      if(last == seg.second)
+        return false;
+
+      prepend(path, seg.second);
       return true;
     }
     else if (first == seg.second) {
-      append(path, seg.first);
+      // paths may not be self intersecting
+      if(last == seg.first)
+        return false;
+
+      prepend(path, seg.first);
       return true;
     }
   }
@@ -114,7 +150,7 @@ template<typename TpointRange>
 inline bool concat_front(Path& path, const TpointRange& pointRange) {
   BOOST_FOREACH(const Segment& seg, segmentView(pointRange)) {
     if (path.empty()) {
-      append(path,seg);
+      prepend(path,seg);
     } else if (!concat_front(path,seg)) {
       return false;
     }
@@ -124,7 +160,7 @@ inline bool concat_front(Path& path, const TpointRange& pointRange) {
 
 template<typename TpointRange>
 inline bool concat(Path& path, const TpointRange& pointRange) {
-  return concat_back(pointRange) || concat_front(pointRange);
+  return concat_back(path, pointRange) || concat_front(path, pointRange);
 }
 
 template<typename TpointRange>
@@ -155,12 +191,31 @@ inline void append(Route& route, const TpointRange& pointRange) {
   route.push_back(path);
 }
 
+inline void prepend(Route& route, const Point& p) {
+  Path path(route.settings);
+  append(path, p);
+  route.push_back(path);
+}
+
+inline void prepend(Route& route, const Segment& seg) {
+  Path path(route.settings);
+  append(path, seg);
+  route.push_back(path);
+}
+
+template<typename TpointRange>
+inline void prepend(Route& route, const TpointRange& pointRange) {
+  Path path(route.settings);
+  append(path, pointRange);
+  route.push_back(path);
+}
+
 inline bool concat_front(Route& route, const Segment& seg) {
   //FIXME where should we filter zero length segments
   if(seg.first == seg.second)
     return true;
   if (route.empty()) {
-    append(route, seg);
+    prepend(route, seg);
     return true;
   } else  {
     return concat_front(route.front(),seg);
@@ -222,7 +277,7 @@ template<typename TpointRange>
 inline bool concat_front(Route& route, const TpointRange& pointRange) {
   BOOST_FOREACH(const Segment& seg, segmentConstView(pointRange)) {
     if (route.empty()) {
-      append(route, seg);
+      prepend(route, seg);
     } else if(!concat_front(route, seg)) {
       return false;
     }

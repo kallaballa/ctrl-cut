@@ -25,8 +25,8 @@
 
 using boost::format;
 
-void HPGLEncoder::encode(std::ostream &out, CutModel& encode) {
-  CutModel model = encode.make();
+void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
+  Cut model = encode.make();
   const Point&  pos = model.get(CutSettings::CPOS);
   translate(encode,model, pos);
 
@@ -47,8 +47,8 @@ void HPGLEncoder::encode(std::ostream &out, CutModel& encode) {
   int lastPower = power_set;
   typedef PathSettings S_SET;
 
-  MultiSegmentView<CutModel> msv(model);
-    for (MultiSegmentView<CutModel>::iterator it_s = msv.begin(); it_s != msv.end(); ++it_s) {
+  MultiSegmentView<Cut> msv(model);
+    for (MultiSegmentView<Cut>::iterator it_s = msv.begin(); it_s != msv.end(); ++it_s) {
       const Segment &seg = *it_s;
 //FIXME
       int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;

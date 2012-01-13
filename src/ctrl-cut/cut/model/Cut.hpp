@@ -17,8 +17,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef CUTMODEL_H_
-#define CUTMODEL_H_
+#ifndef CUT_H_
+#define CUT_H_
 
 #include <string>
 #include <stdio.h>
@@ -68,6 +68,7 @@ public:
 
     while (std::getline(input, line)) {
       first = line[0];
+      std::cerr << line << std::endl;
 
       if (first == 'X') { // End of output
         break;
@@ -136,5 +137,5 @@ protected:
   */
 };
 
-typedef CutImpl<std::vector, std::allocator> CutModel;
-#endif /* CUTMODEL_H_ */
+typedef CutImpl<std::vector, std::allocator> Cut;
+#endif /* CUT_H_ */

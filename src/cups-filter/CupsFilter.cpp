@@ -59,26 +59,26 @@ int main(int argc, char *argv[]) {
   }
 
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-    CutModel& model = **it;
+    Cut& model = **it;
     dump("input.txt", model.begin(), model.end());
 
-    CutModel clipped(model.settings);
-    clip(MultiSegmentView<CutModel>(model), AddSink<CutModel>(clipped), Box(Point(0,0),Point(width,height)));
+    Cut clipped(model.settings);
+    clip(MultiSegmentView<Cut>(model), AddSink<Cut>(clipped), Box(Point(0,0),Point(width,height)));
     dump("clipped.txt", clipped.begin(), clipped.end());
 
-    CutModel exploded(model.settings);
-    explode(MultiSegmentView<CutModel>(clipped), AddSink<CutModel>(exploded));
+    Cut exploded(model.settings);
+    explode(MultiSegmentView<Cut>(clipped), AddSink<Cut>(exploded));
     dump("exploded.txt", exploded.begin(), exploded.end());
 
-    CutModel planared(model.settings);
+    Cut planared(model.settings);
     makePlanar(exploded, planared);
     dump("planared.txt", planared.begin(), planared.end());
 
-    CutModel reduced(model.settings);
+    Cut reduced(model.settings);
     reduce(exploded, reduced, reduceMax.in(PX));
     dump("reduced.txt", reduced.begin(), reduced.end());
 /*
-    CutModel travelled = model.make();
+    Cut travelled = model.make();
     travel(reduced, travelled);
     dump("travelled.txt", travelled.begin(), travelled.end());
 

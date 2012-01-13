@@ -40,7 +40,7 @@ public:
     BOTH
   };
 
-  typedef std::list<CutModel*> CutList;
+  typedef std::list<Cut*> CutList;
   typedef std::list<Engraving*> EngraveList;
   typedef CutList::iterator CutIt;
   typedef EngraveList::iterator EngraveIt;
@@ -53,7 +53,7 @@ public:
   void copy(const Document& other) {
     settings = other.settings;
     for (CutConstIt it = other.begin_cut(); it != other.end_cut(); it++) {
-      this->push_back(new CutModel(**it));
+      this->push_back(new Cut(**it));
     }
 
     for (EngraveConstIt it = other.begin_engrave(); it != other.end_engrave(); it++) {
@@ -84,9 +84,9 @@ public:
 
   void optimize();
 
-  void push_back(CutModel* cut);
+  void push_back(Cut* cut);
   void push_back(Engraving* engraving);
-  void remove(CutModel* cut);
+  void remove(Cut* cut);
   void remove(Engraving* engraving);
   void write(std::ostream &out);
 

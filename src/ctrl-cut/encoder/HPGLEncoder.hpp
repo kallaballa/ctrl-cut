@@ -7,7 +7,7 @@
 class HPGLEncoder {
 
 public:
-  static void encode(std::ostream &out, CutModel& model);
+  static void encode(std::ostream &out, Cut& model);
 };
 
 #endif /* HPGL_ENCODER_H_ */
