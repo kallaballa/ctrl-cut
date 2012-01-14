@@ -33,7 +33,6 @@ typedef EngraveSettings ES;
 
 void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
-  return;
   BitmapImage image = raster.getImage();
   const Point& pos = raster.get(EngraveSettings::EPOS);
 

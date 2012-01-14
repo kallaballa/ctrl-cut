@@ -59,22 +59,22 @@ int main(int argc, char *argv[]) {
   }
 
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-    Cut& model = **it;
-    dump("input.txt", model.begin(), model.end());
+    Cut& cut = **it;
+    dump("input.txt", cut.begin(), cut.end());
 
-    Cut clipped(model.settings);
-    clip(model, clipped, Box(Point(0,0),Point(width,height)));
+    Cut clipped = cut.make();
+    clip(cut, clipped, Box(Point(0,0),Point(width,height)));
     dump("clipped.txt", clipped.begin(), clipped.end());
 
-    Cut exploded(model.settings);
+    Cut exploded = cut.make();
     explode(clipped, exploded);
     dump("exploded.txt", exploded.begin(), exploded.end());
 
-    Cut planared(model.settings);
+    Cut planared = cut.make();
     makePlanar(exploded, planared);
     dump("planared.txt", planared.begin(), planared.end());
 
-    Cut reduced(model.settings);
+    Cut reduced = cut.make();
     reduce(exploded, reduced, reduceMax.in(PX));
     dump("reduced.txt", reduced.begin(), reduced.end());
 /*
@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
     dump("travelled.txt", travelled.begin(), travelled.end());
 
     model = travelled;*/
-    model = reduced;
-    dump("after-copy.txt", model.begin(), model.end());
+    cut = reduced;
+    dump("after-copy.txt", cut.begin(), cut.end());
   }
 
   std::stringstream ss;

@@ -115,27 +115,27 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
+  /*
   if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
   if (this->laserdialog->exec() != QDialog::Accepted) return;
 
   this->laserdialog->updateLaserConfig(*this->scene->getDocumentHolder().doc);
-
- /* QStringList items;
+*/
+ QStringList items;
   items << "Lazzzor" << "localhost";
   bool ok;
-  QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?", items, 0, false, &ok);
+  QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?",
+      items, 0, false, &ok);
   if (ok && !item.isEmpty()) {
-    QString host = (item == "Lazzzor")?"10.20.30.27":"localhost";
+    QString host = (item == "Lazzzor") ? "10.20.30.27" : "localhost";
 
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ostream ostream(&streambuf);
-    this->documentitem->commit();
-    this->documentitem->doc.preprocess();
-    this->documentitem->doc.write(ostream);
-    
+    this->scene->getDocumentHolder().doc->write(ostream);
+
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
-  }*/
+  }
 }
 
 void MainWindow::on_lpdclient_done(bool error)

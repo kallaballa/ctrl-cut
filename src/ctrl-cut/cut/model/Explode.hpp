@@ -179,7 +179,7 @@ template<
   typename TpointInputRange,
   typename TpointOutputRange
 >
-void explode(TpointInputRange src, TpointOutputRange sink) {
+void explode(TpointInputRange& src, TpointOutputRange& sink) {
   MultiSegmentView<TpointInputRange> msv(src);
   AddSink<TpointOutputRange> addSink(sink);
 

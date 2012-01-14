@@ -130,7 +130,7 @@ template<
   typename TpointInputRange,
   typename TpointOutputIterator
 >
-void clip(TpointInputRange src, TpointOutputIterator sink, Box box) {
+void clip(TpointInputRange& src, TpointOutputIterator& sink, Box box) {
   MultiSegmentView<TpointInputRange> msv(src);
   AddSink<TpointOutputIterator> addSink(sink);
 
