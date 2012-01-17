@@ -56,11 +56,6 @@ void SimulatorDialog::sceneSelectionChanged()
 #include "pclint/PclIntConfig.h"
 #include "pclint/Plotter.h"
 #include <stdlib.h>
-#ifdef PCLINT_USE_SDL
-#include <SDL.h>
-#include "boost/thread.hpp"
-#include "boost/bind.hpp"
-#endif
 
 using std::ofstream;
 using std::ifstream;
@@ -68,20 +63,6 @@ using std::string;
 using std::cerr;
 using std::cout;
 using std::endl;
-
-#ifdef PCLINT_USE_SDL
-void sdl_wait(Interpreter* intr) {
-  SDL_Event event;
-  do {
-    SDL_PollEvent( &event );
-  } while(event.type == 4 || event.type == 1);
-  intr->abort();
-}
-#endif
-
-void intr_render_sqlquit(Interpreter* intr) {
-  intr->render();
-}
 
 void SimulatorDialog::drawCut(coord x0, coord y0, coord x1, coord y1) {
   QGraphicsLineItem *line = new QGraphicsLineItem(x0, y0, x1, y1);

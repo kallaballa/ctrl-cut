@@ -68,7 +68,7 @@ public:
 
     while (std::getline(input, line)) {
       first = line[0];
-      std::cerr << line << std::endl;
+      //std::cerr << line << std::endl;
 
       if (first == 'X') { // End of output
         break;
