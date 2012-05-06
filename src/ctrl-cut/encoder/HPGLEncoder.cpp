@@ -100,8 +100,8 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
           // Check if any clipping has been done in any of the passes, and
           // inject the stray "LT" string. This has no function, just for bug compatibility
           // of the output files. See corresponding FIXME in LaserJob.cpp.
-/*REFACTOR          if (!model.wasClipped())
-            out << HPGL_LINE_TYPE; */
+/*REFACTOR          if (!model.wasClipped()) */
+          out << HPGL_LINE_TYPE;
           firstOperation = false;
         } else {
           out << SEP;

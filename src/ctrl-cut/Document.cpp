@@ -60,7 +60,7 @@ void Document::write(std::ostream &out) {
   int raster_speed = 0;
   bool enable_raster = this->get(D_SET::ENABLE_RASTER);
   bool enable_vector = this->get(D_SET::ENABLE_VECTOR);
-
+  enable_raster= false;
   if(enable_raster && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
     raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);

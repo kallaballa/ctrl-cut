@@ -48,15 +48,15 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
   this->put(TEMP_DIR, string("tmp"));
   this->put(AUTO_FOCUS, true);
-  this->put(RESOLUTION, 600);
+  this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);
   this->put(ENABLE_VECTOR, true);
   this->put(ENABLE_RASTER, false);
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 
-  this->put(WIDTH, Measurement(21600,PX,600));
-  this->put(HEIGHT, Measurement(14400,PX,600));
+  this->put(WIDTH, Measurement(2700,PX,75));
+  this->put(HEIGHT, Measurement(1800,PX,75));
   this->put(DUMP_XML, false);
   //FIXME dont do empty defaults
   this->put(TITLE, "");

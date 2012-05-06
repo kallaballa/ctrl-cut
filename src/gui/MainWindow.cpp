@@ -131,8 +131,13 @@ void MainWindow::on_filePrintAction_triggered()
 
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
+    std::ofstream tmpfile("gui.tmp", std::ios::out | std::ios::binary);
     std::ostream ostream(&streambuf);
+    this->scene->getDocumentHolder().doc->put(DocumentSettings::TITLE, "title");
+    this->scene->getDocumentHolder().doc->put(DocumentSettings::USER, "user");
+    this->scene->getDocumentHolder().doc->write(tmpfile);
     this->scene->getDocumentHolder().doc->write(ostream);
+    tmpfile.close();
 
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
