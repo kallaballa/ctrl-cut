@@ -27,7 +27,7 @@
 enum STAT_SLOT { SLOT_RASTER, SLOT_VECTOR, SLOT_GLOBAL };
 enum STAT_UNIT { UNIT_MM, UNIT_IN, UNIT_PPT };
 
-class StatSlot {
+class Slot {
 public:
   double workLen;
   double moveLen;
@@ -36,17 +36,17 @@ public:
   uint32_t segmentCnt;
   BoundingBox bbox;
 
-  StatSlot(): workLen(0), moveLen(0), penDownCnt(0), penUpCnt(0) {
+  Slot(): workLen(0), moveLen(0), penDownCnt(0), penUpCnt(0) {
   }
 
-  virtual ~StatSlot(){};
+  virtual ~Slot(){};
 };
 
 class Statistic {
 private:
   uint32_t width;
   uint32_t height;
-  StatSlot *statSlots;
+  Slot *slots;
   const double in_factor;
   const double mm_factor;
   static Statistic* instance;
@@ -55,35 +55,35 @@ public:
   static Statistic* init(uint32_t width, uint32_t height, uint16_t resolution);
   static Statistic* singleton();
 
-  Statistic(uint32_t width, uint32_t height, uint16_t resolution) : width(width), height(height), statSlots(new StatSlot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
-    statSlots[SLOT_RASTER] = *(new StatSlot());
-    statSlots[SLOT_VECTOR] = *(new StatSlot());
+  Statistic(uint32_t width, uint32_t height, uint16_t resolution) : width(width), height(height), slots(new Slot[2]),  in_factor(10 / resolution), mm_factor(25.5/ resolution){
+    slots[SLOT_RASTER] = *(new Slot());
+    slots[SLOT_VECTOR] = *(new Slot());
   };
 
   virtual ~Statistic() {};
 
-  double distance(const PIPoint& from, const PIPoint& to) const {
+  double distance(const Point& from, const Point& to) const {
     return hypot(abs(from.x - to.x), abs(from.y - to.y));
   }
 
-  void announceWork(const PIPoint& from, const PIPoint& to, const STAT_SLOT slot) {
-    statSlots[slot].workLen += distance(from, to);
-    statSlots[slot].segmentCnt++;
-    statSlots[slot].bbox.update(from);
-    statSlots[slot].bbox.update(to);
+  void announceWork(const Point& from, const Point& to, const STAT_SLOT slot) {
+    slots[slot].workLen += distance(from, to);
+    slots[slot].segmentCnt++;
+    slots[slot].bbox.update(from);
+    slots[slot].bbox.update(to);
   }
 
-  void announceMove(const PIPoint& from, const PIPoint& to, const STAT_SLOT slot) {
+  void announceMove(const Point& from, const Point& to, const STAT_SLOT slot) {
     assert(to.x < this->width && to.y < this->height);
-    statSlots[slot].moveLen += distance(from, to);
+    slots[slot].moveLen += distance(from, to);
   }
 
   void announcePenDown(const STAT_SLOT slot) {
-    statSlots[slot].penDownCnt++;
+    slots[slot].penDownCnt++;
   }
 
   void announcePenUp(const STAT_SLOT slot) {
-    statSlots[slot].penUpCnt++;
+    slots[slot].penUpCnt++;
   }
 
   double convert(const double ppt, const STAT_UNIT unit) const {
@@ -99,53 +99,53 @@ public:
 
   double getWorkLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     if(slot != SLOT_GLOBAL)
-      return convert(statSlots[slot].workLen, unit);
+      return convert(slots[slot].workLen, unit);
     else
-      return convert(statSlots[0].workLen + statSlots[1].workLen, unit);
+      return convert(slots[0].workLen + slots[1].workLen, unit);
   }
 
   double getMoveLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     if(slot != SLOT_GLOBAL)
-      return convert(statSlots[slot].moveLen, unit);
+      return convert(slots[slot].moveLen, unit);
     else
-      return convert(statSlots[0].moveLen + statSlots[1].moveLen, unit);
+      return convert(slots[0].moveLen + slots[1].moveLen, unit);
   }
 
   double getTotalLength(const STAT_SLOT slot, const STAT_UNIT unit=UNIT_MM) const {
     if(slot != SLOT_GLOBAL)
-      return convert(statSlots[slot].workLen + statSlots[slot].moveLen, unit);
+      return convert(slots[slot].workLen + slots[slot].moveLen, unit);
     else
-      return convert(statSlots[0].workLen + statSlots[0].moveLen + statSlots[1].workLen + statSlots[1].moveLen, unit);
+      return convert(slots[0].workLen + slots[0].moveLen + slots[1].workLen + slots[1].moveLen, unit);
   }
 
   uint32_t getPenUpCount(const STAT_SLOT slot) const {
     if(slot != SLOT_GLOBAL)
-      return statSlots[slot].penUpCnt;
+      return slots[slot].penUpCnt;
     else
-      return statSlots[0].penUpCnt + statSlots[1].penUpCnt;
+      return slots[0].penUpCnt + slots[1].penUpCnt;
   }
 
   uint32_t getPenDownCount(const STAT_SLOT slot) const {
     if(slot != SLOT_GLOBAL)
-      return statSlots[slot].penDownCnt;
+      return slots[slot].penDownCnt;
     else
-      return statSlots[0].penDownCnt + statSlots[1].penDownCnt;
+      return slots[0].penDownCnt + slots[1].penDownCnt;
   }
 
   uint32_t getSegmentCount(const STAT_SLOT slot) const {
     if(slot != SLOT_GLOBAL)
-      return statSlots[slot].segmentCnt;
+      return slots[slot].segmentCnt;
     else
-      return statSlots[0].segmentCnt + statSlots[1].segmentCnt;
+      return slots[0].segmentCnt + slots[1].segmentCnt;
   }
 
   BoundingBox& getBoundingBox(const STAT_SLOT slot) const {
     if(slot != SLOT_GLOBAL)
-      return statSlots[slot].bbox;
+      return slots[slot].bbox;
     else {
       BoundingBox& globalBBox = *(new BoundingBox());
-      globalBBox += statSlots[0].bbox;
-      globalBBox += statSlots[1].bbox;
+      globalBBox += slots[0].bbox;
+      globalBBox += slots[1].bbox;
       return globalBBox;
     }
   }
@@ -177,6 +177,7 @@ public:
 
 Statistic* Statistic::instance = NULL;
 Statistic* Statistic::init(uint32_t width, uint32_t height, uint16_t resolution) {
+  assert(instance == NULL);
   return instance = new Statistic(width, height, resolution);
 }
 

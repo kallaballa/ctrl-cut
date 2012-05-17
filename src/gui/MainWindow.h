@@ -49,16 +49,13 @@ public slots:
   void on_toolsMoveToOriginAction_triggered();
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
-  void on_simulateAction_triggered();
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_deleteItem();
-  void on_simplifyItem();
 
   void sceneSelectionChanged();
 
   void openFile(const QString &filename);
   void importFile(const QString &filename);
-  void simulate();
 private:
   static MainWindow *inst;
   MainWindow();

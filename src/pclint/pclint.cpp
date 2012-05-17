@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #ifdef PCLINT_USE_SDL
 #include <SDL.h>
-#include "SDLCanvas.h"
 #endif
 
 using std::ofstream;
@@ -49,25 +48,15 @@ int main(int argc, char *argv[]) {
   ifstream *infile = new ifstream(config->ifilename, ios::in | ios::binary);
   RtlPlot* plot = new RtlPlot(infile);
   Statistic::init(plot->getWidth(), plot->getHeight(), plot->getResolution());
-  SDLCanvas* canvas = NULL;
-  if(PclIntConfig::singleton()->screenSize != NULL)
-    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight(), PclIntConfig::singleton()->screenSize->ul.x, PclIntConfig::singleton()->screenSize->ul.y);
-  else
-    canvas = new SDLCanvas(plot->getWidth(), plot->getHeight());
 
-  Interpreter intr(plot,canvas);
+  Interpreter intr(plot);
   if (config->interactive) {
+    Debugger::create(intr.vectorPlotter);
     Debugger::getInstance()->setInteractive(true);
-    Debugger::getInstance()->autoupdate = true;
-  }
-
-  Debugger::create(canvas);
+  } else
+    Debugger::create();
 
   intr.render();
-  if (config->debugLevel >= LVL_INFO) {
-    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
-    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
-  }
 
   BoundingBox& vBox = intr.vectorPlotter->getBoundingBox();
   if (vBox.isValid()) {
@@ -85,6 +74,10 @@ int main(int argc, char *argv[]) {
     trace->warn("Bitmap image is empty.");
   }
 
+  if (config->debugLevel >= LVL_INFO) {
+    Statistic::singleton()->printSlot(cout, SLOT_VECTOR);
+    Statistic::singleton()->printSlot(cout, SLOT_RASTER);
+  }
 
   return 0;
 }

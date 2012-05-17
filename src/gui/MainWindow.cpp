@@ -21,7 +21,6 @@
 #include "settings/EngraveSettingsTableModel.h"
 #include "settings/DocumentSettingsTableModel.h"
 #include "LaserDialog.h"
-#include "SimulatorDialog.h"
 #include "Document.hpp"
 #include "CtrlCutScene.h"
 #include "helpers/CutItem.h"
@@ -84,7 +83,7 @@ void MainWindow::on_deleteItem() {
   QUndoCommand *deleteCommand = new DeleteCommand(this->scene);
   undoStack->push(deleteCommand);
 }
-
+/*
 void MainWindow::on_simplifyItem() {
   if (this->scene->selectedItems().isEmpty())
     return;
@@ -92,7 +91,7 @@ void MainWindow::on_simplifyItem() {
   QUndoCommand *simplifyCommand = new SimplifyCommand(this->scene);
   undoStack->push(simplifyCommand);
 }
-
+*/
 void MainWindow::openFile(const QString &filename) {
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);
@@ -206,18 +205,7 @@ MainWindow::on_helpAboutAction_triggered()
                                    "(at your option) any later version."));
 }
 
-void
-MainWindow::on_simulateAction_triggered() {
-  simulate();
-}
-
 void MainWindow::on_itemMoved(QGraphicsItem *movedItem,
                            const QPointF &oldPosition) {
     undoStack->push(new MoveCommand(this->scene, movedItem, oldPosition));
-}
-
-
-void MainWindow::simulate() {
-  if (!this->simdialog) this->simdialog = new SimulatorDialog(*this->scene->getDocumentHolder().doc,this);
-  this->simdialog->setVisible(true);
 }

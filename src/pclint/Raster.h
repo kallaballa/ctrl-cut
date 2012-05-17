@@ -33,7 +33,7 @@ private:
   PclInstr* dataInstr;
 
 public:
-  PIPoint loc; // X position given in bytes
+  Point loc; // X position given in bytes
   dim lineLen; // Pixel length in bytes
   coord linePos;
 
@@ -103,7 +103,7 @@ public:
       return NULL;
     }
 
-    PIPoint start = run->loc;
+    Point start = run->loc;
 
     if (run->reverse) {
       start.x += run->lineLen - run->linePos - 1;

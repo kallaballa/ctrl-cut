@@ -38,7 +38,6 @@ FORMS += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += ./MainWindow.h \
-           ./SimulatorDialog.h \
            ./event/CtrlCutEvent.h \
            ./CtrlCutScene.h \
            ./NavigationView.h \
@@ -63,30 +62,13 @@ HEADERS += ./MainWindow.h \
            ./settings/EngraveSettingsTableModel.h \
            ./settings/DocumentSettingsTableModel.h \
            ./settings/SettingsTableModel.h \
-           ./SimulatorView.h \
-           ./SimulatorScene.h \
-           ../ctrl-cut/CtrlCutException.h \
-           ../pclint/Pcl.h \
-           ../pclint/CLI.h \
-           ../pclint/HPGL.h \
-           ../pclint/SDLCanvas.h \
-           ../pclint/2D.h \
-           ../pclint/Interpreter.h \
-           ../pclint/PclIntConfig.h \
-           ../pclint/Statistic.h \
-           ../pclint/Plot.h \
-           ../pclint/Plotter.h \
-           ../pclint/Raster.h \
-           ../pclint/CImg.h \
-           ../pclint/Canvas.h
+           ../ctrl-cut/CtrlCutException.h
 SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \
            ./Commands.cpp \
-	   ./SimulatorDialog.cpp \
            ./LaserDialog.cpp \
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \
-           ./SimulatorView.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
@@ -96,7 +78,4 @@ SOURCES += ./gui.cpp \
            ./CtrlCutScene.cpp \
            ./LpdClient.cpp \
            ./MainWindow.cpp \
-           ./StreamUtils.cpp \
-           ./SimulatorScene.cpp \
-           ../pclint/SDLCanvas.cpp \
-           ../pclint/Canvas.cpp
+           ./StreamUtils.cpp

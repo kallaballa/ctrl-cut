@@ -2,8 +2,8 @@ TARGET = pclint
 CONFIG -= qt
 CONFIG += boost_thread
 CONFIG += X11
-CONFIG += libpng14
 #CONFIG += ImageMagick
+CONFIG += libpng
 !macx:CONFIG += SDL
 
 include(common.pri)
@@ -16,5 +16,4 @@ LIBS+= -lpthread
 OBJECTS_DIR = objects
 SOURCES += \
 pclint.cpp \
-SDLCanvas.cpp \
 Canvas.cpp

@@ -118,7 +118,6 @@
      <string>Tools</string>
     </property>
     <addaction name="toolsMoveToOriginAction"/>
-    <addaction name="simulateAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -193,11 +192,6 @@
   <action name="helpAboutAction">
    <property name="text">
     <string>About...</string>
-   </property>
-  </action>
-  <action name="simulateAction">
-   <property name="text">
-    <string>Simulate</string>
    </property>
   </action>
   <action name="deleteItem">
