@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #define PJL_PARAM
-#include "pjl.h"
-#include "VectorPass.h"
+#include "pjl.hpp"
+#include "VectorPass.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -18,25 +18,28 @@
  */
 
 
-#ifndef ENGRAVINGITEM_H_
-#define ENGRAVINGITEM_H_
+#ifndef ENGRAVINGCANVAS_H_
+#define ENGRAVINGCANVAS_H_
 
 #include "engrave/Engrave.hpp"
 #include "config/EngraveSettings.hpp"
 #include <qgraphicsitem.h>
-#include "helpers/Qt.h"
+#include "helpers/Qt.hpp"
 
-class EngraveItem: public AbstractCtrlCutItem {
+class EngraveCanvas: public AbstractCtrlCutItem {
 public:
-  Engraving& engraving;
 
-  EngraveItem(Engraving& engraving);
-  ~EngraveItem(){};
-
-  void commit() {
-    const QPointF& pos = this->pos();
-    this->engraving.settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
-  }
+  EngraveCanvas(Coord_t maxWidth);
+  ~EngraveCanvas(){};
+  void nextRow(Coord_t x, Coord_t y);
+  void drawPixel(Coord_t x, Coord_t y, uint8_t r,uint8_t g,uint8_t b);
+  void commit() {};
+private:
+  Coord_t maxWidth;
+  Coord_t startX;
+  Coord_t currentX;
+  Coord_t currentY;
+  QPixmap* currentRow;
 };
 
-#endif /* ENGRAVINGITEM_H_ */
+#endif /* ENGRAVINGCANVAS_H_ */

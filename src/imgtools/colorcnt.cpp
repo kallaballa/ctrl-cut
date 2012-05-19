@@ -21,7 +21,7 @@
 #include <iostream>
 #include <set>
 #include <string>
-#include "CImg.h"
+#include "CImg.hpp"
 
 using namespace cimg_library;
 

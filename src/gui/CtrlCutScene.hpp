@@ -22,7 +22,7 @@
 #include <QGraphicsScene>
 #include <QObject>
 #include <QGraphicsItem>
-#include "helpers/DocumentHolder.h"
+#include "helpers/DocumentHolder.hpp"
 
 class CtrlCutScene : public QGraphicsScene
 {

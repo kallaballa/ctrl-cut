@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <strings.h>
 
-#include "laser_config.h"
-#include "eps_converter.h"
+#include "laser_config.hpp"
+#include "eps_converter.hpp"
 
 /** Temporary buffer, used to eps_converter */
 char buf[102400];

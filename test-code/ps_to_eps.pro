@@ -8,7 +8,7 @@ SOURCES = ps_to_eps.cpp \
           ../src/eps_converter.cpp \
           ../src/laser_config.cpp
 
-HEADERS = ../src/eps_converter.h \
+HEADERS = ../src/eps_converter.hpp \
           ../src/laser_config.h
 
 

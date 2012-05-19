@@ -18,8 +18,8 @@
  */
 
 #include <QApplication>
-#include "MainWindow.h"
-#include "EventFilter.h"
+#include "MainWindow.hpp"
+#include "EventFilter.hpp"
 #include "util/Logger.hpp"
 #include "config/DocumentSettings.hpp"
 

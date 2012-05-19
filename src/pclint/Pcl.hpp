@@ -29,8 +29,8 @@
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
-#include "2D.h"
-#include "PclIntConfig.h"
+#include "2D.hpp"
+#include "PclIntConfig.hpp"
 using std::cout;
 using std::cerr;
 using std::endl;

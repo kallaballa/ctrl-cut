@@ -27,12 +27,12 @@
 #include <sstream>
 #include <string>
 #include <limits>
-#include "2D.h"
-#include "PclIntConfig.h"
-#include "HPGL.h"
-#include "Statistic.h"
-#include "Canvas.h"
-#include "CLI.h"
+#include "2D.hpp"
+#include "PclIntConfig.hpp"
+#include "HPGL.hpp"
+#include "Statistic.hpp"
+#include "Canvas.hpp"
+#include "CLI.hpp"
 
 using std::cin;
 using std::cerr;

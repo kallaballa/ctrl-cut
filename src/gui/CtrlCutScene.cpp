@@ -16,16 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "CtrlCutScene.h"
+#include "CtrlCutScene.hpp"
 #include "Document.hpp"
-#include "helpers/CutItem.h"
-#include "helpers/EngraveItem.h"
-#include "event/CtrlCutEvent.h"
-#include "Commands.h"
+#include "helpers/CutItem.hpp"
+#include "helpers/EngraveItem.hpp"
+#include "event/CtrlCutEvent.hpp"
+#include "Commands.hpp"
 #include <QGraphicsItem>
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
-#include "helpers/DocumentHolder.h"
+#include "helpers/DocumentHolder.hpp"
 #include <QGraphicsItem>
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :

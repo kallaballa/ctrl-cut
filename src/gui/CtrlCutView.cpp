@@ -1,4 +1,4 @@
-#include "CtrlCutView.h"
+#include "CtrlCutView.hpp"
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QDebug>

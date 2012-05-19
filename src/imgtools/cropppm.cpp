@@ -20,8 +20,8 @@
 #include <stdint.h>
 #include <iostream>
 #include <fstream>
-#include "MMapMatrix.h"
-#include "PPMFile.h"
+#include "MMapMatrix.hpp"
+#include "PPMFile.hpp"
 
 using std::ofstream;
 using std::cout;

@@ -1,4 +1,4 @@
-#include "SDLCanvas.h"
+#include "SDLCanvas.hpp"
 
 SDLCanvas::SDLCanvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight, BoundingBox* clip) :
 Canvas(bedWidth, bedHeight, screenWidth, screenHeight, clip), voffscreen(bedWidth, bedHeight, 1, 1, 255), roffscreen(bedWidth, bedHeight, 1, 1, 255) {

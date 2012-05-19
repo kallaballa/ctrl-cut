@@ -1,4 +1,4 @@
-#include "CtrlCutEvent.h"
+#include "CtrlCutEvent.hpp"
 
 CtrlCutEvent::ActionMap CtrlCutEvent::actionMap;
 

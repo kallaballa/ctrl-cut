@@ -23,7 +23,7 @@
 #include "config/CutSettings.hpp"
 #include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
-#include "CtrlCutException.h"
+#include "CtrlCutException.hpp"
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
 
@@ -58,10 +58,10 @@ void Document::write(std::ostream &out) {
   int resolution = this->get(D_SET::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  bool enable_raster = this->get(D_SET::ENABLE_ENGRAVING);
+  bool enable_engraving = this->get(D_SET::ENABLE_ENGRAVING);
   bool enable_vector = this->get(D_SET::ENABLE_CUT);
-  enable_raster= false;
-  if(enable_raster && !this->engraveList.empty()) {
+
+  if(enable_engraving && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
     raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
   }
@@ -116,7 +116,7 @@ void Document::write(std::ostream &out) {
    * information to the print job.
    */
 
-  if (enable_raster && !this->engraveList.empty()) {
+  if (enable_engraving && !this->engraveList.empty()) {
     for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
       PclEncoder::encode(out, **it);
     }

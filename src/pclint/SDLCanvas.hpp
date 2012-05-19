@@ -7,7 +7,7 @@
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
 #endif
-#include "Canvas.h"
+#include "Canvas.hpp"
 
 using std::string;
 using cimg_library::CImg;

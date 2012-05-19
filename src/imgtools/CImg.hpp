@@ -63,7 +63,7 @@
  #
  # If you find that default configuration variables are
  # not adapted to your case, you can override their values
- # before including the header file "CImg.h"
+ # before including the header file "CImg.hpp"
  # (use the #define directive).
  #
  ------------------------------------------------------------*/
@@ -215,7 +215,7 @@
 // OpenMP directives can be used in few CImg functions to get
 // advantages of multi-core CPUs. Using OpenMP is not mandatory.
 #ifdef cimg_use_openmp
-#include "omp.h"
+#include "omp.hpp"
 #define _cimg_static
 #else
 #define _cimg_static static
@@ -230,8 +230,8 @@
 // (with function 'CImg<T>::load_camera()'.
 // Using OpenCV is not mandatory.
 #ifdef cimg_use_opencv
-#include "cv.h"
-#include "highgui.h"
+#include "cv.hpp"
+#include "highgui.hpp"
 #endif
 
 // LibPNG configuration.
@@ -243,7 +243,7 @@
 // to get a builtin support of PNG files. Using LibPNG is not mandatory.
 #ifdef cimg_use_png
 extern "C" {
-#include "png.h"
+#include "png.hpp"
 }
 #endif
 
@@ -256,8 +256,8 @@ extern "C" {
 // to get a builtin support of JPEG files. Using LibJPEG is not mandatory.
 #ifdef cimg_use_jpeg
 extern "C" {
-#include "jpeglib.h"
-#include "setjmp.h"
+#include "jpeglib.hpp"
+#include "setjmp.hpp"
 }
 #endif
 
@@ -270,7 +270,7 @@ extern "C" {
 // to get a builtin support of TIFF files. Using LibTIFF is not mandatory.
 #ifdef cimg_use_tiff
 extern "C" {
-#include "tiffio.h"
+#include "tiffio.hpp"
 }
 #endif
 
@@ -291,9 +291,9 @@ extern "C" {
 #define __STDC_CONSTANT_MACROS // ...or stdint.h doesn't define UINT64_C, needed for libavutil
 #endif
 extern "C" {
-#include "avformat.h"
-#include "avcodec.h"
-#include "swscale.h"
+#include "avformat.hpp"
+#include "avcodec.hpp"
+#include "swscale.hpp"
 }
 #endif
 
@@ -306,7 +306,7 @@ extern "C" {
 // to allow compressed data in '.cimg' files. Using Zlib is not mandatory.
 #ifdef cimg_use_zlib
 extern "C" {
-#include "zlib.h"
+#include "zlib.hpp"
 }
 #endif
 
@@ -319,7 +319,7 @@ extern "C" {
 // to get a builtin support of various image formats (PNG,JPEG,TIFF,...).
 // Using Magick++ is not mandatory.
 #ifdef cimg_use_magick
-#include "Magick++.h"
+#include "Magick++.hpp"
 #endif
 
 // FFTW3 configuration.
@@ -331,7 +331,7 @@ extern "C" {
 // efficiently compute the Fast Fourier Transform of image data.
 #ifdef cimg_use_fftw3
 extern "C" {
-#include "fftw3.h"
+#include "fftw3.hpp"
 }
 #endif
 
@@ -348,7 +348,7 @@ extern "C" {
 #undef None
 #define _cimg_redefine_None
 #endif
-#include "Board.h"
+#include "Board.hpp"
 #endif
 
 // OpenEXR configuration
@@ -358,11 +358,11 @@ extern "C" {
 //
 // OpenEXR can be used to read/write .exr file formats.
 #ifdef cimg_use_openexr
-#include "ImfRgbaFile.h"
-#include "ImfInputFile.h"
-#include "ImfChannelList.h"
-#include "ImfMatrixAttribute.h"
-#include "ImfArray.h"
+#include "ImfRgbaFile.hpp"
+#include "ImfInputFile.hpp"
+#include "ImfChannelList.hpp"
+#include "ImfMatrixAttribute.hpp"
+#include "ImfArray.hpp"
 #endif
 
 // Lapack configuration.
@@ -1922,7 +1922,7 @@ extern "C" {
    Anyway, it should not happen often and you should reasonnably start most of your
    %CImg-based programs with
    \code
-   #include "CImg.h"
+   #include "CImg.hpp"
    using namespace cimg_library;
    \endcode
    to simplify the declaration of %CImg Library variables afterwards.
@@ -2045,7 +2045,7 @@ namespace cimg_library {
       The example below shows how to cleanly handle %CImg Library exceptions :
       \code
       #define cimg_verbosity 0     // Disable modal window in CImg exceptions.
-      #define "CImg.h"
+      #define "CImg.hpp"
       int main() {
         try {
           ...; // Here, do what you want.

@@ -7,9 +7,9 @@
 #include <SDL_gfxPrimitives.h>
 #include <SDL_image.h>
 #endif
-#include "2D.h"
+#include "2D.hpp"
 #include <string>
-#include "CImg.h"
+#include "CImg.hpp"
 
 using std::string;
 using cimg_library::CImg;

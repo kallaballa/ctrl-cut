@@ -18,10 +18,10 @@
  */
 #include <QtGui>
 #include <Document.hpp>
-#include <CtrlCutScene.h>
-#include "helpers/CutItem.h"
-#include "helpers/EngraveItem.h"
-#include "Commands.h"
+#include <CtrlCutScene.hpp>
+#include "helpers/CutItem.hpp"
+#include "helpers/EngraveItem.hpp"
+#include "Commands.hpp"
 #include <cut/model/Reduce.hpp>
 
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,

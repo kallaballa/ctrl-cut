@@ -1,7 +1,7 @@
 #ifndef ENGRAVESETTINGSTABLEMODEL_H_
 #define ENGRAVESETTINGSTABLEMODEL_H_
 
-#include "SettingsTableModel.h"
+#include "SettingsTableModel.hpp"
 #include "config/EngraveSettings.hpp"
 
 class EngraveSettingsTableModel : public SettingsTableModel

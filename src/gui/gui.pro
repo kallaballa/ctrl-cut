@@ -37,30 +37,30 @@ FORMS += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
-HEADERS += ./MainWindow.h \
-           ./event/CtrlCutEvent.h \
-           ./CtrlCutScene.h \
-           ./NavigationView.h \
-           ./Commands.h \
-           ./GroupItem.h \
-           ./EventFilter.h \
-           ./LpdClient.h \
-           ./CtrlCutView.h \
-           ./LaserDialog.h \
-           ./StreamUtils.h \
-           ./settings/SettingsTableModel.h \
-	   ./settings/CutSettingsTableModel.h \
-	   ./settings/EngraveSettingsTableModel.h \
-	   ./settings/DocumentSettingsTableModel.h \
-           ./helpers/Qt.h \
-           ./helpers/PathItem.h \
-           ./helpers/CutItem.h \
-           ./helpers/EngraveCanvas.h \
-           ./helpers/EngraveItem.h \
-           ./helpers/DocumentHolder.h \
-           ./settings/CutSettingsTableModel.h \
-           ./settings/EngraveSettingsTableModel.h \
-           ./settings/DocumentSettingsTableModel.h \
+HEADERS += ./MainWindow.hpp \
+           ./event/CtrlCutEvent.hpp \
+           ./CtrlCutScene.hpp \
+           ./NavigationView.hpp \
+           ./Commands.hpp \
+           ./GroupItem.hpp \
+           ./EventFilter.hpp \
+           ./LpdClient.hpp \
+           ./CtrlCutView.hpp \
+           ./LaserDialog.hpp \
+           ./StreamUtils.hpp \
+           ./settings/SettingsTableModel.hpp \
+	   ./settings/CutSettingsTableModel.hpp \
+	   ./settings/EngraveSettingsTableModel.hpp \
+	   ./settings/DocumentSettingsTableModel.hpp \
+           ./helpers/Qt.hpp \
+           ./helpers/PathItem.hpp \
+           ./helpers/CutItem.hpp \
+           ./helpers/EngraveCanvas.hpp \
+           ./helpers/EngraveItem.hpp \
+           ./helpers/DocumentHolder.hpp \
+           ./settings/CutSettingsTableModel.hpp \
+           ./settings/EngraveSettingsTableModel.hpp \
+           ./settings/DocumentSettingsTableModel.hpp \
            ./settings/SettingsTableModel.h
 SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \

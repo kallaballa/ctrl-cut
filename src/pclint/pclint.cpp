@@ -22,11 +22,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-#include "CImg.h"
-#include "Interpreter.h"
-#include "2D.h"
-#include "PclIntConfig.h"
-#include "Plotter.h"
+#include "CImg.hpp"
+#include "Interpreter.hpp"
+#include "2D.hpp"
+#include "PclIntConfig.hpp"
+#include "Plotter.hpp"
 #include <stdlib.h>
 #ifdef PCLINT_USE_SDL
 #include <SDL.h>

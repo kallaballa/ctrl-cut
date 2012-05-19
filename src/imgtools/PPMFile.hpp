@@ -22,9 +22,9 @@
 
 #define PPMREADBUFLEN 256
 
-#include "stdio.h"
+#include "stdio.hpp"
 #include <fstream>
-#include "MMapMatrix.h"
+#include "MMapMatrix.hpp"
 
 using namespace std;
 

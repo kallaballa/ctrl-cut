@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "EngraveCanvas.h"
+#include "EngraveCanvas.hpp"
 #include <qpainter.h>
 EngraveCanvas::EngraveCanvas(Coord_t maxWidth) :
   AbstractCtrlCutItem(), maxWidth(maxWidth), startX(-1), currentX(-1), currentY(-1), currentRow(NULL) {

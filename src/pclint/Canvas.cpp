@@ -1,4 +1,4 @@
-#include "Canvas.h"
+#include "Canvas.hpp"
 
 Canvas::Canvas(dim bedWidth, dim bedHeight, dim screenWidth, dim screenHeight,
     BoundingBox* clip) :

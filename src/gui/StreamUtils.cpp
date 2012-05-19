@@ -1,4 +1,4 @@
-#include "StreamUtils.h"
+#include "StreamUtils.hpp"
 #include <QBuffer>
 #include <stdio.h>
 

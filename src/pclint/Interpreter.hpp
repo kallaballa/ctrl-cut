@@ -24,12 +24,12 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include "Pcl.h"
-#include "Raster.h"
-#include "Plot.h"
-#include "CLI.h"
-#include "PclIntConfig.h"
-#include "Plotter.h"
+#include "Pcl.hpp"
+#include "Raster.hpp"
+#include "Plot.hpp"
+#include "CLI.hpp"
+#include "PclIntConfig.hpp"
+#include "Plotter.hpp"
 
 using std::string;
 using std::stringstream;

@@ -1,7 +1,7 @@
 #ifndef DOCUMENTSETTINGSTABLEMODEL_H_
 #define DOCUMENTSETTINGSTABLEMODEL_H_
 
-#include "SettingsTableModel.h"
+#include "SettingsTableModel.hpp"
 #include "config/DocumentSettings.hpp"
 
 class DocumentSettingsTableModel : public SettingsTableModel

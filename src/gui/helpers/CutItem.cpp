@@ -16,8 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "CutItem.h"
-#include "PathItem.h"
+#include "CutItem.hpp"
+#include "PathItem.hpp"
 #include "cut/model/Translate.hpp"
 #include <qgraphicsitem.h>
 #include <boost/foreach.hpp>

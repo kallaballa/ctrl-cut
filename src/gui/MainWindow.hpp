@@ -25,10 +25,10 @@
 #include <QAbstractSocket>
 #include <QtGui>
 #include <assert.h>
-#include "LpdClient.h"
-#include "StreamUtils.h"
-#include "GroupItem.h"
-#include "helpers/Qt.h"
+#include "LpdClient.hpp"
+#include "StreamUtils.hpp"
+#include "GroupItem.hpp"
+#include "helpers/Qt.hpp"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {

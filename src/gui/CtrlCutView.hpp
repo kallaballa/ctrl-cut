@@ -1,7 +1,7 @@
 #ifndef CTRLCUTVIEW_H_
 #define CTRLCUTVIEW_H_
  
-#include "NavigationView.h"
+#include "NavigationView.hpp"
  
 class CtrlCutView : public NavigationView
 {

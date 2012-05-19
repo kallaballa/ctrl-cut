@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
-#include "Plot.h"
-#include "CImg.h"
+#include "Plot.hpp"
+#include "CImg.hpp"
 
 using std::cin;
 using std::cout;

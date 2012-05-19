@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <QFileOpenEvent>
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 
 class EventFilter : public QObject
 {

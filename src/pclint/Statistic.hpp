@@ -21,7 +21,7 @@
 #define STATISTIC_H_
 
 #include <assert.h>
-#include "2D.h"
+#include "2D.hpp"
 #include <boost/format.hpp>
 
 enum STAT_SLOT { SLOT_RASTER, SLOT_VECTOR, SLOT_GLOBAL };

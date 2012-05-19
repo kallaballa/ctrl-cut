@@ -16,10 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "DocumentHolder.h"
+#include "DocumentHolder.hpp"
 #include "Document.hpp"
-#include "helpers/CutItem.h"
-#include "helpers/EngraveItem.h"
+#include "helpers/CutItem.hpp"
+#include "helpers/EngraveItem.hpp"
 
 DocumentHolder::DocumentHolder() : doc(NULL){
 

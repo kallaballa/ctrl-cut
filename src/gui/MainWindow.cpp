@@ -16,17 +16,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "MainWindow.h"
-#include "settings/CutSettingsTableModel.h"
-#include "settings/EngraveSettingsTableModel.h"
-#include "settings/DocumentSettingsTableModel.h"
-#include "LaserDialog.h"
+#include "MainWindow.hpp"
+#include "settings/CutSettingsTableModel.hpp"
+#include "settings/EngraveSettingsTableModel.hpp"
+#include "settings/DocumentSettingsTableModel.hpp"
+#include "LaserDialog.hpp"
 #include "Document.hpp"
-#include "CtrlCutScene.h"
-#include "helpers/CutItem.h"
-#include "helpers/EngraveItem.h"
+#include "CtrlCutScene.hpp"
+#include "helpers/CutItem.hpp"
+#include "helpers/EngraveItem.hpp"
 #include <qapplication.h>
-#include "Commands.h"
+#include "Commands.hpp"
 #include <QGraphicsItem>
 
 MainWindow *MainWindow::inst = NULL;

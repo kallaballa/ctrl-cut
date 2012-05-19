@@ -10,36 +10,29 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more de0tails.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef PATHITEM_H_
+#define PATHITEM_H_
 
+#include "cut/model/Cut.hpp"
+#include "config/PathSettings.hpp"
+#include "Qt.hpp"
+#include <QGraphicsPolygonItem>
 
-#ifndef ENGRAVINGCANVAS_H_
-#define ENGRAVINGCANVAS_H_
-
-#include "engrave/Engrave.hpp"
-#include "config/EngraveSettings.hpp"
-#include <qgraphicsitem.h>
-#include "helpers/Qt.h"
-
-class EngraveCanvas: public AbstractCtrlCutItem {
+class PathItem: public QGraphicsPolygonItem {
 public:
+  Path& path;
 
-  EngraveCanvas(Coord_t maxWidth);
-  ~EngraveCanvas(){};
-  void nextRow(Coord_t x, Coord_t y);
-  void drawPixel(Coord_t x, Coord_t y, uint8_t r,uint8_t g,uint8_t b);
-  void commit() {};
-private:
-  Coord_t maxWidth;
-  Coord_t startX;
-  Coord_t currentX;
-  Coord_t currentY;
-  QPixmap* currentRow;
+  PathItem(Path& path);
+  ~PathItem(){};
+
+  void commit() {
+  }
 };
 
-#endif /* ENGRAVINGCANVAS_H_ */
+#endif /* PATHITEM_H_ */

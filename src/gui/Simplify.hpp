@@ -10,32 +10,32 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more de0tails.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef CUTITEM_H_
-#define CUTITEM_H_
+#ifndef LASERDIALOG_H_
+#define LASERDIALOG_H_
 
-#include "cut/model/Cut.hpp"
-#include "config/CutSettings.hpp"
-#include "Qt.h"
+#include <QDialog>
+#include "ui_LaserDialog.hpp"
+#include "Document.hpp"
 
-class CutItem: public AbstractCtrlCutItem {
+class SimplifyDialog : public QDialog, private Ui::SimplifyDialog
+{
+  Q_OBJECT;
 public:
-  Cut& cut;
+  SimplifyDialog(QWidget *parent = NULL);
+  ~LaserDialog();
+  
+  void setDistance(Document &document);
+  void updateLaserConfig(Document &document);
 
-  CutItem(Cut& cut);
-  ~CutItem(){};
-
-  void commit() {
-    const QPointF& pos = this->pos();
-    this->cut.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
-  }
-
- void setPos(const QPointF &pos);
+private slots:
+  void on_distance_valueChanged(int);
+private:
 };
 
-#endif /* CUTITEM_H_ */
+#endif

@@ -32,8 +32,8 @@
 #include <string>
 #include <limits>
 #include <boost/format.hpp>
-#include "PclIntConfig.h"
-#include "HPGL.h"
+#include "PclIntConfig.hpp"
+#include "HPGL.hpp"
 
 using std::ios;
 using std::cin;

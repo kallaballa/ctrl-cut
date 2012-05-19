@@ -25,7 +25,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
-#include "stdint.h"
+#include "stdint.hpp"
 #include <cctype>
 #include <limits>
 #include <sstream>

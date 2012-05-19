@@ -22,7 +22,7 @@
 
 #include <QUndoCommand>
 #include <QGraphicsItem>
-#include "helpers/DocumentHolder.h"
+#include "helpers/DocumentHolder.hpp"
 
 class Document;
 class CtrlCutScene;

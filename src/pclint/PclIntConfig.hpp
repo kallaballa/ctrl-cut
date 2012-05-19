@@ -20,7 +20,7 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-#include "2D.h"
+#include "2D.hpp"
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)

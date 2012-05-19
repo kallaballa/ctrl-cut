@@ -1,6 +1,6 @@
-#include "TestPlanarEmbedding.h"
-#include "TestBundledProperties.h"
-#include "TestCopy.h"
+#include "TestPlanarEmbedding.hpp"
+#include "TestBundledProperties.hpp"
+#include "TestCopy.hpp"
 
 int main() {
   TestCopy::test();

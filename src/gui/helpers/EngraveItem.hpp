@@ -10,29 +10,33 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more de0tails.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef PATHITEM_H_
-#define PATHITEM_H_
 
-#include "cut/model/Cut.hpp"
-#include "config/PathSettings.hpp"
-#include "Qt.h"
-#include <QGraphicsPolygonItem>
 
-class PathItem: public QGraphicsPolygonItem {
+#ifndef ENGRAVINGITEM_H_
+#define ENGRAVINGITEM_H_
+
+#include "engrave/Engrave.hpp"
+#include "config/EngraveSettings.hpp"
+#include <qgraphicsitem.h>
+#include "helpers/Qt.hpp"
+
+class EngraveItem: public AbstractCtrlCutItem {
 public:
-  Path& path;
+  Engraving& engraving;
 
-  PathItem(Path& path);
-  ~PathItem(){};
+  EngraveItem(Engraving& engraving);
+  ~EngraveItem(){};
 
   void commit() {
+    const QPointF& pos = this->pos();
+    this->engraving.settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
   }
 };
 
-#endif /* PATHITEM_H_ */
+#endif /* ENGRAVINGITEM_H_ */

@@ -1,7 +1,7 @@
 #ifndef CUTSETTINGSTABLEMODEL_H_
 #define CUTSETTINGSTABLEMODEL_H_
 
-#include "SettingsTableModel.h"
+#include "SettingsTableModel.hpp"
 #include "config/CutSettings.hpp"
 
 

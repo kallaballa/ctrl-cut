@@ -1,9 +1,9 @@
 #ifndef TESTPLANAREMBEDDING_H_
 #define TESTPLANAREMBEDDING_H_
 
-#include "cut/model/CutModel.h"
-#include "cut/graph/Traverse.h"
-#include "cut/geom/Geometry.h"
+#include "cut/model/CutModel.hpp"
+#include "cut/graph/Traverse.hpp"
+#include "cut/geom/Geometry.hpp"
 #include <boost/graph/properties.hpp>
 
 class TestPanarEmbedding {

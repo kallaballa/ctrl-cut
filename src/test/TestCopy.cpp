@@ -1,6 +1,6 @@
-#include "TestCopy.h"
-#include "Document.h"
-#include "config/DocumentSettings.h"
+#include "TestCopy.hpp"
+#include "Document.hpp"
+#include "config/DocumentSettings.hpp"
 
 bool any_compare(const boost::any& a1, const boost::any& a2) {
  /*   cout << "compare " << *boost::unsafe_any_cast<void*>(&a1)

@@ -11,12 +11,12 @@ SOURCES = vectortest.cpp \
           ../src/PolyLine.cpp \
           ../src/OnionSkin.cpp
 
-HEADERS = ../src/LaserPass.h \
-          ../src/VectorPass.h \
-          ../src/Joint.h \
-          ../src/LineSegment.h \
-          ../src/PolyLine.h \
-          ../src/pjl.h \
+HEADERS = ../src/LaserPass.hpp \
+          ../src/VectorPass.hpp \
+          ../src/Joint.hpp \
+          ../src/LineSegment.hpp \
+          ../src/PolyLine.hpp \
+          ../src/pjl.hpp \
           ../src/OnionSkin.h
 
 

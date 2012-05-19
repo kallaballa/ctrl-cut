@@ -14,8 +14,8 @@ CONFIG += libctrl-cut
 include(common.pri)
 
 DEFINES += ETLOG DEBUG=4
-HEADERS += ./CupsGetOpt.h \
-           ./CupsOptions.h \
+HEADERS += ./CupsGetOpt.hpp \
+           ./CupsOptions.hpp \
 
 SOURCES += ./CupsGetOpt.cpp \
            ./CupsFilter.cpp \

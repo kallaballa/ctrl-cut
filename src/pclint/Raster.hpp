@@ -22,11 +22,11 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include "CImg.h"
-#include "Pcl.h"
-#include "2D.h"
-#include "Plot.h"
-#include "Plotter.h"
+#include "CImg.hpp"
+#include "Pcl.hpp"
+#include "2D.hpp"
+#include "Plot.hpp"
+#include "Plotter.hpp"
 
 class Run {
 private:

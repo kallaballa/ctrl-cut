@@ -2,8 +2,8 @@
 #include <iostream>
 #include <set>
 #include <string>
-#include "CImg.h"
-#include "noise.h"
+#include "CImg.hpp"
+#include "noise.hpp"
 
 using namespace cimg_library;
 
