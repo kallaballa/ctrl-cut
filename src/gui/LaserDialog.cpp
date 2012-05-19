@@ -77,7 +77,7 @@ void LaserDialog::updateLaserConfig(Document& document)
   else if (strOptimize == "Inner-Outer") optimize = CS::INNER_OUTER;
   else if (strOptimize == "Shortest Path") optimize = CS::SHORTEST_PATH;
 
-    document.put(CS::OPTIMIZE, optimize);
+  document.put(CS::OPTIMIZE, optimize);
   document.put(CS::CSPEED, this->vectorSpeedSlider->value());
   document.put(CS::CPOWER, this->vectorPowerSlider->value());
   document.put(CS::FREQUENCY, this->vectorFreqSlider->value());
