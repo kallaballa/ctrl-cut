@@ -12,5 +12,5 @@ VectorFrequency=[0-5000]
 VectorOptimize=Simple/Inner-Outer/Flat
 FlipX / noFlipX
 Debug / noDebug
-EnableRaster / noEnableRaster
+EnableEngraving / noEnableEngraving
 EnableVector / noEnableVector

@@ -58,8 +58,8 @@ void Document::write(std::ostream &out) {
   int resolution = this->get(D_SET::RESOLUTION);
   int raster_power = 0;
   int raster_speed = 0;
-  bool enable_raster = this->get(D_SET::ENABLE_RASTER);
-  bool enable_vector = this->get(D_SET::ENABLE_VECTOR);
+  bool enable_raster = this->get(D_SET::ENABLE_ENGRAVING);
+  bool enable_vector = this->get(D_SET::ENABLE_CUT);
   enable_raster= false;
   if(enable_raster && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
@@ -220,8 +220,8 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     if (docFormat == SVG) {
       int convertPipe[2];
 
-      if(!bfs::exists(filename))
-        CtrlCutException::fileNotFoundException(filename);
+   /*   if(!bfs::exists(filename))
+        CtrlCutException::fileNotFoundException(filename);*/
 
       FILE *svgIn = fopen(filename.c_str(), "r");
       int svgFd = fileno (svgIn);

@@ -16,7 +16,7 @@ const string CupsOptions::OPTION_STRINGS[]= {
     "VectorReduce",
     "VectorOptimze",
     "Debug",
-    "EnableRaster",
+    "EnableEngraving",
     "EnableVector"
   };
 
@@ -126,11 +126,11 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
     if (v != "false")
       Logger::init(CC_DEBUG);
   }
-  if (cupsOpts.get(CupsOptions::ENABLE_RASTER, v)) {
-    ds.put(DS::ENABLE_RASTER, v != "false");
+  if (cupsOpts.get(CupsOptions::ENABLE_ENGRAVING, v)) {
+    ds.put(DS::ENABLE_ENGRAVING, v != "false");
   }
   if (cupsOpts.get(CupsOptions::ENABLE_VECTOR, v)) {
-    ds.put(DS::ENABLE_VECTOR, v != "false");
+    ds.put(DS::ENABLE_CUT, v != "false");
   }
 
   if (ds.get(DS::DRIVER) == LaserCutter::UNINITIALIZED) {

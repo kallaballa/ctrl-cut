@@ -20,7 +20,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.377733518." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1703556739" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" resourceTypeBasedDiscovery="true" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.141540329" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-							<builder id="cdt.managedbuild.target.gnu.builder.exe.debug.365194582" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+							<builder id="cdt.managedbuild.target.gnu.builder.exe.debug.140776059" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1483022190" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1607083553" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -28,6 +28,7 @@
 								<option id="gnu.cpp.compiler.option.other.other.698641465" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1326985679" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/librsvg-2.0"/>
+									<listOptionValue builtIn="false" value="/home/elchaschab/devel/ctrl-cut/src/ctrl-cut"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/boost"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
@@ -142,20 +143,20 @@
 	<storageModule moduleId="refreshScope" versionNumber="1">
 		<resource resourceType="PROJECT" workspacePath="/ctrl-cut"/>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.195001357;cdt.managedbuild.config.gnu.exe.release.195001357.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.352148566;cdt.managedbuild.tool.gnu.c.compiler.input.440922794">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.377733518;cdt.managedbuild.config.gnu.exe.debug.377733518.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774612933;cdt.managedbuild.tool.gnu.cpp.compiler.input.2094513617">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.195001357;cdt.managedbuild.config.gnu.exe.release.195001357.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.809082097;cdt.managedbuild.tool.gnu.cpp.compiler.input.1293743113">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.377733518;cdt.managedbuild.config.gnu.exe.debug.377733518.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.965524635;cdt.managedbuild.tool.gnu.c.compiler.input.32882746">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

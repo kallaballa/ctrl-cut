@@ -59,16 +59,14 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 MainWindow::~MainWindow()
 {}
 
-void MainWindow::createUndoView()
-{
+void MainWindow::createUndoView(){
     undoView = new QUndoView(undoStack);
     undoView->setWindowTitle(tr("Command List"));
     undoView->show();
     undoView->setAttribute(Qt::WA_QuitOnClose, false);
 }
 
-void MainWindow::createActions()
-{
+void MainWindow::createActions() {
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
 

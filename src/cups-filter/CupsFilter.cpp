@@ -29,6 +29,8 @@
 #include "cut/graph/Traveller.hpp"
 #include "cut/graph/Traverse.hpp"
 #include "cut/graph/Planar.hpp"
+#include <boost/lexical_cast.hpp>
+
 /**
  * Cups filter entry point.
  *

@@ -50,8 +50,8 @@ void LaserDialog::updateLaserConfig(Document& document)
   QStringList res = this->resolutionCombo->currentText().split(" ");
   if (res.length() > 0) document.put(DS::RESOLUTION, res[0].toInt());
 
-  document.put(DS::ENABLE_RASTER, !this->vectorRadio->isChecked());
-  document.put(DS::ENABLE_VECTOR, !this->rasterRadio->isChecked());
+  document.put(DS::ENABLE_ENGRAVING, !this->vectorRadio->isChecked());
+  document.put(DS::ENABLE_CUT, !this->rasterRadio->isChecked());
   document.put(ES::ESPEED, this->rasterSpeedSlider->value());
   document.put(ES::EPOWER, this->rasterPowerSlider->value());
   document.put(ES::DIRECTION, this->rasterDirection->currentIndex());
@@ -87,8 +87,8 @@ void LaserDialog::applyLaserConfig(Document& document)
   this->autoFocusBox->setChecked(document.get(DS::AUTO_FOCUS));
   this->resolutionCombo->setCurrentIndex(this->resolutionCombo->findText(QString::number(document.get(DS::RESOLUTION)) + " DPI"));
 
-  if (document.get(DS::ENABLE_RASTER) && document.get(DS::ENABLE_VECTOR)) this->combinedRadio->setChecked(true);
-  else if (document.get(DS::ENABLE_RASTER)) this->rasterRadio->setChecked(true);
+  if (document.get(DS::ENABLE_ENGRAVING) && document.get(DS::ENABLE_CUT)) this->combinedRadio->setChecked(true);
+  else if (document.get(DS::ENABLE_ENGRAVING)) this->rasterRadio->setChecked(true);
   else this->vectorRadio->setChecked(true);
 
   this->rasterSpeedSlider->setValue(document.get(ES::ESPEED));

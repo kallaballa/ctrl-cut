@@ -37,8 +37,8 @@ const DocumentSettings::Key<Measurement> DocumentSettings::HEIGHT = "height";
 const DocumentSettings::Key<bool> DocumentSettings::AUTO_FOCUS = "autoFocus";
 const DocumentSettings::Key<uint16_t> DocumentSettings::SCREEN = "screen";
 
-const DocumentSettings::Key<bool> DocumentSettings::ENABLE_RASTER = "enableRaster";
-const DocumentSettings::Key<bool> DocumentSettings::ENABLE_VECTOR = "enableVector";
+const DocumentSettings::Key<bool> DocumentSettings::ENABLE_ENGRAVING = "enableRaster";
+const DocumentSettings::Key<bool> DocumentSettings::ENABLE_CUT = "enableVector";
 const DocumentSettings::Key<bool> DocumentSettings::LOAD_CUT = "loadCut";
 const DocumentSettings::Key<bool> DocumentSettings::LOAD_ENGRAVING = "loadEngraving";
 
@@ -50,8 +50,8 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(AUTO_FOCUS, true);
   this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);
-  this->put(ENABLE_VECTOR, true);
-  this->put(ENABLE_RASTER, false);
+  this->put(ENABLE_CUT, true);
+  this->put(ENABLE_ENGRAVING, false);
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 

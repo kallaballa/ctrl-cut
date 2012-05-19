@@ -61,8 +61,7 @@ HEADERS += ./MainWindow.h \
            ./settings/CutSettingsTableModel.h \
            ./settings/EngraveSettingsTableModel.h \
            ./settings/DocumentSettingsTableModel.h \
-           ./settings/SettingsTableModel.h \
-           ../ctrl-cut/CtrlCutException.h
+           ./settings/SettingsTableModel.h
 SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \
            ./Commands.cpp \

@@ -16,8 +16,8 @@ public:
     addKey(D_SET::HEIGHT);
     addKey(D_SET::RESOLUTION);
     addKey(D_SET::AUTO_FOCUS);
-    addKey(D_SET::ENABLE_RASTER);
-    addKey(D_SET::ENABLE_VECTOR);
+    addKey(D_SET::ENABLE_ENGRAVING);
+    addKey(D_SET::ENABLE_CUT);
   }
 };
 

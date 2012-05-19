@@ -125,13 +125,13 @@ restore
 
 *OpenGroup: General
 
-*%******** EnableRaster ********
-*OpenUI *EnableRaster/EnableRaster: Boolean
-*DefaultEnableRaster: False
-*OrderDependency: 140 AnySetup *EnableRaster
-*EnableRaster True: " "
-*EnableRaster False: " "
-*CloseUI: *EnableRaster
+*%******** EnableEngraving ********
+*OpenUI *EnableEngraving/EnableEngraving: Boolean
+*DefaultEnableEngraving: False
+*OrderDependency: 140 AnySetup *EnableEngraving
+*EnableEngraving True: " "
+*EnableEngraving False: " "
+*CloseUI: *EnableEngraving
 
 *%******** EnableVector ********
 *OpenUI *EnableVector/EnableVector: Boolean

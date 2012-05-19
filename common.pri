@@ -22,6 +22,15 @@ macx {
   }
 }
 
+CONFIG(debug, debug|release) {
+QMAKE_CXXFLAGS_DEBUG = -g3 -O0
+message("DEBUG!")
+} else {
+DEFINES += QT_NO_DEBUG
+DEFINES += QT_NO_DEBUG_OUTPUT
+message("RELEASE!")
+}
+
 CONFIG += link_pkgconfig
 QMAKE_CXXFLAGS += -std=c++98 -Wno-long-long
 linux:QMAKE_CXXFLAGS += -pedantic-errors
@@ -38,3 +47,4 @@ include(gio.pri)
 include(libxml++.pri)
 include(Magick++.pri)
 include(libctrl-cut.pri)
+
