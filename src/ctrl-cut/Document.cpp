@@ -59,7 +59,7 @@ void Document::write(std::ostream &out) {
   int raster_power = 0;
   int raster_speed = 0;
   bool enable_engraving = this->get(D_SET::ENABLE_ENGRAVING);
-  bool enable_vector = this->get(D_SET::ENABLE_CUT);
+  bool enable_cut = this->get(D_SET::ENABLE_CUT);
 
   if(enable_engraving && !this->engraveList.empty()) {
     raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
@@ -122,7 +122,7 @@ void Document::write(std::ostream &out) {
     }
   }
 
-  if (enable_vector && !this->cutList.empty()) {
+  if (enable_cut && !this->cutList.empty()) {
     // FIXME: This is to emulate the LT bug in the Epilog drivers:
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
