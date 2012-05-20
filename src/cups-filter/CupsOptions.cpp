@@ -1,5 +1,4 @@
 #include "CupsOptions.hpp"
-#include "util/Measurement.hpp"
 
 const string CupsOptions::OPTION_STRINGS[]= {
     "Driver",
@@ -47,14 +46,14 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
   if (cupsOpts.get(CupsOptions::BEDSIZE, v)) {
     uint16_t res = ds.get(DS::RESOLUTION);
     if (v == "16x12") {
-      ds.put(DS::WIDTH, Measurement(16, IN, res));
-      ds.put(DS::HEIGHT, Measurement(12, IN, res));
+      ds.put(DS::WIDTH, Distance(16, IN, res));
+      ds.put(DS::HEIGHT, Distance(12, IN, res));
     } else if (v == "24x12") {
-      ds.put(DS::WIDTH, Measurement(24, IN, res));
-      ds.put(DS::HEIGHT, Measurement(12, IN, res));
+      ds.put(DS::WIDTH, Distance(24, IN, res));
+      ds.put(DS::HEIGHT, Distance(12, IN, res));
     } else if (v == "36x24") {
-      ds.put(DS::WIDTH, Measurement(36, IN, res));
-      ds.put(DS::HEIGHT, Measurement(24, IN, res));
+      ds.put(DS::WIDTH, Distance(36, IN, res));
+      ds.put(DS::HEIGHT, Distance(24, IN, res));
     } else {
       LOG_WARN_MSG("Illegal value for BedSize", v);
     }

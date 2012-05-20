@@ -25,6 +25,7 @@
 #include "cut/model/Clip.hpp"
 #include "cut/model/Explode.hpp"
 #include "cut/model/Reduce.hpp"
+#include "cut/model/SvgPlot.hpp"
 #include "cut/geom/sink/AddSink.hpp"
 
 #include "cut/graph/Planar.hpp"
@@ -42,6 +43,11 @@
  * value represents an error code.
  */
 
+void plot(const Cut& cut, const string& prefix) {
+  plot_shared_points(cut, (prefix + "_shared_points.svg").c_str());
+  plot_shared_segments(cut, (prefix + "_shared_segments.svg").c_str());
+}
+
 int main(int argc, char *argv[]) {
   typedef DocumentSettings DS;
   Logger::init(CC_WARNING);
@@ -52,19 +58,20 @@ int main(int argc, char *argv[]) {
 
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
-
+  string basename = doc.get(DS::FILENAME);
+  std::cerr << basename << std::endl;
   Coord_t dpi = doc.get(DS::RESOLUTION);
   Coord_t width = doc.get(DS::WIDTH).in(PX);
   Coord_t height = doc.get(DS::HEIGHT).in(PX);
   string v;
-  Measurement reduceMax(0.1,MM, dpi);
+  Distance reduceMax(0.1,MM, dpi);
   if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM, dpi);
+    reduceMax = Distance(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
-  reduceMax = Measurement(0.1, MM, dpi);
+
   BOOST_FOREACH(Cut* p_cut, doc.cutList) {
     Cut& cut = *p_cut;
-    dump("input.txt", cut.begin(), cut.end());
+    plot(cut, basename + "_input");
 
     Cut clipped = make_from(cut);
     Cut planar = make_from(cut);
@@ -72,25 +79,20 @@ int main(int argc, char *argv[]) {
     Cut reduced = make_from(cut);
 
     clip(cut, clipped, Box(Point(0,0),Point(width,height)));
-    dump("clipped.txt", clipped.begin(), clipped.end());
-    clipped.check();
-    cut.clear();
+    plot(clipped, basename + "_clipped");
 
     explode(clipped, exploded);
-    dump("exploded.txt", exploded.begin(), exploded.end());
-    exploded.check();
+    plot(exploded, basename + "_exploded");
 
     make_planar(exploded, planar);
-    dump("planar.txt", planar.begin(), planar.end());
-    planar.check();
+    plot(planar, basename + "_planar");
 
     reduce(planar, reduced, reduceMax.in(PX));
-    dump("reduced.txt", reduced.begin(), reduced.end());
-    reduced.check();
+    plot(reduced, basename + "_reduced");
 
+    cut.clear();
     cut = reduced;
-    cut.check();
-    dump("cut.txt", cut.begin(), cut.end());
+    plot(cut, basename + "_cut");
   }
 
   std::stringstream ss;
