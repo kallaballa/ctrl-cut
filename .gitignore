@@ -9,3 +9,4 @@ Makefile
 *.o
 *.dylib
 *.so
+*.svg
