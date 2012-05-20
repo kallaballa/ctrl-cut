@@ -32,11 +32,11 @@ public:
   const static Key<string> TITLE;
   const static Key<string>  TEMP_DIR;
   const static Key<string>  DATA_DIR;
-  const static Key<string>  BASENAME;
+  const static Key<string>  FILENAME;
 
   const static Key<uint16_t> RESOLUTION;
-  const static Key<Measurement> WIDTH;
-  const static Key<Measurement> HEIGHT;
+  const static Key<Distance> WIDTH;
+  const static Key<Distance> HEIGHT;
   const static Key<bool> AUTO_FOCUS;
   const static Key<uint16_t> SCREEN;
 

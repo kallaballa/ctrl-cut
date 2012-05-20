@@ -47,6 +47,8 @@ public:
   typedef CutList::const_iterator CutConstIt;
   typedef EngraveList::const_iterator EngraveConstIt;
 
+  std::string filename;
+
   Document() {}
   virtual ~Document() {};
 

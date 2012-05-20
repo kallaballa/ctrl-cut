@@ -138,8 +138,8 @@ public:
   string value(const_iterator it) const {
     boost::any prop = (*it).second;
 
-    if(prop.type() == typeid(Measurement)) {
-      return boost::lexical_cast<string>(boost::any_cast<Measurement>(prop));
+    if(prop.type() == typeid(Distance)) {
+      return boost::lexical_cast<string>(boost::any_cast<Distance>(prop));
     } else if(prop.type() == typeid(Point)) {
       return boost::lexical_cast<string>(boost::any_cast<Point>(prop));
     } else if(prop.type() == typeid(string)){
@@ -159,8 +159,8 @@ public:
   void set(iterator it, const string& val) {
     KeyBase key = (*it).first;
     boost::any prop = (*it).second;
-    if(prop.type() == typeid(Measurement)) {
-      this->put(Key<Measurement>(key.name), boost::lexical_cast<Measurement>(val));
+    if(prop.type() == typeid(Distance)) {
+      this->put(Key<Distance>(key.name), boost::lexical_cast<Distance>(val));
     } else if(prop.type() == typeid(Point)) {
       this->put(Key<Point>(key.name), boost::lexical_cast<Point>(val));
     } else if(prop.type() == typeid(string)){

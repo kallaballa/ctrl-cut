@@ -19,12 +19,12 @@
 
 #include "Measurement.hpp"
 
-const double Measurement::MM_TO_INCH = 25.4;
+const double Distance::MM_TO_INCH = 25.4;
 
-const Measurement Measurement::convert(const Unit& target, const uint16_t dpi) const {
+const Distance Distance::convert(const Unit& target, const uint16_t dpi) const {
   double spx = -1;
 
-  Measurement convertee(-1, target, dpi);
+  Distance convertee(-1, target, dpi);
   if (this->unit == PX)
     spx = this->value;
   else if (this->unit == MM)
@@ -46,6 +46,6 @@ const Measurement Measurement::convert(const Unit& target, const uint16_t dpi) c
   return convertee;
 }
 
-double Measurement::in(const Unit& target) const {
+double Distance::in(const Unit& target) const {
   return this->convert(target, this->resolution).value;
 }

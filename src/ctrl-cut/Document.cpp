@@ -158,7 +158,7 @@ Document& Document::preprocess() {
    Coord_t dpi = model.get(D_SET::RESOLUTION);
    Coord_t width = model.get(D_SET::WIDTH).in(PX, dpi);
    Coord_t height = model.get(D_SET::HEIGHT).in(PX, dpi);
-   Measurement reduceMax = model.get(C_SET::REDUCE);
+   Distance reduceMax = model.get(C_SET::REDUCE);
 
    dump("input.txt", model.begin(), model.end());
 
@@ -211,7 +211,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   string base = basename(strdup(filename.c_str()));
 
   this->put(D_SET::DATA_DIR, string(dirname(strdup(filename.c_str()))));
-  this->put(D_SET::BASENAME,base.erase(base.rfind(".")));
+  this->put(D_SET::FILENAME, filename);
 
   cups_file_t* input_file;
   FileParser *parser = NULL;
@@ -244,7 +244,9 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
         return false;
       }
     }
-    string file_basename = this->get(D_SET::TEMP_DIR)+ "/" + this->get(D_SET::BASENAME);
+
+    string fname = filename;
+    string file_basename = this->get(D_SET::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
 
     // Write out the incoming cups data if debug is enabled.
     // FIXME: This is disabled for now since it has a bug:

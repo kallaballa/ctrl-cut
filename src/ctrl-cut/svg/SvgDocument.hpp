@@ -48,18 +48,18 @@ public:
   const static double SVG_DEFAULT_RES;
   const static double INKSCAPE_DEFAULT_RES;
 
-  Measurement width;
-  Measurement height;
+  Distance width;
+  Distance height;
   double dpi;
 
   Unit parseUnit(const string unit);
-  Measurement parseMeasurement(string dimension);
+  Distance parseDistance(string dimension);
 
-  const string make_viewboxstring(const double& x, const double& y, const Measurement& w, const Measurement& h) const;
+  const string make_viewboxstring(const double& x, const double& y, const Distance& w, const Distance& h) const;
   const string make_attriburestring(const Attribute& attr) const;
   const string make_attriburestring(const string& name, const string& value) const;
 
-  SvgDocument() : width(*(new Measurement(-1, PX, SVG_DEFAULT_RES))) , height(*(new Measurement(-1, PX, SVG_DEFAULT_RES))), dpi(SVG_DEFAULT_RES) { }
+  SvgDocument() : width(*(new Distance(-1, PX, SVG_DEFAULT_RES))) , height(*(new Distance(-1, PX, SVG_DEFAULT_RES))), dpi(SVG_DEFAULT_RES) { }
   virtual ~SvgDocument(){}
 };
 

@@ -55,7 +55,7 @@ Unit SvgDocument::parseUnit(const string unit) {
     assert(false);
 }
 
-Measurement SvgDocument::parseMeasurement(string dimension) {
+Distance SvgDocument::parseDistance(string dimension) {
   stringstream sFloat;
   stringstream sUnit;
   string::const_iterator it;
@@ -92,19 +92,19 @@ Measurement SvgDocument::parseMeasurement(string dimension) {
     if(unit.size() > 0) {
       std::transform ( unit.begin(), unit.end(), unit.begin(), lower_case );
       if(unit == "in") {
-        return Measurement(val,IN, this->dpi);
+        return Distance(val,IN, this->dpi);
       } else if(unit == "mm") {
-        return Measurement(val,MM, this->dpi);
+        return Distance(val,MM, this->dpi);
       } else
         assert(false);
     } else {
-      return Measurement(val,PX, this->dpi);
+      return Distance(val,PX, this->dpi);
     }
   } else
     assert(false);
 }
 
-const string SvgDocument::make_viewboxstring(const double& x, const double& y, const Measurement& w, const Measurement& h) const {
+const string SvgDocument::make_viewboxstring(const double& x, const double& y, const Distance& w, const Distance& h) const {
   stringstream sVB;
   sVB << " viewBox=\"" << x << " " << y << " " << w.in(PX) << " " <<  h.in(PX) << "\"";
   return sVB.str();

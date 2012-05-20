@@ -2,7 +2,6 @@
 #include "util/Logger.hpp"
 #include "util/Eps.hpp"
 #include "cut/geom/Geometry.hpp"
-#include <util/Measurement.hpp>
 #include <cups/cups.h>
 #include <cups/file.h>
 #include "config/EngraveSettings.hpp"
@@ -257,7 +256,8 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   double width = this->conf.get(DocumentSettings::WIDTH).in(PX);
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX);
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
-  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + this->conf.get(DocumentSettings::BASENAME);
+  string filename = this->conf.get(DocumentSettings::FILENAME);
+  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + filename.erase(filename.rfind("."));
   this->filename_eps = tmpbasepath + ".eps";
 
   if (!createEps(input_file, this->filename_eps)) return false;

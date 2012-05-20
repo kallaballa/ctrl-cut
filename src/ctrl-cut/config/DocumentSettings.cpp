@@ -29,11 +29,11 @@ const DocumentSettings::Key<string> DocumentSettings::USER = "user";
 const DocumentSettings::Key<string> DocumentSettings::TITLE = "title";
 const DocumentSettings::Key<string> DocumentSettings::TEMP_DIR = "tmpDir";
 const DocumentSettings::Key<string> DocumentSettings::DATA_DIR = "dataDir";
-const DocumentSettings::Key<string> DocumentSettings::BASENAME = "basename";
+const DocumentSettings::Key<string> DocumentSettings::FILENAME = "filename";
 
 const DocumentSettings::Key<uint16_t> DocumentSettings::RESOLUTION = "resolution";
-const DocumentSettings::Key<Measurement> DocumentSettings::WIDTH = "width";
-const DocumentSettings::Key<Measurement> DocumentSettings::HEIGHT = "height";
+const DocumentSettings::Key<Distance> DocumentSettings::WIDTH = "width";
+const DocumentSettings::Key<Distance> DocumentSettings::HEIGHT = "height";
 const DocumentSettings::Key<bool> DocumentSettings::AUTO_FOCUS = "autoFocus";
 const DocumentSettings::Key<uint16_t> DocumentSettings::SCREEN = "screen";
 
@@ -55,8 +55,8 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 
-  this->put(WIDTH, Measurement(2700,PX,75));
-  this->put(HEIGHT, Measurement(1800,PX,75));
+  this->put(WIDTH, Distance(2700,PX,75));
+  this->put(HEIGHT, Distance(1800,PX,75));
   this->put(DUMP_XML, false);
   //FIXME dont do empty defaults
   this->put(TITLE, "");
