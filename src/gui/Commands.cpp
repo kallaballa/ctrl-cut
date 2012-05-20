@@ -177,7 +177,7 @@
        std::cerr << ci->cut.get(CutSettings::CPOS) << std::endl;
        Cut* newCut = new Cut(ci->cut.settings);
        std::cerr << newCut->get(CutSettings::CPOS) << std::endl;
-       reduce(ci->cut, *newCut, Measurement(1, MM,75).in(PX));
+       reduce(ci->cut, *newCut, Distance(1, MM,75).in(PX));
        CutItem* newItem = new CutItem(*newCut);
        newCutItems.append(newItem);
      }
