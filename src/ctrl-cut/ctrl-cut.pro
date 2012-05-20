@@ -25,7 +25,8 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./util/PJL.hpp \
            ./util/Util.hpp \
            ./cut/model/Explode.hpp \
-           ./cut/model/Cut.hpp \
+           ./cut/model/Reduce.hpp \
+	   ./cut/model/Cut.hpp \
            ./cut/geom/Views.hpp \
            ./cut/geom/Geometry.hpp \
            ./cut/geom/SegmentTree.hpp \

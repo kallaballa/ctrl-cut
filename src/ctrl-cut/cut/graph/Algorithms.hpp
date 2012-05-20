@@ -164,4 +164,20 @@ inline bool is_complete_graph(Graph& graph) {
   return true;
 }
 
+template<typename Graph>
+inline void make_vertex_index(Graph& graph, std::map<typename Graph::vertex_property_type::value_type, typename Graph::vertex_descriptor>& index) {
+  BOOST_FOREACH(typename Graph::vertex_descriptor vertex, vertices(graph)) {
+    Point p = graph[vertex];
+    index[p] = vertex;
+  }
+}
+
+template<typename Graph>
+inline void make_edge_index(Graph& graph, std::map<typename Graph::edge_property_type::value_type, typename Graph::edge_descriptor>& index) {
+
+  BOOST_FOREACH(typename Graph::edge_descriptor edge, edges(graph)) {
+    index[graph[edge]] = edge;
+  }
+}
+
 #endif

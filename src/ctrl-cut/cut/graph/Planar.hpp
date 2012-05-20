@@ -27,6 +27,7 @@ template<typename TpointRangeOutputIterator>
 struct join_strings_visitor: public planar_face_traversal_visitor {
   const SegmentGraph* graph;
   TpointRangeOutputIterator sink;
+  std::set<SegmentGraph::Edge> index;
 
   join_strings_visitor(const SegmentGraph& graph, TpointRangeOutputIterator& sink) :
     graph(&graph), sink(sink) {
@@ -35,15 +36,17 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void begin_face() {}
   void end_face() {}
   void next_edge(SegmentGraph::Edge e) {
-    const SegmentProperty* seg = &(*graph)[e];
-    *sink++ = *static_cast<const Segment*>(seg);
+    if(index.insert(e).second) {
+      const SegmentProperty* seg = &(*graph)[e];
+      *sink++ = *static_cast<const Segment*>(seg);
+    }
   }
 };
 
 template<
   typename TpointRange
   >
-void makePlanar(TpointRange& pointRange, TpointRange& sink) {
+void make_planar(TpointRange& pointRange, TpointRange& sink) {
   LOG_INFO_STR("make planar");
   AddSink<TpointRange> addSink(sink);
   SegmentGraph segGraph;

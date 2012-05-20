@@ -175,7 +175,7 @@
      foreach(CutItem* ci, oldCutItems) {
        ci->commit();
        std::cerr << ci->cut.get(CutSettings::CPOS) << std::endl;
-       Cut* newCut = new Cut(ci->cut.make());
+       Cut* newCut = new Cut(ci->cut.settings);
        std::cerr << newCut->get(CutSettings::CPOS) << std::endl;
        reduce(ci->cut, *newCut, Measurement(1, MM,75).in(PX));
        CutItem* newItem = new CutItem(*newCut);

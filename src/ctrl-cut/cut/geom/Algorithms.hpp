@@ -52,7 +52,7 @@ inline void prepend(Path& path, const Segment& seg) {
 }
 
 template<typename TpointRange>
-inline void prepand(Path& path, const TpointRange& pointRange) {
+inline void prepend(Path& path, const TpointRange& pointRange) {
   boost::geometry::reverse(path);
   boost::geometry::append(path, pointRange);
 }
@@ -276,4 +276,10 @@ inline void add(Route& route, const TpointRange& pointRange) {
   if(!concat(route, pointRange))
     return append(route, pointRange);
 }
+
+template<typename TpointRange>
+inline TpointRange make_from(const TpointRange& pointRange) {
+  return TpointRange(pointRange.settings);
+}
+
 #endif /* ALGORITHMS_HPP_ */

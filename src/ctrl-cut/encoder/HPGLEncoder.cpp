@@ -26,7 +26,7 @@
 using boost::format;
 
 void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
-  Cut model = encode.make();
+  Cut model = make_from(encode);
   const Point&  pos = model.get(CutSettings::CPOS);
   translate(encode,model, pos);
 

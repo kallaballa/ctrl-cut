@@ -45,7 +45,10 @@ public:
   }
 
   size_t size() const {  //FIXME specialize
-    return std::distance(this->begin(), this->end());
+    int num = 0;
+    for(iterator it = this->begin(); it != this->end(); it++)
+      num++;
+    return num;
   }
 };
 

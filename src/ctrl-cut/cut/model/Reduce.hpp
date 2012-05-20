@@ -16,22 +16,48 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-//#include "Reduce.hpp"
 #include "util/Logger.hpp"
-#include "cut/graph/Traverse.hpp"
 #include "cut/model/Cut.hpp"
+#include "cut/graph/SegmentGraph.hpp"
 #include <boost/foreach.hpp>
-/*!
- * Reduce number of vertices in polylines by approximating the polylines with fewer line segments.
- */
 
 template<typename TmultiPointRange>
 void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   LOG_INFO_STR("Reduce");
+
   AddSink<TmultiPointRange> addSink(sink);
-  BOOST_FOREACH(const Path& path, src) {
-    Path simplyfied(path.settings);
-    boost::geometry::simplify(path, simplyfied, maxDistance);
-    *addSink++ = simplyfied;
+
+  SegmentGraph g;
+  build(src, g);
+  LOG_DEBUG(num_vertices(g));
+  std::map<Point, SegmentGraph::Vertex> index;
+  make_vertex_index(g, index);
+
+  BOOST_FOREACH(Path& path, src) {
+    Path singleBranch = make_from(path);
+    Path simplified = make_from(path);
+    Point last = path.front();
+    Point current;
+    BOOST_FOREACH(const Segment& seg, segmentConstView(path)) {
+      concat(singleBranch,seg);
+      if(last == seg.first)
+        current = seg.second;
+      else
+        assert(false);
+
+      last = current;
+      if(boost::degree(index[current],g) > 2) {
+        boost::geometry::simplify(singleBranch, simplified, maxDistance);
+        *addSink++ = simplified;
+        singleBranch.clear();
+        simplified.clear();
+      }
+    }
+
+    if(!singleBranch.empty()) {
+      boost::geometry::simplify(singleBranch, simplified, maxDistance);
+      *addSink++ = simplified;
+    }
   }
+  LOG_DEBUG(sink.size());
 }

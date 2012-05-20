@@ -77,10 +77,6 @@ public:
   double distance(const Point&  other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
-
-  Point make() const {
-    return Point();
-  }
 };
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(Point, Coord_t, cs::cartesian, x, y)
@@ -134,10 +130,6 @@ public:
     return Segment(second,first);
   }
 
-  Segment make() const {
-    return Segment();
-  }
-
   /*!
     Calculates the distance from the Point to the infinite segment
   */
@@ -189,8 +181,9 @@ inline intersection_result intersects(const Segment& s1, const Segment&s2, Point
 
   return ALIGN_NONE;
 }
+
 inline std::ostream& operator<<(std::ostream &os, const Point& p)  {
-  os << p.x << "," << p.y;
+  os << "<point x=\"" << p.x << "\" y=\"" << p.y << "\"\\>";
   return os;
 }
 
@@ -229,6 +222,7 @@ public:
   }
 
   Box(const Point&  min_corner, const Point&  max_corner) : min_corner(min_corner) , max_corner(max_corner) {}
+  Box(const Coord_t&  ulx, const Coord_t&  uly, const Coord_t& lrx, const Coord_t&  lry) : min_corner(ulx,uly) , max_corner(lrx,lry) {}
 
   Coord_t width() {
     return max_corner[0] - min_corner[0];

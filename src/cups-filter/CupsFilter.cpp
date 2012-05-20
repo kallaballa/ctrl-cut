@@ -23,13 +23,14 @@
 #include "Document.hpp"
 
 #include "cut/model/Clip.hpp"
-#include "cut/model/Reduce.hpp"
 #include "cut/model/Explode.hpp"
+#include "cut/model/Reduce.hpp"
 #include "cut/geom/sink/AddSink.hpp"
-#include "cut/graph/Traveller.hpp"
-#include "cut/graph/Traverse.hpp"
+
 #include "cut/graph/Planar.hpp"
+
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 
 /**
  * Cups filter entry point.
@@ -42,6 +43,7 @@
  */
 
 int main(int argc, char *argv[]) {
+  typedef DocumentSettings DS;
   Logger::init(CC_WARNING);
   clock_t start = clock();
 
@@ -51,42 +53,44 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
-  Coord_t dpi = doc.get(DocumentSettings::RESOLUTION);
-  Coord_t width = doc.get(DocumentSettings::WIDTH).in(PX);
-  Coord_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
+  Coord_t dpi = doc.get(DS::RESOLUTION);
+  Coord_t width = doc.get(DS::WIDTH).in(PX);
+  Coord_t height = doc.get(DS::HEIGHT).in(PX);
   string v;
-  Measurement reduceMax(0.1,MM, dpi);
+  Measurement reduceMax(0.2,MM, dpi);
   if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
     reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
-
-  for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-    Cut& cut = **it;
+  reduceMax = Measurement(0.1, MM, dpi);
+  BOOST_FOREACH(Cut* p_cut, doc.cutList) {
+    Cut& cut = *p_cut;
     dump("input.txt", cut.begin(), cut.end());
 
-    Cut clipped = cut.make();
+    Cut clipped = make_from(cut);
+    Cut planar = make_from(cut);
+    Cut exploded = make_from(cut);
+    Cut reduced = make_from(cut);
+
     clip(cut, clipped, Box(Point(0,0),Point(width,height)));
     dump("clipped.txt", clipped.begin(), clipped.end());
+    clipped.check();
+    cut.clear();
 
-    Cut exploded = cut.make();
     explode(clipped, exploded);
     dump("exploded.txt", exploded.begin(), exploded.end());
+    exploded.check();
 
-    Cut planared = cut.make();
-    makePlanar(exploded, planared);
-    dump("planared.txt", planared.begin(), planared.end());
+    make_planar(exploded, planar);
+    dump("planar.txt", planar.begin(), planar.end());
+    planar.check();
 
-    Cut reduced = cut.make();
-    reduce(exploded, reduced, reduceMax.in(PX));
+    reduce(planar, reduced, reduceMax.in(PX));
     dump("reduced.txt", reduced.begin(), reduced.end());
-/*
-    Cut travelled = model.make();
-    travel(reduced, travelled);
-    dump("travelled.txt", travelled.begin(), travelled.end());
+    reduced.check();
 
-    model = travelled;*/
     cut = reduced;
-    dump("after-copy.txt", cut.begin(), cut.end());
+    cut.check();
+    dump("cut.txt", cut.begin(), cut.end());
   }
 
   std::stringstream ss;

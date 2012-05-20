@@ -62,6 +62,7 @@ public:
   CutSettings settings;
   typedef typename _MultiLineStrings::iterator iterator;
   typedef typename _MultiLineStrings::const_iterator const_iterator;
+  typedef typename _MultiLineStrings::value_type value_type;
 
   RouteImpl() {}
   RouteImpl(DocumentSettings& parentSettings) : settings(parentSettings) {}
@@ -113,7 +114,7 @@ public:
   }
 
   void copy(const RouteImpl& other) {
-    this->settings = other.getSettings();
+    this->settings = other.settings;
     for(iterator it = paths.begin(); it != paths.end(); ++it) {
       this->paths.push_back(*it);
     }
@@ -144,10 +145,6 @@ public:
     os << std::endl;
     os << "</route>" << std::endl;
     return os;
-  }
-
-  RouteImpl make() const {
-    return RouteImpl(this->settings);
   }
 };
 

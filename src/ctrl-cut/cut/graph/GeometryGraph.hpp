@@ -24,9 +24,10 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <cut/graph/Algorithms.hpp>
+#include <cut/graph/SegmentGraph.hpp>
 
 template<
-  class ToutEdgeList = boost::setS,
+  class TedgeList = boost::setS,
   class TvertexList = boost::vecS,
   class TdirectedS = boost::undirectedS,
   typename TvertexProperty = boost::no_property,
@@ -34,7 +35,7 @@ template<
 >
 class GeometryGraph :
   public boost::adjacency_list<
-    ToutEdgeList,
+    TedgeList,
     TvertexList,
     TdirectedS,
     TvertexProperty,
@@ -42,13 +43,13 @@ class GeometryGraph :
   > {
 public:
   typedef boost::adjacency_list<
-      ToutEdgeList,
+      TedgeList,
       TvertexList,
       TdirectedS,
       TvertexProperty,
       TedgeProperty
     > _Base;
-  typedef GeometryGraph<ToutEdgeList, TvertexList, TdirectedS, TvertexProperty, TedgeProperty> _Self;
+  typedef GeometryGraph<TedgeList, TvertexList, TdirectedS, TvertexProperty, TedgeProperty> _Self;
 
   typedef typename boost::graph_traits<_Self>::vertex_descriptor Vertex;
   typedef typename boost::graph_traits<_Self>::edge_descriptor Edge;
@@ -59,20 +60,21 @@ public:
   GeometryGraph(const GeometryGraph& graph) : _Base(graph) {}
   GeometryGraph(v_size size) : _Base(size) {}
 
-  Vertex addVertex(const TvertexProperty& prop) {
-    return boost::add_vertex(prop, *this);
+  virtual Vertex addVertex(const TvertexProperty& geom) {
+    return boost::add_vertex(geom, *this);
   }
 
   //concept create(geom,prop) && add(geom,prop)
 };
 
-template<typename TgeomIn, typename Graph>
-void build(TgeomIn begin, TgeomIn end, Graph& graph) {
+template<typename TmultiPointRange, typename Tgraph>
+void build(TmultiPointRange src, Tgraph& graph) {
   //BOOST_CONCEPT_ASSERT((SegmentInputIterator<TgeomIn>));
 
-  for (TgeomIn it = begin; it != end; ++it) {
-    graph.createEdge(*it);
+  BOOST_FOREACH(const typename TmultiPointRange::value_type pointRange, src) {
+    graph.createEdge(pointRange);
   }
 }
+
 
 #endif /* GEOMETRYGRAPH_HPP_ */

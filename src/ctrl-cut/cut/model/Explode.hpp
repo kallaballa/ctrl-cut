@@ -148,8 +148,7 @@ public:
 
      const Result& in_range = tree.findWithinRange(it_pick);
 
-      for (ResultIter it_result = in_range.begin(); it_result != in_range.end(); ++it_result) {
-        TreeIter it_candidate = *it_result;
+     BOOST_FOREACH(TreeIter it_candidate, in_range) {
         const Segment& candidate = *it_candidate;
 
         if (pick == candidate || candidate[0] == candidate[1]) {
@@ -169,7 +168,6 @@ public:
           }
         }
       }
-
     }
     std::copy(tree.begin(), tree.end(), sink);
   }
