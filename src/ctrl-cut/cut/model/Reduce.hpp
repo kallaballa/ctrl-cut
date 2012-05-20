@@ -35,6 +35,7 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   build(src, g);
   LOG_DEBUG(num_vertices(g));
   std::map<Point, SegmentGraph::Vertex> index;
+
   make_vertex_index(g, index);
 
   BOOST_FOREACH(Path& path, src) {

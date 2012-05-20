@@ -55,5 +55,4 @@ void make_planar(TpointRange& pointRange, TpointRange& sink) {
   traverse_planar_faces(segGraph , vis);
 }
 
-
 #endif /* PLANAR_H */

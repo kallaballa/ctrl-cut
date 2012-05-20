@@ -28,7 +28,6 @@
 #include "cut/geom/Route.hpp"
 #include "cut/geom/sink/AddSink.hpp"
 
-
 template<
 template<typename,typename> class Tcontainer = std::vector,
 template<typename> class Tallocator = std::allocator
@@ -122,41 +121,7 @@ public:
   }
 
   void check() {
-    LOG_DEBUG_STR("check cut");
-    if(this->empty()) {
-      LOG_DEBUG_STR("cut is empty");
-      return;
-    }
 
-    //FIXME pointView.size() does never return!
-    //LOG_DEBUG_MSG("num points", pointView(*this).size());
-    //LOG_DEBUG_MSG("num segments", segmentView(*this).size());
-
-    std::set<Segment> segset;
-    std::set<Point> pointset;
-    uint64_t dup = 0;
-    uint64_t selfintersect = 0;
-    uint64_t closed = 0;
-    BOOST_FOREACH(const Path& path, *this) {
-      BOOST_FOREACH(const Segment& seg, segmentConstView(path)) {
-        if(segset.find(seg) != segset.end())
-          dup++;
-      }
-
-      pointset.clear();
-      BOOST_FOREACH(const Point& p, path) {
-        if(!pointset.insert(p).second) {
-          selfintersect++;
-        }
-      }
-
-      if(path.front() == path.back())
-        closed++;
-    }
-
-    LOG_DEBUG_MSG("self intersections", selfintersect);
-    LOG_DEBUG_MSG("closed paths", closed);
-    LOG_DEBUG_MSG("duplicate segments", dup);
   }
 protected:
   /* REFACTOR
@@ -166,4 +131,5 @@ protected:
 };
 
 typedef CutImpl<std::vector, std::allocator> Cut;
+
 #endif /* CUT_H_ */
