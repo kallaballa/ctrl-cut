@@ -27,6 +27,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./cut/model/Explode.hpp \
            ./cut/model/Reduce.hpp \
 	   ./cut/model/Cut.hpp \
+           ./cut/model/SvgPlot.hpp \
            ./cut/geom/Views.hpp \
            ./cut/geom/Geometry.hpp \
            ./cut/geom/SegmentTree.hpp \
