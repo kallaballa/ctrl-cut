@@ -21,12 +21,16 @@
 #include "cut/graph/SegmentGraph.hpp"
 #include <boost/foreach.hpp>
 
+bool is_collapsed(const Path& path, const Path& simplified) {
+  return is_self_intersecting(simplified)
+      ||(is_closed(path) && (!is_closed(simplified) || simplified.size() <= 2));
+}
+
 template<typename TmultiPointRange>
 void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   LOG_INFO_STR("Reduce");
 
   AddSink<TmultiPointRange> addSink(sink);
-
   SegmentGraph g;
   build(src, g);
   LOG_DEBUG(num_vertices(g));
@@ -48,27 +52,19 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
       last = current;
       if(boost::degree(index[current],g) > 2) {
         boost::geometry::simplify(singleBranch, simplified, maxDistance);
-        if(is_self_intersecting(simplified)
-            || (is_closed(singleBranch) && (!is_closed(simplified) || simplified.size() <= 2)))
-          std::cerr << "";
-        //  *addSink++ = singleBranch;
-        else
+        if(!is_collapsed(singleBranch, simplified))
           *addSink++ = simplified;
-
         singleBranch.clear();
         simplified.clear();
       }
     }
 
-    if(!singleBranch.empty()) {
+    if (!singleBranch.empty()) {
       boost::geometry::simplify(singleBranch, simplified, maxDistance);
-      if(is_self_intersecting(simplified)
-          || (is_closed(singleBranch) && (!is_closed(simplified) || simplified.size() <= 2)))
-        std::cerr << "";
-        //*addSink++ = singleBranch;
-      else
+      if (!is_collapsed(singleBranch, simplified))
         *addSink++ = simplified;
     }
+
     singleBranch.clear();
     simplified.clear();
   }
