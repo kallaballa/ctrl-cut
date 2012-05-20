@@ -282,4 +282,28 @@ inline TpointRange make_from(const TpointRange& pointRange) {
   return TpointRange(pointRange.settings);
 }
 
+template<typename TpointRange>
+inline bool is_closed(const TpointRange& pointRange) {
+  return pointRange.front() == pointRange.back();
+}
+
+
+template<typename TpointRange>
+inline bool is_self_intersecting(const TpointRange& pointRange) {
+  bool first = true;
+  bool isClosed = is_closed(pointRange);
+  std::set<Point> pointset;
+  BOOST_FOREACH(const Point& p, pointRange) {
+    if(isClosed && !first) {
+      if(!pointset.insert(p).second) {
+        return true;
+      }
+    }
+    first = false;
+  }
+  return false;
+}
+
+
+
 #endif /* ALGORITHMS_HPP_ */

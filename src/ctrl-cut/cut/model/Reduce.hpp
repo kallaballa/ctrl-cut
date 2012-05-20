@@ -48,7 +48,13 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
       last = current;
       if(boost::degree(index[current],g) > 2) {
         boost::geometry::simplify(singleBranch, simplified, maxDistance);
-        *addSink++ = simplified;
+        if(is_self_intersecting(simplified)
+            || (is_closed(singleBranch) && (!is_closed(simplified) || simplified.size() <= 2)))
+          std::cerr << "";
+        //  *addSink++ = singleBranch;
+        else
+          *addSink++ = simplified;
+
         singleBranch.clear();
         simplified.clear();
       }
@@ -56,8 +62,15 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
 
     if(!singleBranch.empty()) {
       boost::geometry::simplify(singleBranch, simplified, maxDistance);
-      *addSink++ = simplified;
+      if(is_self_intersecting(simplified)
+          || (is_closed(singleBranch) && (!is_closed(simplified) || simplified.size() <= 2)))
+        std::cerr << "";
+        //*addSink++ = singleBranch;
+      else
+        *addSink++ = simplified;
     }
+    singleBranch.clear();
+    simplified.clear();
   }
   LOG_DEBUG(sink.size());
 }

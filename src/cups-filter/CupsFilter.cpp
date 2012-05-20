@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   Coord_t width = doc.get(DS::WIDTH).in(PX);
   Coord_t height = doc.get(DS::HEIGHT).in(PX);
   string v;
-  Measurement reduceMax(0.2,MM, dpi);
+  Measurement reduceMax(0.1,MM, dpi);
   if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
     reduceMax = Measurement(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
