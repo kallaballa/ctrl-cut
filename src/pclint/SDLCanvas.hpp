@@ -16,7 +16,9 @@ class SDLCanvas : public Canvas {
 public:
   SDLCanvas(dim bedWidth, dim bedHeight, dim screenWidth = 0, dim screenHeight = 0, BoundingBox* clip = NULL);
   virtual ~SDLCanvas() {
+#ifdef PCLINT_USE_SDL
     SDL_FreeSurface(screen);
+#endif
   };
   void drawPixel(coord x0, coord y0, uint8_t r,uint8_t g,uint8_t b);
   void drawMove(coord x0, coord y0, coord x1, coord y1);
