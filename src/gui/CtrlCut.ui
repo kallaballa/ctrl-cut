@@ -212,7 +212,7 @@
   <customwidget>
    <class>CtrlCutView</class>
    <extends>QGraphicsView</extends>
-   <header>CtrlCutView.h</header>
+   <header>CtrlCutView.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>
