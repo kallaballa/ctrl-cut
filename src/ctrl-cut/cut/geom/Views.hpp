@@ -55,75 +55,38 @@ public:
 template<typename TpointRange>
 struct SegmentView :
   public View<
-    SegmentWiseIterator<typename TpointRange::iterator>,
-    typename TpointRange::iterator
+    SegmentWiseIterator<typename TpointRange::const_iterator>,
+    typename TpointRange::const_iterator
   > {
   SegmentView(TpointRange& points) :
     View<
-        SegmentWiseIterator<typename TpointRange::iterator>,
-        typename TpointRange::iterator
+        SegmentWiseIterator<typename TpointRange::const_iterator>,
+        typename TpointRange::const_iterator
     >(points.begin(),points.end())
   {}
 
-  SegmentView(typename TpointRange::iterator begin, typename TpointRange::iterator end) :
+  SegmentView(typename TpointRange::const_iterator begin, typename TpointRange::const_iterator end) :
     View<
-        SegmentWiseIterator<typename TpointRange::iterator>,
-        typename TpointRange::iterator
+        SegmentWiseIterator<typename TpointRange::const_iterator>,
+        typename TpointRange::const_iterator
     >(begin,end)
   {}
 };
 
-template<typename TpointRange>
-struct SegmentConstView :
-  public View<
-    SegmentWiseConstIterator<typename TpointRange::const_iterator>,
-    typename TpointRange::const_iterator
-  > {
-  SegmentConstView(const TpointRange& points) :
-    View<
-      SegmentWiseConstIterator<typename TpointRange::const_iterator>,
-      typename TpointRange::const_iterator
-    >(points.begin(),points.end())
-  {}
-
-  SegmentConstView(typename TpointRange::const_iterator begin, typename TpointRange::const_iterator end) :
-    View<
-      SegmentWiseConstIterator<typename TpointRange::const_iterator>,
-      typename TpointRange::const_iterator
-    >(begin,end)
-  {}
-};
 
 template<typename TmultiPointRange>
 struct MultiPointView :
   public View<
-    MultiIter<typename TmultiPointRange::iterator>,
-    typename TmultiPointRange::iterator
+    MultiIter<typename TmultiPointRange::const_iterator>,
+    typename TmultiPointRange::const_iterator
   >
 {
-  typedef View<MultiIter<typename TmultiPointRange::iterator>,typename TmultiPointRange::iterator > _Base;
+  typedef View<MultiIter<typename TmultiPointRange::const_iterator>,typename TmultiPointRange::const_iterator > _Base;
 
   MultiPointView(TmultiPointRange mpr) :
     _Base(mpr.begin(),mpr.end())
   {}
-  MultiPointView(typename TmultiPointRange::iterator begin, typename TmultiPointRange::iterator end) :
-    _Base(begin,end)
-  {};
-};
-
-template<typename TmultiPointRange>
-struct MultiPointConstView :
-  public View<
-    MultiConstIter<typename TmultiPointRange::const_iterator>,
-    typename TmultiPointRange::const_iterator
-  >
-{
-  typedef View<MultiConstIter<typename TmultiPointRange::const_iterator>, typename TmultiPointRange::const_iterator > _Base;
-
-  MultiPointConstView(TmultiPointRange mpr) :
-    _Base(mpr.begin(),mpr.end())
-  {};
-  MultiPointConstView(typename TmultiPointRange::const_iterator begin, typename TmultiPointRange::const_iterator end) :
+  MultiPointView(typename TmultiPointRange::const_iterator begin, typename TmultiPointRange::const_iterator end) :
     _Base(begin,end)
   {};
 };
@@ -132,33 +95,16 @@ struct MultiPointConstView :
 template<typename TmultiPointRange>
 struct MultiSegmentView :
   public View<
-           MultSegmentWiseIterator<typename TmultiPointRange::iterator>,
-           typename TmultiPointRange::iterator
-         >
-{
-  typedef View<
-      MultSegmentWiseIterator<typename TmultiPointRange::iterator>,
-      typename TmultiPointRange::iterator
-    > _Base;
-
-  MultiSegmentView(TmultiPointRange& r) :
-    _Base(r.begin(), r.end())
-  {};
-};
-
-template<typename TmultiPointRange>
-struct MultiSegmentConstView :
-  public View<
-           MultSegmentWiseConstIterator<typename TmultiPointRange::const_iterator>,
+           MultSegmentWiseIterator<typename TmultiPointRange::const_iterator>,
            typename TmultiPointRange::const_iterator
          >
 {
   typedef View<
-      MultSegmentWiseConstIterator<typename TmultiPointRange::const_iterator>,
+      MultSegmentWiseIterator<typename TmultiPointRange::const_iterator>,
       typename TmultiPointRange::const_iterator
     > _Base;
 
-  MultiSegmentConstView(TmultiPointRange& r) :
+  MultiSegmentView(TmultiPointRange& r) :
     _Base(r.begin(), r.end())
   {};
 };

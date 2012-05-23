@@ -132,4 +132,12 @@ protected:
 
 typedef CutImpl<std::vector, std::allocator> Cut;
 
+inline MultiSegmentView<const Cut> segments(const Cut& cut) {
+  return MultiSegmentView<const Cut>(cut);
+}
+
+inline MultiPointView<const Cut> points(const Cut& cut) {
+  return MultiPointView<const Cut>(cut);
+}
+
 #endif /* CUT_H_ */

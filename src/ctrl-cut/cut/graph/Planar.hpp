@@ -50,7 +50,7 @@ void make_planar(TpointRange& pointRange, TpointRange& sink) {
   LOG_INFO_STR("make planar");
   AddSink<TpointRange> addSink(sink);
   SegmentGraph segGraph;
-  createGeometryGraph(segmentView(pointRange), segGraph);
+  load(pointRange, segGraph);
   join_strings_visitor<AddSink<TpointRange> > vis(segGraph, addSink);
   traverse_planar_faces(segGraph , vis);
 }

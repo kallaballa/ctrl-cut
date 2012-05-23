@@ -146,6 +146,7 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
 void SvgFix::work() {
   string line;
   SvgSax parser(*this);
+
   parser.set_substitute_entities(true);
   parser.parse_stream(*in);
 

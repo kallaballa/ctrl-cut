@@ -42,12 +42,6 @@ public:
       return (*it).second;
   }
 
-  void create(const Segment& seg) {
-    SegmentGraph::Vertex inV = SegmentGraph::addVertex(seg.first);
-    SegmentGraph::Vertex outV = SegmentGraph::addVertex(seg.second);
-    boost::add_edge(inV, outV, SegmentProperty(seg), *this);
-  }
-
   void add(const Segment& seg) {
     SegmentGraph::Vertex inV = SegmentGraph::addVertex(seg.first);
     SegmentGraph::Vertex outV = SegmentGraph::addVertex(seg.second);
@@ -55,13 +49,5 @@ public:
   }
 };
 
-template<typename TmultiPointRange>
-void build(TmultiPointRange src, SegmentGraph& graph) {
-  //BOOST_CONCEPT_ASSERT((SegmentInputIterator<TgeomIn>));
-  MultiSegmentView<TmultiPointRange> msv(src);
-  BOOST_FOREACH(const Segment seg, msv) {
-    graph.create(seg);
-  }
-}
 #endif
 

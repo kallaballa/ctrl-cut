@@ -95,7 +95,9 @@ Distance SvgDocument::parseDistance(string dimension) {
         return Distance(val,IN, this->dpi);
       } else if(unit == "mm") {
         return Distance(val,MM, this->dpi);
-      } else
+      } else if(unit == "px")
+        return Distance(val,PX, this->dpi);
+      else
         assert(false);
     } else {
       return Distance(val,PX, this->dpi);

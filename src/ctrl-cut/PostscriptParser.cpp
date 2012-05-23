@@ -12,6 +12,8 @@
 #include <ghostscript/ierrors.h>
 #include <ghostscript/gdevdsp.h>
 #include "boost/format.hpp"
+#include "string.h"
+
 using boost::str;
 using boost::format;
 #else
@@ -257,7 +259,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX);
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
   string filename = this->conf.get(DocumentSettings::FILENAME);
-  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + filename.erase(filename.rfind("."));
+  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + basename(filename.erase(filename.rfind(".")).c_str());
   this->filename_eps = tmpbasepath + ".eps";
 
   if (!createEps(input_file, this->filename_eps)) return false;

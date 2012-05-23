@@ -84,73 +84,9 @@ template<
 struct MultiIter :
   public MultiIterBase<
     TparentIter,
-    typename TparentIter::value_type::iterator
-  > {
-  typedef MultiIter<TparentIter> _Self;
-  typedef TparentIter _ParentIter;
-  typedef typename _ParentIter::value_type::iterator _ValueIter;
-  typedef MultiIterBase<_ParentIter, _ValueIter> _Base;
-
-  typedef typename _ValueIter::difference_type difference_type;
-  typedef typename _ValueIter::iterator_category iterator_category;
-  typedef typename _ValueIter::value_type value_type;
-  typedef typename _ValueIter::pointer pointer;
-  typedef typename _ValueIter::reference reference;
-
-  explicit MultiIter(_ParentIter begin, _ParentIter end) :
-    _Base(begin,end) {}
-
-  explicit MultiIter() :
-    _Base()
-  {}
-
-  typename _ValueIter::reference operator*() const {
-    return *_Base::current;
-  }
-
-  typename _ValueIter::pointer operator->() const {
-    return &*_Base::current;
-  }
-
-  _Self&
-  operator++() {
-    _Base::current++;
-    if(_Base::current == _Base::getCurrentEnd())
-      _Base::nextParent();
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-
-  _Self&
-  operator--() {
-    _Base::current--;
-    if(_Base::current == _Base::getCurrentBegin())
-      _Base::prevParent();
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    --(*this);
-    return __tmp;
-  }
-};
-
-template<
-  typename TparentIter
->
-struct MultiConstIter :
-  public MultiIterBase<
-    TparentIter,
     typename TparentIter::value_type::const_iterator
   > {
-  typedef MultiConstIter<TparentIter> _Self;
+  typedef MultiIter<TparentIter> _Self;
   typedef TparentIter _SuperIter;
   typedef typename _SuperIter::value_type::const_iterator _ValueIter;
   typedef MultiIterBase<_SuperIter, _ValueIter> _Base;
@@ -161,10 +97,10 @@ struct MultiConstIter :
   typedef typename _ValueIter::pointer pointer;
   typedef typename _ValueIter::reference reference;
 
-  explicit MultiConstIter() :
+  explicit MultiIter() :
     _Base()
      {}
-  explicit MultiConstIter(_SuperIter begin, _SuperIter end) :
+  explicit MultiIter(_SuperIter begin, _SuperIter end) :
     _Base(begin,end) {}
 
   typename _ValueIter::reference operator*() const {
@@ -211,7 +147,7 @@ struct SegmentWise {
 
   _PointIter begin;
   _PointIter end;
-  _PointIter last;
+  _PointIter previous;
   _PointIter current;
   bool isEnd;
 
@@ -219,7 +155,7 @@ struct SegmentWise {
   }
 
   explicit SegmentWise(_PointIter parentBegin, _PointIter parentEnd) :
-    begin(parentBegin), end(parentEnd), last(parentBegin), isEnd(parentBegin == parentEnd){
+    begin(parentBegin), end(parentEnd), previous(parentBegin), isEnd(parentBegin == parentEnd){
     // check we are having either no or at least 2 points
     if(!isEnd)
       current = ++parentBegin;
@@ -230,7 +166,7 @@ struct SegmentWise {
   }
 
   _Self& operator++() {
-    last = current++;
+    previous = current++;
     if(current == end)
       isEnd= true;
     return *this;
@@ -244,7 +180,7 @@ struct SegmentWise {
   }
 
   _Self& operator--() {
-    last = current--;
+    previous = current--;
     return *this;
   }
 
@@ -272,9 +208,9 @@ struct SegmentWiseIterator :
 
     typedef ptrdiff_t difference_type;
     typedef typename TparentIter::iterator_category iterator_category;
-    typedef Segment value_type;
-    typedef Segment* pointer;
-    typedef Segment& reference;
+    typedef const Segment value_type;
+    typedef const Segment* pointer;
+    typedef const Segment& reference;
 
   explicit SegmentWiseIterator() :
     _Base()
@@ -285,46 +221,15 @@ struct SegmentWiseIterator :
 
   reference operator*() const {
     //FIXME
-    return * new Segment(*_Base::last, *_Base::current);
+    return * new Segment(*_Base::previous, *_Base::current);
   }
 
   pointer operator->() const {
     //FIXME
-    return new Segment(*_Base::last, *_Base::current);
+    return new Segment(*_Base::previous, *_Base::current);
   }
 };
 
-template<typename TparentIter>
-struct SegmentWiseConstIterator :
-  public SegmentWise<TparentIter> {
-    typedef TparentIter _ParentIter;
-    typedef SegmentWiseConstIterator<_ParentIter> _Self;
-    typedef SegmentWise<_ParentIter> _Base;
-
-    typedef ptrdiff_t difference_type;
-    typedef typename TparentIter::iterator_category iterator_category;
-    typedef const Segment value_type;
-    typedef const Segment* pointer;
-    typedef const Segment& reference;
-
-  explicit SegmentWiseConstIterator() :
-    _Base()
-  {}
-
-  explicit SegmentWiseConstIterator(_ParentIter parentBegin, _ParentIter  parentEnd) :
-    _Base(parentBegin, parentEnd)
-  {}
-
-  reference operator*() const {
-    //FIXME
-    return * new Segment(*_Base::last, *_Base::current);
-  }
-
-  pointer const operator->() const {
-    //FIXME
-    return new Segment(*_Base::last, *_Base::current);
-  }
-};
 
 template<
   typename TmultiPointIter
@@ -333,7 +238,7 @@ struct MultSegmentWiseIterator
 {
   typedef MultSegmentWiseIterator<TmultiPointIter> _Self;
   typedef TmultiPointIter _ParentIter;
-  typedef SegmentWiseIterator<typename TmultiPointIter::value_type::iterator> _ValueIter;
+  typedef SegmentWiseIterator<typename TmultiPointIter::value_type::const_iterator> _ValueIter;
 
   typedef typename _ValueIter::difference_type difference_type;
   typedef typename _ValueIter::iterator_category iterator_category;
@@ -399,111 +304,8 @@ struct MultSegmentWiseIterator
 
   void nextParent() {
     if(!isEnd) {
-      parentCurrent++;
+      ++parentCurrent;
       if(parentCurrent == parentEnd) {
-        isEnd = true;
-      } else {
-        current = getCurrentBegin();
-      }
-    }
-  }
-
-  void prevParent() {
-    parentCurrent--;
-    current = getCurrentEnd();
-  }
-
-  bool operator==(const _Self& __x) const {
-    return this->isEnd == __x.isEnd || this->current == __x.current;
-  }
-
-  bool operator!=(const _Self& __x) const {
-    return !this->operator ==(__x);
-  }
-
-  _ValueIter getCurrentBegin() {
-    return _ValueIter((*parentCurrent).begin(), (*parentCurrent).end());
-  }
-
-  _ValueIter getCurrentEnd() {
-    return _ValueIter((*parentCurrent).end(), (*parentCurrent).end());
-  }
-};
-
-template<
-  typename TmultiPointIter
->
-struct MultSegmentWiseConstIterator
-{
-  typedef MultSegmentWiseConstIterator<TmultiPointIter> _Self;
-  typedef TmultiPointIter _ParentIter;
-  typedef SegmentWiseConstIterator<typename TmultiPointIter::value_type::const_iterator> _ValueIter;
-
-  typedef typename _ValueIter::difference_type difference_type;
-  typedef typename _ValueIter::iterator_category iterator_category;
-  typedef typename _ValueIter::value_type value_type;
-  typedef typename _ValueIter::pointer pointer;
-  typedef typename _ValueIter::reference reference;
-
-
-  _ParentIter parentBegin;
-  _ParentIter parentEnd;
-  _ParentIter parentCurrent;
-  _ValueIter current;
-  bool isEnd;
-
-  explicit MultSegmentWiseConstIterator() : isEnd(true) {}
-
-  explicit MultSegmentWiseConstIterator(_ParentIter begin, _ParentIter end) :
-    parentBegin(begin), parentEnd(end), parentCurrent(begin), isEnd(begin == end) {
-    if(!isEnd)
-      current = getCurrentBegin();
-  }
-
-  MultSegmentWiseConstIterator(const _Self& other) :
-    parentBegin(other.parentBegin), parentEnd(other.parentEnd), parentCurrent(other.parentCurrent), current(other.current), isEnd(other.isEnd)
-  {}
-
-  typename _ValueIter::reference operator*() const {
-    return *current;
-  }
-
-  typename _ValueIter::pointer operator->() const {
-    return &*current;
-  }
-
-  _Self&
-  operator++() {
-    current++;
-    if(current == getCurrentEnd())
-      nextParent();
-    return *this;
-  }
-
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    ++(*this);
-    return __tmp;
-  }
-
-
-  _Self&
-  operator--() {
-    current--;
-    if(current == getCurrentBegin())
-      prevParent();
-    return *this;
-  }
-
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    --(*this);
-    return __tmp;
-  }
-
-  void nextParent() {
-    if(!isEnd) {
-      if(parentCurrent++ == parentEnd) {
         isEnd = true;
       } else {
         current = getCurrentBegin();

@@ -150,20 +150,12 @@ public:
 
 typedef RouteImpl<std::vector, std::allocator> Route;
 
-inline MultiSegmentView<Route> segmentView(Route& route) {
-  return MultiSegmentView<Route>(route);
+inline MultiSegmentView<const Route> segments(const Route& route) {
+  return MultiSegmentView<const Route>(route);
 }
 
-inline MultiSegmentConstView<Route> segmentConstView(Route& route) {
-  return MultiSegmentConstView<Route>(route);
-}
-
-inline MultiPointView<Route> pointView(Route& route) {
-  return MultiPointView<Route>(route);
-}
-
-inline MultiPointConstView<Route> pointConstView(Route& route) {
-  return MultiPointConstView<Route>(route);
+inline MultiPointView<const Route> points(const Route& route) {
+  return MultiPointView<const Route>(route);
 }
 #endif
 

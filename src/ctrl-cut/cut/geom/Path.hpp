@@ -84,12 +84,8 @@ public:
 
 typedef PathImpl<std::vector, std::allocator> Path;
 
-inline static SegmentView<Path> segmentView(Path& path) {
-  return SegmentView<Path>(path);
-}
-
-inline static SegmentConstView<Path> segmentConstView(const Path& path) {
-  return SegmentConstView<Path>(path);
+inline static SegmentView<const Path> segments(const Path& path) {
+  return SegmentView<const Path>(path);
 }
 
 BOOST_GEOMETRY_REGISTER_LINESTRING(Path)

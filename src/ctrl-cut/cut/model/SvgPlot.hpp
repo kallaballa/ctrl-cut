@@ -31,7 +31,7 @@
 
 void find_shared_points(const Cut& cut, std::vector<Point>& sharedPoints) {
   SegmentGraph g;
-  build(cut, g);
+  load(cut, g);
 
   BOOST_FOREACH(SegmentGraph::Vertex v, vertices(g)) {
     if(boost::degree(v,g) > 2) {
@@ -50,7 +50,7 @@ void plot_shared_segments(const Cut& cut, const char* filename) {
   BOOST_FOREACH(const Path& path, cut) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:1");
 
-    BOOST_FOREACH(const Segment& seg, segmentConstView(path)) {
+    BOOST_FOREACH(const Segment& seg, segments(path)) {
       if(segidx.find(seg) != segidx.end()) {
         Path pseg = make_from(path);
         append(pseg, seg);
@@ -75,7 +75,7 @@ void plot_shared_points(const Cut& cut, const char* filename) {
   }
 
   BOOST_FOREACH(const Point& p, sharedPoints) {
-     svg.write(p, "stroke:rgb(255,0,0);stroke-width:1;fill:none");
+    svg.write(p, "stroke:rgb(255,0,0);stroke-width:1;fill:none");
   }
 }
 #endif

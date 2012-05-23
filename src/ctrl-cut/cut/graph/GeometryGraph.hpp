@@ -64,17 +64,9 @@ public:
     return boost::add_vertex(geom, *this);
   }
 
-  //concept create(geom,prop) && add(geom,prop)
-};
-
-template<typename TmultiPointRange, typename Tgraph>
-void build(TmultiPointRange src, Tgraph& graph) {
-  //BOOST_CONCEPT_ASSERT((SegmentInputIterator<TgeomIn>));
-
-  BOOST_FOREACH(const typename TmultiPointRange::value_type pointRange, src) {
-    graph.createEdge(pointRange);
+  virtual void add(const TvertexProperty& geom) {
+    addVertex(geom);
   }
-}
-
+};
 
 #endif /* GEOMETRYGRAPH_HPP_ */

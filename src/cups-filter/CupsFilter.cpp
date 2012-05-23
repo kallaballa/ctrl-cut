@@ -59,7 +59,6 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
   string basename = doc.get(DS::FILENAME);
-  std::cerr << basename << std::endl;
   Coord_t dpi = doc.get(DS::RESOLUTION);
   Coord_t width = doc.get(DS::WIDTH).in(PX);
   Coord_t height = doc.get(DS::HEIGHT).in(PX);

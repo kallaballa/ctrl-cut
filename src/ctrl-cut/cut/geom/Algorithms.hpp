@@ -117,7 +117,7 @@ inline void add(Path& path , const Segment& seg) {
 
 template<typename TpointRange>
 inline bool concat_back(Path& path, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segmentView(pointRange)) {
+  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     if (path.empty()) {
       append(path,seg);
     } else if (!concat_back(path,seg)) {
@@ -129,7 +129,7 @@ inline bool concat_back(Path& path, const TpointRange& pointRange) {
 
 template<typename TpointRange>
 inline bool concat_front(Path& path, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segmentView(pointRange)) {
+  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     if (path.empty()) {
       prepend(path,seg);
     } else if (!concat_front(path,seg)) {
@@ -244,7 +244,7 @@ inline void add(Route& route , const Segment& seg) {
 
 template<typename TpointRange>
 inline bool concat_back(Route& route, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segmentConstView(pointRange)) {
+  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     if (route.empty()) {
       append(route, seg);
     } else if(!concat_back(route, seg)) {
@@ -256,7 +256,7 @@ inline bool concat_back(Route& route, const TpointRange& pointRange) {
 
 template<typename TpointRange>
 inline bool concat_front(Route& route, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segmentConstView(pointRange)) {
+  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     if (route.empty()) {
       prepend(route, seg);
     } else if(!concat_front(route, seg)) {
@@ -286,7 +286,6 @@ template<typename TpointRange>
 inline bool is_closed(const TpointRange& pointRange) {
   return pointRange.front() == pointRange.back();
 }
-
 
 template<typename TpointRange>
 inline bool is_self_intersecting(const TpointRange& pointRange) {

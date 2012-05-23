@@ -30,10 +30,8 @@ template<typename TmultiPointRange>
 void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   LOG_INFO_STR("Reduce");
 
-  AddSink<TmultiPointRange> addSink(sink);
   SegmentGraph g;
-  build(src, g);
-  LOG_DEBUG(num_vertices(g));
+  load(src, g);
   std::map<Point, SegmentGraph::Vertex> index;
 
   make_vertex_index(g, index);
@@ -43,7 +41,7 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
     Path simplified = make_from(path);
     Point last = path.front();
     Point current;
-    BOOST_FOREACH(const Segment& seg, segmentConstView(path)) {
+    BOOST_FOREACH(const Segment& seg, segments(path)) {
       concat(singleBranch,seg);
       if(last == seg.first)
         current = seg.second;
@@ -54,7 +52,7 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
       if(boost::degree(index[current],g) > 2) {
         boost::geometry::simplify(singleBranch, simplified, maxDistance);
         if(!is_collapsed(singleBranch, simplified))
-          *addSink++ = simplified;
+          add(sink, simplified);
         singleBranch.clear();
         simplified.clear();
       }
@@ -63,7 +61,7 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
     if (!singleBranch.empty()) {
       boost::geometry::simplify(singleBranch, simplified, maxDistance);
       if (!is_collapsed(singleBranch, simplified))
-        *addSink++ = simplified;
+        add(sink, simplified);
     }
 
     singleBranch.clear();

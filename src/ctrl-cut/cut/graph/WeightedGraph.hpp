@@ -47,8 +47,10 @@ public:
     _Base(graph) {}
   WeightedGraph(size_t size) :
     _Base(size){}
+  virtual ~WeightedGraph()
+  {}
 
-  void create(const Tgeom& geom, double weight = 0) {
+  virtual void add(const Tgeom& geom, double weight = 0) {
     bool first = true;
     const Point front;
     const Point back;
@@ -59,22 +61,11 @@ public:
         first = false;
       } else {
         back = p;
-        this->add(front,back, weight);
+        boost::add_edge(addVertex(geom.front()), addVertex(geom.back()), WeightProperty(weight), *this);
         front = back;
       }
     }
   }
-
-  void add(const Tgeom& geom, double weight = 0) {
-    add_edge(addVertex(geom.front()), addVertex(geom.back()), WeightProperty(weight), *this);
-  }
 };
-
-template<>
-void WeightedGraph<Segment>::create(const Segment& seg, double weight)
-{
-   this->add(seg, weight);
- }
-
 
 #endif /* WEIGHTEDGRAPH_HPP_ */
