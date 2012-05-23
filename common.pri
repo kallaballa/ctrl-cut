@@ -23,7 +23,7 @@ macx {
 }
 
 CONFIG(debug, debug|release) {
-QMAKE_CXXFLAGS_DEBUG = -g3 -O0
+QMAKE_CXXFLAGS_DEBUG = -g3 -O0 -ggdb
 message("DEBUG!")
 } else {
 DEFINES += QT_NO_DEBUG
