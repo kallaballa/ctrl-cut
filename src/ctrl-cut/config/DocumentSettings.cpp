@@ -51,7 +51,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);
   this->put(ENABLE_CUT, true);
-  this->put(ENABLE_ENGRAVING, false);
+  this->put(ENABLE_ENGRAVING, true);
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 

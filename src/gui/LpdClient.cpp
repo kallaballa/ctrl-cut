@@ -39,7 +39,7 @@ bool LpdClient::print(const QString &host, const QString &jobname, QByteArray rt
   
   this->ctrlheader.sprintf("\002%d cfA%03.3d%.15s\n", this->ctrlfile.length(), 999, "vraag.local");
   
-  this->fileheader.sprintf("\003%lld dfA%03.3d%.15s\n", rtldata.size(), 999, "vraag.local");
+  this->fileheader.sprintf("\003%zd dfA%03.3d%.15s\n", rtldata.size(), 999, "vraag.local");
   this->rtldata = rtldata;
   this->totalsize = this->header.size() + this->ctrlfile.size() + this->ctrlheader.size() + this->fileheader.size() + this->rtldata.size();
   this->totalprogress = 0;

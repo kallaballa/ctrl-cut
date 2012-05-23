@@ -68,6 +68,8 @@ int main(int argc, char *argv[]) {
     reduceMax = Distance(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
 
+  reduceMax = Distance(1, MM, dpi);
+
   BOOST_FOREACH(Cut* p_cut, doc.cutList) {
     Cut& cut = *p_cut;
     plot(cut, basename + "_input");
@@ -94,11 +96,7 @@ int main(int argc, char *argv[]) {
     plot(cut, basename + "_cut");
   }
 
-  std::stringstream ss;
-  doc.write(ss);
-
-  LOG_DEBUG_MSG("Output size", ss.str().size());
-  std::cout << ss.rdbuf();
+  doc.write(std::cout);
 
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;

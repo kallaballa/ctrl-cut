@@ -16,12 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#ifndef REDUCE_H_
+#define REDUCE_H_
+
 #include "util/Logger.hpp"
 #include "cut/model/Cut.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include <boost/foreach.hpp>
 
-bool is_collapsed(const Path& path, const Path& simplified) {
+inline bool is_collapsed(const Path& path, const Path& simplified) {
   return is_self_intersecting(simplified)
       ||(is_closed(path) && (!is_closed(simplified) || simplified.size() <= 2));
 }
@@ -69,3 +73,4 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   }
   LOG_DEBUG(sink.size());
 }
+#endif

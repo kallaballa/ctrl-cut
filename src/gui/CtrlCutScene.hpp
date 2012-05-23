@@ -57,6 +57,7 @@ protected:
 
 private:
   DocumentHolder docHolder;
+  QGraphicsItemGroup *laserbed;
   QGraphicsItem *movingItem;
   QPointF oldPos;
 };

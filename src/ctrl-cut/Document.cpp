@@ -56,15 +56,10 @@ void Document::remove(Engraving* engraving) {
 void Document::write(std::ostream &out) {
   string title = this->get(D_SET::TITLE);
   int resolution = this->get(D_SET::RESOLUTION);
-  int raster_power = 0;
-  int raster_speed = 0;
   bool enable_engraving = this->get(D_SET::ENABLE_ENGRAVING);
   bool enable_cut = this->get(D_SET::ENABLE_CUT);
-
-  if(enable_engraving && !this->engraveList.empty()) {
-    raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
-    raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
-  }
+  int raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
+  int raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
 
   double width = this->get(D_SET::WIDTH).in(PX);
   double height = this->get(D_SET::HEIGHT).in(PX);
@@ -73,6 +68,7 @@ void Document::write(std::ostream &out) {
   /* Print the printer job language header. */
   out << format(PJL_HEADER) % title;
   /* Set autofocus on or off. */
+
   out << format(PCL_AUTOFOCUS) % focus;
   /* FIXME unknown purpose. */
   out << PCL_UNKNOWN_BLAFOO;
