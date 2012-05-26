@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "PathItem.hpp"
-#include "config/PathSettings.hpp"
 #include <qgraphicsitem.h>
 
 PathItem::PathItem(Path& path) : QGraphicsPolygonItem(), path(path) {

@@ -59,7 +59,6 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./tri_logger/tri_logger.hpp \
            ./config/CutSettings.hpp \
            ./config/DocumentSettings.hpp \
-           ./config/PathSettings.hpp \
            ./config/LaserCutter.hpp \
            ./config/Settings.hpp \
            ./config/EngraveSettings.hpp \
@@ -87,7 +86,6 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./tri_logger/tri_logger.cpp \
            ./config/EngraveSettings.cpp \
 	   ./config/BitmapSettings.cpp \
-           ./config/PathSettings.cpp \
            ./config/CutSettings.cpp \
            ./config/DocumentSettings.cpp \
            ./svg/SvgFix.cpp \

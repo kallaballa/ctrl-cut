@@ -21,7 +21,6 @@
 #define PATH_H_
 
 #include "Views.hpp"
-#include "config/PathSettings.hpp"
 #include "config/CutSettings.hpp"
 
 #include <boost/geometry/geometry.hpp>

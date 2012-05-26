@@ -20,7 +20,6 @@
 #define PATHITEM_H_
 
 #include "cut/model/Cut.hpp"
-#include "config/PathSettings.hpp"
 #include "Qt.hpp"
 #include <QGraphicsPolygonItem>
 
