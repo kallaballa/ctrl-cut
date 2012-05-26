@@ -42,7 +42,9 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   }
 
   std::map<Point, SegmentGraph::Vertex> index;
-  make_point_index(g, index);
+  BOOST_FOREACH(SegmentGraph::Vertex v, vertices(g)) {
+    index[g[v]] = v;
+  }
 
   BOOST_FOREACH(Path& path, src) {
     Path singleBranch = make_from(path);

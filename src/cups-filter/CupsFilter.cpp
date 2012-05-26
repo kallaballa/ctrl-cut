@@ -86,10 +86,11 @@ int main(int argc, char *argv[]) {
     explode(clipped, exploded);
     plot(exploded, basename + "_exploded");
 
-/*    make_planar(exploded, planar);
-    plot(planar, basename + "_planar");*/
+    make_planar(exploded, planar);
+    planar = exploded;
+    plot(planar, basename + "_planar");
 
-    reduce(exploded, reduced, reduceMax.in(PX));
+    reduce(planar, reduced, reduceMax.in(PX));
     plot(reduced, basename + "_reduced");
 
     nearest_path_sorting(reduced, sorted);
