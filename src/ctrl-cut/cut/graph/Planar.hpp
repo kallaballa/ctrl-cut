@@ -37,7 +37,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void end_face() {}
   void next_edge(SegmentGraph::Edge e) {
     if(index.insert(e).second) {
-      const SegmentProperty* seg = &(*graph)[e];
+      const PathProperty* seg = &(*graph)[e];
       *sink++ = *static_cast<const Segment*>(seg);
     }
   }

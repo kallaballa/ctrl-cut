@@ -23,6 +23,7 @@
 #include "config/CutSettings.hpp"
 #include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
+#include "cut/model/Translate.hpp"
 #include "CtrlCutException.hpp"
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
@@ -134,7 +135,11 @@ void Document::write(std::ostream &out) {
 
     /* We're going to perform a vector print. */
     for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      HPGLEncoder::encode(out,**it);
+      Cut& cut = **it;
+      Cut translated = make_from(**it);
+      const Point&  pos = cut.get(CutSettings::CPOS);
+      translate(cut,translated, pos);
+      HPGLEncoder::encode(out,translated);
     }
   }
   out << PCL_SECTION_END << HPGL_PEN_UP;

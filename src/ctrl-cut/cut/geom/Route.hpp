@@ -86,10 +86,10 @@ public:
   typename iterator::reference back() {
     return this->paths.back();
   }
-  typename iterator::reference front() const {
+  typename const_iterator::reference front() const {
     return this->paths.front();
   }
-  typename iterator::reference back() const {
+  typename const_iterator::reference back() const {
     return this->paths.back();
   }
 

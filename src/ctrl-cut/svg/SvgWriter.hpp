@@ -44,16 +44,20 @@ public:
     ostream.close();
   }
 
-  void write(const Cut& cut) {
+  void write(const Cut& cut, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1") {
     BOOST_FOREACH(const Path& path, cut) {
-      this->write(path, "stroke:rgb(0,0,0);stroke-width:1");
+      this->write(path, style);
     }
   }
 
   template<typename Tgeom>
   void write(const Tgeom& geom, const std::string& style) {
     ostream << boost::geometry::svg(geom, style) << std::endl;
-   }
+  }
+
+  void text(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"") {
+    ostream << "<text x=\"" << p.x << "\" y=\"" << p.y << "\" " << style << ">" << text << "</text>";
+  }
 };
 
 #endif /* SVGWRITER_HPP_ */

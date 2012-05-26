@@ -26,13 +26,14 @@
 #include "cut/model/Explode.hpp"
 #include "cut/model/Reduce.hpp"
 #include "cut/model/SvgPlot.hpp"
+#include "cut/model/NearestPathSorting.h"
 #include "cut/geom/sink/AddSink.hpp"
 
 #include "cut/graph/Planar.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
-
+#include <boost/bind.hpp>
 /**
  * Cups filter entry point.
  *
@@ -44,8 +45,9 @@
  */
 
 void plot(const Cut& cut, const string& prefix) {
-  plot_shared_points(cut, (prefix + "_shared_points.svg").c_str());
-  plot_shared_segments(cut, (prefix + "_shared_segments.svg").c_str());
+  plot_shared_points(cut, (prefix + "_points_shared.svg").c_str());
+  plot_shared_segments(cut, (prefix + "_segments_shared.svg").c_str());
+  plot_path_order(cut, (prefix + "_path_order.svg").c_str());
 }
 
 int main(int argc, char *argv[]) {
@@ -68,8 +70,6 @@ int main(int argc, char *argv[]) {
     reduceMax = Distance(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
 
-  reduceMax = Distance(1, MM, dpi);
-
   BOOST_FOREACH(Cut* p_cut, doc.cutList) {
     Cut& cut = *p_cut;
     plot(cut, basename + "_input");
@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
     Cut planar = make_from(cut);
     Cut exploded = make_from(cut);
     Cut reduced = make_from(cut);
+    Cut sorted = make_from(cut);
 
     clip(cut, clipped, Box(Point(0,0),Point(width,height)));
     plot(clipped, basename + "_clipped");
@@ -85,14 +86,17 @@ int main(int argc, char *argv[]) {
     explode(clipped, exploded);
     plot(exploded, basename + "_exploded");
 
-    make_planar(exploded, planar);
-    plot(planar, basename + "_planar");
+/*    make_planar(exploded, planar);
+    plot(planar, basename + "_planar");*/
 
-    reduce(planar, reduced, reduceMax.in(PX));
+    reduce(exploded, reduced, reduceMax.in(PX));
     plot(reduced, basename + "_reduced");
 
+    nearest_path_sorting(reduced, sorted);
+    plot(sorted, basename + "_sorted");
+
     cut.clear();
-    cut = reduced;
+    cut = sorted;
     plot(cut, basename + "_cut");
   }
 

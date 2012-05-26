@@ -133,6 +133,7 @@ void MainWindow::on_filePrintAction_triggered()
     this->scene->getDocumentHolder().doc->put(DocumentSettings::TITLE, "title");
     this->scene->getDocumentHolder().doc->put(DocumentSettings::USER, "user");
 //    this->scene->getDocumentHolder().doc->write(tmpfile);
+
     this->scene->getDocumentHolder().doc->write(ostream);
     tmpfile.close();
 

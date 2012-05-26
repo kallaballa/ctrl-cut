@@ -13,13 +13,13 @@ public:
 class SegmentGraph :
   public GeometryGraph<
     boost::setS,
-    boost::vecS,
+    boost::setS,
     boost::undirectedS,
     Point,
     SegmentProperty
 > {
 private:
-    typedef GeometryGraph<boost::setS,boost::vecS,boost::undirectedS,Point,SegmentProperty> _Base;
+    typedef GeometryGraph<boost::setS,boost::setS,boost::undirectedS,Point,SegmentProperty> _Base;
     std::map<Point, Vertex> index;
 public:
   SegmentGraph() :

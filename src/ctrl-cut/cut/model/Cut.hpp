@@ -58,7 +58,6 @@ public:
     int mx = 0, my = 0;
     LOG_INFO_STR("Load vector data");
     int segmentCnt = 0;
-    AddSink<CutImpl> sink(*this);
 
     while (std::getline(input, line)) {
       first = line[0];
@@ -81,7 +80,7 @@ public:
         case 'C': // close
           if (lx != mx || ly != my) {
             segmentCnt++;
-            *sink++ = Segment(Point(lx,ly),Point(mx,my));
+            add(*this, Segment(Point(lx,ly),Point(mx,my)));
           }
           break;
         case 'P': // power
@@ -94,7 +93,7 @@ public:
         case 'L': // line to
           if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
             segmentCnt++;
-            *sink++ = Segment(Point(lx,ly),Point(x,y));
+            add(*this, Segment(Point(lx,ly),Point(x,y)));
             lx = x;
             ly = y;
           }

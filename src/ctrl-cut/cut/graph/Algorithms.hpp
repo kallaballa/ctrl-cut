@@ -24,6 +24,7 @@
 #include <boost/graph/filtered_graph.hpp>
 
 using boost::filtered_graph;
+using boost::graph_traits;
 /*
 template<typename TmultiPointRange, typename Tgraph>
 void load(TmultiPointRange src, Tgraph& graph) {
@@ -31,14 +32,6 @@ void load(TmultiPointRange src, Tgraph& graph) {
     graph.add(pointRange);
   }
 }*/
-
-template<typename TpointRange, typename Tgraph>
-void load(const TpointRange& src, Tgraph& graph) {
-  MultiSegmentView<const Cut> msv(src);
-  BOOST_FOREACH(const Segment seg, segments(src)) {
-    graph.add(seg);
-  }
-}
 
 template<typename Graph, typename Edge, typename Vertex>
 const Vertex get_opposite(const Graph& graph, const Edge edge, const Vertex one) {
@@ -68,18 +61,33 @@ inline bool is_complete_graph(Graph& graph) {
   return true;
 }
 
-template<typename Graph>
-inline void make_vertex_index(Graph& graph, std::map<typename Graph::vertex_property_type::value_type, typename Graph::vertex_descriptor>& index) {
-  BOOST_FOREACH(typename Graph::vertex_descriptor vertex, vertices(graph)) {
-    Point p = graph[vertex];
-    index[p] = vertex;
+
+template<typename Tgraph>
+inline void make_vertex_index(Tgraph& graph,
+    std::map<typename graph_traits<Tgraph>::vertex_descriptor, typename graph_traits<Tgraph>::vertices_size_type>& index) {
+  typename graph_traits<Tgraph>::vertices_size_type vertex_count = 0;
+
+  BOOST_FOREACH(typename graph_traits<Tgraph>::vertex_descriptor v, vertices(graph)) {
+    index[v] = vertex_count;
   }
 }
 
-template<typename Graph>
-inline void make_edge_index(Graph& graph, std::map<typename Graph::edge_property_type::value_type, typename Graph::edge_descriptor>& index) {
-  BOOST_FOREACH(typename Graph::edge_descriptor edge, edges(graph)) {
-    index[graph[edge]] = edge;
+template<typename Tgraph>
+inline void make_edge_index(Tgraph& graph,
+    std::map<typename graph_traits<Tgraph>::edge_descriptor, typename graph_traits<Tgraph>::edges_size_type>& index) {
+  typename graph_traits<Tgraph>::edges_size_type edge_count = 0;
+
+  BOOST_FOREACH(typename graph_traits<Tgraph>::edge_descriptor e, edges(graph)) {
+    index[e] = edge_count;
+  }
+}
+
+template<typename Tgraph>
+inline void make_point_index(Tgraph& graph,
+    std::map<Point, typename graph_traits<Tgraph>::vertex_descriptor>& index) {
+
+  BOOST_FOREACH(typename graph_traits<Tgraph>::vertex_descriptor v, vertices(graph)) {
+    index[graph[v]] = v;
   }
 }
 
@@ -115,7 +123,6 @@ struct is_free_vertex_predicate {
     return false;
   }
 };
-
 
 template<typename Graph>
 class FreeGeometryView : public filtered_graph<Graph, is_free_edge_predicate<Graph>, is_free_vertex_predicate<Graph> > {

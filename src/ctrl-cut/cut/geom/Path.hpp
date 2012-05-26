@@ -27,37 +27,23 @@
 #include <boost/geometry/geometry.hpp>
 #include <boost/geometry/geometries/register/linestring.hpp>
 
-
 template<
   template<typename,typename> class Tcontainer = std::vector,
   template<typename> class Tallocator = std::allocator
 > //FIXME concept
 class PathImpl : public GeometryGroup<Point, Tcontainer, Tallocator> {
 public:
-  PathSettings settings;
   typedef GeometryGroup<Point, Tcontainer, Tallocator> _Base;
   typedef typename _Base::iterator iterator;
   typedef typename _Base::const_iterator const_iterator;
 
-  //only copy settings and inherit the parent settings
-  PathImpl(CutSettings& parentSettings) :
-    settings(parentSettings)
-  {}
-
-  PathImpl(const PathSettings& settings) :
-    settings(settings)
-  {}
+  PathImpl() :
+    _Base() {}
   PathImpl(const PathImpl& other) :
-    _Base(other), settings(other.settings) {}
+    _Base(other) {}
 
   void operator=(const PathImpl& other) {
-    this->copy(other);
-  }
-
-  //deep copy
-  void copy(const PathImpl& other) {
     (*static_cast<_Base*>(this)) = other;
-    this->settings = other.settings;
   }
 
   friend std::ostream& operator<<(std::ostream &os, PathImpl& path) {
@@ -75,10 +61,6 @@ public:
     os << "  </segments>" << std::endl;
     os << "<path>" << std::endl;
     return os;
-  }
-
-  PathImpl make() const {
-    return PathImpl(this->settings);
   }
 };
 

@@ -154,32 +154,32 @@ inline void add(Path& path ,  const TpointRange& pointRange) {
 // ### ROUTE ### //
 
 inline void append(Route& route, const Point& p) {
-  Path path(route.settings);
+  Path path;
   append(path, p);
   route.push_back(path);
 }
 
 inline void append(Route& route, const Segment& seg) {
-  Path path(route.settings);
+  Path path;
   append(path, seg);
   route.push_back(path);
 }
 
 template<typename TpointRange>
 inline void append(Route& route, const TpointRange& pointRange) {
-  Path path(route.settings);
+  Path path;
   append(path, pointRange);
   route.push_back(path);
 }
 
 inline void prepend(Route& route, const Point& p) {
-  Path path(route.settings);
+  Path path;
   append(path, p);
   route.push_back(path);
 }
 
 inline void prepend(Route& route, const Segment& seg) {
-  Path path(route.settings);
+  Path path;
   append(path, seg);
   route.push_back(path);
 }
@@ -280,6 +280,10 @@ inline void add(Route& route, const TpointRange& pointRange) {
 template<typename TpointRange>
 inline TpointRange make_from(const TpointRange& pointRange) {
   return TpointRange(pointRange.settings);
+}
+
+inline Path make_from(const Path& path) {
+  return Path();
 }
 
 template<typename TpointRange>

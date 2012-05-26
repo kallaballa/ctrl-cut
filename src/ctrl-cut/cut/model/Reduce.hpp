@@ -21,6 +21,7 @@
 #define REDUCE_H_
 
 #include "util/Logger.hpp"
+#include "cut/geom/Geometry.hpp"
 #include "cut/model/Cut.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include <boost/foreach.hpp>
@@ -35,10 +36,13 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   LOG_INFO_STR("Reduce");
 
   SegmentGraph g;
-  load(src, g);
-  std::map<Point, SegmentGraph::Vertex> index;
 
-  make_vertex_index(g, index);
+  BOOST_FOREACH(const Segment& seg, segments(src)) {
+    g.add(seg);
+  }
+
+  std::map<Point, SegmentGraph::Vertex> index;
+  make_point_index(g, index);
 
   BOOST_FOREACH(Path& path, src) {
     Path singleBranch = make_from(path);

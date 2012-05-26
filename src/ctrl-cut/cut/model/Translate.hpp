@@ -47,7 +47,7 @@ public:
 
   template<typename TpointRange>
   void operator()(TpointRange& pointRange) {
-    typename boost::remove_const<TpointRange>::type translated = pointRange.make();
+    typename boost::remove_const<TpointRange>::type translated = make_from(pointRange);
     boost::geometry::transform(pointRange, translated, this->transformer);
     *sink++ = translated;
   }

@@ -17,124 +17,99 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #ifndef CLIP_HPP_
 #define CLIP_HPP_
 
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
-
+#include "cut/geom/sink/AddSink.hpp"
 #include <boost/foreach.hpp>
 
 /*
  * Clips segments agains a box
  */
-template<
-  typename TsegmentInputRange,
-  typename TsegmentOutputIterator
->
-class Clip {
-private:
-  TsegmentInputRange src;
-  TsegmentOutputIterator sink;
-  Box bounds;
-public:
-  Clip(TsegmentInputRange src, TsegmentOutputIterator sink, Box& bounds) :
-    src(src), sink(sink), bounds(bounds) {
-  }
+template<typename TpointInputRange, typename TpointOutputRange>
+void clip(TpointInputRange& src, TpointOutputRange& sink, Box bounds) {
+  AddSink<TpointInputRange> addSink(sink);
+  BOOST_FOREACH(const Segment& seg, segments(src)) {
+    double width = bounds.width();
+    double height = bounds.height();
 
-  Clip(const Clip& other) :
-    src(other.src), sink(other.sink), bounds(other.bounds)
-  {}
+    Segment leftBedBorder(Point(0, 0), Point(0, height - 1));
+    Segment bottomBedBorder(Point(0, height - 1), Point(width - 1, height - 1));
+    Segment rightBedBorder(Point(width - 1, height - 1), Point(width - 1, 0));
+    Segment topBedBorder(Point(width - 1, 0), Point(0, 0));
 
-  void operator()() {
-    BOOST_FOREACH(const Segment& seg, src) {
-      double width = bounds.width();
-      double height = bounds.height();
+    Point intersection;
+    Segment clipped = seg;
 
-      Segment leftBedBorder(Point(0, 0),Point(0, height-1));
-      Segment bottomBedBorder(Point(0, height-1),Point(width-1, height-1));
-      Segment rightBedBorder(Point(width-1, height-1),Point(width-1, 0));
-      Segment topBedBorder(Point(width-1, 0),Point(0, 0));
-
-      Point intersection;
-      Segment clipped = seg;
-
-      if(clipped.first.x < 0 || clipped.second.x < 0) {
-        // out of bounds;
-        if(clipped.first.x < 0 && clipped.second.x < 0) {
-          continue;
-        }
-
-        if(intersects(clipped, leftBedBorder, intersection) == ALIGN_INTERSECT) {
-          if(clipped.first.x < clipped.second.x)
-            clipped.first = intersection;
-          else
-            clipped.second = clipped.first;
-            clipped.first = intersection;
-
-          intersection = Point();
-        }
+    if (clipped.first.x < 0 || clipped.second.x < 0) {
+      // out of bounds;
+      if (clipped.first.x < 0 && clipped.second.x < 0) {
+        continue;
       }
 
-      if(clipped.first.y < 0 || clipped.second.y < 0) {
-        if(clipped.first.y < 0 && clipped.second.y < 0) {
-          return;
-        }
+      if (intersects(clipped, leftBedBorder, intersection) == ALIGN_INTERSECT) {
+        if (clipped.first.x < clipped.second.x)
+          clipped.first = intersection;
+        else
+          clipped.second = clipped.first;
+        clipped.first = intersection;
 
-        if(intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
-          if(clipped.first.y < clipped.second.y)
-            clipped.first = intersection;
-          else
-            clipped.second = clipped.first;
-            clipped.first = intersection;
-
-          intersection = Point();
-        }
+        intersection = Point();
       }
-
-      if(greater_than(clipped.first.x,width - 1) || greater_than(clipped.second.x,width - 1)) {
-        if(greater_than(clipped.first.x, width - 1) && greater_than(clipped.second.x,width - 1)) {
-          return;
-        }
-
-        if(intersects(clipped, rightBedBorder, intersection) == ALIGN_INTERSECT) {
-          if(clipped.first.x > clipped.second.x)
-            clipped.first = intersection;
-          else
-            clipped.second = clipped.first;
-            clipped.first = intersection;
-
-          intersection = Point();
-        }
-      }
-
-      if(clipped.first.y > height - 1 || clipped.second.y > height - 1) {
-        if(clipped.first.y > height - 1 && clipped.second.y > height - 1) {
-          return;
-        }
-        if(intersects(clipped, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
-          if(clipped.first.y > clipped.second.y)
-            clipped.first = intersection;
-          else
-            clipped.second = clipped.first;
-            clipped.first = intersection;
-        }
-      }
-      *sink++ = clipped;
     }
+
+    if (clipped.first.y < 0 || clipped.second.y < 0) {
+      if (clipped.first.y < 0 && clipped.second.y < 0) {
+        return;
+      }
+
+      if (intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
+        if (clipped.first.y < clipped.second.y)
+          clipped.first = intersection;
+        else
+          clipped.second = clipped.first;
+        clipped.first = intersection;
+
+        intersection = Point();
+      }
+    }
+
+    if (greater_than(clipped.first.x, width - 1)
+        || greater_than(clipped.second.x, width - 1)) {
+      if (greater_than(clipped.first.x, width - 1)
+          && greater_than(clipped.second.x, width - 1)) {
+        return;
+      }
+
+      if (intersects(clipped, rightBedBorder, intersection)
+          == ALIGN_INTERSECT) {
+        if (clipped.first.x > clipped.second.x)
+          clipped.first = intersection;
+        else
+          clipped.second = clipped.first;
+        clipped.first = intersection;
+
+        intersection = Point();
+      }
+    }
+
+    if (clipped.first.y > height - 1 || clipped.second.y > height - 1) {
+      if (clipped.first.y > height - 1 && clipped.second.y > height - 1) {
+        return;
+      }
+      if (intersects(clipped, bottomBedBorder, intersection)
+          == ALIGN_INTERSECT) {
+        if (clipped.first.y > clipped.second.y)
+          clipped.first = intersection;
+        else
+          clipped.second = clipped.first;
+        clipped.first = intersection;
+      }
+    }
+    *addSink++ = clipped;
   }
-};
-
-template<
-  typename TpointInputRange,
-  typename TpointOutputIterator
->
-void clip(TpointInputRange& src, TpointOutputIterator& sink, Box box) {
-  MultiSegmentView<TpointInputRange> msv(src);
-  AddSink<TpointOutputIterator> addSink(sink);
-
-  Clip<MultiSegmentView<TpointInputRange>, AddSink<TpointOutputIterator> > clipper(msv,addSink,box);
-  clipper();
 }
+
 #endif /* CLIP_HPP_ */
