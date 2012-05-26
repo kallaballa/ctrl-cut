@@ -115,17 +115,17 @@ bool build_planar_embedding(typename Graph::Embedding& embedding, Graph& graph) 
 template<typename Visitor>
 inline void traverse_planar_faces(SegmentGraph& graph, Visitor& visitor) {
   SegmentGraph::Embedding Embedding;
-/*
+
   std::map<SegmentGraph::Edge, graph_traits<SegmentGraph>::edges_size_type > e_index_map;
   graph_traits<SegmentGraph>::edges_size_type edge_count = 0;
   graph_traits<SegmentGraph>::edge_iterator ei, ei_end;
 
   for(tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
     e_index_map[*ei] = edge_count++;
-*/
-//  SegmentGraph::Embedding embedding(num_vertices(graph));
- // assert(build_planar_embedding(embedding, graph));
-  //planar_face_traversal(graph, &embedding[0], visitor,make_assoc_property_map(e_index_map));
+
+  SegmentGraph::Embedding embedding(num_vertices(graph));
+  assert(build_planar_embedding(embedding, graph));
+  planar_face_traversal(graph, &embedding[0], visitor,make_assoc_property_map(e_index_map));
 }
 
 

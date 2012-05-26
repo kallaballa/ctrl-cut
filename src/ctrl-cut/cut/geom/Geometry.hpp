@@ -221,6 +221,7 @@ public:
     }
   }
 
+  Box() {}
   Box(const Point&  min_corner, const Point&  max_corner) : min_corner(min_corner) , max_corner(max_corner) {}
   Box(const Coord_t&  ulx, const Coord_t&  uly, const Coord_t& lrx, const Coord_t&  lry) : min_corner(ulx,uly) , max_corner(lrx,lry) {}
 

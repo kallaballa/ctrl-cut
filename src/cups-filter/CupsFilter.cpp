@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   Coord_t width = doc.get(DS::WIDTH).in(PX);
   Coord_t height = doc.get(DS::HEIGHT).in(PX);
   string v;
-  Distance reduceMax(0.1,MM, dpi);
+  Distance reduceMax(0.2,MM, dpi);
   if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
     reduceMax = Distance(boost::lexical_cast<uint16_t>(v), MM, dpi);
   }
@@ -87,7 +87,6 @@ int main(int argc, char *argv[]) {
     plot(exploded, basename + "_exploded");
 
     make_planar(exploded, planar);
-    planar = exploded;
     plot(planar, basename + "_planar");
 
     reduce(planar, reduced, reduceMax.in(PX));
