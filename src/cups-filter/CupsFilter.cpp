@@ -27,6 +27,7 @@
 #include "cut/model/Reduce.hpp"
 #include "cut/model/SvgPlot.hpp"
 #include "cut/model/NearestPathSorting.h"
+#include "cut/model/Deonion.hpp"
 #include "cut/geom/sink/AddSink.hpp"
 
 #include "cut/graph/Planar.hpp"
@@ -34,6 +35,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
+
 /**
  * Cups filter entry point.
  *
@@ -43,12 +45,6 @@
  * @return An integer where 0 represents successful termination, any other
  * value represents an error code.
  */
-
-void plot(const Cut& cut, const string& prefix) {
-  plot_shared_points(cut, (prefix + "_points_shared.svg").c_str());
-  plot_shared_segments(cut, (prefix + "_segments_shared.svg").c_str());
-  plot_path_order(cut, (prefix + "_path_order.svg").c_str());
-}
 
 int main(int argc, char *argv[]) {
   typedef DocumentSettings DS;
@@ -72,7 +68,7 @@ int main(int argc, char *argv[]) {
 
   BOOST_FOREACH(Cut* p_cut, doc.cutList) {
     Cut& cut = *p_cut;
-    plot(cut, basename + "_input");
+    plot_svg(cut, basename + "_input");
 
     Cut clipped = make_from(cut);
     Cut planar = make_from(cut);
@@ -80,27 +76,33 @@ int main(int argc, char *argv[]) {
     Cut reduced = make_from(cut);
     Cut sorted = make_from(cut);
 
-    clip(cut, clipped, Box(Point(0,0),Point(width,height)));
-    plot(clipped, basename + "_clipped");
+    clip(cut, clipped, Box(Point(0,0), Point(width,height)), Distance(30,MM, dpi));
+    plot_svg(clipped, basename + "_clipped");
 
-    explode(clipped, exploded);
-    plot(exploded, basename + "_exploded");
+    explode(clipped, exploded, Distance(30,MM, dpi));
+    plot_svg(exploded, basename + "_exploded");
 
     make_planar(exploded, planar);
-    plot(planar, basename + "_planar");
+    plot_svg(planar, basename + "_planar");
 
     reduce(planar, reduced, reduceMax.in(PX));
-    plot(reduced, basename + "_reduced");
+    plot_svg(reduced, basename + "_reduced");
 
+/*
     nearest_path_sorting(reduced, sorted);
     plot(sorted, basename + "_sorted");
+*/
+    traverse_onion(reduced, sorted);
+    plot_svg(sorted, basename + "_onion");
 
     cut.clear();
-    cut = sorted;
-    plot(cut, basename + "_cut");
+    cut = reduced;
+    plot_svg(cut, basename + "_cut");
   }
 
-  doc.write(std::cout);
+  stringstream ss;
+  doc.write(ss);
+  std::cout << ss.str() << endl;
 
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;
