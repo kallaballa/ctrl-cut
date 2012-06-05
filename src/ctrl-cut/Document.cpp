@@ -152,45 +152,8 @@ void Document::write(std::ostream &out) {
   }
   out << "Mini]";
 }
-/*
-Document& Document::preprocess() {
- for (CutIt it = this->begin_cut(); it != this->end_cut(); it++) {
-   Cut& model = **it;
-   Coord_t dpi = model.get(D_SET::RESOLUTION);
-   Coord_t width = model.get(D_SET::WIDTH).in(PX, dpi);
-   Coord_t height = model.get(D_SET::HEIGHT).in(PX, dpi);
-   Distance reduceMax = model.get(C_SET::REDUCE);
 
-   dump("input.txt", model.begin(), model.end());
-
-   Cut clipped(model.settings);
-   clip(MultiSegmentView<Cut>(model), AddSink<Cut>(clipped), Box(Point(0,0),Point(width,height)));
-   dump("clipped.txt", clipped.begin(), clipped.end());
-
-   Cut exploded(model.settings);
-   explode(MultiSegmentView<Cut>(clipped), AddSink<Cut>(exploded));
-   dump("exploded.txt", exploded.begin(), exploded.end());
-
-   Cut planared(model.settings);
-   makePlanar(exploded, planared);
-   dump("planared.txt", planared.begin(), planared.end());
-
-   Cut reduced(model.settings);
-   reduce(exploded, reduced, reduceMax.in(PX, dpi));
-   dump("reduced.txt", reduced.begin(), reduced.end());
-
-   Cut travelled = model.make();
-   travel(reduced, travelled);
-   dump("travelled.txt", travelled.begin(), travelled.end());
-
-   model = travelled;
-   dump("after-copy.txt", model.begin(), model.end());
- }
-
-   return *this;
-}
-*/
-Document::Format Document::findFormat(const string& filename) {
+Document::Format Document::guessFileFormat(const string& filename) {
   string base = basename(strdup(filename.c_str()));
   string suffix = base.substr(base.rfind(".") + 1);
   transform ( suffix.begin(), suffix.end(), suffix.begin(), &Util::lower_case );
@@ -207,7 +170,7 @@ Document::Format Document::findFormat(const string& filename) {
 
 bool Document::load(const string& filename, LoadType load, Format docFormat) {
   if(docFormat == UNSPECIFIED)
-    docFormat = findFormat(filename);
+    docFormat = guessFileFormat(filename);
 
   string base = basename(strdup(filename.c_str()));
 
