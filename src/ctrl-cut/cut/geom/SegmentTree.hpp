@@ -27,7 +27,7 @@ struct SegmentNodeImpl: public Segment {
     return Segment::operator==(other);
   }
 
-  static inline Coord_t centerComponent(SegmentNodeImpl item, int k) {
+  static inline Coord_t centerComponent(const SegmentNodeImpl& item, const int& k) {
     return item.center[k];
   }
 };
@@ -55,7 +55,7 @@ struct IndexedSegmentNodeImpl: public Tcontainer<Segment, Tallocator<Segment> >:
     return **this == *other;
   }
 
-  static inline Coord_t centerComponent(IndexedSegmentNodeImpl item, int k) {
+  static inline Coord_t centerComponent(const IndexedSegmentNodeImpl& item, const int& k) {
     return item.center[k];
   }
 };
@@ -132,27 +132,18 @@ public:
   iterator end() {
     return index.end();
   }
-
-
-  template<typename TsegmentInputRange>
-  void build(TsegmentInputRange src) {
-    for(typename TsegmentInputRange::iterator it = src.begin(); it != src.end(); ++it) {
-    //BOOST_FOREACH(const Segment& seg, src) {
-      this->push_back(*it);
-    }
-  }
 };
 
 typedef SegmentTreeImpl<
     SegmentNodeImpl,
-    std::pointer_to_binary_function<SegmentNodeImpl, int, int32_t>
+    std::pointer_to_binary_function<const SegmentNodeImpl&, const int&, Coord_t>
 > SegmentTree;
 typedef IndexedSegmentTreeImpl<
     IndexedSegmentNodeImpl<std::list, std::allocator>,
     std::pointer_to_binary_function<
-      IndexedSegmentNodeImpl<std::list,std::allocator>,
-      int,
-      int32_t
+      const IndexedSegmentNodeImpl<std::list,std::allocator>&,
+      const int&,
+      Coord_t
     >,
     std::list,
     std::allocator
