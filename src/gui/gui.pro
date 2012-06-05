@@ -33,11 +33,12 @@ macx {
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
 
-FORMS += CtrlCut.ui LaserDialog.ui SimulatorDialog.ui
+FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += ./MainWindow.hpp \
+	   ./NewDialog.hpp \
            ./event/CtrlCutEvent.hpp \
            ./CtrlCutScene.hpp \
            ./NavigationView.hpp \
@@ -46,7 +47,6 @@ HEADERS += ./MainWindow.hpp \
            ./EventFilter.hpp \
            ./LpdClient.hpp \
            ./CtrlCutView.hpp \
-           ./LaserDialog.hpp \
            ./StreamUtils.hpp \
            ./settings/SettingsTableModel.hpp \
 	   ./settings/CutSettingsTableModel.hpp \
@@ -57,15 +57,11 @@ HEADERS += ./MainWindow.hpp \
            ./helpers/CutItem.hpp \
            ./helpers/EngraveCanvas.hpp \
            ./helpers/EngraveItem.hpp \
-           ./helpers/DocumentHolder.hpp \
-           ./settings/CutSettingsTableModel.hpp \
-           ./settings/EngraveSettingsTableModel.hpp \
-           ./settings/DocumentSettingsTableModel.hpp \
-           ./settings/SettingsTableModel.h
+           ./helpers/DocumentHolder.hpp
 SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \
            ./Commands.cpp \
-           ./LaserDialog.cpp \
+           ./NewDialog.cpp \
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \
            ./helpers/CutItem.cpp \
