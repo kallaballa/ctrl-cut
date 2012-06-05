@@ -51,6 +51,7 @@ public slots:
   void on_lpdclient_progress(int done, int total);
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_deleteItem();
+  void on_newJob();
 
   void sceneSelectionChanged();
 
