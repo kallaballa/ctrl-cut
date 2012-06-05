@@ -23,14 +23,59 @@
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "cut/geom/sink/AddSink.hpp"
+#include "util/Measurement.hpp"
 #include <boost/foreach.hpp>
+#include <algorithm>
+
+bool chop(Path& chopped, const Segment& seg, const Distance& maxLength) {
+  Coord_t len = seg.length();
+  Coord_t maxLen = maxLength.in(PX);
+  if(len >= maxLen) {
+    Coord_t adj = std::abs(seg[0].x - seg[1].x);
+    Coord_t opp = std::abs(seg[0].y - seg[1].y);
+
+    double alpha ;
+    if(adj == 0)
+      alpha = CC_PI / 2;
+    else if(opp == 0)
+      alpha = 0;
+    else
+      alpha = atan(opp/adj);
+
+    Coord_t x_inc = round(std::max(cos(alpha) * maxLen,1.0));
+    Coord_t y_inc = round(std::max(sin(alpha) * maxLen,1.0));
+
+    if(seg[0].x > seg[1].x) {
+      x_inc *= -1;
+    }
+
+    if(seg[0].y > seg[1].y) {
+      y_inc *= -1;
+    }
+
+    Point p = seg[0];
+    do {
+      append(chopped, p);
+      p.x += x_inc;
+      p.y += y_inc;
+    } while (Segment(chopped.front(), chopped.back()).length() < len);
+
+    if(chopped.back() != seg[1]) {
+      chopped.erase(chopped.end()-1);
+      append(chopped, seg[1]);
+    }
+
+    return true;
+  }
+
+  return false;
+}
 
 /*
  * Clips segments agains a box
  */
 template<typename TpointInputRange, typename TpointOutputRange>
-void clip(TpointInputRange& src, TpointOutputRange& sink, Box bounds) {
-  AddSink<TpointInputRange> addSink(sink);
+void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds, const Distance& maxLength) {
   BOOST_FOREACH(const Segment& seg, segments(src)) {
     double width = bounds.width();
     double height = bounds.height();
@@ -108,7 +153,12 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, Box bounds) {
         clipped.first = intersection;
       }
     }
-    *addSink++ = clipped;
+
+/*    Path chopped;
+    if(chop(chopped, clipped, maxLength))
+      append(sink, chopped);
+    else*/
+      append(sink, clipped);
   }
 }
 
