@@ -22,6 +22,7 @@
 
 #include "cut/graph/SegmentGraph.hpp"
 #include <boost/graph/filtered_graph.hpp>
+#include <boost/foreach.hpp>
 
 using boost::filtered_graph;
 using boost::graph_traits;
@@ -49,7 +50,6 @@ template<typename Graph>
 inline bool is_complete_graph(Graph& graph) {
   typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
   typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex;
-  Vertex i,j;
 
   BOOST_FOREACH(Vertex i, boost::vertices(graph)) {
     BOOST_FOREACH(Vertex j, boost::vertices(graph)) {
