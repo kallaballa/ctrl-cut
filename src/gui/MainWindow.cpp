@@ -81,6 +81,13 @@ void MainWindow::on_deleteItem() {
   QUndoCommand *deleteCommand = new DeleteCommand(this->scene);
   undoStack->push(deleteCommand);
 }
+
+void MainWindow::on_newJob() {
+  QUndoCommand *newCommand = new NewCommand(this->scene);
+  undoStack->push(newCommand);
+  setWindowTitle("Ctrl-Cut - " + QString(this->scene->getDocumentHolder().doc->get(DocumentSettings::TITLE).c_str()));
+}
+
 /*
 void MainWindow::on_simplifyItem() {
   if (this->scene->selectedItems().isEmpty())
@@ -155,23 +162,38 @@ void MainWindow::on_lpdclient_progress(int done, int total)
 void MainWindow::sceneSelectionChanged()
 {
   printf("selectionChanged\n");
+
   if(this->scene->selectedItems().empty()) {
-    DocumentSettingsTableModel* model = new DocumentSettingsTableModel();
-    model->setSettings(this->scene->getDocumentHolder().doc->getSettings());
-    settingsTable->setModel(model);
+    foreach (QGraphicsItem *item, this->scene->items()) {
+      AbstractCtrlCutItem* cci;
+      if((cci = dynamic_cast<AbstractCtrlCutItem*>(item)))
+        cci->setHighlighted(false);
+    }
+    settingsTable->hide();
   } else {
-    foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    foreach (QGraphicsItem *item, this->scene->items()) {
       EngraveItem* ei;
       CutItem* ci;
-      if((ei = dynamic_cast<EngraveItem*>(item))) {
-        EngraveSettingsTableModel* model = new EngraveSettingsTableModel();
-        model->setSettings(ei->engraving.settings);
-        settingsTable->setModel(model);
-      } else if((ci = dynamic_cast<CutItem*>(item))) {
-        CutSettingsTableModel* model = new CutSettingsTableModel();
-        model->setSettings(ci->cut.settings);
-        settingsTable->setModel(model);
+
+      if(item->isSelected()) {
+        if((ei = dynamic_cast<EngraveItem*>(item))) {
+          ei->setHighlighted(true);
+          EngraveSettingsTableModel* model = new EngraveSettingsTableModel();
+          model->setSettings(ei->engraving.settings);
+          settingsTable->setModel(model);
+        } else if((ci = dynamic_cast<CutItem*>(item))) {
+          ci->setHighlighted(true);
+          CutSettingsTableModel* model = new CutSettingsTableModel();
+          model->setSettings(ci->cut.settings);
+          settingsTable->setModel(model);
+        }
+      } else {
+        AbstractCtrlCutItem* cci;
+        if((cci = dynamic_cast<AbstractCtrlCutItem*>(item))) {
+          cci->setHighlighted(false);
+        }
       }
+      settingsTable->show();
       printf("item: %p\n", item);
     }
   }
@@ -194,7 +216,7 @@ void
 MainWindow::on_helpAboutAction_triggered()
 {
   qApp->setWindowIcon(QApplication::windowIcon());
-  QMessageBox::information(this, "About Ctrl-Cut", 
+  QMessageBox::information(this, "About Ctrl-Cut",
                            QString("Ctrl-Cut " TOSTRING(CTRLCUT_VERSION) " (http://github.com/metalab/ctrl-cut)\n") +
                            QString("Copyright (C) 2009-2011 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>\n"
                                    "\n"

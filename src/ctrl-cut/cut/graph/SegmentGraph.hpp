@@ -10,30 +10,36 @@ public:
   SegmentProperty(const Segment& s) : Segment(s), owned(false) {}
 };
 
-class SegmentGraph :
+template<
+  class TedgeList = boost::setS,
+  class TvertexList = boost::vecS
+>
+class SegmentGraphImpl :
   public GeometryGraph<
-    boost::setS,
-    boost::setS,
+    TedgeList,
+    TvertexList,
     boost::undirectedS,
     Point,
     SegmentProperty
 > {
 private:
-    typedef GeometryGraph<boost::setS,boost::setS,boost::undirectedS,Point,SegmentProperty> _Base;
-    std::map<Point, Vertex> index;
+    typedef GeometryGraph<TedgeList,TvertexList,boost::undirectedS,Point,SegmentProperty> _Base;
+    typedef SegmentGraphImpl<_Base> _Self;
 public:
-  SegmentGraph() :
+    typedef typename _Base::Vertex Vertex;
+    std::map<Point,Vertex> index;
+    SegmentGraphImpl() :
     _Base()
   {}
-  SegmentGraph(const SegmentGraph& graph) :
+    SegmentGraphImpl(const _Self& graph) :
     _Base(graph)
   {}
-  SegmentGraph(_Base::v_size size) :
+    SegmentGraphImpl(typename _Base::v_size size) :
     _Base(size)
   {}
 
   Vertex addVertex(const Point& p) {
-    std::map<Point, Vertex>::iterator it = index.find(p);
+    typename std::map<Point, Vertex>::iterator it = index.find(p);
     if(it == index.end()) {
       Vertex v = boost::add_vertex(p, *this);
       index[p] = v;
@@ -43,11 +49,12 @@ public:
   }
 
   void add(const Segment& seg) {
-    SegmentGraph::Vertex inV = SegmentGraph::addVertex(seg.first);
-    SegmentGraph::Vertex outV = SegmentGraph::addVertex(seg.second);
+    Vertex inV = this->addVertex(seg.first);
+    Vertex outV = this->addVertex(seg.second);
     boost::add_edge(inV, outV, SegmentProperty(seg), *this);
   }
 };
 
+  typedef SegmentGraphImpl<boost::vecS, boost::vecS> SegmentGraph;
 #endif
 

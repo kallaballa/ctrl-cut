@@ -77,6 +77,20 @@ private:
   DocumentHolder newDoc;
 };
 
+class NewCommand: public QUndoCommand {
+public:
+  NewCommand(CtrlCutScene* scene,
+      QUndoCommand *parent = NULL);
+
+  void undo();
+  void redo();
+
+private:
+  CtrlCutScene* scene;
+  DocumentHolder oldDoc;
+  DocumentHolder newDoc;
+};
+
 class ImportCommand: public QUndoCommand {
 public:
   ImportCommand(CtrlCutScene* scene, const QString &filename, QUndoCommand *parent = NULL);

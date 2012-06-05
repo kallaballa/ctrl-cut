@@ -35,14 +35,17 @@ template<typename TmultiPointRange>
 void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   LOG_INFO_STR("Reduce");
 
-  SegmentGraph g;
+  typedef SegmentGraphImpl<boost::setS, boost::setS> UniqueSegmentGraph;
+  UniqueSegmentGraph g;
 
   BOOST_FOREACH(const Segment& seg, segments(src)) {
     g.add(seg);
   }
 
-  std::map<Point, SegmentGraph::Vertex> index;
-  make_point_index(g, index);
+  std::map<Point, UniqueSegmentGraph::Vertex> index;
+  BOOST_FOREACH(UniqueSegmentGraph::Vertex v, vertices(g)) {
+    index[g[v]] = v;
+  }
 
   BOOST_FOREACH(Path& path, src) {
     Path singleBranch = make_from(path);
@@ -61,6 +64,14 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
         boost::geometry::simplify(singleBranch, simplified, maxDistance);
         if(!is_collapsed(singleBranch, simplified))
           add(sink, simplified);
+        else {
+          Box b;
+          boost::geometry::envelope(simplified, b);
+          if(b.width() > maxDistance && b.height() > maxDistance) {
+            add(sink, simplified);
+          }
+        }
+
         singleBranch.clear();
         simplified.clear();
       }
@@ -70,6 +81,13 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
       boost::geometry::simplify(singleBranch, simplified, maxDistance);
       if (!is_collapsed(singleBranch, simplified))
         add(sink, simplified);
+      else {
+        Box b;
+        boost::geometry::envelope(simplified, b);
+        if(b.width() > maxDistance && b.height() > maxDistance) {
+          add(sink, simplified);
+        }
+      }
     }
 
     singleBranch.clear();

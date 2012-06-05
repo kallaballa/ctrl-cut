@@ -92,7 +92,7 @@ public:
   void remove(Engraving* engraving);
   void write(std::ostream &out);
 
-  Format findFormat(const string& filename);
+  Format guessFileFormat(const string& filename);
 
   bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED);
 

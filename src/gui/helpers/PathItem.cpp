@@ -18,13 +18,17 @@
  */
 #include "PathItem.hpp"
 #include <qgraphicsitem.h>
+#include <qpen.h>
 
 PathItem::PathItem(Path& path) : QGraphicsPolygonItem(), path(path) {
-  QPolygonF polygon;
+  QPolygon polygon;
+
   BOOST_FOREACH(const Point& p, path) {
-    polygon << QPointF(p.x, p.y);
+    polygon << QPoint(p.x, p.y);
   }
 
+  QPen p(Qt::blue);
   QGraphicsPolygonItem::setPolygon(polygon);
+  QGraphicsPolygonItem::setPen(p);
 }
 

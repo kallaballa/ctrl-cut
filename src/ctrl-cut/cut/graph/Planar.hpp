@@ -37,7 +37,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void end_face() {}
   void next_edge(SegmentGraph::Edge e) {
     if(index.insert(e).second) {
-      const PathProperty* seg = &(*graph)[e];
+      const SegmentProperty* seg = &(*graph)[e];
       *sink++ = *static_cast<const Segment*>(seg);
     }
   }
@@ -50,7 +50,10 @@ void make_planar(TpointRange& pointRange, TpointRange& sink) {
   LOG_INFO_STR("make planar");
   AddSink<TpointRange> addSink(sink);
   SegmentGraph segGraph;
-  load(pointRange, segGraph);
+  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
+    segGraph.add(seg);
+  }
+
   join_strings_visitor<AddSink<TpointRange> > vis(segGraph, addSink);
   traverse_planar_faces(segGraph , vis);
 }

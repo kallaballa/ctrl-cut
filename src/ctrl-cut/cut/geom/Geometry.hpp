@@ -63,10 +63,12 @@ public:
     return this->x != other.x || this->y != other.y;
   }
 
-  Point& operator-(const Point&  other) const {
-    Coord_t x_diff = this->x - other.x;
-    Coord_t y_diff = this->y - other.y;
-    return (* new Point(x_diff, y_diff));
+  Point operator-(const Point&  other) const {
+    return Point(this->x - other.x, this->y - other.y);
+  }
+
+  Point operator+(const Point&  other) const {
+    return Point(this->x + other.x, this->y + other.y);
   }
 
   void operator=(const Point&  other) {
@@ -131,13 +133,46 @@ public:
   }
 
   /*!
-    Calculates the distance from the Point to the infinite segment
+    Returns angle to the positive Y axis
   */
-  float distance(const Point& p) const;
+  float distance(const Point &p) const
+  {
+    return
+      fabs((this->first[1] - this->second[1]) * p.x + (this->second[0] - this->first[0]) * p.y +
+       this->first[0] * this->second[1] - this->second[0] * this->first[1]) /
+      sqrt((this->second[0] - this->first[0]) * (this->second[0] - this->first[0]) +
+           (this->second[1] - this->first[1]) * (this->second[1] - this->first[1]));
+  }
+
+  /*!
+    Returns the length of the segment in pixels
+  */
+  float length() const {
+    return hypot(std::fabs(first.x - second.x), std::fabs(first.y - second.y));
+  }
+
   /*!
     Returns angle to the positive Y axis
   */
-  float getSlope(bool invert = false) const;
+  float getSlope(bool invert = false) const
+  {
+    int d_x = (*this)[1][0] - (*this)[0][0];
+    int d_y = (*this)[1][1] - (*this)[0][1];
+    // make sure we're pointing into the positive halfsphere
+    /*if ((*this)[0][0] > (*this)[1][0]) {
+      d_x = -d_x;
+      d_y = -d_y;
+    }*/
+
+    if(invert) {
+      d_x = -d_x;
+      d_y = -d_y;
+    }
+
+    // Swap x and y since we're measuring relative to the Y axis.
+    // We also negate the Y axis since positive Y points downwards (left handed)
+    return CC_PI - ((float)atan2(d_x, -d_y));
+  }
 };
 
 BOOST_GEOMETRY_REGISTER_SEGMENT(Segment, Point, first, second)
@@ -221,14 +256,15 @@ public:
     }
   }
 
+  Box() {}
   Box(const Point&  min_corner, const Point&  max_corner) : min_corner(min_corner) , max_corner(max_corner) {}
   Box(const Coord_t&  ulx, const Coord_t&  uly, const Coord_t& lrx, const Coord_t&  lry) : min_corner(ulx,uly) , max_corner(lrx,lry) {}
 
-  Coord_t width() {
+  Coord_t width() const {
     return max_corner[0] - min_corner[0];
   }
 
-  Coord_t height() {
+  Coord_t height() const {
     return max_corner[1] - min_corner[1];
   }
 };
@@ -244,7 +280,7 @@ public:
   Sphere(const Tgeom& seg) {
     Box box(seg);
 
-    Point& diff = box.max_corner - box.min_corner;
+    const Point& diff = box.max_corner - box.min_corner;
     this->center = Point(box.min_corner.x + (diff.x / 2), box.min_corner.y + (diff.y / 2));
     this->radius = boost::math::hypot((diff.x / 2), (diff.y / 2));
   }

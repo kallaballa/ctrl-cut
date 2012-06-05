@@ -28,6 +28,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./cut/model/Reduce.hpp \
 	   ./cut/model/Cut.hpp \
            ./cut/model/SvgPlot.hpp \
+	   ./cut/model/Deonion.hpp \
            ./cut/geom/Views.hpp \
            ./cut/geom/Geometry.hpp \
            ./cut/geom/SegmentTree.hpp \
@@ -73,6 +74,7 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
+           ./cut/model/Deonion.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \
            ./engrave/dither/DitherBurke.cpp \

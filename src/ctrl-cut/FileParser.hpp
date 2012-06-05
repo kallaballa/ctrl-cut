@@ -14,6 +14,8 @@
 class FileParser
 {
 public:
+  DocumentSettings& conf;
+
   FileParser(DocumentSettings &conf) : conf(conf) {}
   virtual ~FileParser() {}
 
@@ -28,9 +30,6 @@ public:
   virtual bool hasBitmapImage() = 0;
   virtual bool hasGrayscaleImage() = 0;
   virtual const std::string &getBitmapFile() = 0;
-
-protected:
-  DocumentSettings& conf;
 };
 
 class PostscriptParser : public FileParser

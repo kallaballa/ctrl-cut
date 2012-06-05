@@ -30,24 +30,22 @@
  * Split segments at intersection points.
  */
 template<
-  typename TsegmentInputRange,
-  typename TpointOutputRange
+  typename TmultiPointRange
 >
 class Explode {
 private:
-  TsegmentInputRange src;
-  TpointOutputRange sink;
+  TmultiPointRange& src;
+  TmultiPointRange& sink;
+  const Distance& maxLen;
 
   IndexedSegmentTree tree;
 
   typedef IndexedSegmentTree::iterator TreeIter;
   typedef IndexedSegmentTree::Result Result;
   typedef IndexedSegmentTree::Result::const_iterator ResultIter;
-
 public:
-  Explode(TsegmentInputRange src, TpointOutputRange sink) :
-    src(src), sink(sink) {
-    BOOST_CONCEPT_ASSERT((SegmentOutputIterator<TpointOutputRange>));
+  Explode(TmultiPointRange& src, TmultiPointRange& sink, const Distance& maxLen) :
+    src(src), sink(sink), maxLen(maxLen) {
   }
 
   Explode(const Explode& other) :
@@ -138,7 +136,10 @@ public:
     LOG_INFO_STR("Explode");
 
     Point intersection;
-    tree.build(src);
+
+    BOOST_FOREACH(const Segment& seg, segments(src)) {
+      tree.push_back(seg);
+    }
 
     for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
 
@@ -169,19 +170,19 @@ public:
         }
       }
     }
-    std::copy(tree.begin(), tree.end(), sink);
+
+    BOOST_FOREACH(const Segment& seg, segments(src)) {
+      add(sink, seg);
+    }
   }
 };
 
 template<
-  typename TpointInputRange,
-  typename TpointOutputRange
->
-void explode(TpointInputRange& src, TpointOutputRange& sink) {
-  MultiSegmentView<TpointInputRange> msv(src);
-  AddSink<TpointOutputRange> addSink(sink);
+  typename TmultiPointRange
 
-  Explode<MultiSegmentView<TpointInputRange>, AddSink<TpointOutputRange> > exploder(msv,addSink);
+>
+void explode(TmultiPointRange& src, TmultiPointRange& sink, const Distance& maxLen) {
+  Explode<TmultiPointRange> exploder(src,sink, maxLen);
   exploder();
 }
 

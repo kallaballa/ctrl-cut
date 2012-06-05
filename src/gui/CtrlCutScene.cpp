@@ -31,13 +31,22 @@
 #include <QGraphicsItem>
 #include "cut/model/Clip.hpp"
 #include "cut/model/Explode.hpp"
+#include "cut/model/Deonion.hpp"
 #include "cut/model/Reduce.hpp"
+#include "cut/model/NearestPathSorting.h"
 #include "cut/graph/Planar.hpp"
+#include "cut/model/SvgPlot.hpp"
+#include <boost/filesystem.hpp>
+#include <qpixmapcache.h>
+#include <qpainter.h>
+#include <qvarlengtharray.h>
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
   this->docHolder.doc = new Document();
   this->laserbed = NULL;
+  setItemIndexMethod(QGraphicsScene::BspTreeIndex);
+
   using namespace Qt;
 
 
@@ -130,38 +139,69 @@ void CtrlCutScene::open(const QString& filename) {
   load(filename);
 }
 
-void CtrlCutScene::load(const QString& filename) {
-  if (!this->docHolder.doc)
-    this->docHolder.doc = new Document();
+void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height) {
+  typedef DocumentSettings DS;
+  this->reset();
+  this->docHolder.doc = new Document();
+  this->docHolder.doc->put(DS::TITLE, title.toStdString());
+  this->docHolder.doc->put(DS::RESOLUTION, resolution);
+  this->docHolder.doc->put(DS::WIDTH, width);
+  this->docHolder.doc->put(DS::HEIGHT, height);
+}
 
+void CtrlCutScene::load(const QString& filename) {
+  if (!this->docHolder.doc) {
+    this->newJob(boost::filesystem::path(filename.toStdString()).filename().c_str(), 600, Distance(36, IN, 600), Distance(24, IN, 600));
+  }
+//  QPixmapCache::setCacheLimit(width * height / 8 * 2);
   Document doc;
 
   //FIXME make settings available through the gui
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
   doc.put(DocumentSettings::LOAD_ENGRAVING, true);
+  doc.put(DocumentSettings::RESOLUTION, 600);
+  doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
+  doc.put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
   doc.load(filename.toStdString());
+  string basename = doc.get(DocumentSettings::FILENAME);
   uint32_t resolution = doc.get(DocumentSettings::RESOLUTION);
   uint32_t width = doc.get(DocumentSettings::WIDTH).in(PX);
   uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
   Distance reduceMax = Distance(1, MM, resolution);
-
+  QPixmapCache::setCacheLimit((width * height) / 8 * 2);
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
     Cut& cut = **it;
 
+    plot_svg(cut, basename + "_input");
 
     Cut clipped = make_from(cut);
     Cut planar = make_from(cut);
     Cut exploded = make_from(cut);
     Cut reduced = make_from(cut);
+    Cut sorted = make_from(cut);
 
-    clip(cut, clipped, Box(Point(0,0),Point(width,height)));
-    explode(clipped, exploded);
-//    make_planar(exploded, planar);
-    reduce(cut, reduced, reduceMax.in(PX));
+    clip(cut, clipped, Box(Point(0,0),Point(width,height)), Distance(30,MM, resolution));
+    plot_svg(clipped, basename + "_clipped");
+
+    explode(clipped, exploded, Distance(30,MM, resolution));
+    plot_svg(exploded, basename + "_exploded");
+
+    make_planar(exploded, planar);
+    plot_svg(planar, basename + "_planar");
+
+    reduce(planar, reduced, reduceMax.in(PX));
+    plot_svg(reduced, basename + "_reduced");
+/*
+    nearest_path_sorting(reduced, sorted);
+    plot(sorted, basename + "_sorted");
+*/
+    traverse_onion(reduced, sorted);
+    plot_svg(sorted, basename + "_onion");
+
     cut.clear();
-    cut = reduced;
-
-    CutItem* ci = new CutItem(cut);
+    cut = sorted;
+    plot_svg(cut, basename + "_cut");
+    CutItem* ci = new CutItem(**it);
     this->docHolder.add(*ci);
     this->addItem(ci);
   }
@@ -213,15 +253,7 @@ void CtrlCutScene::reset() {
     this->docHolder.engraveItems.takeFirst();
 }
 
-void CtrlCutScene::update() {
-  foreach (QGraphicsItem *sitem, this->items())
-    {
-      AbstractCtrlCutItem* ccItem;
-      if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
-        ccItem->commit();
-      }
-    }
-
+void CtrlCutScene::drawBackground ( QPainter * painter, const QRectF & rect ) {
   uint32_t width;
   uint32_t height;
   uint32_t resolution;
@@ -230,37 +262,32 @@ void CtrlCutScene::update() {
     width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
     height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
     resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
+
+    painter->setPen(Qt::black);
+    painter->fillRect(QRect(QPoint(0, 0), QSize(width, height)), QBrush(Qt::white));
+    painter->setPen(Qt::lightGray);
+    uint32_t cellsize = Distance(50,MM,resolution).in(PX);
+    QVarLengthArray<QLineF, 100> lines;
+
+    for (int j = cellsize; j < height; j += cellsize) {
+      lines.append(QLineF(0, j, width, j));
+    }
+
+    for (int i = cellsize;  i < width; i += cellsize) {
+      lines.append(QLineF(i, 0, i, height));
+    }
+
+    painter->drawLines(lines.data(), lines.size());
   }
-  if(laserbed != NULL)
-    this->removeItem(this->laserbed);
-
-  laserbed = new QGraphicsItemGroup();
-  laserbed->setZValue(-1000); // Render at the back
-  QGraphicsPolygonItem* background = new QGraphicsPolygonItem(QPolygonF(QRectF(QPointF(0, 0), QSizeF(width, height))));
-  background->setBrush(QBrush(Qt::white));
-  background->setZValue(-1000);
-
-  QGraphicsItemGroup* grid = new QGraphicsItemGroup();
-  grid->setZValue(-999); // Render at the back
-
-  QPen gray(Qt::lightGray);
-  uint32_t cellsize = Distance(50,MM,resolution).in(PX);
-
-  for (int j = cellsize; j < height; j += cellsize) {
-    QGraphicsLineItem* gridline = new QGraphicsLineItem(QLineF(0, j, width, j));
-    gridline->setPen(gray);
-    grid->addToGroup(gridline);
-  }
-
-  for (int i = cellsize;  i < width; i += cellsize) {
-    QGraphicsLineItem* gridline = new QGraphicsLineItem(QLineF(i, 0, i, height));
-    gridline->setPen(gray);
-    grid->addToGroup(gridline);
-  }
-  laserbed->addToGroup(background);
-  laserbed->addToGroup(grid);
-  this->addItem(laserbed);
-
-  QGraphicsScene::update();
 }
 
+void CtrlCutScene::update(const QRectF &rect) {
+  foreach (QGraphicsItem *sitem, this->items()) {
+    AbstractCtrlCutItem* ccItem;
+    if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
+      ccItem->commit();
+    }
+  }
+
+  QGraphicsScene::update(rect);
+}

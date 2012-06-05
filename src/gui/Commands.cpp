@@ -22,7 +22,9 @@
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
 #include "Commands.hpp"
+#include "NewDialog.hpp"
 #include <cut/model/Reduce.hpp>
+
 
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,
                   QUndoCommand *parent)
@@ -116,6 +118,32 @@
    if(!this->newDoc.doc) {
      this->scene->open(filename);
      this->newDoc = this->scene->getDocumentHolder();
+   } else {
+     this->scene->setDocumentHolder(this->newDoc);
+   }
+
+   this->scene->update();
+ }
+
+ NewCommand::NewCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+   QUndoCommand(parent), scene(scene) {
+   setText("New Job");
+ }
+
+ void NewCommand::undo() {
+   this->scene->setDocumentHolder(this->oldDoc);
+   this->scene->update();
+ }
+
+ void NewCommand::redo() {
+   if(!this->newDoc.doc) {
+     NewDialog nd;
+    if (nd.exec() == QDialog::Accepted) {
+      int resolution = nd.getResolution();
+      this->scene->newJob(nd.getTitle(), nd.getResolution(),
+          Distance(36, IN, resolution), Distance(24, IN, resolution));
+      this->newDoc = this->scene->getDocumentHolder();
+    }
    } else {
      this->scene->setDocumentHolder(this->newDoc);
    }

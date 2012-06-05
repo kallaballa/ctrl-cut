@@ -7,6 +7,7 @@
 #include <set>
 
 #include "cut/geom/Geometry.hpp"
+#include "cut/model/SvgPlot.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 
 #include <boost/graph/planar_face_traversal.hpp>
@@ -35,21 +36,6 @@ void check(TsegmentInputIterator first, TsegmentInputIterator last) {
   }
 }
 */
-void dump(std::ostream& os, Route::iterator first, Route::iterator last) {
-  os << "<route>" << std::endl;
-
-  for(Route::iterator it = first; it != last; ++it)
-    os << *it;
-
-  os << "</route>" << std::endl;
-}
-
-void dump(const std::string &filename, Route::iterator first, Route::iterator last) {
-  std::ofstream os(filename.c_str(), std::ios_base::out);
-  dump(os, first,last);
-  os.close();
-}
-
 
 /*
 struct join_strings_visitor: public planar_face_traversal_visitor {
@@ -101,33 +87,54 @@ void make_linestrings(Route& strings, SegmentList::const_iterator first, Segment
 #endif
 }
 */
-template<typename Graph>
-bool build_planar_embedding(typename Graph::Embedding& embedding, Graph& graph) {
+template<typename Tgraph>
+bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph) {
  // Test for planarity and compute the planar embedding as a side-effect
+  typedef typename graph_traits<Tgraph>::edge_descriptor Edge;
+  typedef typename graph_traits<Tgraph>::edges_size_type EdgesSize_t;
+  std::map<Edge, EdgesSize_t > e_index_map;
+  graph_traits<SegmentGraph>::edges_size_type edge_count = 0;
+  graph_traits<SegmentGraph>::edge_iterator ei, ei_end;
+
+  for(tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
+    e_index_map[*ei] = edge_count++;
+
+  std::vector< Edge > kuratowski_edges;
+
  if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
-     boyer_myrvold_params::embedding = &embedding[0]))
+     boyer_myrvold_params::embedding = &embedding[0],
+     boyer_myrvold_params::edge_index_map = make_assoc_property_map(e_index_map),
+     boyer_myrvold_params::kuratowski_subgraph = std::back_inserter(kuratowski_edges)))
    return true;
- else
+ else {
+   DocumentSettings settings;
+   Route r(settings);
+   BOOST_FOREACH(Edge e, kuratowski_edges) {
+     const Segment& seg = graph[e];
+     if(!concat(r, seg))
+       append(r, seg);
+   }
+
+   plot_svg(r, "kuratowski");
    return false;
+ }
 }
 
 
 template<typename Visitor>
 inline void traverse_planar_faces(SegmentGraph& graph, Visitor& visitor) {
   SegmentGraph::Embedding Embedding;
-/*
+
   std::map<SegmentGraph::Edge, graph_traits<SegmentGraph>::edges_size_type > e_index_map;
   graph_traits<SegmentGraph>::edges_size_type edge_count = 0;
   graph_traits<SegmentGraph>::edge_iterator ei, ei_end;
 
   for(tie(ei, ei_end) = edges(graph); ei != ei_end; ++ei)
     e_index_map[*ei] = edge_count++;
-*/
-//  SegmentGraph::Embedding embedding(num_vertices(graph));
- // assert(build_planar_embedding(embedding, graph));
-  //planar_face_traversal(graph, &embedding[0], visitor,make_assoc_property_map(e_index_map));
+
+  SegmentGraph::Embedding embedding(num_vertices(graph));
+  assert(build_planar_embedding(embedding, graph));
+  planar_face_traversal(graph, &embedding[0], visitor,make_assoc_property_map(e_index_map));
 }
-
-
 
 #endif /* TRAVERSE_H_ */

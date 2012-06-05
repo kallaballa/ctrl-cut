@@ -10,3 +10,15 @@ Makefile
 *.dylib
 *.so
 *.svg
+src/ctrl-cut/libctrl-cut.so*
+src/gui/gui
+.gdb_history
+.settings/
+test.csv
+test.html
+full.csv
+full.html
+gmon.out
+gui.tmp
+src/pclint/pclint
+
