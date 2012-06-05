@@ -96,7 +96,7 @@ static int display_size(void *, void *, int width, int height,
   //int depth = fmt & DISPLAY_DEPTH_MASK;
 
   // FIXME: Verify format
-  if (this->conf.get(DocumentSettings::LOAD_ENGRAVING))
+  if (PostscriptParser::instance()->conf.get(DocumentSettings::LOAD_ENGRAVING))
     PostscriptParser::instance()->createImage(width, height, pimage, rowstride);
 
   return 0;
