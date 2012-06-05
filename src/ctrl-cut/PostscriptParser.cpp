@@ -96,8 +96,8 @@ static int display_size(void *, void *, int width, int height,
   //int depth = fmt & DISPLAY_DEPTH_MASK;
 
   // FIXME: Verify format
-
-  PostscriptParser::instance()->createImage(width, height, pimage, rowstride);
+  if (this->conf.get(DocumentSettings::LOAD_ENGRAVING))
+    PostscriptParser::instance()->createImage(width, height, pimage, rowstride);
 
   return 0;
 }
@@ -397,28 +397,29 @@ Rectangle PostscriptParser::getCropBox() {
 }
 
 void PostscriptParser::copyPage() {
+  if (this->conf.get(DocumentSettings::LOAD_ENGRAVING)) {
+    if(this->gsimage.isAllocated()) {
+      this->cropbox = this->gsimage.autocrop();
+      GrayscaleImage cropped;
 
-  if(this->gsimage.isAllocated()) {
-    this->cropbox = this->gsimage.autocrop();
-    GrayscaleImage cropped;
+      this->gsimage.copy(cropped,this->cropbox);
+      this->gsimage = cropped;
+    }
 
-    this->gsimage.copy(cropped,this->cropbox);
-    this->gsimage = cropped;
+    if(this->bmimage.isAllocated()) {
+      this->cropbox = this->bmimage.autocrop();
+      BitmapImage cropped;
+
+      this->bmimage.copy(cropped,this->cropbox);
+      this->bmimage = cropped;
+    }
+
+    // For debugging, we can export the image here:
+    #if 1
+      if (bmimage.isAllocated()) bmimage.saveAsPBM("/tmp/out.pbm");
+      if (gsimage.isAllocated()) gsimage.saveAsPGM("/tmp/out.pgm");
+    #endif
   }
-
-  if(this->bmimage.isAllocated()) {
-    this->cropbox = this->bmimage.autocrop();
-    BitmapImage cropped;
-
-    this->bmimage.copy(cropped,this->cropbox);
-    this->bmimage = cropped;
-  }
-
-  // For debugging, we can export the image here:
-#if 1
-  if (bmimage.isAllocated()) bmimage.saveAsPBM("/tmp/out.pbm");
-  if (gsimage.isAllocated()) gsimage.saveAsPGM("/tmp/out.pgm");
-#endif
 }
 
 /*
