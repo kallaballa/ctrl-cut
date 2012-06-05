@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QGraphicsItem>
 #include "helpers/DocumentHolder.hpp"
+#include "cut/geom/Geometry.hpp"
+#include "util/Measurement.hpp"
 
 class CtrlCutScene : public QGraphicsScene
 {
@@ -42,10 +44,11 @@ public:
   void remove(CutItem& cutItem);
   void add(class EngraveItem& engraveItem);
   void remove(EngraveItem& engraveItem);
+  void newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height);
   void open(const QString& filename);
   void load(const QString& filename);
   void reset();
-  void update();
+  void update(const QRectF &rect = QRectF());
  // void keyPressEvent(QKeyEvent *event);
 
 signals:
@@ -54,6 +57,7 @@ signals:
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *event);
    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+   void drawBackground(QPainter *painter, const QRectF &rect);
 
 private:
   DocumentHolder docHolder;
