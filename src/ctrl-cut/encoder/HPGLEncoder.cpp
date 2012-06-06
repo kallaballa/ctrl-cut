@@ -45,7 +45,6 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
   int beginX = -1, beginY = -1;
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
-  typedef PathSettings S_SET;
 
     BOOST_FOREACH(const Segment& seg, segments(model)) {
       int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
