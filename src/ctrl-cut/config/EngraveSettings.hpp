@@ -52,7 +52,7 @@ public:
   static Key<uint16_t> ESPEED;
 
   EngraveSettings(const DocumentSettings& docSettings) : Settings(docSettings) {
-    this->put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
+    this->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
     this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
     this->put(EngraveSettings::EPOWER, 20);
     this->put(EngraveSettings::ESPEED, 100);
