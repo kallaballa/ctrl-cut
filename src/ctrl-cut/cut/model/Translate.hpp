@@ -21,7 +21,6 @@
 #ifndef _TRANSLATE_HPP_
 #define _TRANSLATE_HPP_
 
-#include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
 #include <boost/foreach.hpp>
 
@@ -38,4 +37,4 @@ void translate(TmultiPointRange& src, TmultiPointRange& sink, const Point& trans
     append(sink, translated);
   }
 }
-#endif /* CLIP_HPP_ */
+#endif
