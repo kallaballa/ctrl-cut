@@ -22,8 +22,8 @@
 EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
   QGraphicsItemGroup::setFlags(
       QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-  BitmapImage bm = engraving.getImage();
-  QImage& img = QtMake::make_QImage(bm);
+  GrayscaleImage gs = engraving.getImage();
+  QImage& img = QtMake::make_QImage(gs);
   img.bits();
   QPixmap pixmap = QPixmap::fromImage(img);
   Point pos = engraving.get(EngraveSettings::EPOS);

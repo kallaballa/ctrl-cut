@@ -261,8 +261,8 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
       case E_SET::BURKE:
       case E_SET::STUCKI:
       case E_SET::SIERRA2:
-      case E_SET::SIERRA3: // FIXME psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
-        psparser->setRasterFormat(PostscriptParser::BITMAP);
+      case E_SET::SIERRA3:
+        psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
         break;
 
       default:
@@ -282,9 +282,10 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   if (load == ENGRAVING || load == BOTH) {
     Engraving* engraving = new Engraving(this->settings);
     if (docFormat == PBM) {
-      std::string suffix = filename.substr(filename.rfind(".") + 1);
+      assert(false);
+/*      std::string suffix = filename.substr(filename.rfind(".") + 1);
       engraving->setImage(loadpbm(filename));
-      engraving->put(E_SET::EPOS, Point(392, 516));
+      engraving->put(E_SET::EPOS, Point(392, 516));*/
     }
     else if (parser) {
       if (parser->hasImageData()) {
@@ -293,32 +294,34 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
         if(parser->hasGrayscaleImage()) {
           GrayscaleImage gs = parser->getGrayscaleImage();
           Rectangle cropbox = parser->getCropBox();
-          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
-          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
-          engraving->setImage(bm);
+/*          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
+          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
+          engraving->setImage(gs);
           engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
         } else if(parser->hasBitmapImage()) {
-          Rectangle cropbox = parser->getCropBox();
+          assert(false);
+/*          Rectangle cropbox = parser->getCropBox();
           engraving->setImage(parser->getBitmapImage());
-          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
+          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));*/
         }
       }
       else if (!parser->getBitmapFile().empty()) {
         std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
         if (suffix == "ppm" || suffix == "pgm") {
           GrayscaleImage gs = loadppm(filename);
-          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
-          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));
-          engraving->setImage(bm);
+/*Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
+          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
+          engraving->setImage(gs);
         }
         else {
-          engraving->setImage(loadpbm(filename));
+          assert(false);
+          //engraving->setImage(loadpbm(filename));
         }
 
         engraving->put(E_SET::EPOS, Point(392, 516));
       }
     }
-    if (engraving) {
+    if (engraving && engraving->isAllocated()) {
       this->push_back(engraving);
     }
   }

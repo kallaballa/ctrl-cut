@@ -23,7 +23,7 @@
 #include "engrave/image/MMapMatrix.hpp"
 #include "config/EngraveSettings.hpp"
 #include "PclEncoder.hpp"
-
+#include "engrave/dither/Dither.hpp"
 #include <boost/format.hpp>
 #include <math.h>
 
@@ -33,7 +33,10 @@ typedef EngraveSettings ES;
 
 void PclEncoder::encode(std::ostream &out, Engraving& raster)
 {
-  BitmapImage image = raster.getImage();
+  GrayscaleImage gs = raster.getImage();
+  Dither& dither = Dither::create(gs, raster.get(ES::DITHERING));
+  BitmapImage image = dither.dither(raster.get(ES::EPOS));
+
   const Point& pos = raster.get(EngraveSettings::EPOS);
 
   LOG_DEBUG_STR("Encode raster");

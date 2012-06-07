@@ -71,7 +71,11 @@ public:
   const T get(const Settings::Key<T>& key) const {
     return settings.get(key);
   }
+
+  bool isAllocated() {
+    return this->image.isAllocated();
+  }
 };
 
-typedef EngravingImpl<BitmapImage> Engraving;
+typedef EngravingImpl<GrayscaleImage> Engraving;
 #endif
