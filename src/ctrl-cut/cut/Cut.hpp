@@ -27,11 +27,11 @@
 #include "config/CutSettings.hpp"
 #include "cut/geom/Route.hpp"
 
-#include "cut/model/Clip.hpp"
-#include "cut/model/Explode.hpp"
-#include "cut/graph/Planar.hpp"
-#include "cut/model/Reduce.hpp"
-#include "cut/model/SvgPlot.hpp"
+#include "cut/operations/Clip.hpp"
+#include "cut/operations/Explode.hpp"
+#include "cut/operations/Planar.hpp"
+#include "cut/operations/Reduce.hpp"
+#include "svg/SvgPlot.hpp"
 
 template<
 template<typename,typename> class Tcontainer = std::vector,

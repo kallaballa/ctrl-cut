@@ -22,7 +22,6 @@
 
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
-#include "cut/geom/sink/AddSink.hpp"
 #include "util/Measurement.hpp"
 #include <boost/foreach.hpp>
 #include <algorithm>

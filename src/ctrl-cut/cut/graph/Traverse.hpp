@@ -7,9 +7,9 @@
 #include <set>
 
 #include "cut/geom/Geometry.hpp"
-#include "cut/model/SvgPlot.hpp"
+#include "svg/SvgPlot.hpp"
 #include "cut/graph/SegmentGraph.hpp"
-#include "cut/geom/Algorithms.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>

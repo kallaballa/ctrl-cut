@@ -16,45 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef ALGORITHMS_HPP_
-#define ALGORITHMS_HPP_
+#ifndef CONCAT_HPP_
+#define CONCAT_HPP_
 
-#include "Path.hpp"
-#include "Route.hpp"
+#include "cut/geom/Path.hpp"
+#include "cut/geom/Route.hpp"
 #include <boost/foreach.hpp>
 #include <boost/geometry/algorithms/append.hpp>
-
-// Path
-inline void append(Path& path, const Point& p) {
-  boost::geometry::append(path, p);
-}
-
-inline void append(Path& path, const Segment& seg) {
-  boost::geometry::append(path,seg.first);
-  boost::geometry::append(path,seg.second);
-}
-
-template<typename TpointRange>
-inline void append(Path& path, const TpointRange& pointRange) {
-  boost::geometry::append(path, pointRange);
-}
-
-inline void prepend(Path& path, const Point& p) {
-  boost::geometry::reverse(path);
-  boost::geometry::append(path, p);
-}
-
-inline void prepend(Path& path, const Segment& seg) {
-  boost::geometry::reverse(path);
-  boost::geometry::append(path,seg.first);
-  boost::geometry::append(path,seg.second);
-}
-
-template<typename TpointRange>
-inline void prepend(Path& path, const TpointRange& pointRange) {
-  boost::geometry::reverse(path);
-  boost::geometry::append(path, pointRange);
-}
 
 inline bool concat_back(Path& path, const Segment& seg) {
   //FIXME where should we filter zero length segments
@@ -105,14 +73,6 @@ inline bool concat(Path& path, const Segment& seg) {
   return concat_back(path, seg) || concat_front(path, seg);
 }
 
-template<typename TpointRange>
-inline void add(Path& path , const Segment& seg) {
-  //FIXME where should we filter zero length segments
-  if(seg.first == seg.second)
-    return true;
-  if(!concat(path, seg))
-    return append(path, seg);
-}
 
 template<typename TpointRange>
 inline bool concat_back(Path& path, const TpointRange& pointRange) {
@@ -141,53 +101,6 @@ inline bool concat_front(Path& path, const TpointRange& pointRange) {
 template<typename TpointRange>
 inline bool concat(Path& path, const TpointRange& pointRange) {
   return concat_back(path, pointRange) || concat_front(path, pointRange);
-}
-
-template<typename TpointRange>
-inline void add(Path& path ,  const TpointRange& pointRange) {
-  if(!concat(path, pointRange))
-    return append(path, pointRange);
-}
-
-
-// ### ROUTE ### //
-
-inline void append(Route& route, const Point& p) {
-  Path path;
-  append(path, p);
-  route.push_back(path);
-}
-
-inline void append(Route& route, const Segment& seg) {
-  Path path;
-  append(path, seg);
-  route.push_back(path);
-}
-
-template<typename TpointRange>
-inline void append(Route& route, const TpointRange& pointRange) {
-  Path path;
-  append(path, pointRange);
-  route.push_back(path);
-}
-
-inline void prepend(Route& route, const Point& p) {
-  Path path;
-  append(path, p);
-  route.push_back(path);
-}
-
-inline void prepend(Route& route, const Segment& seg) {
-  Path path;
-  append(path, seg);
-  route.push_back(path);
-}
-
-template<typename TpointRange>
-inline void prepend(Route& route, const TpointRange& pointRange) {
-  Path path(route.settings);
-  append(path, pointRange);
-  route.push_back(path);
 }
 
 inline bool concat_front(Route& route, const Segment& seg) {
@@ -233,15 +146,6 @@ inline bool concat(Route& route, const Segment& seg) {
 }
 
 template<typename TpointRange>
-inline void add(Route& route , const Segment& seg) {
-  //FIXME where should we filter zero length segments
-  if(seg.first == seg.second)
-    return true;
-  if(!concat(route, seg))
-    return append(route, seg);
-}
-
-template<typename TpointRange>
 inline bool concat_back(Route& route, const TpointRange& pointRange) {
   BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     if (route.empty()) {
@@ -270,42 +174,4 @@ inline bool concat(Route& route, const TpointRange& pointRange) {
   return concat_back(route, pointRange) || concat_front(route, pointRange);
 }
 
-template<typename TpointRange>
-inline void add(Route& route, const TpointRange& pointRange) {
-  if(!concat(route, pointRange))
-    return append(route, pointRange);
-}
-
-template<typename TpointRange>
-inline TpointRange make_from(const TpointRange& pointRange) {
-  return TpointRange(pointRange.settings);
-}
-
-inline Path make_from(const Path& path) {
-  return Path();
-}
-
-template<typename TpointRange>
-inline bool is_closed(const TpointRange& pointRange) {
-  return pointRange.front() == pointRange.back();
-}
-
-template<typename TpointRange>
-inline bool is_self_intersecting(const TpointRange& pointRange) {
-  bool first = true;
-  bool isClosed = is_closed(pointRange);
-  std::set<Point> pointset;
-  BOOST_FOREACH(const Point& p, pointRange) {
-    if(isClosed && !first) {
-      if(!pointset.insert(p).second) {
-        return true;
-      }
-    }
-    first = false;
-  }
-  return false;
-}
-
-
-
-#endif /* ALGORITHMS_HPP_ */
+#endif

@@ -22,7 +22,7 @@
 #include "cut/graph/Traverse.hpp"
 #include "cut/geom/SegmentTree.hpp"
 #include "cut/geom/Route.hpp"
-#include "cut/geom/Algorithms.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 #include "boost/function.hpp"
 
 typedef SegmentGraphImpl<boost::setS, boost::setS> UniqueSegmentGraph;

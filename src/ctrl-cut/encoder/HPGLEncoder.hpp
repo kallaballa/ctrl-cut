@@ -2,7 +2,7 @@
 #define HPGL_ENCODER_H_
 
 #include <iostream>
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 
 class HPGLEncoder {
 

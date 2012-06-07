@@ -26,7 +26,7 @@
 #include <sstream>
 #include "svg/SvgWriter.hpp"
 #include "cut/graph/SegmentGraph.hpp"
-#include "cut/geom/Algorithms.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 
 struct hsl_color{
   double h;

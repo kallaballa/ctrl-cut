@@ -7,9 +7,9 @@
 #include <set>
 
 #include "cut/geom/Geometry.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include "cut/graph/Traverse.hpp"
-#include "cut/graph/sink/CreateSink.hpp"
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
@@ -23,14 +23,14 @@ using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
 
-template<typename TpointRangeOutputIterator>
+template<typename TpointRange>
 struct join_strings_visitor: public planar_face_traversal_visitor {
   const SegmentGraph* graph;
-  TpointRangeOutputIterator sink;
+  TpointRange* sink;
   std::set<SegmentGraph::Edge> index;
 
-  join_strings_visitor(const SegmentGraph& graph, TpointRangeOutputIterator& sink) :
-    graph(&graph), sink(sink) {
+  join_strings_visitor(const SegmentGraph& graph, TpointRange& sink) :
+    graph(&graph), sink(&sink) {
   }
 
   void begin_face() {}
@@ -38,7 +38,7 @@ struct join_strings_visitor: public planar_face_traversal_visitor {
   void next_edge(SegmentGraph::Edge e) {
     if(index.insert(e).second) {
       const SegmentProperty* seg = &(*graph)[e];
-      *sink++ = *static_cast<const Segment*>(seg);
+      add(*sink, *static_cast<const Segment*>(seg));
     }
   }
 };
@@ -48,13 +48,12 @@ template<
   >
 void make_planar(TpointRange& pointRange, TpointRange& sink) {
   LOG_INFO_STR("make planar");
-  AddSink<TpointRange> addSink(sink);
   SegmentGraph segGraph;
   BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
     segGraph.add(seg);
   }
 
-  join_strings_visitor<AddSink<TpointRange> > vis(segGraph, addSink);
+  join_strings_visitor<TpointRange> vis(segGraph, sink);
   traverse_planar_faces(segGraph , vis);
 }
 

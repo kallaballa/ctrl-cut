@@ -20,7 +20,7 @@
 #ifndef ROUTE_H_
 #define ROUTE_H_
 
-#include "Path.hpp"
+#include "cut/geom/Path.hpp"
 #include "Views.hpp"
 #include <config/CutSettings.hpp>
 

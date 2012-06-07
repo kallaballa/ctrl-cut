@@ -18,11 +18,11 @@
  */
 #include "HPGLEncoder.hpp"
 #include "util/PJL.hpp"
-#include "cut/model/Cut.hpp"
-#include "cut/model/Deonion.hpp"
-#include "cut/model/NearestPathSorting.h"
-#include "cut/model/Translate.hpp"
-#include "cut/model/SvgPlot.hpp"
+#include "cut/Cut.hpp"
+#include "cut/operations/Deonion.hpp"
+#include "cut/operations/NearestPathSorting.h"
+#include "cut/operations/Translate.hpp"
+#include "svg/SvgPlot.hpp"
 #include <boost/format.hpp>
 
 using boost::format;

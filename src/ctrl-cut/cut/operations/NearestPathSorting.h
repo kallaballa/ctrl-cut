@@ -21,7 +21,7 @@
 #define NEARESTPATHSORTING_H_
 
 #include "util/Logger.hpp"
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "cut/geom/PointTree.hpp"
 #include "cut/graph/Algorithms.hpp"
 #include "cut/graph/PathGraph.hpp"

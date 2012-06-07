@@ -19,7 +19,7 @@
 
 #include "util/Logger.hpp"
 #include "Document.hpp"
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "CupsGetOpt.hpp"
 #include <boost/foreach.hpp>
 

@@ -17,24 +17,42 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "Append.hpp"
+#include "Prepend.hpp"
+#include "Concat.hpp"
+#include "Add.hpp"
 
-/*REFACTOR
-void translate(SegmentList& segments, SegmentList::iterator first, SegmentList::iterator last, const Point&  translation) {
-  Segment seg;
-  int32_t fx;
-  int32_t fy;
-  int32_t sx;
-  int32_t sy;
+#ifndef ALGORITHMS_HPP_
+#define ALGORITHMS_HPP_
 
-  for(SegmentList::iterator it = first; it != last; ++it) {
-    seg = *it;
-    fx = seg.first[0] + translation.x;
-    fy = seg.first[1] + translation.y;
-    sx = seg.second[0] + translation.x;
-    sy = seg.second[1] + translation.y;
-
-    //FIXME
-    segments.push_back(Segment(Point(fx,fy),Point(sx,sy), seg));
-  }
+template<typename TpointRange>
+inline TpointRange make_from(const TpointRange& pointRange) {
+  return TpointRange(pointRange.settings);
 }
-*/
+
+inline Path make_from(const Path& path) {
+  return Path();
+}
+
+template<typename TpointRange>
+inline bool is_closed(const TpointRange& pointRange) {
+  return pointRange.front() == pointRange.back();
+}
+
+template<typename TpointRange>
+inline bool is_self_intersecting(const TpointRange& pointRange) {
+  bool first = true;
+  bool isClosed = is_closed(pointRange);
+  std::set<Point> pointset;
+
+  BOOST_FOREACH(const Point& p, pointRange) {
+    if(isClosed && !first) {
+      if(!pointset.insert(p).second) {
+        return true;
+      }
+    }
+    first = false;
+  }
+  return false;
+}
+#endif

@@ -22,9 +22,9 @@
 
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "cut/graph/SegmentGraph.hpp"
-#include "cut/geom/Algorithms.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 
 #include <boost/foreach.hpp>
 
