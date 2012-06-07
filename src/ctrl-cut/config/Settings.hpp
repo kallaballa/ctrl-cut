@@ -232,8 +232,12 @@ public:
     boost::throw_exception(setting_not_found(key));
   }
 
-  void onUpdate(boost::function<void (const KeyBase&)> triggerFunc) {
+  void setUpdateTrigger(boost::function<void (const KeyBase&)> triggerFunc) {
     this->updateTrigger = Trigger(triggerFunc);
+  }
+
+  void deleteUpdateTrigger() {
+    this->updateTrigger = Trigger();
   }
 
   bool hasParent() const {
