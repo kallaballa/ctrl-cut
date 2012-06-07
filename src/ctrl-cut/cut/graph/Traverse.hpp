@@ -9,6 +9,7 @@
 #include "cut/geom/Geometry.hpp"
 #include "cut/model/SvgPlot.hpp"
 #include "cut/graph/SegmentGraph.hpp"
+#include "cut/geom/Algorithms.hpp"
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
@@ -21,72 +22,7 @@ using boost::planar_face_traversal;
 using boost::boyer_myrvold_planarity_test;
 using boost::graph_traits;
 using namespace boost;
-/*
-template<typename TsegmentInputIterator>
-void check(TsegmentInputIterator first, TsegmentInputIterator last) {
-  BOOST_CONCEPT_ASSERT((SegmentInputIterator<TsegmentInputIterator>));
 
-  std::set<Segment> uniq_segments;
-
-  for (TsegmentInputIterator it_s = first; it_s != last; ++it_s) {
-    const Segment& seg = *it_s;
-    // assert the segments are globally unique
-    assert(uniq_segments.find(seg) == uniq_segments.end() && uniq_segments.find(Segment(seg.second, seg.first)) == uniq_segments.end());
-    uniq_segments.insert(seg);
-  }
-}
-*/
-
-/*
-struct join_strings_visitor: public planar_face_traversal_visitor {
-  SegmentGraph& graph;
-  Route& strings;
-
-  join_strings_visitor(SegmentGraph& graph, Route& strings) :
-    graph(graph), strings(strings) {
-  }
-
-  void begin_face() {}
-  void end_face() {}
-  void next_edge(SegmentGraph::Edge e) {
-    Segment& seg = graph[e];
-    if(strings.append(seg))
-      strings.push_back(seg);
-  }
-}; */
-
-/*void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator  last, SegmentGraph& segGraph) {
-  LOG_INFO_STR("make linestrings");
-  LOG_DEBUG_MSG("strings before", strings.size());
-  create_planar_graph(segGraph, first, last);
-  join_strings_visitor vis = *new join_strings_visitor(segGraph, strings);
-  traverse_planar_faces(segGraph , vis);
-  LOG_DEBUG_MSG("strings after", strings.size());
-
-#ifdef DEBUG
-  check_linestrings(strings.beginStrings(), strings.endStrings());
-#endif
-}
-
-void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator last) {
-  SegmentGraph segGraph;
-  make_linestrings(strings, first, last, segGraph);
-}
-*/
-/*
-void make_linestrings(Route& strings, SegmentList::const_iterator first, SegmentList::const_iterator  last, SegmentGraph& segGraph) {
-  LOG_INFO_STR("make linestrings");
-  LOG_DEBUG_MSG("strings before", strings.size());
-  create_planar_graph(segGraph, first, last);
-  join_strings_visitor vis = *new join_strings_visitor(segGraph, strings);
-  traverse_planar_faces(segGraph , vis);
-  LOG_DEBUG_MSG("strings after", strings.size());
-
-#ifdef DEBUG
-  check_linestrings(strings.beginStrings(), strings.endStrings());
-#endif
-}
-*/
 template<typename Tgraph>
 bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph) {
  // Test for planarity and compute the planar embedding as a side-effect

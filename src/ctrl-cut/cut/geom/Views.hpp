@@ -21,6 +21,7 @@
 #define VIEWS_H_
 
 #include "Iterators.hpp"
+#include <boost/range/iterator_range.hpp>
 
 template<
   typename Titer,

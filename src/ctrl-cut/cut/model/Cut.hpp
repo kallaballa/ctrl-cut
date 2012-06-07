@@ -26,7 +26,12 @@
 #include "config/DocumentSettings.hpp"
 #include "config/CutSettings.hpp"
 #include "cut/geom/Route.hpp"
-#include "cut/geom/sink/AddSink.hpp"
+
+#include "cut/model/Clip.hpp"
+#include "cut/model/Explode.hpp"
+#include "cut/graph/Planar.hpp"
+#include "cut/model/Reduce.hpp"
+#include "cut/model/SvgPlot.hpp"
 
 template<
 template<typename,typename> class Tcontainer = std::vector,
@@ -119,8 +124,35 @@ public:
     return this->load(infile);
   }
 
-  void check() {
+  void prepare() {
+    typedef CutImpl<Tcontainer, Tallocator> Cut;
+    typedef DocumentSettings DS;
+    Distance width = this->get(DS::WIDTH);
+    Distance height = this->get(DS::HEIGHT);
+    int dpi = this->get(DS::RESOLUTION);
+    string filename = this->get(DS::FILENAME);
 
+    Distance reduceMax(0.2,MM, dpi);
+
+    Cut cut = *this;
+    plot_svg(cut, filename + "_input");
+
+    Cut clipped = make_from(cut);
+    Cut exploded = make_from(cut);
+    Cut planar= make_from(cut);
+    Cut reduced = make_from(cut);
+
+    clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))), Distance(30,MM, dpi));
+    plot_svg(clipped, filename + "_clipped");
+
+    explode(clipped, exploded, Distance(30,MM, dpi));
+    plot_svg(exploded, filename + "_exploded");
+
+    make_planar(exploded, planar);
+    plot_svg(planar, filename + "_planar");
+
+    reduce(planar, reduced, reduceMax.in(PX));
+    plot_svg(reduced, filename + "_reduced");
   }
 protected:
   /* REFACTOR
@@ -138,5 +170,10 @@ inline MultiSegmentView<const Cut> segments(const Cut& cut) {
 inline MultiPointView<const Cut> points(const Cut& cut) {
   return MultiPointView<const Cut>(cut);
 }
+
+inline void merge(Cut& left, Cut& right) {
+
+}
+
 
 #endif /* CUT_H_ */

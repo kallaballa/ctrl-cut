@@ -19,23 +19,38 @@
 #include "HPGLEncoder.hpp"
 #include "util/PJL.hpp"
 #include "cut/model/Cut.hpp"
+#include "cut/model/Deonion.hpp"
+#include "cut/model/NearestPathSorting.h"
 #include "cut/model/Translate.hpp"
-
+#include "cut/model/SvgPlot.hpp"
 #include <boost/format.hpp>
 
 using boost::format;
 
-void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
-  Cut model = make_from(encode);
-  const Point&  pos = model.get(CutSettings::CPOS);
-  translate(encode,model, pos);
+void HPGLEncoder::encode(std::ostream &out, Cut& encodee) {
+  string filename = encodee.get(DocumentSettings::FILENAME);
+  Cut reduced = make_from(encodee);
+  Cut sorted = make_from(encodee);
+  Cut final = make_from(encodee);
+
+  if(encodee.get(CutSettings::OPTIMIZE) == CutSettings::INNER_OUTER)
+    traverse_onion(encodee, sorted);
+  else if(encodee.get(CutSettings::OPTIMIZE) == CutSettings::SHORTEST_PATH)
+    nearest_path_sorting(encodee, sorted);
+
+  plot_svg(sorted, filename + "_sorted");
+
+  const Point&  pos = sorted.get(CutSettings::CPOS);
+  translate(sorted,final, pos);
+
+  plot_svg(sorted, filename + "_translate");
 
   bool firstOperation = true;
   bool writingPolyline = false;
 
-  int power_set = model.get(CutSettings::CPOWER);
-  int speed_set = model.get(CutSettings::CSPEED);
-  int freq_set = model.get(CutSettings::FREQUENCY);
+  int power_set = final.get(CutSettings::CPOWER);
+  int speed_set = final.get(CutSettings::CSPEED);
+  int freq_set = final.get(CutSettings::FREQUENCY);
 
   out << V_INIT << SEP;
   out << format(V_POWER) % power_set << SEP;
@@ -46,7 +61,7 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encode) {
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
 
-    BOOST_FOREACH(const Segment& seg, segments(model)) {
+    BOOST_FOREACH(const Segment& seg, segments(final)) {
       int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
       if (power != lastPower) {
         if (writingPolyline) {

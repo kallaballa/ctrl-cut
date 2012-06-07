@@ -27,6 +27,7 @@
 #include <boost/foreach.hpp>
 #include <algorithm>
 
+/*
 bool chop(Path& chopped, const Segment& seg, const Distance& maxLength) {
   Coord_t len = seg.length();
   Coord_t maxLen = maxLength.in(PX);
@@ -69,7 +70,7 @@ bool chop(Path& chopped, const Segment& seg, const Distance& maxLength) {
   }
 
   return false;
-}
+}*/
 
 /*
  * Clips segments agains a box

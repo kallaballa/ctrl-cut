@@ -44,8 +44,8 @@ public:
     ostream.close();
   }
 
-  void write(const Cut& cut, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1") {
-    BOOST_FOREACH(const Path& path, cut) {
+  void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1") {
+    BOOST_FOREACH(const Path& path, r) {
       this->write(path, style);
     }
   }

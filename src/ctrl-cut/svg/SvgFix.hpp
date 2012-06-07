@@ -44,12 +44,10 @@ using std::pair;
 using std::ofstream;
 using xmlpp::SaxParser;
 
-namespace io = boost::iostreams;
-
 class SvgFix {
 private:
-  typedef io::stream<io::file_descriptor_sink> fdostream;
-  typedef io::stream<io::file_descriptor_source> fdistream;
+  typedef boost::iostreams::stream<boost::iostreams::file_descriptor_sink> fdostream;
+  typedef boost::iostreams::stream<boost::iostreams::file_descriptor_source> fdistream;
 
   fdistream* in;
   fdostream* out;

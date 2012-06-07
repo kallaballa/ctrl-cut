@@ -20,7 +20,9 @@
 #ifndef ITERATORS_HPP_
 #define ITERATORS_HPP_
 
+#include "cut/geom/Geometry.hpp"
 #include <vector>
+#include <stddef.h>
 
 template<typename TparentIter,typename TvalueIter>
 struct MultiIterBase {

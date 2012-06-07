@@ -24,6 +24,8 @@
 #include "cut/geom/Geometry.hpp"
 #include "cut/model/Cut.hpp"
 #include "cut/graph/SegmentGraph.hpp"
+#include "cut/geom/Algorithms.hpp"
+
 #include <boost/foreach.hpp>
 
 inline bool is_collapsed(const Path& path, const Path& simplified) {

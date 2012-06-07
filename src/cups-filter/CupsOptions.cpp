@@ -128,6 +128,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
   if (cupsOpts.get(CupsOptions::ENABLE_ENGRAVING, v)) {
     ds.put(DS::ENABLE_ENGRAVING, v != "false");
   }
+
   if (cupsOpts.get(CupsOptions::ENABLE_VECTOR, v)) {
     ds.put(DS::ENABLE_CUT, v != "false");
   }

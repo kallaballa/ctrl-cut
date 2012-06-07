@@ -18,23 +18,11 @@
  */
 
 #include "util/Logger.hpp"
+#include "Document.hpp"
 #include "cut/model/Cut.hpp"
 #include "CupsGetOpt.hpp"
-#include "Document.hpp"
-
-#include "cut/model/Clip.hpp"
-#include "cut/model/Explode.hpp"
-#include "cut/model/Reduce.hpp"
-#include "cut/model/SvgPlot.hpp"
-#include "cut/model/NearestPathSorting.h"
-#include "cut/model/Deonion.hpp"
-#include "cut/geom/sink/AddSink.hpp"
-
-#include "cut/graph/Planar.hpp"
-
-#include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
-#include <boost/bind.hpp>
+
 
 /**
  * Cups filter entry point.
@@ -56,50 +44,10 @@ int main(int argc, char *argv[]) {
 
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
-  string basename = doc.get(DS::FILENAME);
-  Coord_t dpi = doc.get(DS::RESOLUTION);
-  Coord_t width = doc.get(DS::WIDTH).in(PX);
-  Coord_t height = doc.get(DS::HEIGHT).in(PX);
-  string v;
-  Distance reduceMax(0.2,MM, dpi);
-  if(cupsOpts.get(CupsOptions::VECTOR_REDUCE, v)) {
-    reduceMax = Distance(boost::lexical_cast<uint16_t>(v), MM, dpi);
+
+  BOOST_FOREACH(Cut* cut, doc.cutList) {
+    cut->prepare();
   }
-
-  BOOST_FOREACH(Cut* p_cut, doc.cutList) {
-    Cut& cut = *p_cut;
-    plot_svg(cut, basename + "_input");
-
-    Cut clipped = make_from(cut);
-    Cut planar = make_from(cut);
-    Cut exploded = make_from(cut);
-    Cut reduced = make_from(cut);
-    Cut sorted = make_from(cut);
-
-    clip(cut, clipped, Box(Point(0,0), Point(width,height)), Distance(30,MM, dpi));
-    plot_svg(clipped, basename + "_clipped");
-
-    explode(clipped, exploded, Distance(30,MM, dpi));
-    plot_svg(exploded, basename + "_exploded");
-
-    make_planar(exploded, planar);
-    plot_svg(planar, basename + "_planar");
-
-    reduce(planar, reduced, reduceMax.in(PX));
-    plot_svg(reduced, basename + "_reduced");
-
-/*
-    nearest_path_sorting(reduced, sorted);
-    plot(sorted, basename + "_sorted");
-*/
-    traverse_onion(reduced, sorted);
-    plot_svg(sorted, basename + "_onion");
-
-    cut.clear();
-    cut = reduced;
-    plot_svg(cut, basename + "_cut");
-  }
-
   stringstream ss;
   doc.write(ss);
   std::cout << ss.str() << endl;

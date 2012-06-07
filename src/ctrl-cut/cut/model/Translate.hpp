@@ -18,72 +18,24 @@
  */
 
 
-#ifndef CLIP_HPP_
-#define CLIP_HPP_
+#ifndef _TRANSLATE_HPP_
+#define _TRANSLATE_HPP_
 
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
-
 #include <boost/foreach.hpp>
-
-namespace trans = boost::geometry::strategy::transform;
-
-template<
-  typename TpointRangeOutputIterator
->
-class TranslateFunc {
-private:
-  TpointRangeOutputIterator sink;
-  trans::translate_transformer<Point, Point> transformer;
-
-public:
-  TranslateFunc(TpointRangeOutputIterator sink, const Point& translate) :
-    sink(sink), transformer(translate.x, translate.y) {
-  }
-
-  TranslateFunc(const TranslateFunc& other) :
-    sink(other.sink), transformer(other.transformer)
-  {}
-
-  template<typename TpointRange>
-  void operator()(TpointRange& pointRange) {
-    typename boost::remove_const<TpointRange>::type translated = make_from(pointRange);
-    boost::geometry::transform(pointRange, translated, this->transformer);
-    *sink++ = translated;
-  }
-};
-
-template <class TpointRangeOutputIterator>
-class TranslateSink : public boost::function_output_iterator<TranslateFunc<TpointRangeOutputIterator> > {
-public:
-  typedef boost::function_output_iterator<TranslateFunc<TpointRangeOutputIterator> > _Base;
-  typedef std::output_iterator_tag iterator_category;
-  typedef void value_type;
-  typedef void difference_type;
-  typedef void pointer;
-  typedef void reference;
-
-  explicit TranslateSink() :
-    _Base() {};
-
-  TranslateSink(TpointRangeOutputIterator& pointRangeSink, const Point& translate) :
-    _Base(TranslateFunc<TpointRangeOutputIterator>(pointRangeSink, translate))
-      {};
-
-  TranslateSink(const TranslateSink& other) :
-    _Base(other)
-      {};
-};
-
 
 template<
   typename TmultiPointRange
 >
 void translate(TmultiPointRange& src, TmultiPointRange& sink, const Point& translate) {
-  AddSink<TmultiPointRange> addSink(sink);
-  TranslateSink<AddSink<TmultiPointRange> > transSink(addSink,translate);
+  namespace tl = boost::geometry::strategy::transform;
+  tl::translate_transformer<Point, Point> transformer(translate.x, translate.y);
+
   BOOST_FOREACH(const Path& path, src) {
-    *transSink++ = path;
+    Path translated = make_from(path);
+    boost::geometry::transform(path, translated, transformer);
+    append(sink, translated);
   }
 }
 #endif /* CLIP_HPP_ */
