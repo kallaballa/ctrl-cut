@@ -48,10 +48,8 @@ HEADERS += ./MainWindow.hpp \
            ./LpdClient.hpp \
            ./CtrlCutView.hpp \
            ./StreamUtils.hpp \
-           ./settings/SettingsTableModel.hpp \
-	   ./settings/CutSettingsTableModel.hpp \
-	   ./settings/EngraveSettingsTableModel.hpp \
-	   ./settings/DocumentSettingsTableModel.hpp \
+	   ./ObjectPropertyWidget.hpp \
+           ./delegates/DistanceDelegate.hpp \
            ./helpers/Qt.hpp \
            ./helpers/PathItem.hpp \
            ./helpers/CutItem.hpp \
@@ -64,6 +62,8 @@ SOURCES += ./gui.cpp \
            ./NewDialog.cpp \
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \
+           ./ObjectPropertyWidget.cpp \
+           ./delegates/DistanceDelegate.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
