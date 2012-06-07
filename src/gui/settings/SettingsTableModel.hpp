@@ -12,8 +12,6 @@ class SettingsTableModel : public QAbstractTableModel
 private:
   std::vector<Settings::KeyBase> keyLayout;
 public:
-
-
   SettingsTableModel(QObject *parent = NULL) :
     QAbstractTableModel(parent), settings(NULL) {}
 

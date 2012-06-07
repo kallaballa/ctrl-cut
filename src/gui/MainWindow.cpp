@@ -17,10 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "MainWindow.hpp"
-#include "settings/CutSettingsTableModel.hpp"
-#include "settings/EngraveSettingsTableModel.hpp"
-#include "settings/DocumentSettingsTableModel.hpp"
-#include "LaserDialog.hpp"
 #include "Document.hpp"
 #include "CtrlCutScene.hpp"
 #include "helpers/CutItem.hpp"
@@ -28,6 +24,7 @@
 #include <qapplication.h>
 #include "Commands.hpp"
 #include <QGraphicsItem>
+#include "delegates/DistanceDelegate.hpp"
 
 MainWindow *MainWindow::inst = NULL;
 
@@ -169,7 +166,7 @@ void MainWindow::sceneSelectionChanged()
       if((cci = dynamic_cast<AbstractCtrlCutItem*>(item)))
         cci->setHighlighted(false);
     }
-    settingsTable->hide();
+    this->objectProperties->hide();
   } else {
     foreach (QGraphicsItem *item, this->scene->items()) {
       EngraveItem* ei;
@@ -178,14 +175,10 @@ void MainWindow::sceneSelectionChanged()
       if(item->isSelected()) {
         if((ei = dynamic_cast<EngraveItem*>(item))) {
           ei->setHighlighted(true);
-          EngraveSettingsTableModel* model = new EngraveSettingsTableModel();
-          model->setSettings(ei->engraving.settings);
-          settingsTable->setModel(model);
+          this->objectProperties->show(ei);
         } else if((ci = dynamic_cast<CutItem*>(item))) {
           ci->setHighlighted(true);
-          CutSettingsTableModel* model = new CutSettingsTableModel();
-          model->setSettings(ci->cut.settings);
-          settingsTable->setModel(model);
+          this->objectProperties->show(ci);
         }
       } else {
         AbstractCtrlCutItem* cci;
@@ -193,7 +186,6 @@ void MainWindow::sceneSelectionChanged()
           cci->setHighlighted(false);
         }
       }
-      settingsTable->show();
       printf("item: %p\n", item);
     }
   }

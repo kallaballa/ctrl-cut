@@ -53,7 +53,6 @@ public:
   }
 };
 
-
 class AbstractCtrlCutItem : public QGraphicsItemGroup {
 public:
   virtual void commit() = 0;

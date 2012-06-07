@@ -34,8 +34,6 @@ public:
     const QPointF& pos = this->pos();
     this->cut.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
   }
-
- void setPos(const QPointF &pos);
 };
 
 #endif /* CUTITEM_H_ */
