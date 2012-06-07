@@ -75,6 +75,7 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
            ./cut/model/Deonion.cpp \
+           ./cut/model/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \
            ./engrave/dither/DitherBurke.cpp \
