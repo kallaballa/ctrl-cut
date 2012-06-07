@@ -19,7 +19,7 @@
 #ifndef PATHITEM_H_
 #define PATHITEM_H_
 
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "Qt.hpp"
 #include <QGraphicsPolygonItem>
 

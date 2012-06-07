@@ -16,15 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include <QtGui>
-#include <Document.hpp>
-#include <CtrlCutScene.hpp>
+
+#include "Commands.hpp"
+#include "CtrlCutScene.hpp"
+#include "NewDialog.hpp"
+#include "ImportDialog.hpp"
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
-#include "Commands.hpp"
-#include "NewDialog.hpp"
-#include <cut/model/Reduce.hpp>
-
+#include <Document.hpp>
+#include <cut/operations/Reduce.hpp>
+#include <QtGui>
 
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,
                   QUndoCommand *parent)
@@ -166,8 +167,13 @@
 
  void ImportCommand::redo() {
    if(!this->newDoc.doc) {
-     this->scene->load(filename);
-     this->newDoc = this->scene->getDocumentHolder();
+     ImportDialog imd;
+    if (imd.exec() == QDialog::Accepted) {
+      bool loadVector = imd.isVectorDataEnabled();
+      bool loadRaster = imd.isRasterDataEnabled();
+      this->scene->load(filename, loadVector, loadRaster);
+      this->newDoc = this->scene->getDocumentHolder();
+    }
    } else {
      this->scene->setDocumentHolder(this->newDoc);
    }

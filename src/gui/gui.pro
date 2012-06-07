@@ -39,6 +39,7 @@ RESOURCES += ctrl-cut.qrc
 
 HEADERS += ./MainWindow.hpp \
 	   ./NewDialog.hpp \
+	   ./ImportDialog.hpp \ 
            ./event/CtrlCutEvent.hpp \
            ./CtrlCutScene.hpp \
            ./NavigationView.hpp \
@@ -49,7 +50,6 @@ HEADERS += ./MainWindow.hpp \
            ./CtrlCutView.hpp \
            ./StreamUtils.hpp \
 	   ./ObjectPropertyWidget.hpp \
-           ./delegates/DistanceDelegate.hpp \
            ./helpers/Qt.hpp \
            ./helpers/PathItem.hpp \
            ./helpers/CutItem.hpp \
@@ -60,10 +60,10 @@ SOURCES += ./gui.cpp \
            ./event/CtrlCutEvent.cpp \
            ./Commands.cpp \
            ./NewDialog.cpp \
+           ./ImportDialog.cpp \	   
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \
            ./ObjectPropertyWidget.cpp \
-           ./delegates/DistanceDelegate.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \

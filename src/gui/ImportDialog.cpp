@@ -10,26 +10,28 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more de0tails.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "CutItem.hpp"
-#include "PathItem.hpp"
-#include "cut/operations/Translate.hpp"
-#include <qgraphicsitem.h>
-#include <boost/foreach.hpp>
+#include "ImportDialog.hpp"
+#include <QString>
+#include <assert.h>
 
-CutItem::CutItem(Cut& cut) : AbstractCtrlCutItem(), cut(cut) {
-  QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
-  Point pos = this->cut.get(CutSettings::CPOS);
-  QGraphicsItemGroup::setPos(QPointF(pos.x, pos.y));
+ImportDialog::ImportDialog(QWidget *parent) : QDialog(parent)
+{
+  setupUi(this);
+}
 
-  BOOST_FOREACH(Path& p, cut) {
-    PathItem* pi = new PathItem(p);
-    pi->setPos(QPointF(pos.x, pos.y));
-    QGraphicsItemGroup::addToGroup(pi);
-  }
+ImportDialog::~ImportDialog() {
+}
+
+bool ImportDialog::isRasterDataEnabled() {
+  return this->bothButton->isChecked() || this->rasterButton->isChecked();
+}
+
+bool ImportDialog::isVectorDataEnabled() {
+  return this->bothButton->isChecked() || this->vectorButton->isChecked();
 }

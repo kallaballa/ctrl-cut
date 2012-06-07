@@ -17,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "CtrlCutScene.hpp"
-#include "Document.hpp"
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
 #include "event/CtrlCutEvent.hpp"
@@ -29,13 +28,13 @@
 #include <QGraphicsSceneMouseEvent>
 #include "helpers/DocumentHolder.hpp"
 #include <QGraphicsItem>
-#include "cut/model/Clip.hpp"
-#include "cut/model/Explode.hpp"
-#include "cut/model/Deonion.hpp"
-#include "cut/model/Reduce.hpp"
-#include "cut/model/NearestPathSorting.h"
-#include "cut/graph/Planar.hpp"
-#include "cut/model/SvgPlot.hpp"
+#include "cut/operations/Clip.hpp"
+#include "cut/operations/Explode.hpp"
+#include "cut/operations/Deonion.hpp"
+#include "cut/operations/Reduce.hpp"
+#include "cut/operations/NearestPathSorting.h"
+#include "cut/operations/Planar.hpp"
+#include "svg/SvgPlot.hpp"
 #include <boost/filesystem.hpp>
 #include <qpixmapcache.h>
 #include <qpainter.h>
@@ -149,26 +148,29 @@ void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const
   this->docHolder.doc->put(DS::HEIGHT, height);
 }
 
-void CtrlCutScene::load(const QString& filename) {
+void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
   if (!this->docHolder.doc) {
     this->newJob(boost::filesystem::path(filename.toStdString()).filename().c_str(), 600, Distance(36, IN, 600), Distance(24, IN, 600));
   }
-//  QPixmapCache::setCacheLimit(width * height / 8 * 2);
+
   Document doc;
 
-  //FIXME make settings available through the gui
+  doc.put(DocumentSettings::LOAD_CUT, loadVector);
+  doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-  doc.put(DocumentSettings::LOAD_ENGRAVING, true);
+
   doc.put(DocumentSettings::RESOLUTION, 600);
   doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
   doc.put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
   doc.load(filename.toStdString());
+
   string basename = doc.get(DocumentSettings::FILENAME);
   uint32_t resolution = doc.get(DocumentSettings::RESOLUTION);
   uint32_t width = doc.get(DocumentSettings::WIDTH).in(PX);
   uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
   Distance reduceMax = Distance(1, MM, resolution);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
+
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
     Cut& cut = **it;
 

@@ -19,7 +19,7 @@
 #ifndef CUTITEM_H_
 #define CUTITEM_H_
 
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "config/CutSettings.hpp"
 #include "Qt.hpp"
 

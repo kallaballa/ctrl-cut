@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>204</width>
-    <height>101</height>
+    <height>163</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,23 +15,36 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QCheckBox" name="chkImportVector">
-     <property name="text">
-      <string>Import vector data</string>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Select data to import</string>
      </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="chkImportRaster">
-     <property name="text">
-      <string>Import raster data</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="bothButton">
+        <property name="text">
+         <string>Both</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="vectorButton">
+        <property name="text">
+         <string>Vector data only</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rasterButton">
+        <property name="text">
+         <string>Raster data only</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

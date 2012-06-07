@@ -24,7 +24,6 @@
 #include <qapplication.h>
 #include "Commands.hpp"
 #include <QGraphicsItem>
-#include "delegates/DistanceDelegate.hpp"
 
 MainWindow *MainWindow::inst = NULL;
 
@@ -85,15 +84,6 @@ void MainWindow::on_newJob() {
   setWindowTitle("Ctrl-Cut - " + QString(this->scene->getDocumentHolder().doc->get(DocumentSettings::TITLE).c_str()));
 }
 
-/*
-void MainWindow::on_simplifyItem() {
-  if (this->scene->selectedItems().isEmpty())
-    return;
-
-  QUndoCommand *simplifyCommand = new SimplifyCommand(this->scene);
-  undoStack->push(simplifyCommand);
-}
-*/
 void MainWindow::openFile(const QString &filename) {
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);

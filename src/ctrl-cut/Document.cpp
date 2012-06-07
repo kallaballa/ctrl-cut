@@ -23,7 +23,7 @@
 #include "config/CutSettings.hpp"
 #include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
-#include "cut/model/Translate.hpp"
+#include "cut/operations/Translate.hpp"
 #include "CtrlCutException.hpp"
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
@@ -168,7 +168,7 @@ Document::Format Document::guessFileFormat(const string& filename) {
     return POSTSCRIPT;
 }
 
-bool Document::load(const string& filename, LoadType load, Format docFormat) {
+bool Document::load(const string& filename, Format docFormat) {
   if(docFormat == UNSPECIFIED)
     docFormat = guessFileFormat(filename);
 
@@ -176,6 +176,9 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
 
   this->put(D_SET::DATA_DIR, string(dirname(strdup(filename.c_str()))));
   this->put(D_SET::FILENAME, filename);
+
+  bool loadCut = this->get(D_SET::LOAD_CUT);
+  bool loadEngraving = this->get(D_SET::LOAD_ENGRAVING);
 
   cups_file_t* input_file;
   FileParser *parser = NULL;
@@ -250,7 +253,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     // Uncomment this to force ghostscript to render to file using the ppmraw
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
-    if (load == ENGRAVING || load == BOTH) {
+    if (loadEngraving) {
       switch (this->get(E_SET::DITHERING)) {
       case E_SET::DEFAULT_DITHERING:
         psparser->setRasterFormat(PostscriptParser::BITMAP);
@@ -279,7 +282,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
     }
   }
 
-  if (load == ENGRAVING || load == BOTH) {
+  if (loadEngraving) {
     Engraving* engraving = new Engraving(this->settings);
     if (docFormat == PBM) {
       assert(false);
@@ -327,7 +330,7 @@ bool Document::load(const string& filename, LoadType load, Format docFormat) {
   }
 
   Cut *cut = NULL;
-  if (load == CUT || load == BOTH) {
+  if (loadCut) {
     if (docFormat == VECTOR) {
       cut = new Cut(this->settings);
       if(!cut->load(filename))

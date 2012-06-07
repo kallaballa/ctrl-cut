@@ -3,7 +3,7 @@
 
 #include "util/PJL.hpp"
 #include "engrave/Engrave.hpp"
-#include "cut/model/Cut.hpp"
+#include "cut/Cut.hpp"
 #include "config/DocumentSettings.hpp"
 
 #include "FileParser.hpp"
@@ -32,12 +32,6 @@ public:
     SVG,
     VECTOR,
     PBM
-  };
-
-  enum LoadType {
-    ENGRAVING,
-    CUT,
-    BOTH
   };
 
   typedef std::list<Cut*> CutList;
@@ -94,7 +88,7 @@ public:
 
   Format guessFileFormat(const string& filename);
 
-  bool load(const string& filename, LoadType load = BOTH, Format docFormat = UNSPECIFIED);
+  bool load(const string& filename, Format docFormat = UNSPECIFIED);
 
   DocumentSettings& getSettings() {
     return settings;

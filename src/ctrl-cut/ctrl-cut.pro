@@ -24,11 +24,16 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./util/Logger.hpp \
            ./util/PJL.hpp \
            ./util/Util.hpp \
-           ./cut/model/Explode.hpp \
-           ./cut/model/Reduce.hpp \
-	   ./cut/model/Cut.hpp \
-           ./cut/model/SvgPlot.hpp \
-	   ./cut/model/Deonion.hpp \
+           ./cut/operations/Explode.hpp \
+           ./cut/operations/Reduce.hpp \
+	   ./cut/Cut.hpp \
+           ./cut/operations/SvgPlot.hpp \
+	   ./cut/operations/Deonion.hpp \
+           ./cut/geom/algorithms/Algorithms.hpp \
+           ./cut/geom/algorithms/Add.hpp \
+           ./cut/geom/algorithms/Concat.hpp \
+           ./cut/geom/algorithms/Append.hpp \
+           ./cut/geom/algorithms/Prepend.hpp \
            ./cut/geom/Views.hpp \
            ./cut/geom/Geometry.hpp \
            ./cut/geom/SegmentTree.hpp \
@@ -74,8 +79,8 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
-           ./cut/model/Deonion.cpp \
-           ./cut/model/SvgPlot.cpp \
+           ./cut/operations/Deonion.cpp \
+           ./svg/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \
            ./engrave/dither/DitherBurke.cpp \

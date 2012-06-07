@@ -25,6 +25,8 @@
 #include "helpers/DocumentHolder.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
+#include "Document.hpp"
+
 
 class CtrlCutScene : public QGraphicsScene
 {
@@ -46,7 +48,7 @@ public:
   void remove(EngraveItem& engraveItem);
   void newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height);
   void open(const QString& filename);
-  void load(const QString& filename);
+  void load(const QString& filename, bool loadVector = true, bool loadRaster = true);
   void reset();
   void update(const QRectF &rect = QRectF());
  // void keyPressEvent(QKeyEvent *event);
