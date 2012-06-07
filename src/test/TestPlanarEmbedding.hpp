@@ -1,7 +1,7 @@
 #ifndef TESTPLANAREMBEDDING_H_
 #define TESTPLANAREMBEDDING_H_
 
-#include "cut/model/CutModel.hpp"
+#include "cut/operations/CutModel.hpp"
 #include "cut/graph/Traverse.hpp"
 #include "cut/geom/Geometry.hpp"
 #include <boost/graph/properties.hpp>
