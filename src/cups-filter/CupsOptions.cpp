@@ -70,9 +70,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
     ds.put(ES::EPOWER, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::RASTER_DITHERING, v)) {
-    ds.put(ES::DITHERING, ES::DEFAULT_DITHERING);
-/* FIXME custom ditherings a borken
- *    if (v == "Default")
+    if (v == "Default")
       ds.put(ES::DITHERING, ES::DEFAULT_DITHERING);
     else if (v == "Bayer")
       ds.put(ES::DITHERING, ES::BAYER);
@@ -90,7 +88,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
       ds.put(ES::DITHERING, ES::SIERRA3);
     else {
       LOG_WARN_MSG("Illegal value for RasterDithering", v);
-    }*/
+    }
   }
   if (cupsOpts.get(CupsOptions::RASTER_DIRECTION, v)) {
     if (v == "TopDown")
