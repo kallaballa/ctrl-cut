@@ -23,7 +23,6 @@
 #include "CupsGetOpt.hpp"
 #include <boost/foreach.hpp>
 
-
 /**
  * Cups filter entry point.
  *
@@ -35,7 +34,6 @@
  */
 
 int main(int argc, char *argv[]) {
-  typedef DocumentSettings DS;
   Logger::init(CC_WARNING);
   clock_t start = clock();
 
@@ -45,9 +43,6 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
-  BOOST_FOREACH(Cut* cut, doc.cutList) {
-    cut->prepare();
-  }
   stringstream ss;
   doc.write(ss);
   std::cout << ss.str() << endl;
