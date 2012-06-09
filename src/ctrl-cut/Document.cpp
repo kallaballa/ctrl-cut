@@ -312,8 +312,6 @@ bool Document::load(const string& filename, Format docFormat) {
         std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
         if (suffix == "ppm" || suffix == "pgm") {
           GrayscaleImage gs = loadppm(filename);
-/*Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
-          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
           engraving->setImage(gs);
         }
         else {
@@ -341,7 +339,10 @@ bool Document::load(const string& filename, Format docFormat) {
       if(!cut->load(parser->getVectorData()))
           return false;
     }
-    if (cut) this->push_back(cut);
+    if (cut)  {
+      this->push_back(cut);
+      cut->normalize();
+    }
   }
 
   return true;
