@@ -36,7 +36,6 @@ class Explode {
 private:
   TmultiPointRange& src;
   TmultiPointRange& sink;
-  const Distance& maxLen;
 
   IndexedSegmentTree tree;
 
@@ -44,8 +43,8 @@ private:
   typedef IndexedSegmentTree::Result Result;
   typedef IndexedSegmentTree::Result::const_iterator ResultIter;
 public:
-  Explode(TmultiPointRange& src, TmultiPointRange& sink, const Distance& maxLen) :
-    src(src), sink(sink), maxLen(maxLen) {
+  Explode(TmultiPointRange& src, TmultiPointRange& sink) :
+    src(src), sink(sink){
   }
 
   Explode(const Explode& other) :
@@ -181,8 +180,8 @@ template<
   typename TmultiPointRange
 
 >
-void explode(TmultiPointRange& src, TmultiPointRange& sink, const Distance& maxLen) {
-  Explode<TmultiPointRange> exploder(src,sink, maxLen);
+void explode(TmultiPointRange& src, TmultiPointRange& sink) {
+  Explode<TmultiPointRange> exploder(src,sink);
   exploder();
 }
 

@@ -20,8 +20,7 @@
 #ifndef MERGE_H_
 #define MERGE_H_
 
-#include <cut/model/Cut.hpp>
-#include "cut/geom/Geometry.hpp"
+#include "Cut.hpp"
 #include <boost/foreach.hpp>
 
 inline void merge(Cut& src, Cut& sink) {
