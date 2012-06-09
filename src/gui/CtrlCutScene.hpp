@@ -59,7 +59,7 @@ signals:
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *event);
    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-   void drawBackground(QPainter *painter, const QRectF &rect);
+   virtual void drawBackground(QPainter *painter, const QRectF &rect);
 
 private:
   DocumentHolder docHolder;

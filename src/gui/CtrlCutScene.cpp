@@ -172,37 +172,6 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
   for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-    Cut& cut = **it;
-
-    plot_svg(cut, basename + "_input");
-
-    Cut clipped = make_from(cut);
-    Cut planar = make_from(cut);
-    Cut exploded = make_from(cut);
-    Cut reduced = make_from(cut);
-    Cut sorted = make_from(cut);
-
-    clip(cut, clipped, Box(Point(0,0),Point(width,height)), Distance(30,MM, resolution));
-    plot_svg(clipped, basename + "_clipped");
-
-    explode(clipped, exploded, Distance(30,MM, resolution));
-    plot_svg(exploded, basename + "_exploded");
-
-    make_planar(exploded, planar);
-    plot_svg(planar, basename + "_planar");
-
-    reduce(planar, reduced, reduceMax.in(PX));
-    plot_svg(reduced, basename + "_reduced");
-/*
-    nearest_path_sorting(reduced, sorted);
-    plot(sorted, basename + "_sorted");
-*/
-    traverse_onion(reduced, sorted);
-    plot_svg(sorted, basename + "_onion");
-
-    cut.clear();
-    cut = sorted;
-    plot_svg(cut, basename + "_cut");
     CutItem* ci = new CutItem(**it);
     this->docHolder.add(*ci);
     this->addItem(ci);

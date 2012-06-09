@@ -124,7 +124,7 @@ public:
     return this->load(infile);
   }
 
-  void prepare() {
+  void normalize() {
     typedef CutImpl<Tcontainer, Tallocator> Cut;
     typedef DocumentSettings DS;
     Distance width = this->get(DS::WIDTH);
@@ -142,23 +142,38 @@ public:
     Cut planar= make_from(cut);
     Cut reduced = make_from(cut);
 
-    clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))), Distance(30,MM, dpi));
+    clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
     plot_svg(clipped, filename + "_clipped");
 
-    explode(clipped, exploded, Distance(30,MM, dpi));
+    explode(clipped, exploded);
     plot_svg(exploded, filename + "_exploded");
-
-    make_planar(exploded, planar);
-    plot_svg(planar, filename + "_planar");
 
     reduce(planar, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
   }
-protected:
-  /* REFACTOR
-  uint64_t clipped;
-  uint64_t zerolength;
-  */
+
+  void sort() {
+    typedef CutImpl<Tcontainer, Tallocator> Cut;
+    string filename = this->get(DocumentSettings::FILENAME);
+    Cut planar_faces = make_from(*this);
+    Cut sorted = make_from(*this);
+    Cut translated = make_from(*this);
+
+    make_planar(*this, planar_faces);
+    plot_svg(planar_faces, filename + "_planar_faces");
+
+    if(this->get(CutSettings::OPTIMIZE) == CutSettings::INNER_OUTER)
+      traverse_onion(planar_faces, sorted);
+    else if(this->get(CutSettings::OPTIMIZE) == CutSettings::SHORTEST_PATH)
+      nearest_path_sorting(planar_faces, sorted);
+
+    plot_svg(sorted, filename + "_sorted");
+
+    const Point&  pos = sorted.get(CutSettings::CPOS);
+    translate(sorted, translated, pos);
+
+    plot_svg(translated, filename + "_translate");
+  }
 };
 
 typedef CutImpl<std::vector, std::allocator> Cut;
@@ -170,10 +185,5 @@ inline MultiSegmentView<const Cut> segments(const Cut& cut) {
 inline MultiPointView<const Cut> points(const Cut& cut) {
   return MultiPointView<const Cut>(cut);
 }
-
-inline void merge(Cut& left, Cut& right) {
-
-}
-
 
 #endif /* CUT_H_ */
