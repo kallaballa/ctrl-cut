@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "Svg2Ps.hpp"
+#include "cut/Cut.hpp"
 
 using std::ofstream;
 
@@ -78,4 +79,3 @@ void Svg2Ps::convert() {
   fflush(fpOut);
   fclose(fpOut);
 }
-
