@@ -139,7 +139,6 @@ public:
 
     Cut clipped = make_from(cut);
     Cut exploded = make_from(cut);
-    Cut planar= make_from(cut);
     Cut reduced = make_from(cut);
 
     clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
@@ -148,7 +147,7 @@ public:
     explode(clipped, exploded);
     plot_svg(exploded, filename + "_exploded");
 
-    reduce(planar, reduced, reduceMax.in(PX));
+    reduce(exploded, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
   }
 
