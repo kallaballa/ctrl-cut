@@ -96,6 +96,7 @@ SOURCES += ./encoder/HPGLEncoder.cpp \
 	   ./config/BitmapSettings.cpp \
            ./config/CutSettings.cpp \
            ./config/DocumentSettings.cpp \
+	   ./svg/SvgWriter.cpp \  
            ./svg/SvgFix.cpp \
            ./svg/SvgDocument.cpp \
            ./svg/Svg2Ps.cpp
