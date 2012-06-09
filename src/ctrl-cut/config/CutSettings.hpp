@@ -48,6 +48,22 @@ public:
     this->put(CutSettings::CPOS, Point());
   }
   CutSettings(const CutSettings& settings) : Settings(settings) {}
+
+  static string getOptimizeName(Optimize opt) {
+    switch(opt) {
+    case SIMPLE:
+      return "Simple";
+      break;
+    case INNER_OUTER:
+      return "Inner-Outer";
+      break;
+    case SHORTEST_PATH:
+      return "Shortest Path";
+      break;
+    }
+    return "Unkown";
+  }
+
   ~CutSettings() {}
 };
 
