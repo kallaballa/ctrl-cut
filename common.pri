@@ -23,10 +23,10 @@ macx {
 }
 
 CONFIG(debug, debug|release) {
-QMAKE_CXXFLAGS_DEBUG += -g3 -O0 -ggdb
+QMAKE_CXXFLAGS_DEBUG += -g3 -O0 -ggdb -Wc++0x-compat
 message("DEBUG!")
 } else {
-QMAKE_CXXFLAGS += -fprefetch-loop-arrays
+QMAKE_CXXFLAGS += -msse2 -fprefetch-loop-arrays
 DEFINES += QT_NO_DEBUG
 DEFINES += QT_NO_DEBUG_OUTPUT
 message("RELEASE!")
