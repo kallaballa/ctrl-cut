@@ -26,8 +26,6 @@
 #include <sstream>
 #include "Document.hpp"
 #include <boost/geometry/extensions/io/svg/svg_mapper.hpp>
-#include <boost/foreach.hpp>
-#include <boost/format.hpp>
 
 class SvgWriter {
 public:
@@ -46,6 +44,7 @@ public:
   void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
   void text(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"");
   void writeCut(const Cut& cut, const string& style = "");
+  void writeEngraving(const Engraving& engraving, const string& style = "");
   void writeDocument(const Document& d, const string& style = "");
 
 private:
