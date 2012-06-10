@@ -156,7 +156,7 @@ public:
       out.write((const char *)invertedline, width());
       scanlineptr += this->row_stride;
     }
-    delete invertedline;
+    delete[] invertedline;
     return true;
   }
 
