@@ -119,10 +119,9 @@ void SvgWriter::writeEngraving(const Engraving& engraving, const string& style) 
   Coord_t width = img.width() - 1;
   Coord_t height = img.height() - 1;
 
-
+  Magick::Blob rawblob(img.data(), (img.rowstride()) * height);
   Magick::Blob pngblob;
-  Magick::Image image;
-  image.read( width, height, "GRAY", MagickCore::CharPixel, img.data());
+  Magick::Image image(rawblob, Magick::Geometry((img.rowstride()), height), 8, "GRAY");
   image.magick( "PNG" );
   image.write(&pngblob);
   const string& imgData = "data:image/png;base64," + pngblob.base64();
