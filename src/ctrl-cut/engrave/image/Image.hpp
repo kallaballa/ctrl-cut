@@ -99,7 +99,7 @@ public:
     LOG_DEBUG((int)this->bytes_per_pixel);
   }
 
-  Image(const Image& other) : AbstractImage(other), comp(other.comp) {}
+  Image(const Image& other) : AbstractImage(other), bytes_per_pixel(other.bytes_per_pixel), comp(other.comp){}
 
   virtual ~Image() {}
   
