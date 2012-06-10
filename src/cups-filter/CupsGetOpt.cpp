@@ -80,7 +80,7 @@ CupsOptions CupsGetOpt::load_document(Document& doc, int argc, char *argv[]) {
   // Handle CUPS options
   cups_option_t *cups_options;
   size_t numCupsOptions = cupsParseOptions(options.c_str(), 0, &cups_options);
-  CupsOptions cupsOpts = CupsOptions::parseSettings(doc.getSettings(), cups_options, numCupsOptions);
+  CupsOptions cupsOpts = CupsOptions::parseSettings(doc.settings(), cups_options, numCupsOptions);
   doc.load(filename);
   return cupsOpts;
 }

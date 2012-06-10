@@ -22,6 +22,7 @@
 #include "cut/Cut.hpp"
 #include "CupsGetOpt.hpp"
 #include <boost/foreach.hpp>
+#include "cutters/EpilogLegend36Ext.hpp"
 
 /**
  * Cups filter entry point.
@@ -44,7 +45,10 @@ int main(int argc, char *argv[]) {
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
   stringstream ss;
-  doc.write(ss);
+
+  EpilogLegend36Ext cutter;
+  cutter.write(doc,ss);
+
   std::cout << ss.str() << endl;
 
   clock_t end = clock() - start;
