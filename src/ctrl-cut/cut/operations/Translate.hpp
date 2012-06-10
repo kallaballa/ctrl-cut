@@ -27,7 +27,7 @@
 template<
   typename TmultiPointRange
 >
-void translate(TmultiPointRange& src, TmultiPointRange& sink, const Point& translate) {
+void translate(const TmultiPointRange& src, TmultiPointRange& sink, const Point& translate) {
   namespace tl = boost::geometry::strategy::transform;
   tl::translate_transformer<Point, Point> transformer(translate.x, translate.y);
 
