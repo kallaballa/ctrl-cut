@@ -58,7 +58,7 @@ public:
     this->image = image;
   }
 
-  const Timage& getImage() {
+  const Timage& getImage() const {
     return image;
   }
 
