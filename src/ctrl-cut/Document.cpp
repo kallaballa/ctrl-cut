@@ -32,9 +32,9 @@ using std::list;
 
 namespace bfs = boost::filesystem3;
 
-typedef EngraveSettings E_SET;
-typedef DocumentSettings D_SET;
-typedef CutSettings C_SET;
+typedef EngraveSettings ES;
+typedef DocumentSettings DS;
+typedef CutSettings CS;
 
 void Document::push_back(Cut* cut) {
   this->cutList.push_back(cut);
@@ -73,11 +73,11 @@ bool Document::load(const string& filename, Format docFormat) {
 
   string base = basename(strdup(filename.c_str()));
 
-  this->put(D_SET::DATA_DIR, string(dirname(strdup(filename.c_str()))));
-  this->put(D_SET::FILENAME, filename);
+  this->put(DS::DATA_DIR, string(dirname(strdup(filename.c_str()))));
+  this->put(DS::FILENAME, filename);
 
-  bool loadCut = this->get(D_SET::LOAD_CUT);
-  bool loadEngraving = this->get(D_SET::LOAD_ENGRAVING);
+  bool loadCut = this->get(DS::LOAD_CUT);
+  bool loadEngraving = this->get(DS::LOAD_ENGRAVING);
 
   cups_file_t* input_file;
   FileParser *parser = NULL;
@@ -112,7 +112,7 @@ bool Document::load(const string& filename, Format docFormat) {
     }
 
     string fname = filename;
-    string file_basename = this->get(D_SET::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
+    string file_basename = this->get(DS::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
 
     // Write out the incoming cups data if debug is enabled.
     // FIXME: This is disabled for now since it has a bug:
@@ -153,17 +153,17 @@ bool Document::load(const string& filename, Format docFormat) {
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
     if (loadEngraving) {
-      switch (this->get(E_SET::DITHERING)) {
-      case E_SET::DEFAULT_DITHERING:
+      switch (this->get(ES::DITHERING)) {
+      case ES::DEFAULT_DITHERING:
 //        psparser->setRasterFormat(PostscriptParser::BITMAP);
         //break;
-      case E_SET::BAYER:
-      case E_SET::FLOYD_STEINBERG:
-      case E_SET::JARVIS:
-      case E_SET::BURKE:
-      case E_SET::STUCKI:
-      case E_SET::SIERRA2:
-      case E_SET::SIERRA3:
+      case ES::BAYER:
+      case ES::FLOYD_STEINBERG:
+      case ES::JARVIS:
+      case ES::BURKE:
+      case ES::STUCKI:
+      case ES::SIERRA2:
+      case ES::SIERRA3:
         psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
         break;
 
@@ -199,7 +199,7 @@ bool Document::load(const string& filename, Format docFormat) {
 /*          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
           BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
           engraving->setImage(gs);
-          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
+          engraving->put(ES::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
         } else if(parser->hasBitmapImage()) {
           assert(false);
 /*          Rectangle cropbox = parser->getCropBox();
@@ -218,7 +218,7 @@ bool Document::load(const string& filename, Format docFormat) {
           //engraving->setImage(loadpbm(filename));
         }
 
-        engraving->put(E_SET::EPOS, Point(392, 516));
+        engraving->put(ES::EPOS, Point(392, 516));
       }
     }
     if (engraving && engraving->isAllocated()) {
