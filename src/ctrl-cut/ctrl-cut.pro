@@ -14,8 +14,8 @@ include(common.pri)
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
 
-HEADERS +=  ./encoder/PclEncoder.hpp \
-           ./encoder/HPGLEncoder.hpp \
+HEADERS += ./cutters/encoder/PclEncoder.hpp \
+           ./cutters/encoder/HPGLEncoder.hpp \
            ./FileParser.hpp \
            ./Document.hpp \
            ./util/Eps.hpp \
@@ -24,6 +24,7 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./util/Logger.hpp \
            ./util/PJL.hpp \
            ./util/Util.hpp \
+           ./cutters/EpilogLegend36Ext.hpp \
            ./cut/operations/Explode.hpp \
            ./cut/operations/Reduce.hpp \
 	   ./cut/Cut.hpp \
@@ -72,13 +73,14 @@ HEADERS +=  ./encoder/PclEncoder.hpp \
            ./svg/SvgDocument.hpp \
            ./svg/SvgFix.hpp
 
-SOURCES += ./encoder/HPGLEncoder.cpp \
-           ./encoder/PclEncoder.cpp \
+SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
+           ./cutters/encoder/PclEncoder.cpp \
            ./PostscriptParser.cpp \
            ./util/2D.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
+	   ./cutters/EpilogLegend36Ext.cpp \
            ./cut/operations/Deonion.cpp \
            ./svg/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
