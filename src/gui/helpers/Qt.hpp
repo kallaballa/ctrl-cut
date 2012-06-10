@@ -59,7 +59,7 @@ public:
 
   void setHighlighted(bool enabled) {
     return;
-    // causes performance issues
+    // FIXME causes performance issues
     QGraphicsColorizeEffect* highlight = new QGraphicsColorizeEffect();
     highlight->setColor(Qt::green);
     if(enabled) {
