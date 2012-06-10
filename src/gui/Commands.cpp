@@ -25,6 +25,8 @@
 #include "helpers/EngraveItem.hpp"
 #include <Document.hpp>
 #include <cut/operations/Reduce.hpp>
+#include <svg/SvgWriter.hpp>
+
 #include <QtGui>
 
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,
@@ -150,6 +152,22 @@
    }
 
    this->scene->update();
+ }
+
+ SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
+       QUndoCommand(parent), scene(scene), filename(filename) {
+   setText("Save");
+ }
+
+ void SaveCommand::undo() {
+
+ }
+
+ void SaveCommand::redo() {
+   typedef DocumentSettings DS;
+   Document& doc = *this->scene->getDocumentHolder().doc;
+   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), filename.toStdString().c_str());
+   svgW.writeDocument(doc, "stroke:rgb(255,0,0);stroke-width:5;");
  }
 
  ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :

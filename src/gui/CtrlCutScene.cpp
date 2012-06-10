@@ -171,14 +171,14 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   Distance reduceMax = Distance(1, MM, resolution);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
-  for (Document::CutIt it = doc.begin_cut(); it != doc.end_cut(); it++) {
-    CutItem* ci = new CutItem(**it);
+  BOOST_FOREACH(Cut* cut, doc.cuts()) {
+    CutItem* ci = new CutItem(*cut);
     this->docHolder.add(*ci);
     this->addItem(ci);
   }
 
-  for (Document::EngraveIt it = doc.begin_engrave(); it != doc.end_engrave(); it++) {
-    EngraveItem* ei = new EngraveItem(**it);
+  BOOST_FOREACH(Engraving* engraving, doc.engravings()) {
+    EngraveItem* ei = new EngraveItem(*engraving);
     this->docHolder.add(*ei);
     this->addItem(ei);
   }

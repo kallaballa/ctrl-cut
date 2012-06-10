@@ -455,17 +455,6 @@
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="fileMenu">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="newJobAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileOpenAction"/>
-    <addaction name="fileImportAction"/>
-    <addaction name="separator"/>
-    <addaction name="filePrintAction"/>
-   </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
      <string>Tools</string>
@@ -483,6 +472,19 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="deleteItem"/>
+   </widget>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="newJobAction"/>
+    <addaction name="separator"/>
+    <addaction name="fileSaveAction"/>
+    <addaction name="separator"/>
+    <addaction name="fileOpenAction"/>
+    <addaction name="fileImportAction"/>
+    <addaction name="separator"/>
+    <addaction name="filePrintAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="editMenu"/>
@@ -504,7 +506,7 @@
   </action>
   <action name="filePrintAction">
    <property name="text">
-    <string>&amp;Print</string>
+    <string>Send &amp;to</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -544,6 +546,11 @@
   <action name="newJobAction">
    <property name="text">
     <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="fileSaveAction">
+   <property name="text">
+    <string>&amp;Save</string>
    </property>
   </action>
  </widget>

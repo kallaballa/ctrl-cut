@@ -16,6 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "cutters/EpilogLegend36Ext.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"
 #include "CtrlCutScene.hpp"
@@ -94,15 +96,26 @@ void MainWindow::importFile(const QString &filename) {
   undoStack->push(importCommand);
 }
 
+void MainWindow::saveFile(const QString &filename) {
+  QUndoCommand *saveCommand = new SaveCommand(this->scene, filename);
+  undoStack->push(saveCommand);
+}
+
 void MainWindow::on_fileOpenAction_triggered()
 {
-  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Ctrl-Cut SVG (*.svg)"));
+  openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Ctrl-Cut Document (*.cut)"));
+}
+
+void MainWindow::on_fileSaveAction_triggered()
+{
+  saveFile(QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)"));
 }
 
 void MainWindow::on_fileImportAction_triggered()
 {
   importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.vector *.svg)"));
 }
+
 
 void MainWindow::on_filePrintAction_triggered()
 {
@@ -128,7 +141,9 @@ void MainWindow::on_filePrintAction_triggered()
     this->scene->getDocumentHolder().doc->put(DocumentSettings::USER, "user");
 //    this->scene->getDocumentHolder().doc->write(tmpfile);
 
-    this->scene->getDocumentHolder().doc->write(ostream);
+    EpilogLegend36Ext cutter;
+    cutter.write(*this->scene->getDocumentHolder().doc,ostream);
+
     tmpfile.close();
 
     this->lpdclient->print(host, "MyDocument", rtlbuffer);

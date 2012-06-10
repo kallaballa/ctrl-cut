@@ -44,6 +44,7 @@ public:
 public slots:
   void on_helpAboutAction_triggered();
   void on_fileOpenAction_triggered();
+  void on_fileSaveAction_triggered();
   void on_fileImportAction_triggered();
   void on_filePrintAction_triggered();
   void on_toolsMoveToOriginAction_triggered();
@@ -57,6 +58,7 @@ public slots:
 
   void openFile(const QString &filename);
   void importFile(const QString &filename);
+  void saveFile(const QString &filename);
 private:
   static MainWindow *inst;
   MainWindow();

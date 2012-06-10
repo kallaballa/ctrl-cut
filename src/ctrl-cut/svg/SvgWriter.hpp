@@ -24,40 +24,32 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "Document.hpp"
 #include <boost/geometry/extensions/io/svg/svg_mapper.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
+
 class SvgWriter {
 public:
-  uint32_t width;
-  uint32_t height;
+  Coord_t width;
+  Coord_t height;
   std::ofstream ostream;
 
-  SvgWriter(uint32_t width, uint32_t height, const char* filename) : width(width), height(height), ostream(filename) {
-    ostream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << std::endl;
-    ostream << "<svg xmlns=\"http://www.w3.org/2000/svg\" xml:space=\"preserve\" ";
-    ostream << "width=\"" << width << "px\" height=\"" << height << "px\" ";
-    ostream << "viewbox=\"0 0 " << width << " " << height << "\">" << std::endl;
-  }
-
-  virtual ~SvgWriter() {
-    ostream << "</svg>";
-    ostream.close();
-  }
-
-  void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1") {
-    BOOST_FOREACH(const Path& path, r) {
-      this->write(path, style);
-    }
-  }
+  SvgWriter(Coord_t width, Coord_t height, const char* filename);
+  virtual ~SvgWriter();
 
   template<typename Tgeom>
   void write(const Tgeom& geom, const std::string& style) {
     ostream << boost::geometry::svg(geom, style) << std::endl;
   }
 
-  void text(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"") {
-    ostream << "<text x=\"" << p.x << "\" y=\"" << p.y << "\" " << style << ">" << text << "</text>";
-  }
-};
+  void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
+  void text(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"");
+  void writeCut(const Cut& cut, const string& style = "");
+  void writeDocument(const Document& d, const string& style = "");
 
+private:
+  void writeDocumentStart(const Document& d);
+  void writeDocumentEnd();
+};
 #endif /* SVGWRITER_HPP_ */

@@ -91,6 +91,19 @@ private:
   DocumentHolder newDoc;
 };
 
+
+class SaveCommand: public QUndoCommand {
+public:
+  SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent = NULL);
+
+  void undo();
+  void redo();
+
+private:
+  CtrlCutScene* scene;
+  const QString filename;
+};
+
 class ImportCommand: public QUndoCommand {
 public:
   ImportCommand(CtrlCutScene* scene, const QString &filename, QUndoCommand *parent = NULL);
