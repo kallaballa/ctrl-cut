@@ -149,6 +149,8 @@ public:
 
     reduce(exploded, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
+    this->clear();
+    (*this) = reduced;
   }
 
   void sort() {
