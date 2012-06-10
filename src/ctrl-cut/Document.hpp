@@ -47,36 +47,26 @@ public:
   virtual ~Document() {};
 
   void copy(const Document& other) {
-    settings = other.settings;
-    for (CutConstIt it = other.begin_cut(); it != other.end_cut(); it++) {
-      this->push_back(new Cut(**it));
+    this->docSettings = other.docSettings;
+    BOOST_FOREACH(const Cut* cut, this->cuts()) {
+      this->push_back(new Cut(*cut));
     }
-
-    for (EngraveConstIt it = other.begin_engrave(); it != other.end_engrave(); it++) {
-      this->push_back(new Engraving(**it));
+    BOOST_FOREACH(const Engraving* engrave, this->engravings()) {
+      this->push_back(new Engraving(*engrave));
     }
   }
 
-  CutList cutList;
-  EngraveList engraveList;
+  const CutList& cuts() const {
+    return this->cutList;
+  }
 
-  CutIt begin_cut() { return this->cutList.begin(); }
-  CutConstIt begin_cut() const  { return this->cutList.begin(); }
-  CutIt end_cut() { return this->cutList.end(); }
-  CutConstIt end_cut() const  { return this->cutList.end(); }
-  CutList::reference front_cut() { return this->cutList.front(); }
-  CutList::reference back_cut() { return this->cutList.back(); }
-  size_t size_cut() const { return this->cutList.size(); }
-  bool empty_cut() const { return this->cutList.empty(); }
+  const EngraveList& engravings() const {
+    return this->engraveList;
+  }
 
-  EngraveIt begin_engrave() { return this->engraveList.begin(); }
-  EngraveConstIt begin_engrave() const  { return this->engraveList.begin(); }
-  EngraveIt end_engrave() { return this->engraveList.end(); }
-  EngraveConstIt end_engrave() const  { return this->engraveList.end(); }
-  EngraveList::reference front_engrave() { return this->engraveList.front(); }
-  EngraveList::reference back_engrave() { return this->engraveList.back(); }
-  size_t size_engrave() const { return this->engraveList.size(); }
-  bool empty_engrave() const { return this->engraveList.empty(); }
+  DocumentSettings& settings() {
+    return this->docSettings;
+  };
 
   void optimize();
 
@@ -84,27 +74,23 @@ public:
   void push_back(Engraving* engraving);
   void remove(Cut* cut);
   void remove(Engraving* engraving);
-  void write(std::ostream &out);
 
   Format guessFileFormat(const string& filename);
-
   bool load(const string& filename, Format docFormat = UNSPECIFIED);
-
-  DocumentSettings& getSettings() {
-    return settings;
-  };
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
-    settings.put(key,value);
+    docSettings.put(key,value);
   }
 
   template<typename T>
   const T get(const Settings::Key<T>& key) const {
-    return settings.get(key);
+    return docSettings.get(key);
   }
 private:
-  DocumentSettings settings;
+  DocumentSettings docSettings;
+  CutList cutList;
+  EngraveList engraveList;
 };
 
 #endif /* DOCUMENT_H_ */

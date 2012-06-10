@@ -21,8 +21,6 @@
 #include "Document.hpp"
 #include "util/Measurement.hpp"
 #include "config/CutSettings.hpp"
-#include "encoder/HPGLEncoder.hpp"
-#include "encoder/PclEncoder.hpp"
 #include "cut/operations/Translate.hpp"
 #include "CtrlCutException.hpp"
 #include "boost/filesystem.hpp"
@@ -52,105 +50,6 @@ void Document::remove(Cut* cut) {
 
 void Document::remove(Engraving* engraving) {
   this->engraveList.remove(engraving);
-}
-
-void Document::write(std::ostream &out) {
-  string title = this->get(D_SET::TITLE);
-  int resolution = this->get(D_SET::RESOLUTION);
-  bool enable_engraving = this->get(D_SET::ENABLE_ENGRAVING);
-  bool enable_cut = this->get(D_SET::ENABLE_CUT);
-  int raster_power = this->front_engrave()->settings.get(E_SET::EPOWER);
-  int raster_speed = this->front_engrave()->settings.get(E_SET::ESPEED);
-
-  double width = this->get(D_SET::WIDTH).in(PX);
-  double height = this->get(D_SET::HEIGHT).in(PX);
-  int focus = this->get(D_SET::AUTO_FOCUS);
-
-  /* Print the printer job language header. */
-  out << format(PJL_HEADER) % title;
-  /* Set autofocus on or off. */
-
-  out << format(PCL_AUTOFOCUS) % focus;
-  /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO;
-  /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO2;
-  /* Left (long-edge) offset registration.  Adjusts the position of the
-   * logical page across the width of the page.
-   */
-  out << format(PCL_OFF_X) % 0;
-  /* Top (short-edge) offset registration.  Adjusts the position of the
-   * logical page across the length of the page.
-   */
-  out << format(PCL_OFF_Y) % 0;
-  /* Resolution of the print. */
-  out << format(PCL_PRINT_RESOLUTION) % resolution;
-  /* X position = 0 */
-  out << format(PCL_POS_X) % 0;
-  /* Y position = 0 */
-  out << format(PCL_POS_Y) % 0;
-  /* PCL resolution. */
-  out << format(PCL_RESOLUTION) % resolution;
-
-  // Raster Orientation
-  out << format(R_ORIENTATION) % 0;
-
-  // Raster power
-  out << format(R_POWER) % raster_power;
-
-  // Raster speed
-  out << format(R_SPEED) % raster_speed;
-
-  out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % height;
-  out << format(R_WIDTH) % width;
-  // Raster compression
-  int compressionLevel = 2;
-
-  out << format(R_COMPRESSION) % compressionLevel;
-
-  /* If raster power is enabled and raster mode is not 'n' then add that
-   * information to the print job.
-   */
-
-  if (enable_engraving && !this->engraveList.empty()) {
-    for (EngraveIt it = this->engraveList.begin(); it != this->engraveList.end(); it++) {
-      PclEncoder::encode(out, **it);
-    }
-  }
-
-  if (enable_cut && !this->cutList.empty()) {
-    // FIXME: This is to emulate the LT bug in the Epilog drivers:
-    // Check if any clipping has been done in any of the passes, and
-    // inject the stray "LT" string. This has no function, just for bug compatibility
-    // of the output files. See corresponding FIXME in LaserJob.cpp.
-    /* REFACTOR
-    for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      Cut *cut = *it;
-      if (cut && cut->wasClipped())
-        out << "LT";
-    }*/
-
-    out << PCL_SECTION_END;
-
-    /* We're going to perform a vector print. */
-    for (CutIt it = this->cutList.begin(); it != this->cutList.end(); it++) {
-      Cut& cut = **it;
-      Cut translated = make_from(**it);
-      const Point&  pos = cut.get(CutSettings::CPOS);
-      translate(cut,translated, pos);
-      HPGLEncoder::encode(out,translated);
-    }
-  }
-  out << PCL_SECTION_END << HPGL_PEN_UP;
-  out << PCL_RESET;
-  out << PJL_FOOTER;
-
-  /* Pad out the remainder of the file with spaces and 'footer'. */
-  for (int i = 0; i < 4092; i++) {
-    out << ' ';
-  }
-  out << "Mini]";
 }
 
 Document::Format Document::guessFileFormat(const string& filename) {
@@ -249,15 +148,15 @@ bool Document::load(const string& filename, Format docFormat) {
     }
 #endif
 
-    PostscriptParser *psparser = new PostscriptParser(this->getSettings());
+    PostscriptParser *psparser = new PostscriptParser(this->settings());
     // Uncomment this to force ghostscript to render to file using the ppmraw
     // backend, instead of in-memory rendering
     //    psparser->setRenderToFile(true);
     if (loadEngraving) {
       switch (this->get(E_SET::DITHERING)) {
       case E_SET::DEFAULT_DITHERING:
-        psparser->setRasterFormat(PostscriptParser::BITMAP);
-        break;
+//        psparser->setRasterFormat(PostscriptParser::BITMAP);
+        //break;
       case E_SET::BAYER:
       case E_SET::FLOYD_STEINBERG:
       case E_SET::JARVIS:
@@ -283,7 +182,7 @@ bool Document::load(const string& filename, Format docFormat) {
   }
 
   if (loadEngraving) {
-    Engraving* engraving = new Engraving(this->settings);
+    Engraving* engraving = new Engraving(this->settings());
     if (docFormat == PBM) {
       assert(false);
 /*      std::string suffix = filename.substr(filename.rfind(".") + 1);
@@ -330,12 +229,12 @@ bool Document::load(const string& filename, Format docFormat) {
   Cut *cut = NULL;
   if (loadCut) {
     if (docFormat == VECTOR) {
-      cut = new Cut(this->settings);
+      cut = new Cut(this->settings());
       if(!cut->load(filename))
         return false;
     }
     else if (parser) {
-      cut = new Cut(this->settings);
+      cut = new Cut(this->settings());
       if(!cut->load(parser->getVectorData()))
           return false;
     }
