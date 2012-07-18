@@ -4,11 +4,13 @@ boost_thread {
   macx {
     LIBS += -L/opt/local/lib
   }
-  LIBS += -lboost_thread-mt
+  LIBS += -lboost_thread-mt 
 }
 
 boost {
   message("Configuring Boost...")
+
+  LIBS += -lpthread
   macx {
     INCLUDEPATH += /opt/local/include
   }
