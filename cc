@@ -21,7 +21,7 @@ do
 done
 
 [ ! $CUPS_SERVER_BIN ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
-[ ! $CUPS_SERVER_DATA ] && export CUPS_SERVER_DATA="`cups-config --databin`"
+[ ! $CUPS_SERVER_DATA ] && export CUPS_SERVER_DATA="`cups-config --datadir`"
 [ ! $CC_BASE ] && export CC_BASE="`pwd`"
 export CC_PRINTERNAME="lazzzor"
 export CC_PRINTERPPD="Epilog/Legend36EXT.ppd"
