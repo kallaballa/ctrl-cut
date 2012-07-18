@@ -114,7 +114,11 @@ bool ps_to_eps(LaserConfig *lconf, cups_file_t *ps_file, FILE *eps_file)
         // If the laser itself has a portrait layout, this check is inherently wrong
         // -> rethink this later.
         if (height > width) {
+          LOG_DEBUG_STR("Found portrait orientation");
+          LOG_DEBUG(width);
+          LOG_DEBUG(height);
           portrait = true;
+          fprintf(eps_file, "0 -1 1 0 0 1728 6 array astore concat\n");
         }
 
         // FIXME: Sometimes (e.g. from Inkscape) the width and height is swapped.
