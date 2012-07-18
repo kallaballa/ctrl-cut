@@ -25,6 +25,7 @@
 
 #  include <cups/backend.h>
 #  include <cups/sidechannel.h>
+#  include <cups/ppd.h>
 #  include "ppd-private.h"
 #  include "debug.h"
 #  include "i18n.h"
