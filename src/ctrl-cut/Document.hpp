@@ -20,7 +20,7 @@
 #include <cups/cups.h>
 #include <cups/file.h>
 #include <boost/thread.hpp>
-#include "boost/format.hpp"
+#include <boost/format.hpp>
 
 using std::string;
 
