@@ -31,8 +31,8 @@
  
 NavigationView::NavigationView(QWidget* parent) : QGraphicsView(parent)
 {
-  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
   setAlignment(0);
   setTransformationAnchor(QGraphicsView::NoAnchor);
   //  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
