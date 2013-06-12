@@ -44,6 +44,7 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
   this->docHolder.doc = new Document();
   this->laserbed = NULL;
+  this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 
   using namespace Qt;
@@ -173,14 +174,12 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
 
   BOOST_FOREACH(Cut* cut, doc.cuts()) {
     CutItem* ci = new CutItem(*cut);
-    this->docHolder.add(*ci);
-    this->addItem(ci);
+    this->add(*ci);
   }
 
   BOOST_FOREACH(Engraving* engraving, doc.engravings()) {
     EngraveItem* ei = new EngraveItem(*engraving);
-    this->docHolder.add(*ei);
-    this->addItem(ei);
+    this->add(*ei);
   }
 }
 
@@ -224,7 +223,7 @@ void CtrlCutScene::reset() {
     this->docHolder.engraveItems.takeFirst();
 }
 
-void CtrlCutScene::drawBackground ( QPainter * painter, const QRectF & rect ) {
+void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {
   uint32_t width;
   uint32_t height;
   uint32_t resolution;
@@ -235,9 +234,9 @@ void CtrlCutScene::drawBackground ( QPainter * painter, const QRectF & rect ) {
     resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
 
     painter->setPen(Qt::black);
-    painter->fillRect(QRect(QPoint(0, 0), QSize(width, height)), QBrush(Qt::white));
+    painter->fillRect(QRect(QPoint(0, 0), QSize(width, height)), QBrush(Qt::gray));
     painter->setPen(Qt::lightGray);
-    uint32_t cellsize = Distance(50,MM,resolution).in(PX);
+    uint32_t cellsize = Distance(5,MM,resolution).in(PX);
     QVarLengthArray<QLineF, 100> lines;
 
     for (int j = cellsize; j < height; j += cellsize) {
@@ -253,6 +252,7 @@ void CtrlCutScene::drawBackground ( QPainter * painter, const QRectF & rect ) {
 }
 
 void CtrlCutScene::update(const QRectF &rect) {
+
   foreach (QGraphicsItem *sitem, this->items()) {
     AbstractCtrlCutItem* ccItem;
     if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {

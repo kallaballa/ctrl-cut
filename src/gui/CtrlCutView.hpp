@@ -2,7 +2,7 @@
 #define CTRLCUTVIEW_H_
  
 #include "NavigationView.hpp"
- 
+
 class CtrlCutView : public NavigationView
 {
   Q_OBJECT
