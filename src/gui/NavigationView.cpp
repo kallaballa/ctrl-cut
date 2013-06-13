@@ -38,11 +38,6 @@ NavigationView::NavigationView(QWidget* parent) : QGraphicsView(parent)
   //  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
   setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
   setDragMode(QGraphicsView::ScrollHandDrag);
-
-  setBackgroundBrush(Qt::lightGray);
- 
-  // this->ensureVisible(laserbed);
-
 }
  
 void NavigationView::wheelEvent(QWheelEvent* event)
