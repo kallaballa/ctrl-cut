@@ -195,7 +195,7 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
   }
 
   if(gsargv)
-    delete gsargv;
+    delete[] gsargv;
   gsapi_delete_instance(minst);
 
   if ((code == 0) || (code == e_Quit)) {
