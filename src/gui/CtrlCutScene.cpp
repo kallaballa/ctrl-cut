@@ -44,9 +44,10 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
   this->docHolder.doc = new Document();
   this->laserbed = NULL;
+  this->backgroundItem = NULL;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
-
+  this->makeBackground();
   using namespace Qt;
 
 
@@ -159,6 +160,11 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+  this->docHolder.doc->put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
+  this->docHolder.doc->put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
+  this->docHolder.doc->put(DocumentSettings::RESOLUTION, 600);
+
+  makeBackground();
 
   doc.put(DocumentSettings::RESOLUTION, 600);
   doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
@@ -261,4 +267,20 @@ void CtrlCutScene::update(const QRectF &rect) {
   }
 
   QGraphicsScene::update(rect);
+}
+
+void CtrlCutScene::makeBackground() {
+	if(backgroundItem == NULL) {
+		backgroundItem = new QGraphicsPolygonItem();
+		this->addItem(backgroundItem);
+	}
+	QPolygon polygon;
+	uint32_t width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
+	uint32_t height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
+	uint32_t resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
+
+	QPen p(Qt::blue);
+	polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
+	backgroundItem->setPolygon(polygon);
+	backgroundItem->setPen(p);
 }
