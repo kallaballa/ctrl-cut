@@ -62,7 +62,9 @@ protected:
    virtual void drawBackground(QPainter *painter, const QRectF &rect);
 
 private:
+  void makeBackground();
   DocumentHolder docHolder;
+  QGraphicsPolygonItem* backgroundItem;
   QGraphicsItemGroup *laserbed;
   QGraphicsItem *movingItem;
   QPointF oldPos;
