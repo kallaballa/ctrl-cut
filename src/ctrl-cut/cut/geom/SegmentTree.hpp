@@ -44,11 +44,21 @@ struct IndexedSegmentNodeImpl: public Tcontainer<Segment, Tallocator<Segment> >:
   IndexedSegmentNodeImpl(const Point& center) :
     _Base(), center(center) {
   }
+
   IndexedSegmentNodeImpl(const _Base it) :
     _Base(it) {
-    Sphere sphere(*it);
-    center = sphere.center;
-    range = sphere.radius;
+	Sphere sphere(*it);
+	center = sphere.center;
+	range = sphere.radius;
+  }
+
+  IndexedSegmentNodeImpl(const _Base it, bool isEnd) :
+    _Base(it) {
+	if(!isEnd){
+		Sphere sphere(*it);
+		center = sphere.center;
+		range = sphere.radius;
+	}
   }
 
   bool operator==(const IndexedSegmentNodeImpl& other) const {
@@ -116,7 +126,7 @@ public:
 
   void push_back(const Segment& seg) {
     index.push_back(seg);
-    _Parent::insert(--(index.end()));
+    _Parent::insert(iterator(--(index.end()), false));
   }
 
   iterator erase(iterator& node) {
@@ -126,11 +136,11 @@ public:
   }
 
   iterator begin() {
-    return index.begin();
+    return iterator(index.begin(), false);
   }
 
   iterator end() {
-    return index.end();
+    return iterator(index.end(), true);
   }
 };
 
