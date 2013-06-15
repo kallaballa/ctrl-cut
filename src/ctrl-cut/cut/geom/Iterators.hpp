@@ -64,7 +64,8 @@ struct MultiIterBase {
   }
 
   bool operator==(const _Self& __x) const {
-    return this->isEnd == __x.isEnd || this->current == __x.current;
+	//make sure not to compare singular iterators (if isEnd is true the iterators are empty)
+	return (this->isEnd && __x.isEnd) || (!this->isEnd && !__x.isEnd && (this->current == __x.current));
   }
 
   bool operator!=(const _Self& __x) const {
@@ -193,7 +194,8 @@ struct SegmentWise {
   }
 
   bool operator==(const _Self& __x) const {
-    return this->isEnd == __x.isEnd || this->current == __x.current;
+	//make sure not to compare singular iterators (if isEnd is true the iterators are empty)
+	return (this->isEnd && __x.isEnd) || (!this->isEnd && !__x.isEnd && (this->current == __x.current));
   }
 
   bool operator!=(const _Self& __x) const {
@@ -321,7 +323,8 @@ struct MultSegmentWiseIterator
   }
 
   bool operator==(const _Self& __x) const {
-    return this->isEnd == __x.isEnd || this->current == __x.current;
+	//make sure not to compare singular iterators (if isEnd is true the iterators are empty)
+    return (this->isEnd && __x.isEnd) || (!this->isEnd && !__x.isEnd && (this->current == __x.current));
   }
 
   bool operator!=(const _Self& __x) const {
