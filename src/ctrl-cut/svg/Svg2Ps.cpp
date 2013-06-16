@@ -76,6 +76,7 @@ void Svg2Ps::convert() {
 
   cairo_destroy(cr);
   cairo_surface_destroy(surface);
+  svg_fix_thread.join();
   fflush(fpOut);
   fclose(fpOut);
 }
