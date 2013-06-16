@@ -56,7 +56,7 @@ protected:
 };
 
 
-void SvgFix::writeSvg(string s) {
+void SvgFix::writeSvg(const string& s) {
   *out << s;
 }
 
