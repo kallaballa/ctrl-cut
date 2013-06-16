@@ -22,14 +22,16 @@
 #include <boost/format.hpp>
 #include <Magick++.h>
 
-SvgWriter::SvgWriter(Coord_t width, Coord_t height, const char* filename) : width(width), height(height), ostream(filename) {
+SvgWriter::SvgWriter(Coord_t width, Coord_t height, const string& title, const char* filename) : width(width), height(height), title(title), ostream(filename) {
+  this->writeDocumentStart();
 }
 
 SvgWriter::~SvgWriter() {
-  ostream.close();
+  this->writeDocumentEnd();
+  this->ostream.close();
 }
 
-void SvgWriter::writeDocumentStart(const Document& d) {
+void SvgWriter::writeDocumentStart() {
   using namespace boost;
   typedef DocumentSettings DS;
 
@@ -38,9 +40,6 @@ void SvgWriter::writeDocumentStart(const Document& d) {
 
   string version="1.0";
   string dtd = "http://tbd/tbd.dtd";
-  Coord_t width = d.get(DS::WIDTH).in(PX);
-  Coord_t height = d.get(DS::HEIGHT).in(PX);
-  string title = d.get(DS::TITLE);
 
   format svgtag(string("<svg xmlns:dc=\"http://purl.org/dc/elements/1.1/\" ") +
       "xmlns:cc=\"http://creativecommons.org/ns#\" " +
@@ -67,8 +66,8 @@ void SvgWriter::writeDocumentStart(const Document& d) {
       "</rdf:RDF>" +
     "</metadata>";
 
-  ostream << (svgtag % dtd % width % height % version % width % height) << std::endl;
-  ostream << (ctrlcutDoc % title) << std::endl;
+  ostream << (svgtag % dtd % this->width % this->height % version % this->width % this->height) << std::endl;
+  ostream << (ctrlcutDoc % this->title) << std::endl;
   ostream << metadata << std::endl;
 }
 
@@ -134,7 +133,7 @@ void SvgWriter::writeEngraving(const Engraving& engraving, const string& style) 
 }
 
 void SvgWriter::writeDocument(const Document& d, const std::string& style) {
-  writeDocumentStart(d);
+  writeDocumentStart();
   BOOST_FOREACH(const Engraving* engraving, d.engravings()) {
     this->writeEngraving(*engraving, style);
   }
