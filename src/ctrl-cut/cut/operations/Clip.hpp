@@ -95,12 +95,10 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
       }
 
       if (intersects(clipped, leftBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.x < clipped.second.x)
-          clipped.first = intersection;
-        else
+        if (clipped.first.x >= clipped.second.x)
           clipped.second = clipped.first;
-        clipped.first = intersection;
 
+        clipped.first = intersection;
         intersection = Point();
       }
     }
@@ -111,10 +109,9 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
       }
 
       if (intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.y < clipped.second.y)
-          clipped.first = intersection;
-        else
+        if (clipped.first.y >= clipped.second.y)
           clipped.second = clipped.first;
+
         clipped.first = intersection;
 
         intersection = Point();
@@ -128,12 +125,10 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
         return;
       }
 
-      if (intersects(clipped, rightBedBorder, intersection)
-          == ALIGN_INTERSECT) {
-        if (clipped.first.x > clipped.second.x)
-          clipped.first = intersection;
-        else
+      if (intersects(clipped, rightBedBorder, intersection) == ALIGN_INTERSECT) {
+        if (clipped.first.x <= clipped.second.x)
           clipped.second = clipped.first;
+
         clipped.first = intersection;
 
         intersection = Point();
@@ -144,21 +139,15 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
       if (clipped.first.y > height - 1 && clipped.second.y > height - 1) {
         return;
       }
-      if (intersects(clipped, bottomBedBorder, intersection)
-          == ALIGN_INTERSECT) {
-        if (clipped.first.y > clipped.second.y)
-          clipped.first = intersection;
-        else
+      if (intersects(clipped, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
+        if (clipped.first.y <= clipped.second.y)
+
           clipped.second = clipped.first;
         clipped.first = intersection;
       }
     }
 
-/*    Path chopped;
-    if(chop(chopped, clipped, maxLength))
-      append(sink, chopped);
-    else*/
-      append(sink, clipped);
+    append(sink, clipped);
   }
 }
 
