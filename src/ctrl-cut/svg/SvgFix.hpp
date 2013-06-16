@@ -60,10 +60,8 @@ public:
   };
   SvgDocument document;
   DocGenerator generator;
-  void writeSvg(string s);
+  void writeSvg(const string& s);
   void writeSvg(const Glib::ustring& name, const SaxParser::AttributeList& properties);
-  void dumpSvg(string s);
-  void dumpBase64(string s);
   void findGenerator(const Glib::ustring& text);
   void fixJpeg(const Glib::ustring& name, const AttributeList& properties);
   void fixViewbox(const Glib::ustring& name, const AttributeList& properties);
