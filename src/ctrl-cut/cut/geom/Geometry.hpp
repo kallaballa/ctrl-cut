@@ -88,8 +88,8 @@ public:
   Point first;
   Point second;
 
-  Segment() {};
-  Segment(const Segment& other) : first(other.first), second(other.second)  {};
+  Segment() {}
+  Segment(const Segment& other) : first(other.first), second(other.second)  {}
   Segment(Point first, Point second) : first(first), second(second)  {}
 
   const Point& operator[](size_t idx) const {
