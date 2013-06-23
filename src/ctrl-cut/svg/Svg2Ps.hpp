@@ -28,6 +28,7 @@
 
 //QT makes use of signals too
 #undef signals
+#include <glibconfig.h>
 #include <gio/gunixinputstream.h>
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
