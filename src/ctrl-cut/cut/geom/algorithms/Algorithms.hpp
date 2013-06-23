@@ -30,10 +30,6 @@ inline TpointRange make_from(const TpointRange& pointRange) {
   return TpointRange(pointRange.settings);
 }
 
-inline Path make_from(const Path& path) {
-  return Path();
-}
-
 template<typename TpointRange>
 inline bool is_closed(const TpointRange& pointRange) {
   return pointRange.front() == pointRange.back();
