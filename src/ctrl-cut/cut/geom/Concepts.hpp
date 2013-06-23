@@ -20,6 +20,8 @@
 #ifndef CONCEPTS_H_
 #define CONCEPTS_H_
 
+#include <boost/concept_check.hpp>
+#include "Geometry.hpp"
 
 template <class X>
 struct PointInputIterator
