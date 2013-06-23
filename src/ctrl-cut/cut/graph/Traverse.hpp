@@ -7,7 +7,6 @@
 #include <set>
 
 #include "cut/geom/Geometry.hpp"
-#include "svg/SvgPlot.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include "cut/geom/algorithms/Algorithms.hpp"
 
@@ -16,6 +15,7 @@
 #include "boost/function_output_iterator.hpp"
 #include <boost/graph/properties.hpp>
 #include <boost/graph/metric_tsp_approx.hpp>
+#include "svg/SvgPlot.hpp"
 
 using std::vector;
 using boost::planar_face_traversal;
@@ -47,8 +47,7 @@ bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph
    Route r(settings);
    BOOST_FOREACH(Edge e, kuratowski_edges) {
      const Segment& seg = graph[e];
-     if(!concat(r, seg))
-       append(r, seg);
+     add(r, seg);
    }
 
    plot_svg(r, "kuratowski");
