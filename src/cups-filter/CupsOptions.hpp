@@ -44,11 +44,11 @@ public:
   CupsOptions(cups_option_t *options, int numOptions) : options(options), numOptions(numOptions) {};
   virtual ~CupsOptions(){};
 
-  const bool get(CupsOptionsKey key, string& v) {
+  bool get(CupsOptionsKey key, string& v) {
     return get(this->OPTION_STRINGS[key], v);
   }
 
-  const bool get(const string& key, string& v) {
+  bool get(const string& key, string& v) {
     const char* cupsV = cupsGetOption(key.c_str(), this->numOptions, this->options);
 
     if(cupsV == NULL)
