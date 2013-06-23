@@ -31,7 +31,8 @@
 #include "cut/operations/Explode.hpp"
 #include "cut/operations/Planar.hpp"
 #include "cut/operations/Reduce.hpp"
-#include "svg/SvgPlot.hpp"
+#include "cut/operations/NearestPathSorting.h"
+#include "cut/operations/Deonion.hpp"
 
 template<
 template<typename,typename> class Tcontainer = std::vector,
@@ -174,6 +175,7 @@ public:
     translate(sorted, translated, pos);
 
     plot_svg(translated, filename + "_translate");
+    (*this) = translated;
   }
 };
 
