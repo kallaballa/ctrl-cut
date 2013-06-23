@@ -25,6 +25,18 @@
 #include "cut/geom/SegmentTree.hpp"
 #include "cut/geom/Views.hpp"
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
+#include "svg/SvgPlot.hpp"
+
+//#define CC_EXPLODE_DEBUG 1
+
+void debug(const Segment& seg);
+void debug(const Segment& pick, const Segment& candidate);
+void debug(const Segment& pick, const Segment& candidate, const Point& intersection);
+void debugEmitted(const Segment& seg);
+void debugTree(IndexedSegmentTree& tree);
+void printSegment(const Segment& seg, size_t indent);
 
 /*
  * Split segments at intersection points.
@@ -56,6 +68,8 @@ public:
   }
 
   void push_back(const Segment& seg) {
+    debugEmitted(seg);
+
     if(seg[0] != seg[1]) //ignore zero length segments produced by intersections
       this->tree.push_back(seg);
   }
@@ -67,6 +81,7 @@ public:
   void intersect(const Point& intersection, TreeIter& it_pick, TreeIter& it_candidate) {
     const Segment& pick = *it_pick;
     const Segment& candidate = *it_candidate;
+
     if (candidate[0] != intersection && candidate[1] != intersection) {
       this->push_back(candidate[0], intersection);
       this->push_back(candidate[1], intersection);
@@ -78,6 +93,7 @@ public:
       this->push_back(pick[1], intersection);
       it_pick = this->erase(it_pick);
     }
+    debugTree(tree);
   }
 
   void intersectCoincidence (TreeIter& it_pick, TreeIter& it_candidate) {
@@ -124,11 +140,11 @@ public:
         this->push_back(candidate_min, pick_min);
         this->push_back(pick_min, candidate_max);
         this->push_back(candidate_max, pick_max);
-
         it_pick = this->erase(it_pick);
         it_candidate = this->erase(it_candidate);
       }
     }
+    debugTree(tree);
   }
 
   void operator()() {
@@ -140,45 +156,54 @@ public:
       tree.push_back(seg);
     }
 
-    for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
+    for(size_t n=0; n < 1; ++n) {
+      for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
+        const Segment& pick = (*it_pick);
+        debug(pick);
 
-      const Segment& pick = (*it_pick);
-      if(pick[0] == pick[1])
-        continue;
-
-     const Result& in_range = tree.findWithinRange(it_pick);
-
-     BOOST_FOREACH(TreeIter it_candidate, in_range) {
-        const Segment& candidate = *it_candidate;
-
-        if (pick == candidate || candidate[0] == candidate[1]) {
+        if(pick[0] == pick[1])
           continue;
-        }
 
-        if (pick[0] != candidate[0] &&
-            pick[0] != candidate[1] &&
-            pick[1] != candidate[0] &&
-            pick[1] != candidate[1]) {
-          intersection_result is_res = intersects(pick, candidate, intersection);
-          // check if pick does intersect candidate
-          if (is_res == ALIGN_INTERSECT) {
-            intersect(intersection, it_pick, it_candidate);
-          } else if (is_res == ALIGN_COINCIDENCE) {
-            intersectCoincidence(it_pick, it_candidate);
+       const Result& in_range = tree.findWithinRange(it_pick);
+
+       BOOST_FOREACH(TreeIter it_candidate, in_range) {
+         if(it_pick == it_candidate)
+           continue;
+          const Segment& candidate = *it_candidate;
+
+          debug(pick,candidate);
+          if (pick != candidate && candidate[0] != candidate[1]) {
+            if (pick[0] != candidate[0] &&
+                pick[0] != candidate[1] &&
+                pick[1] != candidate[0] &&
+                pick[1] != candidate[1]) {
+              intersection_result is_res = intersects(pick, candidate, intersection);
+              // check if pick does intersect candidate
+              if (is_res == ALIGN_INTERSECT) {
+                debug(pick,candidate, intersection);
+                intersect(intersection, it_pick, it_candidate);
+                break;
+              } else if (is_res == ALIGN_COINCIDENCE) {
+                debug(pick,candidate, intersection);
+                intersectCoincidence(it_pick, it_candidate);
+                break;
+              }
+            }
           }
         }
       }
     }
 
-    BOOST_FOREACH(const Segment& seg, segments(src)) {
-      add(sink, seg);
+    debugTree(this->tree);
+    for(TreeIter it = this->tree.begin(); it != this->tree.end(); ++it) {
+      add(sink, *it);
     }
   }
 };
 
+
 template<
   typename TmultiPointRange
-
 >
 void explode(TmultiPointRange& src, TmultiPointRange& sink) {
   Explode<TmultiPointRange> exploder(src,sink);
