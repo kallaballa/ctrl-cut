@@ -166,7 +166,7 @@
  void SaveCommand::redo() {
    typedef DocumentSettings DS;
    Document& doc = *this->scene->getDocumentHolder().doc;
-   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), filename.toStdString().c_str());
+   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::TITLE), filename.toStdString().c_str());
    svgW.writeDocument(doc, "stroke:rgb(255,0,0);stroke-width:5;");
  }
 
