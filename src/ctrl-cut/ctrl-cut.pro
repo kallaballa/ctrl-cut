@@ -75,6 +75,7 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
 
 SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cutters/encoder/PclEncoder.cpp \
+					 ./cut/operations/Explode.cpp \
            ./PostscriptParser.cpp \
            ./util/2D.cpp \
            ./util/Measurement.cpp \
