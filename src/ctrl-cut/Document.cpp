@@ -241,6 +241,7 @@ bool Document::load(const string& filename, Format docFormat) {
     if (cut)  {
       this->push_back(cut);
       cut->normalize();
+      cut->sort();
     }
   }
 
