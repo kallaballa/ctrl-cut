@@ -22,7 +22,6 @@
 #include "cut/operations/Deonion.hpp"
 #include "cut/operations/NearestPathSorting.h"
 #include "cut/operations/Translate.hpp"
-#include "svg/SvgPlot.hpp"
 #include <boost/format.hpp>
 
 using boost::format;
