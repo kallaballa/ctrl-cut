@@ -34,9 +34,9 @@ void walkTheEdge(Route& skins, UniqueSegmentGraph& graph, const Edge lastEdge, c
 {
   Edge nextEdge;
   Segment& lastSegment = graph[lastEdge];
-  graph.remove_edge(lastEdge);
+  Point lastPoint = graph[outV];
 
-  Point& lastPoint = graph[outV];
+  graph.remove_edge(lastEdge);
   float lastSlope;
 
   if(lastPoint == lastSegment[0])
