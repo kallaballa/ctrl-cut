@@ -31,9 +31,11 @@ class SvgWriter {
 public:
   Coord_t width;
   Coord_t height;
+  const string title;
   std::ofstream ostream;
 
-  SvgWriter(Coord_t width, Coord_t height, const char* filename);
+
+  SvgWriter(Coord_t width, Coord_t height, const string& title, const char* filename);
   virtual ~SvgWriter();
 
   template<typename Tgeom>
@@ -48,7 +50,7 @@ public:
   void writeDocument(const Document& d, const string& style = "");
 
 private:
-  void writeDocumentStart(const Document& d);
+  void writeDocumentStart();
   void writeDocumentEnd();
 };
 #endif /* SVGWRITER_HPP_ */
