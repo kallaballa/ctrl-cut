@@ -51,7 +51,7 @@ void PclEncoder::encode(std::ostream &out, const Engraving& raster)
   int width = image.width() / 8; // width in bytes
   int height = image.height();
 
-  char* pack = new char[width];
+  char* pack = new char[width + 8];
 
   // raster (basic)
   uint32_t lasty = 0;
@@ -159,7 +159,7 @@ void PclEncoder::encode(std::ostream &out, const Engraving& raster)
   }
 
   if(pack)
-    delete pack;
+    delete[] pack;
 
   out << R_END; // end raster
 }
