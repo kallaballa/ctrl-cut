@@ -50,8 +50,8 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   }
 
   BOOST_FOREACH(Path& path, src) {
-    Path singleBranch = make_from(path);
-    Path simplified = make_from(path);
+    Path singleBranch;
+    Path simplified;
     Point last = path.front();
     Point current;
     BOOST_FOREACH(const Segment& seg, segments(path)) {
