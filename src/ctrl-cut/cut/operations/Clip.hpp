@@ -147,7 +147,7 @@ void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
       }
     }
 
-    append(sink, clipped);
+    add(sink, clipped);
   }
 }
 
