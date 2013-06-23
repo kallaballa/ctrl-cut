@@ -32,7 +32,7 @@ void translate(const TmultiPointRange& src, TmultiPointRange& sink, const Point&
   tl::translate_transformer<Point, Point> transformer(translate.x, translate.y);
 
   BOOST_FOREACH(const Path& path, src) {
-    Path translated = make_from(path);
+    Path translated;
     boost::geometry::transform(path, translated, transformer);
     append(sink, translated);
   }
