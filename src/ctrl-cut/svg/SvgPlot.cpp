@@ -156,7 +156,7 @@ void plot_shared_segments(const Route& r, const char* filename) {
 
     BOOST_FOREACH(const Segment& seg, segments(path)) {
       if (segidx.find(seg) != segidx.end()) {
-        Path pseg = make_from(path);
+        Path pseg;
         append(pseg, seg);
         svg.write(pseg, "stroke:rgb(0,255,0);stroke-width:1");
         break;
