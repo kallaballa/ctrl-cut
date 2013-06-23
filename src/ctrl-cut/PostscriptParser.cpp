@@ -289,6 +289,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
     case RGB:
       argstrings.push_back("-sDEVICE=ppmraw");
       this->filename_bitmap += ".ppm";
+      break;
     default:
       assert(false && "Illegal value for displayformat");
     }
