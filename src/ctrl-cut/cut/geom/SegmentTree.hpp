@@ -68,13 +68,13 @@ public:
   const Coord_t range() const {
     if(this->_singular)
       return this->_range;
-
     const Sphere sphere(**this);
     return sphere.radius;
   }
 
+
   bool operator==(const IndexedSegmentNodeImpl& other) const {
-    return ((this->_singular == true) && (other._singular == true)) || ((!this->_singular && !other._singular) && _Base::operator==(other));
+    return ((this->_singular == true) && (other._singular == true)) || ((!this->_singular && !other._singular) && (&(**this) == &(*other)));
   }
 
   static inline Coord_t centerComponent(const IndexedSegmentNodeImpl& item, const int& k) {
