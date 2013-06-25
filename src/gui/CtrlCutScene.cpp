@@ -34,7 +34,6 @@
 #include "cut/operations/Reduce.hpp"
 #include "cut/operations/NearestPathSorting.h"
 #include "cut/operations/Planar.hpp"
-#include "svg/SvgPlot.hpp"
 #include <boost/filesystem.hpp>
 #include <qpixmapcache.h>
 #include <qpainter.h>
@@ -42,12 +41,13 @@
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
-  this->docHolder.doc = new Document();
+  this->docHolder.doc = NULL;
   this->laserbed = NULL;
   this->backgroundItem = NULL;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
   this->makeBackground();
+
   using namespace Qt;
 
 
@@ -155,14 +155,11 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
     this->newJob(boost::filesystem::path(filename.toStdString()).filename().c_str(), 600, Distance(36, IN, 600), Distance(24, IN, 600));
   }
 
-  Document doc;
+  Document& doc = *this->docHolder.doc;
 
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-  this->docHolder.doc->put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
-  this->docHolder.doc->put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
-  this->docHolder.doc->put(DocumentSettings::RESOLUTION, 600);
 
   makeBackground();
 
@@ -177,15 +174,20 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
   Distance reduceMax = Distance(1, MM, resolution);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
+  std::cerr << doc.cuts().size() << std::endl;
 
-  BOOST_FOREACH(Cut* cut, doc.cuts()) {
-    CutItem* ci = new CutItem(*cut);
-    this->add(*ci);
+  const Document::CutList& cuts = doc.cuts();
+  for(Document::CutConstIt it = cuts.begin(); it != cuts.end(); ++it) {
+    CutItem* ci = new CutItem(**it);
+    this->docHolder.cutItems.append(ci);
+    this->addItem(ci);
   }
 
-  BOOST_FOREACH(Engraving* engraving, doc.engravings()) {
-    EngraveItem* ei = new EngraveItem(*engraving);
-    this->add(*ei);
+  const Document::EngraveList& engravings = doc.engravings();
+  for(Document::EngraveConstIt it = engravings.begin(); it != engravings.end(); ++it) {
+    EngraveItem* ei = new EngraveItem(**it);
+    this->docHolder.engraveItems.append(ei);
+    this->addItem(ei);
   }
 }
 
@@ -258,7 +260,6 @@ void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {
 }
 
 void CtrlCutScene::update(const QRectF &rect) {
-
   foreach (QGraphicsItem *sitem, this->items()) {
     AbstractCtrlCutItem* ccItem;
     if ((ccItem = dynamic_cast<AbstractCtrlCutItem*> (sitem->parentItem()))) {
@@ -270,17 +271,19 @@ void CtrlCutScene::update(const QRectF &rect) {
 }
 
 void CtrlCutScene::makeBackground() {
-	if(backgroundItem == NULL) {
-		backgroundItem = new QGraphicsPolygonItem();
-		this->addItem(backgroundItem);
-	}
-	QPolygon polygon;
-	uint32_t width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
-	uint32_t height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
-	uint32_t resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
+  if(docHolder.doc != NULL) {
+    if(backgroundItem == NULL) {
+        backgroundItem = new QGraphicsPolygonItem();
+        this->addItem(backgroundItem);
+    }
+    QPolygon polygon;
+    uint32_t width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
+    uint32_t height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
+    uint32_t resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
 
-	QPen p(Qt::blue);
-	polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
-	backgroundItem->setPolygon(polygon);
-	backgroundItem->setPen(p);
+    QPen p(Qt::blue);
+    polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
+    backgroundItem->setPolygon(polygon);
+    backgroundItem->setPen(p);
+  }
 }
