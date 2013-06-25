@@ -56,7 +56,7 @@ inline void prepend(Route& route, const Segment& seg) {
 
 template<typename TpointRange>
 inline void prepend(Route& route, const TpointRange& pointRange) {
-  Path path(route.settings);
+  Path path;
   append(path, pointRange);
   route.push_back(path);
 }
