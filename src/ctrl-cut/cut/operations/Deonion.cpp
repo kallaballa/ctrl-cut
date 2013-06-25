@@ -33,7 +33,7 @@ typedef std::map<Point,Vertex>::iterator IndexIter;
 void walkTheEdge(Route& skins, UniqueSegmentGraph& graph, const Edge lastEdge, const Vertex outV)
 {
   Edge nextEdge;
-  Segment& lastSegment = graph[lastEdge];
+  Segment lastSegment = graph[lastEdge];
   Point lastPoint = graph[outV];
 
   graph.remove_edge(lastEdge);
