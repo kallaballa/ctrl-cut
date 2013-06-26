@@ -39,6 +39,7 @@ public:
   void show(CutItem* ci);
   void show(EngraveItem* ei);
   void hide();
+  void update();
 
 public slots:
   void on_power_update(const QString &);
@@ -49,9 +50,12 @@ public slots:
   void on_sort_update(int);
   void on_direction_update(int);
   void on_dithering_update(int);
+  void on_unit_update(int);
 private:
   enum State { NONE, Engraving, Cut};
-  State current;
+  State currentState;
+  Unit currentUnit;
+  uint32_t currentResolution;
 
   CutItem* ci;
   EngraveItem* ei;

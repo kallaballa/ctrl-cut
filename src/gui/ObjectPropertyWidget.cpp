@@ -28,7 +28,7 @@ typedef DocumentSettings DS;
 typedef EngraveSettings ES;
 typedef CutSettings CS;
 
-ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), current(NONE) {
+ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600) {
   // setupUi(this);
 }
 
@@ -36,15 +36,15 @@ ObjectPropertyWidget::~ObjectPropertyWidget() {
 }
 
 void ObjectPropertyWidget::updateEngraveProperties(const EngraveSettings::KeyBase&  key) {
-
+  this->show(this->ei);
 }
 
 void ObjectPropertyWidget::updateCutProperties(const CutSettings::KeyBase&  key) {
-  MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget());
-
+  this->show(this->ci);
 }
 
 void ObjectPropertyWidget::show(CutItem* ci) {
+  this->hide();
   this->ci = ci;
   this->ci->cut.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
 
@@ -53,9 +53,14 @@ void ObjectPropertyWidget::show(CutItem* ci) {
   int power = this->ci->cut.get(CS::CPOWER);
   int freq = this->ci->cut.get(CS::FREQUENCY);
   CS::Optimize sort = this->ci->cut.get(CS::OPTIMIZE);
+  this->currentResolution = this->ci->cut.get(DS::RESOLUTION);
+
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
-  mainw->posX->setText(QString::number(pos.x));
-  mainw->posY->setText(QString::number(pos.y));
+  double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
+  double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
+
+  mainw->posX->setText(QString::number(posX));
+  mainw->posY->setText(QString::number(posY));
   mainw->speed->setValue(speed);
   mainw->power->setValue(power);
   mainw->frequency->setValue(freq);
@@ -91,17 +96,18 @@ void ObjectPropertyWidget::show(CutItem* ci) {
 
   mainw->sort->setCurrentIndex(mainw->sort->findText(strSort));
   QWidget::setEnabled(true);
-  this->current = Cut;
+  this->currentState = Cut;
 }
 
 void ObjectPropertyWidget::show(EngraveItem* ei) {
+  this->hide();
   this->ei = ei;
   this->ei->engraving.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));
 
   Point pos = this->ei->engraving.get(ES::EPOS);
   int speed = this->ei->engraving.get(ES::ESPEED);
   int power = this->ei->engraving.get(ES::EPOWER);
-
+  this->currentResolution = this->ei->engraving.get(DS::RESOLUTION);
   ES::Dithering dither = this->ei->engraving.get(ES::DITHERING);
   ES::Direction direction = this->ei->engraving.get(ES::DIRECTION);
 
@@ -121,8 +127,11 @@ void ObjectPropertyWidget::show(EngraveItem* ei) {
   mainw->direction->show();
   mainw->directionLabel->show();
 
-  mainw->posX->setText(QString::number(pos.x));
-  mainw->posY->setText(QString::number(pos.y));
+  double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
+  double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
+
+  mainw->posX->setText(QString::number(posX));
+  mainw->posY->setText(QString::number(posY));
   mainw->speed->setValue(speed);
   mainw->power->setValue(power);
 
@@ -160,29 +169,35 @@ void ObjectPropertyWidget::show(EngraveItem* ei) {
   mainw->dithering->setCurrentIndex(mainw->dithering->findText(ditherstr));
   mainw->direction->setCurrentIndex(direction);
   QWidget::setEnabled(true);
-  this->current = Engraving;
+  this->currentState = Engraving;
+}
+
+void ObjectPropertyWidget::update() {
+  if(this->ci != NULL)
+    this->show(this->ci);
+  if(this->ei != NULL)
+    this->show(this->ei);
 }
 
 void ObjectPropertyWidget::hide() {
-  this->ei = ei;
-  if(this->current == Cut) {
+  if(this->currentState == Cut) {
     this->ci->cut.settings.deleteUpdateTrigger();
     this->ci = NULL;
-  } else if(this->current == Engraving) {
+  } else if(this->currentState == Engraving) {
     this->ei->engraving.settings.deleteUpdateTrigger();
     this->ei = NULL;
   }
   QWidget::setEnabled(false);
-  this->current = NONE;
+  this->currentState = NONE;
 }
 
 void ObjectPropertyWidget::on_power_update(const QString& p) {
   if(p.length() > 0) {
     QString val = QString(p).remove(p.length() -1,1);
     std::cerr << val.toStdString() << std::endl;
-    if(current == Cut)
+    if(currentState == Cut)
       this->ci->cut.put(CS::CPOWER, val.toInt());
-    else if(current == Engraving) {
+    else if(currentState == Engraving) {
       this->ei->engraving.put(ES::EPOWER, val.toInt());
     }
   }
@@ -192,16 +207,16 @@ void ObjectPropertyWidget::on_speed_update(const QString& s)  {
   if(s.length() > 0) {
     QString val = QString(s).remove(s.length() -1,1);
     std::cerr << val.toStdString() << std::endl;
-    if(current == Cut)
+    if(currentState == Cut)
       this->ci->cut.put(CS::CSPEED, val.toInt());
-    else if(current == Engraving) {
+    else if(currentState == Engraving) {
       this->ei->engraving.put(ES::ESPEED, val.toInt());
     }
   }
 }
 
 void ObjectPropertyWidget::on_frequency_update(const QString& f)  {
-  if(f.length() > 0 && current == Cut) {
+  if(f.length() > 0 && currentState == Cut) {
     QString val = QString(f).remove(f.length() -2,2);
     std::cerr << val.toStdString() << std::endl;
     this->ci->cut.put(CS::FREQUENCY, val.toInt());
@@ -209,37 +224,38 @@ void ObjectPropertyWidget::on_frequency_update(const QString& f)  {
 }
 
 void ObjectPropertyWidget::on_posX_update(const QString& x)  {
-  if(current == Cut) {
+  if(currentState == Cut) {
     Point pos = this->ci->cut.get(CS::CPOS);
-    pos.x = x.toInt();
+    pos.x = Distance(x.toDouble(), currentUnit, currentResolution).in(PX);
+
     this->ci->cut.put(CS::CPOS, pos);
     this->ci->setPos(pos.x, pos.y);
   }
-  else if(current == Engraving) {
+  else if(currentState == Engraving) {
     Point pos = this->ei->engraving.get(ES::EPOS);
-    pos.x = x.toInt();
+    pos.x = Distance(x.toDouble(), currentUnit, currentResolution).in(PX);
     this->ei->engraving.put(ES::EPOS, pos);
     this->ei->setPos(pos.x, pos.y);
   }
 }
 
 void ObjectPropertyWidget::on_posY_update(const QString& y)  {
-  if(current == Cut) {
+  if(currentState == Cut) {
     Point pos = this->ci->cut.get(CS::CPOS);
-    pos.y = y.toInt();
+    pos.y = Distance(y.toDouble(), currentUnit, currentResolution).in(PX);
     this->ci->cut.put(CS::CPOS, pos);
     this->ci->setPos(pos.x, pos.y);
   }
-  else if(current == Engraving) {
+  else if(currentState == Engraving) {
     Point pos = this->ei->engraving.get(ES::EPOS);
-    pos.y = y.toInt();
+    pos.y = Distance(y.toDouble(), currentUnit, currentResolution).in(PX);
     this->ei->engraving.put(ES::EPOS, pos);
     this->ei->setPos(pos.x, pos.y);
   }
 }
 
 void ObjectPropertyWidget::on_sort_update(int s) {
-  if(current == Cut) {
+  if(currentState == Cut) {
     switch(s) {
     case 0:
       this->ci->cut.put(CS::OPTIMIZE, CS::SIMPLE);
@@ -255,7 +271,7 @@ void ObjectPropertyWidget::on_sort_update(int s) {
 }
 
 void ObjectPropertyWidget::on_direction_update(int d) {
-  if(current == Engraving) {
+  if(currentState == Engraving) {
       if(d == 0)
         this->ei->engraving.put(ES::DIRECTION, ES::TOPDOWN);
       else
@@ -264,7 +280,7 @@ void ObjectPropertyWidget::on_direction_update(int d) {
 }
 
 void ObjectPropertyWidget::on_dithering_update(int d) {
-  if(current == Engraving) {
+  if(currentState == Engraving) {
     switch(d) {
     case 0:
       this->ei->engraving.put(ES::DITHERING, ES::DEFAULT_DITHERING);
@@ -292,4 +308,14 @@ void ObjectPropertyWidget::on_dithering_update(int d) {
         break;
     }
   }
+}
+
+void ObjectPropertyWidget::on_unit_update(int d) {
+	if(d == 0)
+		currentUnit = MM;
+	else if(d == 1)
+		currentUnit = IN;
+	else if(d == 2)
+		currentUnit = PX;
+	this->update();
 }
