@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1002</width>
+    <width>1186</width>
     <height>595</height>
    </rect>
   </property>
@@ -134,6 +134,25 @@
          <property name="placeholderText">
           <string>0</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="unit">
+         <item>
+          <property name="text">
+           <string>MM</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>IN</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PX</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -451,8 +470,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1002</width>
-     <height>23</height>
+     <width>1186</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
@@ -605,7 +624,7 @@
   </connection>
   <connection>
    <sender>posX</sender>
-   <signal>textEdited(QString)</signal>
+   <signal>textChanged(QString)</signal>
    <receiver>objectProperties</receiver>
    <slot>on_posX_update(QString)</slot>
    <hints>
@@ -621,7 +640,7 @@
   </connection>
   <connection>
    <sender>posY</sender>
-   <signal>textEdited(QString)</signal>
+   <signal>textChanged(QString)</signal>
    <receiver>objectProperties</receiver>
    <slot>on_posY_update(QString)</slot>
    <hints>
@@ -728,6 +747,22 @@
     <hint type="destinationlabel">
      <x>500</x>
      <y>44</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>unit</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>objectProperties</receiver>
+   <slot>on_unit_update(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>268</x>
+     <y>42</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>592</x>
+     <y>42</y>
     </hint>
    </hints>
   </connection>
