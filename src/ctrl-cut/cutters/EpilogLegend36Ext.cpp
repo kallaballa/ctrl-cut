@@ -121,7 +121,7 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
       Cut& cut = *cutp;
       Cut translated = make_from(cut);
       Point pos = cut.get(CutSettings::CPOS);
-      translate(cut,translated, pos);
+      translateTo(cut,translated, pos);
       HPGLEncoder::encode(out,translated);
     }
   }

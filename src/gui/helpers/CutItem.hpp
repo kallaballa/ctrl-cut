@@ -28,7 +28,7 @@ public:
   Cut& cut;
 
   CutItem(Cut& cut);
-  ~CutItem(){};
+  virtual ~CutItem(){};
 
   void commit() {
     const QPointF& pos = this->pos();

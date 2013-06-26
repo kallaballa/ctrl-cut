@@ -242,6 +242,7 @@ bool Document::load(const string& filename, Format docFormat) {
       this->push_back(cut);
       cut->normalize();
       cut->sort();
+      cut->translate();
     }
   }
 

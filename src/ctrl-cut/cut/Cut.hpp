@@ -32,7 +32,9 @@
 #include "cut/operations/Planar.hpp"
 #include "cut/operations/Reduce.hpp"
 #include "cut/operations/NearestPathSorting.h"
+#include "cut/operations/Translate.hpp"
 #include "cut/operations/Deonion.hpp"
+#include <limits>
 
 template<
 template<typename,typename> class Tcontainer = std::vector,
@@ -170,12 +172,46 @@ public:
       nearest_path_sorting(planar_faces, sorted);
 
     plot_svg(sorted, filename + "_sorted");
+    this->clear();
+    (*this) = sorted;
+  }
 
-    const Point&  pos = sorted.get(CutSettings::CPOS);
-    translate(sorted, translated, pos);
+  void translate() {
+    CutImpl<Tcontainer, Tallocator> translated = make_from(*this);
+    const Point&  pos = this->get(CutSettings::CPOS);
+    string filename = this->get(DocumentSettings::FILENAME);
+
+    translateTo(*this, translated, pos);
 
     plot_svg(translated, filename + "_translate");
+    this->put(CutSettings::CPOS, Point());
+    this->clear();
     (*this) = translated;
+  }
+
+  void crop() {
+    CutImpl<Tcontainer, Tallocator> cropped = make_from(*this);
+    const Point&  pos = this->get(CutSettings::CPOS);
+    if(pos != Point(0,0))
+      this->translate();
+
+    Coord_t minx = std::numeric_limits<Coord_t>::max();
+    Coord_t miny = std::numeric_limits<Coord_t>::max();
+    for(typename Route_t::iterator it = this->begin(); it != this->end(); ++it) {
+      const Path& pt = *it;
+
+      for(Path::const_iterator itp = pt.begin(); itp != pt.end(); ++itp) {
+        const Point& p = *itp;
+        minx = std::min(p.x, minx);
+        miny = std::min(p.y, miny);
+      }
+    }
+
+    translateTo(*this,cropped, Point(-minx, -miny));
+
+    cropped.put(CutSettings::CPOS, Point(minx, miny));
+    this->clear();
+    (*this) = cropped;
   }
 };
 

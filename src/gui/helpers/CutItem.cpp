@@ -24,6 +24,7 @@
 
 CutItem::CutItem(Cut& cut) : AbstractCtrlCutItem(), cut(cut) {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
+  cut.crop();
   Point pos = this->cut.get(CutSettings::CPOS);
   QGraphicsItemGroup::setPos(QPointF(pos.x, pos.y));
 
