@@ -160,12 +160,13 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-
-  makeBackground();
-
   doc.put(DocumentSettings::RESOLUTION, 600);
   doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
   doc.put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
+
+  makeBackground();
+
+
   doc.load(filename.toStdString());
 
   string basename = doc.get(DocumentSettings::FILENAME);
@@ -174,7 +175,6 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
   Distance reduceMax = Distance(1, MM, resolution);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
-  std::cerr << doc.cuts().size() << std::endl;
 
   const Document::CutList& cuts = doc.cuts();
   for(Document::CutConstIt it = cuts.begin(); it != cuts.end(); ++it) {
