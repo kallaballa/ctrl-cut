@@ -58,8 +58,8 @@ public:
   virtual void commit() = 0;
 
   void setHighlighted(bool enabled) {
-    return;
-    // FIXME causes performance issues
+ /*   return;
+    // FIXME causes performance issues*/
     QGraphicsColorizeEffect* highlight = new QGraphicsColorizeEffect();
     highlight->setColor(Qt::green);
     if(enabled) {
