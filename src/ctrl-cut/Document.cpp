@@ -67,7 +67,13 @@ Document::Format Document::guessFileFormat(const string& filename) {
     return POSTSCRIPT;
 }
 
-bool Document::load(const string& filename, Format docFormat) {
+typedef std::list<Cut*> CutList;
+typedef std::list<Engraving*> EngraveList;
+
+std::pair<CutList, EngraveList> Document::load(const string& filename, Format docFormat) {
+  CutList newCuts;
+  EngraveList newEngravings;
+
   if(docFormat == UNSPECIFIED)
     docFormat = guessFileFormat(filename);
 
@@ -93,21 +99,18 @@ bool Document::load(const string& filename, Format docFormat) {
       int svgFd = fileno (svgIn);
 
       if (pipe(convertPipe)) {
-        fprintf(stderr, "Pipe failed.\n");
-        return false;
+        CtrlCutException::generalError("Svg converter pipe failed");
       }
 
       Svg2Ps converter(svgFd, convertPipe[1]);
       boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
 
       if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", filename.c_str());
-        return false;
+        CtrlCutException::generalError("unable to open print file:" + filename);
       }
     } else if(docFormat == POSTSCRIPT){
       if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
-        LOG_FATAL_MSG("unable to open print file", filename.c_str());
-        return false;
+        CtrlCutException::generalError("unable to open print file:" + filename);
       }
     }
 
@@ -130,8 +133,7 @@ bool Document::load(const string& filename, Format docFormat) {
 
       /* Check that file handle opened. */
       if (!file_debug) {
-        LOG_FATAL_MSG("Can't open", filename_cups_debug);
-        return 1;
+        CtrlCutException::generalError("Can't open" + filename_cups_debug);
       }
 
       /* Write cups data to the filesystem. */
@@ -173,8 +175,7 @@ bool Document::load(const string& filename, Format docFormat) {
       }
     }
     if (!psparser->parse(input_file)) {
-      LOG_FATAL("Error processing postscript");
-      return 1;
+      CtrlCutException::generalError("Error parsing postscript");
     }
     else {
       parser = psparser;
@@ -223,6 +224,7 @@ bool Document::load(const string& filename, Format docFormat) {
     }
     if (engraving && engraving->isAllocated()) {
       this->push_back(engraving);
+      newEngravings.push_back(engraving);
     }
   }
 
@@ -230,21 +232,21 @@ bool Document::load(const string& filename, Format docFormat) {
   if (loadCut) {
     if (docFormat == VECTOR) {
       cut = new Cut(this->settings());
-      if(!cut->load(filename))
-        return false;
+      cut->load(filename);
     }
     else if (parser) {
       cut = new Cut(this->settings());
-      if(!cut->load(parser->getVectorData()))
-          return false;
+      cut->load(parser->getVectorData());
     }
+
     if (cut)  {
       this->push_back(cut);
+      newCuts.push_back(cut);
       cut->normalize();
       cut->sort();
       cut->translate();
     }
   }
 
-  return true;
+  return std::make_pair(newCuts,newEngravings);
 }

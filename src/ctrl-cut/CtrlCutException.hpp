@@ -28,9 +28,38 @@ namespace bfs = boost::filesystem3;
 namespace berrc = boost::system::errc;
 
 class CtrlCutException {
+  class setting_not_found : public std::exception
+  {
+  public:
+    const string keyid;
+    setting_not_found(const string keyid) : keyid(keyid) {}
+    virtual ~setting_not_found() throw () {}
+
+  public:
+      virtual const char * what() const throw() {
+          return ("setting_not_found: " + keyid).c_str();
+      }
+  };
+
+  class general_error : public std::exception
+  {
+  public:
+    const string msg;
+    general_error(const string msg) : msg(msg) {}
+    virtual ~general_error() throw () {}
+
+  public:
+      virtual const char * what() const throw() {
+          return ("general error: " + msg).c_str();
+      }
+  };
 public:
   static void fileNotFoundException(const string& path) {
     boost::throw_exception(bfs::filesystem_error(path,berrc::make_error_code(berrc::no_such_file_or_directory)));
+  }
+
+  static void generalError(const string& message) {
+    boost::throw_exception(general_error(message));
   }
 };
 
