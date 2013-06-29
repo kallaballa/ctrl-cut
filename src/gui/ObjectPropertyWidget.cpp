@@ -29,7 +29,7 @@ typedef EngraveSettings ES;
 typedef CutSettings CS;
 
 ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600) {
-  // setupUi(this);
+  hide();
 }
 
 ObjectPropertyWidget::~ObjectPropertyWidget() {
