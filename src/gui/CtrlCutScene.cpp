@@ -38,12 +38,16 @@
 #include <qpixmapcache.h>
 #include <qpainter.h>
 #include <qvarlengtharray.h>
+#include <qmenu.h>
+#include <qgraphicsview.h>
+#include <algorithm>
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
   this->docHolder.doc = NULL;
   this->laserbed = NULL;
   this->backgroundItem = NULL;
+  this->currentZ = 0;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
   this->makeBackground();
@@ -166,26 +170,23 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
 
   makeBackground();
 
+  std::pair<Document::CutList, Document::EngraveList> loaded = doc.load(filename.toStdString());
 
-  doc.load(filename.toStdString());
-
-  string basename = doc.get(DocumentSettings::FILENAME);
-  uint32_t resolution = doc.get(DocumentSettings::RESOLUTION);
   uint32_t width = doc.get(DocumentSettings::WIDTH).in(PX);
   uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
-  Distance reduceMax = Distance(1, MM, resolution);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
-  const Document::CutList& cuts = doc.cuts();
-  for(Document::CutConstIt it = cuts.begin(); it != cuts.end(); ++it) {
+  for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
     CutItem* ci = new CutItem(**it);
+    ci->setZValue(++this->currentZ);
     this->docHolder.cutItems.append(ci);
     this->addItem(ci);
   }
 
   const Document::EngraveList& engravings = doc.engravings();
-  for(Document::EngraveConstIt it = engravings.begin(); it != engravings.end(); ++it) {
+  for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
     EngraveItem* ei = new EngraveItem(**it);
+    ei->setZValue(++this->currentZ);
     this->docHolder.engraveItems.append(ei);
     this->addItem(ei);
   }
@@ -285,5 +286,88 @@ void CtrlCutScene::makeBackground() {
     polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
     backgroundItem->setPolygon(polygon);
     backgroundItem->setPen(p);
+    backgroundItem->setZValue(-9999);
   }
+}
+
+
+void CtrlCutScene::lowerItem() {
+  QList<QGraphicsItem *> items = this->selectedItems();
+  qreal selZ = items[0]->zValue();
+  qreal z;
+  qreal belowZ = selZ - 1;
+
+  foreach (QGraphicsItem *i, this->items()) {
+    z = i->zValue();
+    if(z > belowZ && z < selZ) {
+      belowZ = z;
+    }
+  }
+
+  items[0]->setZValue(belowZ - 1);
+}
+
+void CtrlCutScene::raiseItem() {
+  QList<QGraphicsItem *> items = this->selectedItems();
+  qreal selZ = items[0]->zValue();
+  qreal z;
+  qreal aboveZ = selZ + 1;
+
+  foreach (QGraphicsItem *i, this->items()) {
+    z = i->zValue();
+    if(z < aboveZ && z > selZ) {
+      aboveZ = z;
+    }
+  }
+
+  items[0]->setZValue(aboveZ + 1);
+}
+
+void CtrlCutScene::raiseItemToTop() {
+  QList<QGraphicsItem *> items = this->selectedItems();
+  qreal maxz = items[0]->zValue();
+
+  foreach (QGraphicsItem *i, this->items()) {
+    if(i->zValue() > -9999)
+      maxz = std::max(maxz, i->zValue());
+  }
+
+  items[0]->setZValue(maxz);
+}
+
+void CtrlCutScene::lowerItemToBottom() {
+  QList<QGraphicsItem *> items = this->selectedItems();
+  qreal minz = items[0]->zValue();
+
+  foreach (QGraphicsItem *i, this->items()) {
+    if(i->zValue() > -9999)
+      minz = std::min(minz, i->zValue());
+  }
+
+  items[0]->setZValue(minz);
+}
+
+void CtrlCutScene::showContextMenu(const QPoint& pos) {
+  QPoint globalPos = this->views()[0]->mapToGlobal(pos);
+  QMenu menu;
+
+  QAction* lowerAct = new QAction(tr("&Lower"), this);
+  lowerAct->setStatusTip(tr("Lower an item"));
+  QAction* raiseAct = new QAction(tr("&Raise"), this);
+  raiseAct->setStatusTip(tr("Raise an item"));
+  QAction* bottomAct = new QAction(tr("&Lower to bottom"), this);
+  bottomAct->setStatusTip(tr("Lower an item to the bottom"));
+  QAction* topAct = new QAction(tr("&Raise to top"), this);
+  topAct->setStatusTip(tr("Raise an item to the top"));
+
+  connect(lowerAct, SIGNAL(triggered()), this, SLOT(lowerItem()));
+  connect(raiseAct, SIGNAL(triggered()), this, SLOT(raiseItem()));
+  connect(bottomAct, SIGNAL(triggered()), this, SLOT(lowerItemToBottom()));
+  connect(topAct, SIGNAL(triggered()), this, SLOT(raiseItemToTop()));
+
+  menu.addAction(lowerAct);
+  menu.addAction(raiseAct);
+  menu.addAction(bottomAct);
+  menu.addAction(topAct);
+  menu.exec(globalPos);
 }
