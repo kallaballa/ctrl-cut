@@ -41,6 +41,10 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   this->scene = new CtrlCutScene(this);
   this->graphicsView->setScene(this->scene);
+  this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+  connect(this->graphicsView, SIGNAL(customContextMenuRequested(const QPoint&)),
+      this->scene, SLOT(showContextMenu(const QPoint&)));
 
   connect(this->scene, SIGNAL(selectionChanged()), this,
       SLOT(sceneSelectionChanged()));
@@ -87,16 +91,25 @@ void MainWindow::on_newJob() {
 }
 
 void MainWindow::openFile(const QString &filename) {
+  if(filename.isNull())
+    return;
+
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);
 }
 
 void MainWindow::importFile(const QString &filename) {
+  if(filename.isNull())
+    return;
+
   QUndoCommand *importCommand = new ImportCommand(this->scene, filename);
   undoStack->push(importCommand);
 }
 
 void MainWindow::saveFile(const QString &filename) {
+  if(filename.isNull())
+    return;
+
   QUndoCommand *saveCommand = new SaveCommand(this->scene, filename);
   undoStack->push(saveCommand);
 }
