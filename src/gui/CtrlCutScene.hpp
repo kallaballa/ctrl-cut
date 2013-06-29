@@ -22,6 +22,7 @@
 #include <QGraphicsScene>
 #include <QObject>
 #include <QGraphicsItem>
+#include <qevent.h>
 #include "helpers/DocumentHolder.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
@@ -56,11 +57,17 @@ public:
 signals:
    void itemMoved(QGraphicsItem *movedItem, const QPointF &movedFromPosition);
 
+public slots:
+  void showContextMenu(const QPoint& pos);
+  void lowerItem();
+  void raiseItem();
+  void raiseItemToTop();
+  void lowerItemToBottom();
+
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *event);
    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
    virtual void drawBackground(QPainter *painter, const QRectF &rect);
-
 private:
   void makeBackground();
   DocumentHolder docHolder;
@@ -68,6 +75,7 @@ private:
   QGraphicsItemGroup *laserbed;
   QGraphicsItem *movingItem;
   QPointF oldPos;
+  qreal currentZ;
 };
 
 #endif
