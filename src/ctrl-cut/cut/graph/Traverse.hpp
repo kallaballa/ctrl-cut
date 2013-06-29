@@ -43,8 +43,7 @@ bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph
      boyer_myrvold_params::kuratowski_subgraph = std::back_inserter(kuratowski_edges)))
    return true;
  else {
-   DocumentSettings settings;
-   Route r(settings);
+   Route r;
    BOOST_FOREACH(Edge e, kuratowski_edges) {
      const Segment& seg = graph[e];
      add(r, seg);
