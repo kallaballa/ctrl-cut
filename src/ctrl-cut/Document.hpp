@@ -76,7 +76,7 @@ public:
   void remove(Engraving* engraving);
 
   Format guessFileFormat(const string& filename);
-  bool load(const string& filename, Format docFormat = UNSPECIFIED);
+  std::pair<CutList, EngraveList> load(const string& filename, Format docFormat = UNSPECIFIED);
 
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
