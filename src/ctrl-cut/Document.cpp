@@ -25,7 +25,7 @@
 #include "CtrlCutException.hpp"
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
-
+#include "svg/CtrlCutParser.hpp"
 
 using boost::format;
 using std::list;
@@ -63,14 +63,13 @@ Document::Format Document::guessFileFormat(const string& filename) {
     return PBM;
   else if (suffix == "svg")
     return SVG;
+  else if (suffix == "cut")
+    return CTRLCUT;
   else
     return POSTSCRIPT;
 }
 
-typedef std::list<Cut*> CutList;
-typedef std::list<Engraving*> EngraveList;
-
-std::pair<CutList, EngraveList> Document::load(const string& filename, Format docFormat) {
+std::pair<Document::CutList, Document::EngraveList> Document::load(const string& filename, Format docFormat) {
   CutList newCuts;
   EngraveList newEngravings;
 
@@ -88,165 +87,169 @@ std::pair<CutList, EngraveList> Document::load(const string& filename, Format do
   cups_file_t* input_file;
   FileParser *parser = NULL;
 
-  if (docFormat == POSTSCRIPT || docFormat == SVG) {
-    if (docFormat == SVG) {
-      int convertPipe[2];
+  if(docFormat == CTRLCUT) {
+    CtrlCutParser parser;
+    parser.load(filename, *this, newCuts, newEngravings);
+  } else {
+    if (docFormat == POSTSCRIPT || docFormat == SVG) {
+      if (docFormat == SVG) {
+        int convertPipe[2];
 
-   /*   if(!bfs::exists(filename))
-        CtrlCutException::fileNotFoundException(filename);*/
+     /*   if(!bfs::exists(filename))
+          CtrlCutException::fileNotFoundException(filename);*/
 
-      FILE *svgIn = fopen(filename.c_str(), "r");
-      int svgFd = fileno (svgIn);
+        FILE *svgIn = fopen(filename.c_str(), "r");
+        int svgFd = fileno (svgIn);
 
-      if (pipe(convertPipe)) {
-        CtrlCutException::generalError("Svg converter pipe failed");
+        if (pipe(convertPipe)) {
+          CtrlCutException::generalError("Svg converter pipe failed");
+        }
+
+        Svg2Ps converter(svgFd, convertPipe[1]);
+        boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
+
+        if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
+          CtrlCutException::generalError("unable to open print file:" + filename);
+        }
+      } else if(docFormat == POSTSCRIPT){
+        if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
+          CtrlCutException::generalError("unable to open print file:" + filename);
+        }
       }
 
-      Svg2Ps converter(svgFd, convertPipe[1]);
-      boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
+      string fname = filename;
+      string file_basename = this->get(DS::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
 
-      if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
-        CtrlCutException::generalError("unable to open print file:" + filename);
+      // Write out the incoming cups data if debug is enabled.
+      // FIXME: This is disabled for now since it has a bug:
+      // If we're reading from network/stdin, and debug is on, we reopen
+      // the dumped file as a FILE*. Otherwise, we'll keep the cups_file_t.
+      // Subsequent code doesn't handle the difference.
+  #if 0
+      FILE *file_debug;
+      FILE *file_cups;
+      string filename_cups_debug;
+      if (cc_loglevel >= CC_DEBUG) {
+        /* We save the incoming cups data to the filesystem. */
+        filename_cups_debug = file_basename + ".cups";
+        file_debug = fopen(filename_cups_debug.c_str(), "w");
+
+        /* Check that file handle opened. */
+        if (!file_debug) {
+          CtrlCutException::generalError("Can't open" + filename_cups_debug);
+        }
+
+        /* Write cups data to the filesystem. */
+        int l;
+        while ((l = cupsFileRead(input_file, buf, sizeof(buf))) > 0) {
+          fwrite(buf, 1, l, file_debug);
+        }
+        fclose(file_debug);
+        /* In case file_cups pointed to stdin we close the existing file handle
+         * and switch over to using the debug file handle.
+         */
+        cupsFileClose(input_file);
+        file_cups = fopen(filename_cups_debug, "r");
       }
-    } else if(docFormat == POSTSCRIPT){
-      if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
-        CtrlCutException::generalError("unable to open print file:" + filename);
+  #endif
+
+      PostscriptParser *psparser = new PostscriptParser(this->settings());
+      // Uncomment this to force ghostscript to render to file using the ppmraw
+      // backend, instead of in-memory rendering
+      //    psparser->setRenderToFile(true);
+      if (loadEngraving) {
+        switch (this->get(ES::DITHERING)) {
+        case ES::DEFAULT_DITHERING:
+  //        psparser->setRasterFormat(PostscriptParser::BITMAP);
+          //break;
+        case ES::BAYER:
+        case ES::FLOYD_STEINBERG:
+        case ES::JARVIS:
+        case ES::BURKE:
+        case ES::STUCKI:
+        case ES::SIERRA2:
+        case ES::SIERRA3:
+          psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
+          break;
+
+        default:
+          assert(false);
+          break;
+        }
+      }
+      if (!psparser->parse(input_file)) {
+        CtrlCutException::generalError("Error parsing postscript");
+      }
+      else {
+        parser = psparser;
       }
     }
 
-    string fname = filename;
-    string file_basename = this->get(DS::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
-
-    // Write out the incoming cups data if debug is enabled.
-    // FIXME: This is disabled for now since it has a bug:
-    // If we're reading from network/stdin, and debug is on, we reopen
-    // the dumped file as a FILE*. Otherwise, we'll keep the cups_file_t.
-    // Subsequent code doesn't handle the difference.
-#if 0
-    FILE *file_debug;
-    FILE *file_cups;
-    string filename_cups_debug;
-    if (cc_loglevel >= CC_DEBUG) {
-      /* We save the incoming cups data to the filesystem. */
-      filename_cups_debug = file_basename + ".cups";
-      file_debug = fopen(filename_cups_debug.c_str(), "w");
-
-      /* Check that file handle opened. */
-      if (!file_debug) {
-        CtrlCutException::generalError("Can't open" + filename_cups_debug);
-      }
-
-      /* Write cups data to the filesystem. */
-      int l;
-      while ((l = cupsFileRead(input_file, buf, sizeof(buf))) > 0) {
-        fwrite(buf, 1, l, file_debug);
-      }
-      fclose(file_debug);
-      /* In case file_cups pointed to stdin we close the existing file handle
-       * and switch over to using the debug file handle.
-       */
-      cupsFileClose(input_file);
-      file_cups = fopen(filename_cups_debug, "r");
-    }
-#endif
-
-    PostscriptParser *psparser = new PostscriptParser(this->settings());
-    // Uncomment this to force ghostscript to render to file using the ppmraw
-    // backend, instead of in-memory rendering
-    //    psparser->setRenderToFile(true);
     if (loadEngraving) {
-      switch (this->get(ES::DITHERING)) {
-      case ES::DEFAULT_DITHERING:
-//        psparser->setRasterFormat(PostscriptParser::BITMAP);
-        //break;
-      case ES::BAYER:
-      case ES::FLOYD_STEINBERG:
-      case ES::JARVIS:
-      case ES::BURKE:
-      case ES::STUCKI:
-      case ES::SIERRA2:
-      case ES::SIERRA3:
-        psparser->setRasterFormat(PostscriptParser::GRAYSCALE);
-        break;
-
-      default:
+      Engraving* engraving = new Engraving(this->settings());
+      if (docFormat == PBM) {
         assert(false);
-        break;
+  /*      std::string suffix = filename.substr(filename.rfind(".") + 1);
+        engraving->setImage(loadpbm(filename));
+        engraving->put(E_SET::EPOS, Point(392, 516));*/
       }
-    }
-    if (!psparser->parse(input_file)) {
-      CtrlCutException::generalError("Error parsing postscript");
-    }
-    else {
-      parser = psparser;
-    }
-  }
+      else if (parser) {
+        if (parser->hasImageData()) {
+          LOG_DEBUG_STR("Processing bitmap data from memory");
 
-  if (loadEngraving) {
-    Engraving* engraving = new Engraving(this->settings());
-    if (docFormat == PBM) {
-      assert(false);
-/*      std::string suffix = filename.substr(filename.rfind(".") + 1);
-      engraving->setImage(loadpbm(filename));
-      engraving->put(E_SET::EPOS, Point(392, 516));*/
-    }
-    else if (parser) {
-      if (parser->hasImageData()) {
-        LOG_DEBUG_STR("Processing bitmap data from memory");
+          if(parser->hasGrayscaleImage()) {
+            GrayscaleImage gs = parser->getGrayscaleImage();
+            Rectangle cropbox = parser->getCropBox();
+  /*          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
+            BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
+            engraving->setImage(gs);
+            engraving->put(ES::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
+          } else if(parser->hasBitmapImage()) {
+            assert(false);
+  /*          Rectangle cropbox = parser->getCropBox();
+            engraving->setImage(parser->getBitmapImage());
+            engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));*/
+          }
+        }
+        else if (!parser->getBitmapFile().empty()) {
+          std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
+          if (suffix == "ppm" || suffix == "pgm") {
+            GrayscaleImage gs = loadppm(filename);
+            engraving->setImage(gs);
+          }
+          else {
+            assert(false);
+            //engraving->setImage(loadpbm(filename));
+          }
 
-        if(parser->hasGrayscaleImage()) {
-          GrayscaleImage gs = parser->getGrayscaleImage();
-          Rectangle cropbox = parser->getCropBox();
-/*          Dither& dither = Dither::create(gs, this->get(E_SET::DITHERING));
-          BitmapImage bm = dither.dither(this->get(E_SET::EPOS));*/
-          engraving->setImage(gs);
-          engraving->put(ES::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));
-        } else if(parser->hasBitmapImage()) {
-          assert(false);
-/*          Rectangle cropbox = parser->getCropBox();
-          engraving->setImage(parser->getBitmapImage());
-          engraving->put(E_SET::EPOS, Point(cropbox.ul[0], cropbox.ul[1]));*/
+          engraving->put(ES::EPOS, Point(392, 516));
         }
       }
-      else if (!parser->getBitmapFile().empty()) {
-        std::string suffix = parser->getBitmapFile().substr(parser->getBitmapFile().rfind(".") + 1);
-        if (suffix == "ppm" || suffix == "pgm") {
-          GrayscaleImage gs = loadppm(filename);
-          engraving->setImage(gs);
-        }
-        else {
-          assert(false);
-          //engraving->setImage(loadpbm(filename));
-        }
-
-        engraving->put(ES::EPOS, Point(392, 516));
+      if (engraving && engraving->isAllocated()) {
+        this->push_back(engraving);
+        newEngravings.push_back(engraving);
       }
     }
-    if (engraving && engraving->isAllocated()) {
-      this->push_back(engraving);
-      newEngravings.push_back(engraving);
+
+    Cut *cut = NULL;
+    if (loadCut) {
+      if (docFormat == VECTOR) {
+        cut = new Cut(this->settings());
+        cut->load(filename);
+      }
+      else if (parser) {
+        cut = new Cut(this->settings());
+        cut->load(parser->getVectorData());
+      }
+
+      if (cut)  {
+        this->push_back(cut);
+        newCuts.push_back(cut);
+        cut->normalize();
+        cut->sort();
+        cut->translate();
+      }
     }
   }
-
-  Cut *cut = NULL;
-  if (loadCut) {
-    if (docFormat == VECTOR) {
-      cut = new Cut(this->settings());
-      cut->load(filename);
-    }
-    else if (parser) {
-      cut = new Cut(this->settings());
-      cut->load(parser->getVectorData());
-    }
-
-    if (cut)  {
-      this->push_back(cut);
-      newCuts.push_back(cut);
-      cut->normalize();
-      cut->sort();
-      cut->translate();
-    }
-  }
-
   return std::make_pair(newCuts,newEngravings);
 }

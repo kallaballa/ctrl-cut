@@ -31,11 +31,12 @@ class SvgWriter {
 public:
   Coord_t width;
   Coord_t height;
+  Coord_t resolution;
   const string title;
   std::ofstream ostream;
 
 
-  SvgWriter(Coord_t width, Coord_t height, const string& title, const char* filename);
+  SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, const char* filename);
   virtual ~SvgWriter();
 
   template<typename Tgeom>

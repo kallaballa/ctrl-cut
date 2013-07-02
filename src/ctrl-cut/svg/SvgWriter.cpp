@@ -22,7 +22,7 @@
 #include <boost/format.hpp>
 #include <Magick++.h>
 
-SvgWriter::SvgWriter(Coord_t width, Coord_t height, const string& title, const char* filename) : width(width), height(height), title(title), ostream(filename) {
+SvgWriter::SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, const char* filename) : width(width), height(height), resolution(resolution), title(title), ostream(filename) {
   this->writeDocumentStart();
 }
 
@@ -50,6 +50,7 @@ void SvgWriter::writeDocumentStart() {
       "xmlns:ctrlcut=\"%s\" " +
       "width=\"%f\" " +
       "height=\"%f\" " +
+      "resolution=\"%f\" " +
       "version=\"1.1\" " +
       "ctrlcut:version=\"%s\" " +
       "viewbox=\"0 0 %d %d\" >");
@@ -66,7 +67,7 @@ void SvgWriter::writeDocumentStart() {
       "</rdf:RDF>" +
     "</metadata>";
 
-  ostream << (svgtag % dtd % this->width % this->height % version % this->width % this->height) << std::endl;
+  ostream << (svgtag % dtd % this->width % this->height % this->resolution % version % this->width % this->height) << std::endl;
   ostream << (ctrlcutDoc % this->title) << std::endl;
   ostream << metadata << std::endl;
 }
@@ -133,7 +134,6 @@ void SvgWriter::writeEngraving(const Engraving& engraving, const string& style) 
 }
 
 void SvgWriter::writeDocument(const Document& d, const std::string& style) {
-  writeDocumentStart();
   BOOST_FOREACH(const Engraving* engraving, d.engravings()) {
     this->writeEngraving(*engraving, style);
   }
@@ -141,7 +141,6 @@ void SvgWriter::writeDocument(const Document& d, const std::string& style) {
   BOOST_FOREACH(const Cut* cut, d.cuts()) {
     this->writeCut(*cut, style);
   }
-  writeDocumentEnd();
 }
 
 void SvgWriter::write(const Route& r, const std::string& style) {

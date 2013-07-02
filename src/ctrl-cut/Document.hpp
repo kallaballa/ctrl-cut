@@ -31,7 +31,8 @@ public:
     POSTSCRIPT,
     SVG,
     VECTOR,
-    PBM
+    PBM,
+    CTRLCUT
   };
 
   typedef std::list<Cut*> CutList;
@@ -44,7 +45,34 @@ public:
   std::string filename;
 
   Document() {}
+  Document(const Document& other) {
+    docSettings = other.docSettings;
+    const CutList& c = other.cuts();
+    for(CutConstIt it = c.begin(); it != c.end(); ++it) {
+      newCut() = **it;
+    }
+
+    const EngraveList& e = other.engravings();
+    for(EngraveConstIt it = e.begin(); it != e.end(); ++it) {
+      newEngraving() = **it;
+    }
+  }
+
   virtual ~Document() {};
+
+  Cut& newCut() {
+    //FIXME memory leak
+    Cut* cut = new Cut(settings());
+    this->push_back(cut);
+    return *cut;
+  }
+
+  Engraving& newEngraving() {
+    //FIXME memory leak
+    Engraving* eng = new Engraving(settings());
+    this->push_back(eng);
+    return *eng;
+  }
 
   void copy(const Document& other) {
     this->docSettings = other.docSettings;
@@ -86,6 +114,11 @@ public:
   template<typename T>
   const T get(const Settings::Key<T>& key) const {
     return docSettings.get(key);
+  }
+
+  void clear() {
+    this->cutList.clear();
+    this->engraveList.clear();
   }
 private:
   DocumentSettings docSettings;

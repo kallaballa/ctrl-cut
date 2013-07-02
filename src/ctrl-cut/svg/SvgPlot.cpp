@@ -148,8 +148,9 @@ void plot_shared_segments(const Route& r, const char* filename) {
   std::set<Segment> segidx;
   uint32_t width = r.get(DocumentSettings::WIDTH).in(PX);
   uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
+  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
-  SvgWriter svg(width, height, title, filename);
+  SvgWriter svg(width, height, resolution, title, filename);
 
   BOOST_FOREACH(const Path& path, r) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:1");
@@ -168,9 +169,13 @@ void plot_shared_segments(const Route& r, const char* filename) {
 void plot_shared_points(const Route& r, const char* filename) {
   uint32_t width = r.get(DocumentSettings::WIDTH).in(PX);
   uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
+  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
 
-  SvgWriter svg(width, height, title, filename);
+  SvgWriter svg(width, height, resolution, title, filename);
+  if(r.empty())
+    return;
+
   std::vector<Point> sharedPoints;
 
   find_shared_points(r, sharedPoints);
@@ -190,9 +195,10 @@ void plot_shared_points(const Route& r, const char* filename) {
 void plot_path_order(const Route& r, const char* filename) {
   Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
   Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
+  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
 
-  SvgWriter svg(width, height, title, filename);
+  SvgWriter svg(width, height, resolution, title, filename);
   std::vector<Point> sharedPoints;
 
   hsl_color hsl;
@@ -234,9 +240,10 @@ void plot_path_order(const Route& r, const char* filename) {
 void plot_segment_order(const Route& r, const char* filename) {
   Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
   Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
+  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
 
-  SvgWriter svg(width, height, title, filename);
+  SvgWriter svg(width, height, resolution, title, filename);
 
   hsl_color hsl;
   rgb_color rgb;

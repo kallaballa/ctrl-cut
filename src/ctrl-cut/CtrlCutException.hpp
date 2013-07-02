@@ -37,7 +37,7 @@ class CtrlCutException {
 
   public:
       virtual const char * what() const throw() {
-          return ("setting_not_found: " + keyid).c_str();
+          return keyid.c_str();
       }
   };
 
@@ -50,9 +50,25 @@ class CtrlCutException {
 
   public:
       virtual const char * what() const throw() {
-          return ("general error: " + msg).c_str();
+          return msg.c_str();
       }
   };
+
+  class malformed_document_error: public std::exception {
+  public:
+    const string msg;
+    malformed_document_error(const string& msg) :
+        msg(msg) {
+    }
+    virtual ~malformed_document_error() throw () {
+    }
+
+  public:
+    virtual const char * what() const throw () {
+      return msg.c_str();
+    }
+  };
+
 public:
   static void fileNotFoundException(const string& path) {
     boost::throw_exception(bfs::filesystem_error(path,berrc::make_error_code(berrc::no_such_file_or_directory)));
@@ -60,6 +76,10 @@ public:
 
   static void generalError(const string& message) {
     boost::throw_exception(general_error(message));
+  }
+
+  static void malformedDocument(const string& message) {
+    boost::throw_exception(malformed_document_error(message));
   }
 };
 
