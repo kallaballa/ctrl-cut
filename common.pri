@@ -33,7 +33,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++98 -Wno-long-long
+QMAKE_CXXFLAGS += -std=c++0x -Wno-long-long
 linux:QMAKE_CXXFLAGS += -pedantic-errors
 include(boost.pri)
 include(ghostscript.pri)

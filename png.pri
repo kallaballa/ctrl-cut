@@ -1,5 +1,5 @@
 libpng {
   message("Configuring libpng...")
   DEFINES += cimg_use_png
-  LIBS += -lpng14
+  LIBS += -lpng16
 }
