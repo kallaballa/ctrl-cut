@@ -37,22 +37,24 @@ bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph
 
   std::vector< Edge > kuratowski_edges;
 
- /*if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
-     boyer_myrvold_params::embedding = &embedding[0],
-     boyer_myrvold_params::edge_index_map = make_assoc_property_map(e_index_map),
-     boyer_myrvold_params::kuratowski_subgraph = std::back_inserter(kuratowski_edges)))
+//FIXME building of the kuratowski graph broke with boost 1.56
+ if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = graph,
+     boyer_myrvold_params::embedding = &embedding[0]
+//     boyer_myrvold_params::edge_index_map = make_assoc_property_map(e_index_map),
+//     boyer_myrvold_params::kuratowski_subgraph = std::back_inserter(kuratowski_edges)
+))
    return true;
  else {
-   Route r;
+/*   Route r;
    BOOST_FOREACH(Edge e, kuratowski_edges) {
      const Segment& seg = graph[e];
      add(r, seg);
    }
 
    plot_svg(r, "kuratowski");
+*/
    return false;
- }*/
- return true;
+ }
 }
 
 
