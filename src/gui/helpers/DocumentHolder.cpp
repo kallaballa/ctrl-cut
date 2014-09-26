@@ -26,7 +26,12 @@ DocumentHolder::DocumentHolder() : doc(NULL){
 }
 
 DocumentHolder::DocumentHolder(const DocumentHolder& other) {
-  this->doc = other.doc;
+  DocumentHolder::operator=(other);
+}
+
+void DocumentHolder::operator=(const DocumentHolder& other) {
+  //FIXME memory leak
+  this->doc = new Document(*other.doc);
   this->cutItems = other.cutItems;
   this->engraveItems = other.engraveItems;
 }

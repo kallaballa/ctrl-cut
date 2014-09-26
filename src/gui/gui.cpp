@@ -23,11 +23,29 @@
 #include "util/Logger.hpp"
 #include "config/DocumentSettings.hpp"
 
+class CtrlCutApplication : public QApplication {
+public:
+  CtrlCutApplication(int& argc, char ** argv) :
+    QApplication(argc, argv) { }
+  virtual ~CtrlCutApplication() { }
+
+  // reimplemented from QApplication so we can throw exceptions in slots
+  virtual bool notify(QObject * receiver, QEvent * event) {
+    try {
+      return QApplication::notify(receiver, event);
+    } catch(std::exception& e) {
+      qCritical() << "Exception thrown:" << e.what();
+    }
+    return false;
+  }
+};
+
 int main(int argc, char **argv)
 {
   Logger::init(CC_DEBUG);
+
   QApplication::setGraphicsSystem("raster");
-  QApplication app(argc, argv);
+  CtrlCutApplication app(argc, argv);
 
   app.installEventFilter(new EventFilter(&app));
 

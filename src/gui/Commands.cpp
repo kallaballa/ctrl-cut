@@ -29,6 +29,29 @@
 
 #include <QtGui>
 
+ CtrlCutUndo::CtrlCutUndo(CtrlCutScene* scene, QUndoCommand *parent)
+     : QUndoCommand(parent),  scene(scene), before(NULL), after(NULL) {
+   before = &this->scene->getDocumentHolder();
+   after = NULL;
+ }
+
+ void CtrlCutUndo::undo() {
+   scene->attachDocumentHolder(before);
+   scene->update();
+ }
+
+ void CtrlCutUndo::redo() {
+   if(after == NULL) {
+     //FIXME memory leak
+     after = new DocumentHolder(this->scene->getDocumentHolder());
+     scene->attachDocumentHolder(after);
+     modify();
+   } else {
+     scene->attachDocumentHolder(after);
+   }
+   scene->update();
+ }
+
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,
                   QUndoCommand *parent)
      : QUndoCommand(parent),  scene(scene)
@@ -72,132 +95,73 @@
  }
 
  DeleteCommand::DeleteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene) {
-   QList<QGraphicsItem *> list = scene->selectedItems();
-   list.first()->setSelected(false);
-   graphicsItem = static_cast<QGraphicsItem *> (list.first());
-   setText(QObject::tr("Delete %1")
-     .arg(createCommandString(graphicsItem, graphicsItem->pos())));
+   CtrlCutUndo(scene,parent) {
+   setText("Delete item");
  }
 
- void DeleteCommand::undo() {
-   CutItem* ci;
-   EngraveItem* ei;
+ void DeleteCommand::modify() {
+   foreach(QGraphicsItem* graphicsItem, scene->selectedItems()) {
+     CutItem* ci;
+     EngraveItem* ei;
 
-   if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
-     scene->add(*ci);
-   } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {
-     scene->add(*ei);
-   }
-
-   scene->update();
- }
-
- void DeleteCommand::redo() {
-   CutItem* ci;
-   EngraveItem* ei;
-
-   if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
-     scene->remove(*ci);
-   } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {
-     scene->remove(*ei);
+     if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
+       scene->remove(*ci);
+     } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {
+       scene->remove(*ei);
+     }
    }
  }
 
  OpenCommand::OpenCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene), filename(filename) {
-   if (!filename.isEmpty()) {
-     this->oldDoc = this->scene->getDocumentHolder();
-     setText("Open " + filename);
-   }
+   CtrlCutUndo(scene, parent), filename(filename) {
+   setText("Open " + filename);
  }
 
- void OpenCommand::undo() {
-   this->scene->setDocumentHolder(this->oldDoc);
-   this->scene->update();
+ void OpenCommand::modify() {
+   this->scene->open(filename);
  }
 
- void OpenCommand::redo() {
-   if(!this->newDoc.doc) {
-     this->scene->open(filename);
-     this->newDoc = this->scene->getDocumentHolder();
-   } else {
-     this->scene->setDocumentHolder(this->newDoc);
-   }
+NewCommand::NewCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+   CtrlCutUndo(scene, parent) {
+   setText("New Document");
+}
 
-   this->scene->update();
- }
-
- NewCommand::NewCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene) {
-   setText("New Job");
- }
-
- void NewCommand::undo() {
-   this->scene->setDocumentHolder(this->oldDoc);
-   this->scene->update();
- }
-
- void NewCommand::redo() {
-   if(!this->newDoc.doc) {
-     NewDialog nd;
-    if (nd.exec() == QDialog::Accepted) {
-      int resolution = nd.getResolution();
-      this->scene->newJob(nd.getTitle(), nd.getResolution(),
-          Distance(36, IN, resolution), Distance(24, IN, resolution));
-      this->newDoc = this->scene->getDocumentHolder();
-    }
-   } else {
-     this->scene->setDocumentHolder(this->newDoc);
-   }
-
-   this->scene->update();
- }
+void NewCommand::modify() {
+  NewDialog nd;
+  if (nd.exec() == QDialog::Accepted) {
+    int resolution = nd.getResolution();
+    this->scene->newJob(nd.getTitle(), nd.getResolution(),
+        Distance(36, IN, resolution), Distance(24, IN, resolution));
+  }
+}
 
  SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
-       QUndoCommand(parent), scene(scene), filename(filename) {
+     CtrlCutUndo(scene, parent), filename(filename) {
    setText("Save");
  }
 
- void SaveCommand::undo() {
-
- }
-
- void SaveCommand::redo() {
+ void SaveCommand::modify() {
    typedef DocumentSettings DS;
    Document& doc = *this->scene->getDocumentHolder().doc;
-   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::TITLE), filename.toStdString().c_str());
+   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), filename.toStdString().c_str());
    svgW.writeDocument(doc, "stroke:rgb(255,0,0);stroke-width:5;");
  }
 
- ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene), filename(filename) {
-   if (!filename.isEmpty()) {
-     this->oldDoc = this->scene->getDocumentHolder();
-     setText("Import " + filename);
-   }
- }
+ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
+  CtrlCutUndo(scene, parent), filename(filename) {
+  if (!filename.isEmpty()) {
+    setText("Import " + filename);
+  }
+}
 
- void ImportCommand::undo() {
-   this->scene->setDocumentHolder(this->oldDoc);
-   this->scene->update();
- }
-
- void ImportCommand::redo() {
-   if(!this->newDoc.doc) {
-     ImportDialog imd;
-    if (imd.exec() == QDialog::Accepted) {
-      bool loadVector = imd.isVectorDataEnabled();
-      bool loadRaster = imd.isRasterDataEnabled();
-      this->scene->load(filename, loadVector, loadRaster);
-      this->newDoc = this->scene->getDocumentHolder();
-    }
-   } else {
-     this->scene->setDocumentHolder(this->newDoc);
-   }
-
-   this->scene->update();
- }
+void ImportCommand::modify() {
+  ImportDialog imd;
+  if (imd.exec() == QDialog::Accepted) {
+    bool loadVector = imd.isVectorDataEnabled();
+    bool loadRaster = imd.isRasterDataEnabled();
+    this->scene->load(filename, loadVector, loadRaster);
+  }
+}
 
  SimplifyCommand::SimplifyCommand(CtrlCutScene* scene, QUndoCommand *parent) :
    QUndoCommand(parent), scene(scene) {
@@ -226,6 +190,7 @@
    if(newCutItems.empty()) {
      foreach(CutItem* ci, oldCutItems) {
        ci->commit();
+       //FIXME memory leak
        std::cerr << ci->cut.get(CutSettings::CPOS) << std::endl;
        Cut* newCut = new Cut(ci->cut.settings);
        std::cerr << newCut->get(CutSettings::CPOS) << std::endl;
@@ -245,6 +210,82 @@
 
    this->scene->update();
  }
+
+LowerItemCommand::LowerItemCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Lower item");
+}
+
+void LowerItemCommand::modify() {
+  QList<QGraphicsItem *> items = scene->selectedItems();
+  qreal selZ = items[0]->zValue();
+  qreal z;
+  qreal belowZ = selZ;
+
+  foreach (QGraphicsItem *i, scene->items()) {
+    z = i->zValue();
+    if ((z > belowZ || belowZ == selZ) && z < selZ) {
+      belowZ = z;
+    }
+  }
+
+  items[0]->setZValue(belowZ-1);
+}
+
+RaiseItemCommand::RaiseItemCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Raise item");
+}
+
+void RaiseItemCommand::modify() {
+  QList<QGraphicsItem *> items = scene->selectedItems();
+  qreal selZ = items[0]->zValue();
+  qreal z;
+  qreal aboveZ = selZ;
+
+  foreach (QGraphicsItem *i, scene->items()) {
+    z = i->zValue();
+    if ((z < aboveZ || aboveZ == selZ) && z > selZ) {
+      aboveZ = z;
+    }
+  }
+
+  items[0]->setZValue(aboveZ+1);
+}
+
+LowerItemToBottomCommand::LowerItemToBottomCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Lower item to bottom");
+}
+
+void LowerItemToBottomCommand::modify() {
+  QList<QGraphicsItem *> items = scene->selectedItems();
+  qreal minz = items[0]->zValue();
+
+  foreach (QGraphicsItem *i, scene->items()) {
+    if (i->zValue() > -9999)
+      minz = std::min(minz, i->zValue());
+  }
+
+  items[0]->setZValue(minz-1);
+}
+
+RaiseItemToTopCommand::RaiseItemToTopCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Raise item to top");
+}
+
+void RaiseItemToTopCommand::modify() {
+  QList<QGraphicsItem *> items = scene->selectedItems();
+  qreal maxz = items[0]->zValue();
+
+  foreach (QGraphicsItem *i, scene->items()) {
+    if (i->zValue() > -9999)
+      maxz = std::max(maxz, i->zValue());
+  }
+
+  items[0]->setZValue(maxz+1);
+}
 
 QString createCommandString(QGraphicsItem *item, const QPointF &pos) {
   return QObject::tr("Pos (%2, %3)").arg(pos.x()).arg(pos.y());

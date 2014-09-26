@@ -23,6 +23,7 @@
 #include "CutSettings.hpp"
 #include "util/Measurement.hpp"
 
+const DocumentSettings::Key<string>  DocumentSettings::DUUID = "duuid";
 const DocumentSettings::Key<LaserCutter::Driver>  DocumentSettings::DRIVER = "driver";
 const DocumentSettings::Key<string> DocumentSettings::USER = "user";
 const DocumentSettings::Key<string> DocumentSettings::TITLE = "title";
@@ -44,6 +45,9 @@ const DocumentSettings::Key<bool> DocumentSettings::LOAD_ENGRAVING = "loadEngrav
 const DocumentSettings::Key<bool> DocumentSettings::DUMP_XML = "dumpXml";
 
 DocumentSettings::DocumentSettings() : Settings() {
+  std::stringstream ss;
+  ss << boost::uuids::random_generator()();
+  this->put(DUUID, ss.str());
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
   this->put(TEMP_DIR, string("tmp"));
   this->put(AUTO_FOCUS, true);
@@ -68,7 +72,7 @@ DocumentSettings::DocumentSettings() : Settings() {
 
   this->put(BitmapSettings::BPOS, Point());
 
-  this->put(CutSettings::OPTIMIZE, CutSettings::INNER_OUTER);
+  this->put(CutSettings::SORT, CutSettings::INNER_OUTER);
   this->put(CutSettings::CSPEED, 33);
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);

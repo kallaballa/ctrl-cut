@@ -61,6 +61,16 @@ public:
     os << "<path>" << std::endl;
     return os;
   }
+
+  void toJson(std::ostream& os) {
+    os << "[";
+    for(typename PathImpl::const_iterator it=this->begin(); it != this->end(); ++it) {
+      if(it != this->begin())
+        os << ",";
+      (*it).toJson(os);
+    }
+    os << "]";
+  }
 };
 
 typedef PathImpl<std::vector, std::allocator> Path;

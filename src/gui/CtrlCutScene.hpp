@@ -38,10 +38,10 @@ public:
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}
 
-  void setDocumentHolder(DocumentHolder& doc);
+  void attachDocumentHolder(DocumentHolder* doc);
 
-  DocumentHolder getDocumentHolder() {
-    return this->docHolder;
+  DocumentHolder& getDocumentHolder() {
+    return *this->docHolder;
   }
   void add(class CutItem& cutItem);
   void remove(CutItem& cutItem);
@@ -51,18 +51,12 @@ public:
   void open(const QString& filename);
   void load(const QString& filename, bool loadVector = true, bool loadRaster = true);
   void reset();
+  void detachDocumentHolder();
   void update(const QRectF &rect = QRectF());
  // void keyPressEvent(QKeyEvent *event);
 
 signals:
    void itemMoved(QGraphicsItem *movedItem, const QPointF &movedFromPosition);
-
-public slots:
-  void showContextMenu(const QPoint& pos);
-  void lowerItem();
-  void raiseItem();
-  void raiseItemToTop();
-  void lowerItemToBottom();
 
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -70,7 +64,7 @@ protected:
    virtual void drawBackground(QPainter *painter, const QRectF &rect);
 private:
   void makeBackground();
-  DocumentHolder docHolder;
+  DocumentHolder* docHolder;
   QGraphicsPolygonItem* backgroundItem;
   QGraphicsItemGroup *laserbed;
   QGraphicsItem *movingItem;

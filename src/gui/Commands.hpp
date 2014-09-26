@@ -27,21 +27,28 @@
 class Document;
 class CtrlCutScene;
 
+class CtrlCutUndo: public QUndoCommand {
+public:
+  CtrlCutUndo(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual ~CtrlCutUndo(){};
+  void undo();
+  void redo();
+  virtual void modify() = 0;
+
+  CtrlCutScene* scene;
+private:
+  DocumentHolder* before;
+  DocumentHolder* after;
+};
+
 class MoveCommand: public QUndoCommand {
 public:
-  enum {
-    Id = 1234
-  };
-
   MoveCommand(CtrlCutScene* scene, QGraphicsItem *QGraphicsItem, const QPointF &oldPos,
       QUndoCommand *parent = NULL);
 
   void undo();
   void redo();
   //bool mergeWith(const QUndoCommand *command);
-  int id() const {
-    return Id;
-  }
 
 private:
   CtrlCutScene* scene;
@@ -50,72 +57,49 @@ private:
   QPointF newPos;
 };
 
- class DeleteCommand : public QUndoCommand
- {
- public:
-     DeleteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-
-     void undo();
-     void redo();
-
-private:
-  CtrlCutScene* scene;
-  QGraphicsItem *graphicsItem;
+class DeleteCommand : public CtrlCutUndo
+{
+public:
+    DeleteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+    virtual void modify();
 };
-class OpenCommand: public QUndoCommand {
+
+class OpenCommand: public CtrlCutUndo {
 public:
   OpenCommand(CtrlCutScene* scene, const QString &filename,
       QUndoCommand *parent = NULL);
 
-  void undo();
-  void redo();
-
+  virtual void modify();
 private:
-  CtrlCutScene* scene;
   QString filename;
-  DocumentHolder oldDoc;
-  DocumentHolder newDoc;
 };
 
-class NewCommand: public QUndoCommand {
+class NewCommand: public CtrlCutUndo {
 public:
   NewCommand(CtrlCutScene* scene,
       QUndoCommand *parent = NULL);
 
-  void undo();
-  void redo();
-
-private:
-  CtrlCutScene* scene;
-  DocumentHolder oldDoc;
-  DocumentHolder newDoc;
+  void modify();
 };
 
 
-class SaveCommand: public QUndoCommand {
+class SaveCommand: public CtrlCutUndo {
 public:
   SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent = NULL);
 
-  void undo();
-  void redo();
+  void modify();
 
-private:
-  CtrlCutScene* scene;
   const QString filename;
 };
 
-class ImportCommand: public QUndoCommand {
+class ImportCommand: public CtrlCutUndo {
 public:
   ImportCommand(CtrlCutScene* scene, const QString &filename, QUndoCommand *parent = NULL);
 
-  void undo();
-  void redo();
+  void modify();
 
 private:
-  CtrlCutScene* scene;
   QString filename;
-  DocumentHolder oldDoc;
-  DocumentHolder newDoc;
 };
 
 class SimplifyCommand: public QUndoCommand {
@@ -127,6 +111,30 @@ public:
   CtrlCutScene* scene;
   QList<CutItem* > oldCutItems;
   QList<CutItem* > newCutItems;
+};
+
+class LowerItemCommand: public CtrlCutUndo {
+public:
+  LowerItemCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
+};
+
+class RaiseItemCommand: public CtrlCutUndo {
+public:
+  RaiseItemCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
+};
+
+class LowerItemToBottomCommand: public CtrlCutUndo {
+public:
+  LowerItemToBottomCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
+};
+
+class RaiseItemToTopCommand: public CtrlCutUndo {
+public:
+  RaiseItemToTopCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
 };
 
 QString createCommandString(QGraphicsItem *item, const QPointF &point);

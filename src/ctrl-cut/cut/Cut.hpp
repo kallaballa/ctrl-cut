@@ -22,6 +22,7 @@
 
 #include <string>
 #include <stdio.h>
+#include <iostream>
 
 #include "config/DocumentSettings.hpp"
 #include "config/CutSettings.hpp"
@@ -42,6 +43,7 @@ template<typename> class Tallocator = std::allocator
 >
 class CutImpl : public RouteImpl<Tcontainer, Tallocator> {
 public:
+  typedef CutImpl<Tcontainer, Tallocator> _Self;
   typedef RouteImpl<Tcontainer, Tallocator> Route_t;
   CutImpl(DocumentSettings& parentSettings) :
     Route_t(parentSettings)
@@ -137,7 +139,7 @@ public:
 
     Distance reduceMax(0.2,MM, dpi);
 
-    Cut cut = *this;
+    Cut& cut = *this;
     plot_svg(cut, filename + "_input");
 
     Cut clipped = make_from(cut);
@@ -166,9 +168,9 @@ public:
     make_planar(*this, planar_faces);
     plot_svg(planar_faces, filename + "_planar_faces");
 
-    if(this->get(CutSettings::OPTIMIZE) == CutSettings::INNER_OUTER)
+    if(this->get(CutSettings::SORT) == CutSettings::INNER_OUTER)
       traverse_onion(planar_faces, sorted);
-    else if(this->get(CutSettings::OPTIMIZE) == CutSettings::SHORTEST_PATH)
+    else if(this->get(CutSettings::SORT) == CutSettings::SHORTEST_PATH)
       nearest_path_sorting(planar_faces, sorted);
 
     plot_svg(sorted, filename + "_sorted");
@@ -212,6 +214,12 @@ public:
     cropped.put(CutSettings::CPOS, Point(minx, miny));
     this->clear();
     (*this) = cropped;
+  }
+
+  void operator=(const _Self& other) {
+    this->settings = other.settings;
+    this->clear();
+    Route_t::operator=(other);
   }
 };
 

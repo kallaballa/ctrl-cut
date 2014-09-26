@@ -71,12 +71,12 @@ void LaserDialog::updateLaserConfig(Document& document)
 
   const QString& strOptimize = this->cutOptimize->currentText();
 
-  CS::Optimize optimize;
+  CS::Sort optimize;
   if (strOptimize == "Simple") optimize = CS::SIMPLE;
   else if (strOptimize == "Inner-Outer") optimize = CS::INNER_OUTER;
   else if (strOptimize == "Shortest Path") optimize = CS::SHORTEST_PATH;
 
-    document.put(CS::OPTIMIZE, optimize);
+    document.put(CS::SORT, optimize);
   document.put(CS::CSPEED, this->vectorSpeedSlider->value());
   document.put(CS::CPOWER, this->vectorPowerSlider->value());
   document.put(CS::FREQUENCY, this->vectorFreqSlider->value());
@@ -127,7 +127,7 @@ void LaserDialog::applyLaserConfig(Document& document)
   this->rasterDithering->setCurrentIndex(this->rasterDithering->findText(ditherstr));
 
   QString strOptimize;
-  switch (document.get(CS::OPTIMIZE)) {
+  switch (document.get(CS::SORT)) {
   case CS::SIMPLE:
     strOptimize = "Simple";
     break;

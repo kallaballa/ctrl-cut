@@ -110,11 +110,11 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
   }
   if (cupsOpts.get(CupsOptions::VECTOR_OPTIMIZE, v)) {
     if (v == "Simple")
-      ds.put(CS::OPTIMIZE, CS::SIMPLE);
+      ds.put(CS::SORT, CS::SIMPLE);
     else if (v == "Inner-Outer")
-      ds.put(CS::OPTIMIZE, CS::INNER_OUTER);
+      ds.put(CS::SORT, CS::INNER_OUTER);
     else if (v == "Shortest-Path")
-      ds.put(CS::OPTIMIZE, CS::SHORTEST_PATH);
+      ds.put(CS::SORT, CS::SHORTEST_PATH);
     else {
       LOG_WARN_MSG("Illegal value for VectorOptimize", v);
     }

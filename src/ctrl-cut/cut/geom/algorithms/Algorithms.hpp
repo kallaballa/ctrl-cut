@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef ALGORITHMS_HPP_
+#define ALGORITHMS_HPP_
+
 #include "Append.hpp"
 #include "Prepend.hpp"
 #include "Concat.hpp"
 #include "Add.hpp"
-
-#ifndef ALGORITHMS_HPP_
-#define ALGORITHMS_HPP_
 
 template<typename TpointRange>
 inline TpointRange make_from(const TpointRange& pointRange) {

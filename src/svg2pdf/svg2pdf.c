@@ -56,7 +56,7 @@ int main (int argc, char *argv[])
     if (argc != 3)
 	FAIL ("usage: svg2pdf input_file.svg output_file.pdf");
 
-    g_type_init ();
+    //g_type_init ();
 
     rsvg_set_default_dpi (72.0);
     handle = rsvg_handle_new_from_file (filename, &error);

@@ -71,11 +71,12 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./config/EngraveSettings.hpp \
            ./svg/Svg2Ps.hpp \
            ./svg/SvgDocument.hpp \
-           ./svg/SvgFix.hpp
+           ./svg/SvgFix.hpp \
+	   ./svg/CtrlCutParser.hpp
 
 SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cutters/encoder/PclEncoder.cpp \
-					 ./cut/operations/Explode.cpp \
+           ./cut/operations/Explode.cpp \
            ./PostscriptParser.cpp \
            ./util/2D.cpp \
            ./util/Measurement.cpp \
@@ -102,4 +103,6 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
 	   ./svg/SvgWriter.cpp \  
            ./svg/SvgFix.cpp \
            ./svg/SvgDocument.cpp \
-           ./svg/Svg2Ps.cpp
+           ./svg/Svg2Ps.cpp \
+           ./svg/CtrlCutParser.cpp
+

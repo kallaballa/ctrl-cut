@@ -5,7 +5,8 @@
  
 CtrlCutView::CtrlCutView(QWidget* parent) : NavigationView(parent)
 {
-	this->setBackgroundBrush(Qt::NoBrush);
+  this->setBackgroundBrush(Qt::NoBrush);
+  this->scale(0.05,0.05);
 }
 
 void CtrlCutView::dragEnterEvent(QDragEnterEvent *event)

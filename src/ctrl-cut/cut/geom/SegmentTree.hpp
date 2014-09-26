@@ -65,7 +65,7 @@ public:
     return sphere.center;
   }
 
-  const Coord_t range() const {
+  Coord_t range() const {
     if(this->_singular)
       return this->_range;
     const Sphere sphere(**this);

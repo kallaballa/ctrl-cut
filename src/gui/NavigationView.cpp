@@ -92,6 +92,6 @@ void NavigationView::paintEvent(QPaintEvent *event)
 
 void NavigationView::updateSceneRect(const QRectF &rect)
 {
-  setSceneRect(rect.adjusted(-rect.width(), -rect.height(), rect.width(), rect.height()));
+  //setSceneRect(rect.adjusted(-rect.width(), -rect.height(), rect.width(), rect.height()));
 }
 

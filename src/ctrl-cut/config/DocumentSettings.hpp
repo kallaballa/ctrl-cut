@@ -26,6 +26,8 @@
 class DocumentSettings : public Settings
 {
 public:
+  const static Key<string> DUUID;
+
   // the configured laser cutter hardware
   const static Key<LaserCutter::Driver> DRIVER;
   const static Key<string> USER;
@@ -48,6 +50,16 @@ public:
 
   DocumentSettings();
   ~DocumentSettings() {}
+
+  void toJson(std::ostream& os) const {
+    os << "{" << std::endl;
+    os << "\"uuid\":\"" << this->get(DocumentSettings::DUUID) << "\"," << std::endl;
+    os << "\"title\":\"" << this->get(DocumentSettings::TITLE) << "\"," << std::endl;
+    os << "\"width\":" << this->get(DocumentSettings::WIDTH) << "," << std::endl;
+    os << "\"height\":" << this->get(DocumentSettings::HEIGHT) << "," << std::endl;
+    os << "\"resolution\":" << this->get(DocumentSettings::RESOLUTION) << std::endl;
+    os << "}" ;
+  }
 };
 
 #endif /* DOCUMENT_SETTINGS_H_ */

@@ -52,7 +52,7 @@ void ObjectPropertyWidget::show(CutItem* ci) {
   int speed = this->ci->cut.get(CS::CSPEED);
   int power = this->ci->cut.get(CS::CPOWER);
   int freq = this->ci->cut.get(CS::FREQUENCY);
-  CS::Optimize sort = this->ci->cut.get(CS::OPTIMIZE);
+  CS::Sort sort = this->ci->cut.get(CS::SORT);
   this->currentResolution = this->ci->cut.get(DS::RESOLUTION);
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
@@ -258,13 +258,13 @@ void ObjectPropertyWidget::on_sort_update(int s) {
   if(currentState == Cut) {
     switch(s) {
     case 0:
-      this->ci->cut.put(CS::OPTIMIZE, CS::SIMPLE);
+      this->ci->cut.put(CS::SORT, CS::SIMPLE);
         break;
     case 1:
-      this->ci->cut.put(CS::OPTIMIZE, CS::INNER_OUTER);
+      this->ci->cut.put(CS::SORT, CS::INNER_OUTER);
         break;
     case 2:
-      this->ci->cut.put(CS::OPTIMIZE, CS::SHORTEST_PATH);
+      this->ci->cut.put(CS::SORT, CS::SHORTEST_PATH);
         break;
     }
   }

@@ -18,7 +18,8 @@
  */
 #include "CutSettings.hpp"
 
-CutSettings::Key<CutSettings::Optimize> CutSettings::OPTIMIZE = "optimize";
+CutSettings::Key<string> CutSettings::CUUID = "cuuid";
+CutSettings::Key<CutSettings::Sort> CutSettings::SORT = "optimize";
 CutSettings::Key<bool> CutSettings::CLIP = "CLIP";
 CutSettings::Key<Point> CutSettings::CPOS = "cpos";
 CutSettings::Key<uint16_t> CutSettings::CSPEED = "cspeed";

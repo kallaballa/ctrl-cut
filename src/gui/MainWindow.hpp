@@ -53,7 +53,11 @@ public slots:
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_deleteItem();
   void on_newJob();
-
+  void showContextMenu(const QPoint& pos);
+  void on_lowerItem();
+  void on_raiseItem();
+  void on_raiseItemToTop();
+  void on_lowerItemToBottom();
   void sceneSelectionChanged();
 
   void openFile(const QString &filename);
@@ -64,6 +68,7 @@ private:
   MainWindow();
   void createUndoView();
   void createActions();
+  void createContextMenu();
 
   LpdClient *lpdclient;
   class CtrlCutScene *scene;
@@ -76,6 +81,12 @@ private:
 
   QUndoStack *undoStack;
   QUndoView *undoView;
+
+  QMenu* menu;
+  QAction* lowerAct;
+  QAction* raiseAct;
+  QAction* bottomAct;
+  QAction* topAct;
 };
 
 #endif

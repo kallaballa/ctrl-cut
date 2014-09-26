@@ -156,7 +156,7 @@ public:
       tree.push_back(seg);
     }
 
-    for(size_t n=0; n < 1; ++n) {
+    for(size_t n=0; n < 3; ++n) {
       for (TreeIter it_pick = tree.begin(); it_pick != tree.end(); ++it_pick) {
         const Segment& pick = (*it_pick);
         debug(pick);

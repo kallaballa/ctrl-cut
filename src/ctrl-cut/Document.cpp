@@ -30,7 +30,7 @@
 using boost::format;
 using std::list;
 
-namespace bfs = boost::filesystem3;
+namespace bfs = boost::filesystem;
 
 typedef EngraveSettings ES;
 typedef DocumentSettings DS;
@@ -252,4 +252,29 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     }
   }
   return std::make_pair(newCuts,newEngravings);
+}
+
+void Document::toJson(std::ostream& os) {
+  os << "{ \"doc\": {" << std::endl;
+  os << "\"settings\": " << std::endl;
+  this->settings().toJson(os);
+  os << "," << std::endl << "{ \"data\":" << std::endl << "{" ;
+  os << std::endl << " \"cutList\":" << std::endl << "[";
+
+  for (CutList::const_iterator it = cutList.begin(); it != cutList.end();
+      ++it) {
+    if (it != cutList.begin())
+      os << ", " << std::endl;
+    (*it)->toJson(os);
+  }
+
+  os << "]," << std::endl << "\"engraveList\":" << std::endl << "[";
+
+  for (EngraveList::const_iterator it = engraveList.begin(); it != engraveList.end(); ++it) {
+    if (it != engraveList.begin())
+      os << ", " << std::endl;
+    (*it)->toJson(os);
+  }
+
+  os << "] } } }" << std::endl;
 }

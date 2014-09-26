@@ -20,19 +20,25 @@
 #ifndef CUT_SETTINGS_H_
 #define CUT_SETTINGS_H_
 
+#include <string>
+#include <sstream>
 #include "DocumentSettings.hpp"
 #include "cut/geom/Geometry.hpp"
+#include <boost/uuid/uuid.hpp>            // uuid class
+#include <boost/uuid/uuid_generators.hpp> // generators
+#include <boost/uuid/uuid_io.hpp>         // streaming operators etc.
 
 class CutSettings : public Settings
 {
 public:
-  enum Optimize {
+  enum Sort {
     SIMPLE,
     INNER_OUTER,
     SHORTEST_PATH
   };
 
-  static Key<Optimize> OPTIMIZE;
+  static Key<std::string> CUUID;
+  static Key<Sort> SORT;
   static Key<bool> CLIP;
   static Key<Point> CPOS;
   static Key<uint16_t> CSPEED;
@@ -41,15 +47,20 @@ public:
 
   CutSettings() : Settings() {}
   CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {
-    this->put(CutSettings::OPTIMIZE, CutSettings::INNER_OUTER);
+    std::stringstream ss;
+    ss << boost::uuids::random_generator()();
+    this->put(CutSettings::CUUID, ss.str());
+    this->put(CutSettings::SORT, CutSettings::INNER_OUTER);
     this->put(CutSettings::CSPEED, 33);
     this->put(CutSettings::CPOWER, 80);
     this->put(CutSettings::FREQUENCY, 5000);
     this->put(CutSettings::CPOS, Point());
   }
-  CutSettings(const CutSettings& settings) : Settings(settings) {}
+  CutSettings(const CutSettings& other) : Settings(other) {
+    Settings::setParent(other.parent);
+  }
 
-  static string getOptimizeName(Optimize opt) {
+  static string getSortName(Sort opt) {
     switch(opt) {
     case SIMPLE:
       return "Simple";
@@ -64,7 +75,29 @@ public:
     return "Unkown";
   }
 
+  static Sort parseSortName(const string& name) {
+    if(name == "Simple") {
+      return SIMPLE;
+    } else if(name == "Inner-Outer") {
+      return INNER_OUTER;
+    } else if(name == "Shortest Path") {
+      return SHORTEST_PATH;
+    }
+  }
+
   ~CutSettings() {}
+
+  void toJson(std::ostream& os) const {
+    os << "{" << std::endl;
+    os << "\"uuid\":\"" << this->get(CutSettings::CUUID) << "\"," << std::endl;
+    os << "\"sort\":\"" << getSortName(this->get(CutSettings::SORT)) << "\"," << std::endl;
+    os << "\"speed\":" << this->get(CutSettings::CSPEED) << "," << std::endl;
+    os << "\"power\":" << this->get(CutSettings::CPOWER) << "," << std::endl;
+    os << "\"frequency\":" << this->get(CutSettings::FREQUENCY) << "," << std::endl;
+    os << "\"position\":";
+    this->get(CutSettings::CPOS).toJson(os);
+    os << std::endl << "}" ;
+  }
 };
 
 #endif /* CUT_SETTINGS_H_ */

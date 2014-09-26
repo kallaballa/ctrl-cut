@@ -48,7 +48,6 @@ const Vertex get_opposite(const Graph& graph, const Edge edge, const Vertex one)
 
 template<typename Graph>
 inline bool is_complete_graph(Graph& graph) {
-  typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
   typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex;
 
   BOOST_FOREACH(Vertex i, boost::vertices(graph)) {

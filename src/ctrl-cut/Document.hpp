@@ -120,6 +120,8 @@ public:
     this->cutList.clear();
     this->engraveList.clear();
   }
+
+  void toJson(std::ostream& os);
 private:
   DocumentSettings docSettings;
   CutList cutList;

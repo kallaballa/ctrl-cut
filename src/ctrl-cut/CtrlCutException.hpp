@@ -24,7 +24,7 @@
 #include "boost/exception/all.hpp"
 #include "boost/system/error_code.hpp"
 
-namespace bfs = boost::filesystem3;
+namespace bfs = boost::filesystem;
 namespace berrc = boost::system::errc;
 
 class CtrlCutException {

@@ -47,6 +47,18 @@ public:
   virtual ~Distance() {};
   const Distance convert(const Unit& target, const uint16_t dpi) const;
   double in(const Unit& target) const;
+  void toJson(std::ostream& os) {
+    os << "{ \"value\":" << value << ", \"unit\":";
+
+    if (unit == MM)
+      os << "\"mm\"";
+    else if (unit == IN)
+      os << "\"in\"";
+    else if (unit == PX)
+      os << "\"px\"";
+
+    os << ", \"resolution\":" << resolution << " }";
+  }
 };
 
 inline std::ostream& operator<<(std::ostream &os, const Distance& m)  {
@@ -79,5 +91,6 @@ inline std::istream& operator>>(std::istream &is, Distance& m)  {
 
   return is;
 }
+
 
 #endif /* UNITS_H_ */

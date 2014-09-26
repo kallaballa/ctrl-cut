@@ -27,6 +27,8 @@
 #include "engrave/dither/Dither.hpp"
 #include "image/PPMFile.hpp"
 #include <list>
+#include <Magick++.h>
+
 
 template<typename Timage>
 class EngravingImpl
@@ -74,6 +76,21 @@ public:
 
   bool isAllocated() {
     return this->image.isAllocated();
+  }
+
+  void toJson(std::ostream& os) const {
+    GrayscaleImage img = this->getImage();
+    Coord_t height = img.height() - 1;
+
+    Magick::Blob rawblob(img.data(), (img.rowstride()) * height);
+    Magick::Blob pngblob;
+    Magick::Image image(rawblob, Magick::Geometry((img.rowstride()), height), 8, "GRAY");
+    image.magick( "PNG" );
+    image.write(&pngblob);
+
+    os << "{ \"settings\":" << std::endl;
+    this->settings.toJson(os);
+    os << "," << std::endl << "\"image\": \"" << pngblob.base64() << "\" }" << std::endl;
   }
 };
 

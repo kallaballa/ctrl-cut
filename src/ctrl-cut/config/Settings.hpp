@@ -121,10 +121,6 @@ public:
 
   Settings(Settings& parent) : parent(&parent) {};
   Settings(const Settings& other) : parent(NULL) {
-    if(other.hasParent()) {
-      this->parent = &other.getParent();
-    }
-
     this->properties = other.properties;
   };
 
@@ -154,6 +150,32 @@ public:
       return boost::lexical_cast<string>(boost::any_cast<uint32_t>(prop));
     }
     return "unknown type: " + (*it).first.name;
+  }
+
+  string json(const_iterator it) const {
+    std::stringstream ss;
+    ss << "\"" << (*it).first.name << "\":";
+    boost::any prop = (*it).second;
+
+    if(prop.type() == typeid(Distance)) {
+      ss << boost::any_cast<Distance>(prop).in(PX);
+    } else if(prop.type() == typeid(Point)) {
+      boost::any_cast<Point>(prop).toJson(ss);
+    } else if(prop.type() == typeid(string)){
+      ss << "\"" << boost::any_cast<string>(prop) << "\"";
+    } else if(prop.type() == typeid(float)){
+      ss << "\"" << boost::any_cast<float>(prop) << "\"";
+    } else if(prop.type() == typeid(bool)){
+      ss << "\"" << boost::any_cast<bool>(prop) << "\"";
+    } else if(prop.type() == typeid(uint16_t)){
+      ss << "\"" << boost::any_cast<uint16_t>(prop) << "\"";
+    } else if(prop.type() == typeid(uint32_t)){
+      ss << "\"" << boost::any_cast<uint32_t>(prop) << "\"";
+    } else {
+      ss << "\"\"";
+    }
+
+    return ss.str();
   }
 
   void set(iterator it, const string& val) {
@@ -249,12 +271,14 @@ public:
     return *this->parent;
   }
 
-  void operator=(const Settings& other) {
-    if(other.hasParent())
-      this->parent = &other.getParent();
+  void setParent(Settings* p) {
+    this->parent = p;
+  }
 
+  void operator=(const Settings& other) {
     this->properties = other.properties;
   }
+
 protected:
   Settings* parent;
   SettingsMap properties;

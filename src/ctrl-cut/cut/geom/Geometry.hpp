@@ -79,6 +79,10 @@ public:
   double distance(const Point&  other) const {
     return hypot(double(this->x - other.x), double(this->y - other.y));
   }
+
+  inline void toJson(std::ostream& os) const {
+    os << "[" << this->x << "," << this->y << "]";
+  }
 };
 
 BOOST_GEOMETRY_REGISTER_POINT_2D(Point, Coord_t, cs::cartesian, x, y)

@@ -36,6 +36,7 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   createActions();
   createUndoView();
+  createContextMenu();
 
   setupUi(this);
 
@@ -44,7 +45,7 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
   connect(this->graphicsView, SIGNAL(customContextMenuRequested(const QPoint&)),
-      this->scene, SLOT(showContextMenu(const QPoint&)));
+      this, SLOT(showContextMenu(const QPoint&)));
 
   connect(this->scene, SIGNAL(selectionChanged()), this,
       SLOT(sceneSelectionChanged()));
@@ -61,6 +62,45 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 MainWindow::~MainWindow()
 {}
 
+void MainWindow::showContextMenu(const QPoint& pos) {
+  QPoint globalPos = this->scene->views()[0]->mapToGlobal(pos);
+  if(this->scene->selectedItems().size() != 1) {
+    lowerAct->setEnabled(false);
+    raiseAct->setEnabled(false);
+    bottomAct->setEnabled(false);
+    topAct->setEnabled(false);
+  } else {
+    lowerAct->setEnabled(true);
+    raiseAct->setEnabled(true);
+    bottomAct->setEnabled(true);
+    topAct->setEnabled(true);
+  }
+  menu->exec(globalPos);
+}
+
+void MainWindow::createContextMenu() {
+  this->menu = new QMenu();
+
+  this->lowerAct = new QAction(tr("&Lower"), this);
+  this->lowerAct->setStatusTip(tr("Lower an item"));
+  this->raiseAct = new QAction(tr("&Raise"), this);
+  this->raiseAct->setStatusTip(tr("Raise an item"));
+  this->bottomAct = new QAction(tr("&Lower to bottom"), this);
+  this->bottomAct->setStatusTip(tr("Lower an item to the bottom"));
+  this->topAct = new QAction(tr("&Raise to top"), this);
+  this->topAct->setStatusTip(tr("Raise an item to the top"));
+
+  connect(lowerAct, SIGNAL(triggered()), this, SLOT(on_lowerItem()));
+  connect(raiseAct, SIGNAL(triggered()), this, SLOT(on_raiseItem()));
+  connect(bottomAct, SIGNAL(triggered()), this, SLOT(on_lowerItemToBottom()));
+  connect(topAct, SIGNAL(triggered()), this, SLOT(on_raiseItemToTop()));
+
+  menu->addAction(lowerAct);
+  menu->addAction(raiseAct);
+  menu->addAction(bottomAct);
+  menu->addAction(topAct);
+}
+
 void MainWindow::createUndoView(){
     undoView = new QUndoView(undoStack);
     undoView->setWindowTitle(tr("Command List"));
@@ -74,6 +114,26 @@ void MainWindow::createActions() {
 
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
+}
+
+void MainWindow::on_lowerItem() {
+  QUndoCommand *liCmd = new LowerItemCommand(this->scene);
+  undoStack->push(liCmd);
+}
+
+void MainWindow::on_raiseItem() {
+  QUndoCommand *riCmd = new RaiseItemCommand(this->scene);
+  undoStack->push(riCmd);
+}
+
+void MainWindow::on_lowerItemToBottom() {
+  QUndoCommand *libCmd = new LowerItemToBottomCommand(this->scene);
+  undoStack->push(libCmd);
+}
+
+void MainWindow::on_raiseItemToTop() {
+  QUndoCommand *ritCmd = new RaiseItemToTopCommand(this->scene);
+  undoStack->push(ritCmd);
 }
 
 void MainWindow::on_deleteItem() {

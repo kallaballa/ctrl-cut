@@ -30,6 +30,7 @@ public:
 
   DocumentHolder();
   DocumentHolder(const DocumentHolder& holder);
+  void operator=(const DocumentHolder& other);
   void add(CutItem& cutItem);
   void remove(CutItem& cutItem);
   void add(EngraveItem& engraveItem);

@@ -16,39 +16,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef SVG_TO_PS_H_
-#define SVG_TO_PS_H_
 
+#ifndef CTRLCUTPARSER_H_
+#define CTRLCUTPARSER_H_
 
-#include <iostream>
-#include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <boost/thread.hpp>
+#include <libxml++/libxml++.h>
+#include <string>
+#include "Document.hpp"
 
-//QT makes use of signals too
-#undef signals
-#include <gio/gunixinputstream.h>
-#include <librsvg/rsvg.h>
+using std::string;
+using xmlpp::SaxParser;
 
-#include <cairo-ps.h>
-#include <cairo-pdf.h>
-#include "SvgFix.hpp"
-
-#define FAIL(msg)							\
-    do { fprintf (stderr, "FAIL: %s\n", msg); exit (-1); } while (0)
-
-#define PIXELS_PER_POINT 1
-
-class Svg2Ps {
-private:
-  int fdIn, fdOut;
-  bool doFixSvg;
+class CtrlCutParser {
 public:
+  typedef SaxParser::Attribute Attribute;
+  typedef SaxParser::AttributeList AttributeList;
 
-  Svg2Ps(int fdIn, int fdOut, bool doFixSvg=true) : fdIn(fdIn), fdOut(fdOut), doFixSvg(doFixSvg) { }
-  void convert();
-
+  CtrlCutParser() { }
+  void load(const string& filename, Document& doc, Document::CutList& newCuts, Document::EngraveList& newEngs);
 };
 
-#endif /* SVG_TO_PS_H_ */
+#endif /* CTRLCUTPARSER_H_ */

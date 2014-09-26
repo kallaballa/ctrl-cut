@@ -44,12 +44,14 @@
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
-  this->docHolder.doc = NULL;
+  this->docHolder = new DocumentHolder();
+  this->docHolder->doc = NULL;
   this->laserbed = NULL;
   this->backgroundItem = NULL;
   this->currentZ = 0;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
+  this->newJob("New Document", 600, Distance(21600,PX, 600), Distance(14400,PX, 600));
   this->makeBackground();
 
   using namespace Qt;
@@ -124,16 +126,16 @@ void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QGraphicsScene::mouseReleaseEvent(event);
 }
 
-void CtrlCutScene::setDocumentHolder(DocumentHolder& docHolder) {
-  this->reset();
+void CtrlCutScene::attachDocumentHolder(DocumentHolder* docHolder) {
+  this->detachDocumentHolder();
   this->docHolder = docHolder;
 
-  foreach(CutItem* ci, docHolder.cutItems)
+  foreach(CutItem* ci, this->docHolder->cutItems)
     {
       this->addItem(ci);
     }
 
-  foreach(EngraveItem* ei, docHolder.engraveItems)
+  foreach(EngraveItem* ei, this->docHolder->engraveItems)
     {
       this->addItem(ei);
     }
@@ -147,19 +149,19 @@ void CtrlCutScene::open(const QString& filename) {
 void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height) {
   typedef DocumentSettings DS;
   this->reset();
-  this->docHolder.doc = new Document();
-  this->docHolder.doc->put(DS::TITLE, title.toStdString());
-  this->docHolder.doc->put(DS::RESOLUTION, resolution);
-  this->docHolder.doc->put(DS::WIDTH, width);
-  this->docHolder.doc->put(DS::HEIGHT, height);
+  this->docHolder->doc = new Document();
+  this->docHolder->doc->put(DS::TITLE, title.toStdString());
+  this->docHolder->doc->put(DS::RESOLUTION, resolution);
+  this->docHolder->doc->put(DS::WIDTH, width);
+  this->docHolder->doc->put(DS::HEIGHT, height);
 }
 
 void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
-  if (!this->docHolder.doc) {
+  if (!this->docHolder->doc) {
     this->newJob(boost::filesystem::path(filename.toStdString()).filename().c_str(), 600, Distance(36, IN, 600), Distance(24, IN, 600));
   }
 
-  Document& doc = *this->docHolder.doc;
+  Document& doc = *this->docHolder->doc;
 
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
@@ -172,14 +174,14 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
 
   std::pair<Document::CutList, Document::EngraveList> loaded = doc.load(filename.toStdString());
 
-  uint32_t width = doc.get(DocumentSettings::WIDTH).in(PX);
-  uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
+  qreal width = doc.get(DocumentSettings::WIDTH).in(PX);
+  qreal height = doc.get(DocumentSettings::HEIGHT).in(PX);
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
   for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
     CutItem* ci = new CutItem(**it);
     ci->setZValue(++this->currentZ);
-    this->docHolder.cutItems.append(ci);
+    this->docHolder->cutItems.append(ci);
     this->addItem(ci);
   }
 
@@ -187,49 +189,55 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
     EngraveItem* ei = new EngraveItem(**it);
     ei->setZValue(++this->currentZ);
-    this->docHolder.engraveItems.append(ei);
+    this->docHolder->engraveItems.append(ei);
     this->addItem(ei);
   }
+
+  this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
 }
 
 void CtrlCutScene::add(CutItem& cutItem) {
-  this->docHolder.add(cutItem);
+  this->docHolder->add(cutItem);
   this->addItem(&cutItem);
 }
 
 void CtrlCutScene::remove(CutItem& cutItem) {
-  this->docHolder.remove(cutItem);
+  this->docHolder->remove(cutItem);
   this->removeItem(&cutItem);
 }
 
 void CtrlCutScene::add(EngraveItem& engraveItem) {
-  this->docHolder.add(engraveItem);
+  this->docHolder->add(engraveItem);
   this->addItem(&engraveItem);
 }
 
 void CtrlCutScene::remove(EngraveItem& engraveItem) {
-  this->docHolder.remove(engraveItem);
+  this->docHolder->remove(engraveItem);
   this->removeItem(&engraveItem);
 }
 
+void CtrlCutScene::detachDocumentHolder() {
+  foreach(CutItem* ci, docHolder->cutItems)
+     {
+       this->removeItem(ci);
+     }
+
+   foreach(EngraveItem* ei, docHolder->engraveItems)
+     {
+       this->removeItem(ei);
+     }
+}
 void CtrlCutScene::reset() {
-  foreach(CutItem* ci, docHolder.cutItems)
-    {
-      this->removeItem(ci);
-    }
+  this->detachDocumentHolder();
 
-  foreach(EngraveItem* ei, docHolder.engraveItems)
-    {
-      this->removeItem(ei);
-    }
+  if(this->docHolder->doc != NULL)
+    this->docHolder->doc->clear();
 
-  this->docHolder.doc = NULL;
+  while (!this->docHolder->cutItems.empty())
+    this->docHolder->cutItems.takeFirst();
 
-  while (!this->docHolder.cutItems.empty())
-    this->docHolder.cutItems.takeFirst();
-
-  while (!this->docHolder.engraveItems.empty())
-    this->docHolder.engraveItems.takeFirst();
+  while (!this->docHolder->engraveItems.empty())
+    this->docHolder->engraveItems.takeFirst();
 }
 
 void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {
@@ -237,10 +245,10 @@ void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {
   uint32_t height;
   uint32_t resolution;
 
-  if(docHolder.doc != NULL) {
-    width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
-    height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
-    resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
+  if(docHolder->doc != NULL) {
+    width = docHolder->doc->get(DocumentSettings::WIDTH).in(PX);
+    height = docHolder->doc->get(DocumentSettings::HEIGHT).in(PX);
+    resolution = docHolder->doc->get(DocumentSettings::RESOLUTION);
 
     painter->setPen(Qt::black);
     painter->fillRect(QRect(QPoint(0, 0), QSize(width, height)), QBrush(Qt::gray));
@@ -272,15 +280,15 @@ void CtrlCutScene::update(const QRectF &rect) {
 }
 
 void CtrlCutScene::makeBackground() {
-  if(docHolder.doc != NULL) {
+  if(docHolder->doc != NULL) {
     if(backgroundItem == NULL) {
         backgroundItem = new QGraphicsPolygonItem();
         this->addItem(backgroundItem);
     }
     QPolygon polygon;
-    uint32_t width = docHolder.doc->get(DocumentSettings::WIDTH).in(PX);
-    uint32_t height = docHolder.doc->get(DocumentSettings::HEIGHT).in(PX);
-    uint32_t resolution = docHolder.doc->get(DocumentSettings::RESOLUTION);
+    uint32_t width = docHolder->doc->get(DocumentSettings::WIDTH).in(PX);
+    uint32_t height = docHolder->doc->get(DocumentSettings::HEIGHT).in(PX);
+    uint32_t resolution = docHolder->doc->get(DocumentSettings::RESOLUTION);
 
     QPen p(Qt::blue);
     polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
@@ -291,83 +299,4 @@ void CtrlCutScene::makeBackground() {
 }
 
 
-void CtrlCutScene::lowerItem() {
-  QList<QGraphicsItem *> items = this->selectedItems();
-  qreal selZ = items[0]->zValue();
-  qreal z;
-  qreal belowZ = selZ - 1;
 
-  foreach (QGraphicsItem *i, this->items()) {
-    z = i->zValue();
-    if(z > belowZ && z < selZ) {
-      belowZ = z;
-    }
-  }
-
-  items[0]->setZValue(belowZ - 1);
-}
-
-void CtrlCutScene::raiseItem() {
-  QList<QGraphicsItem *> items = this->selectedItems();
-  qreal selZ = items[0]->zValue();
-  qreal z;
-  qreal aboveZ = selZ + 1;
-
-  foreach (QGraphicsItem *i, this->items()) {
-    z = i->zValue();
-    if(z < aboveZ && z > selZ) {
-      aboveZ = z;
-    }
-  }
-
-  items[0]->setZValue(aboveZ + 1);
-}
-
-void CtrlCutScene::raiseItemToTop() {
-  QList<QGraphicsItem *> items = this->selectedItems();
-  qreal maxz = items[0]->zValue();
-
-  foreach (QGraphicsItem *i, this->items()) {
-    if(i->zValue() > -9999)
-      maxz = std::max(maxz, i->zValue());
-  }
-
-  items[0]->setZValue(maxz);
-}
-
-void CtrlCutScene::lowerItemToBottom() {
-  QList<QGraphicsItem *> items = this->selectedItems();
-  qreal minz = items[0]->zValue();
-
-  foreach (QGraphicsItem *i, this->items()) {
-    if(i->zValue() > -9999)
-      minz = std::min(minz, i->zValue());
-  }
-
-  items[0]->setZValue(minz);
-}
-
-void CtrlCutScene::showContextMenu(const QPoint& pos) {
-  QPoint globalPos = this->views()[0]->mapToGlobal(pos);
-  QMenu menu;
-
-  QAction* lowerAct = new QAction(tr("&Lower"), this);
-  lowerAct->setStatusTip(tr("Lower an item"));
-  QAction* raiseAct = new QAction(tr("&Raise"), this);
-  raiseAct->setStatusTip(tr("Raise an item"));
-  QAction* bottomAct = new QAction(tr("&Lower to bottom"), this);
-  bottomAct->setStatusTip(tr("Lower an item to the bottom"));
-  QAction* topAct = new QAction(tr("&Raise to top"), this);
-  topAct->setStatusTip(tr("Raise an item to the top"));
-
-  connect(lowerAct, SIGNAL(triggered()), this, SLOT(lowerItem()));
-  connect(raiseAct, SIGNAL(triggered()), this, SLOT(raiseItem()));
-  connect(bottomAct, SIGNAL(triggered()), this, SLOT(lowerItemToBottom()));
-  connect(topAct, SIGNAL(triggered()), this, SLOT(raiseItemToTop()));
-
-  menu.addAction(lowerAct);
-  menu.addAction(raiseAct);
-  menu.addAction(bottomAct);
-  menu.addAction(topAct);
-  menu.exec(globalPos);
-}

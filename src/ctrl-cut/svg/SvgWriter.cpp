@@ -90,7 +90,7 @@ void SvgWriter::writeCut(const Cut& cut, const string& style) {
       % cut.get(CS::CSPEED)
       % cut.get(CS::CPOWER)
       % cut.get(CS::FREQUENCY)
-      % cut.get(CS::OPTIMIZE)
+      % cut.get(CS::SORT)
       % translate.x % translate.y
       << std::endl;
 

@@ -146,6 +146,18 @@ public:
     os << "</route>" << std::endl;
     return os;
   }
+
+  void toJson(std::ostream& os) {
+    os << "{ \"settings\":" << std::endl;
+    this->settings.toJson(os);
+    os << "," << std::endl << "\"paths\":" << std::endl;
+    for(iterator it = this->begin(); it != this->end(); ++it) {
+      if(it != this->begin())
+        os << "," << std::endl;
+      (*it).toJson(os);
+    }
+    os << "}" << std::endl;
+  }
 };
 
 typedef RouteImpl<std::vector, std::allocator> Route;
@@ -157,6 +169,7 @@ inline MultiSegmentView<const Route> segments(const Route& route) {
 inline MultiPointView<const Route> points(const Route& route) {
   return MultiPointView<const Route>(route);
 }
+
 #endif
 
 
