@@ -25,7 +25,6 @@
 #include <fstream>
 #include <sstream>
 #include "Document.hpp"
-#include <boost/geometry/extensions/io/svg/svg_mapper.hpp>
 
 class SvgWriter {
 public:
@@ -39,16 +38,14 @@ public:
   SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, const char* filename);
   virtual ~SvgWriter();
 
-  template<typename Tgeom>
-  void write(const Tgeom& geom, const std::string& style) {
-    ostream << boost::geometry::svg(geom, style) << std::endl;
-  }
-
+  void write(const Point& point, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
+  void write(const Segment& seg, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
+  void write(const Path& p, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
   void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1");
-  void text(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"");
-  void writeCut(const Cut& cut, const string& style = "");
-  void writeEngraving(const Engraving& engraving, const string& style = "");
-  void writeDocument(const Document& d, const string& style = "");
+  void write(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"black\"");
+  void write(const Cut& cut, const string& style = "");
+  void write(const Engraving& engraving, const string& style = "");
+  void write(const Document& d, const string& style = "");
 
 private:
   void writeDocumentStart();

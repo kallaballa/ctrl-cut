@@ -76,7 +76,7 @@ void SvgWriter::writeDocumentEnd() {
   ostream << "</svg>";
 }
 
-void SvgWriter::writeCut(const Cut& cut, const string& style) {
+void SvgWriter::write(const Cut& cut, const string& style) {
   typedef CutSettings CS;
   boost::format layer = boost::format(string("<g ctrlcut:type=\"cut\" ")
       + "ctrlcut:speed=\"%d\" "
@@ -98,7 +98,7 @@ void SvgWriter::writeCut(const Cut& cut, const string& style) {
   ostream << "</g>" << std::endl;
 }
 
-void SvgWriter::writeEngraving(const Engraving& engraving, const string& style) {
+void SvgWriter::write(const Engraving& engraving, const string& style) {
   typedef EngraveSettings ES;
   boost::format layer = boost::format(string("<g ctrlcut:type=\"engraving\" ")
       + "ctrlcut:speed=\"%d\" "
@@ -133,14 +133,32 @@ void SvgWriter::writeEngraving(const Engraving& engraving, const string& style) 
   ostream << "</g>" << std::endl;
 }
 
-void SvgWriter::writeDocument(const Document& d, const std::string& style) {
+void SvgWriter::write(const Document& d, const std::string& style) {
   BOOST_FOREACH(const Engraving* engraving, d.engravings()) {
-    this->writeEngraving(*engraving, style);
+    this->write(*engraving, style);
   }
 
   BOOST_FOREACH(const Cut* cut, d.cuts()) {
-    this->writeCut(*cut, style);
+    this->write(*cut, style);
   }
+}
+
+void SvgWriter::write(const Point& p, const std::string& style) {
+  ostream << "<circle cx=\"" << p.x << "\" cy=\"" << p.y << "\" " << "style=\"" << style << "\"/>" << std::endl;
+}
+
+void SvgWriter::write(const Segment& seg, const std::string& style) {
+  ostream << "<polyline points=\"";
+  ostream << seg.first.x << "," << seg.first.y << " " << seg.second.x << "," << seg.second.y;
+  ostream << "\" style=\"" << style << "\"/>" << std::endl;
+}
+
+void SvgWriter::write(const Path& path, const std::string& style) {
+  ostream << "<polyline points=\"";
+  BOOST_FOREACH(const Point& p, path) {
+    ostream << p.x << "," << p.y << " ";
+  }
+  ostream << "\" style=\"" << style << "\"/>" << std::endl;
 }
 
 void SvgWriter::write(const Route& r, const std::string& style) {
@@ -149,6 +167,6 @@ void SvgWriter::write(const Route& r, const std::string& style) {
   }
 }
 
-void SvgWriter::text(const string& text, const Point& p, const string& style) {
+void SvgWriter::write(const string& text, const Point& p, const string& style) {
   ostream << "<text x=\"" << p.x << "\" y=\"" << p.y << "\" " << style << ">" << text << "</text>";
 }

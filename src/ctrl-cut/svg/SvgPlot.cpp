@@ -157,9 +157,7 @@ void plot_shared_segments(const Route& r, const char* filename) {
 
     BOOST_FOREACH(const Segment& seg, segments(path)) {
       if (segidx.find(seg) != segidx.end()) {
-        Path pseg;
-        append(pseg, seg);
-        svg.write(pseg, "stroke:rgb(0,255,0);stroke-width:1");
+        svg.write(seg, "stroke:rgb(0,255,0);stroke-width:1");
         break;
       }
     }
@@ -226,8 +224,8 @@ void plot_path_order(const Route& r, const char* filename) {
   BOOST_FOREACH(const Path& path, r) {
     svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;fill:rgb(0,0,0)");
     svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;fill:rgb(0,0,0)");
-    svg.text((boost::format("%d") % count).str(), path.front(), "font-size=\"50\" fill=\"black\"");
-    svg.text((boost::format("%d") % count).str(), path.back(), "font-size=\"50\" fill=\"black\"");
+    svg.write((boost::format("%d") % count).str(), path.front(), "font-size=\"50\" fill=\"black\"");
+    svg.write((boost::format("%d") % count).str(), path.back(), "font-size=\"50\" fill=\"black\"");
 
     ++count;
   }
@@ -261,10 +259,7 @@ void plot_segment_order(const Route& r, const char* filename) {
     }
     rgb = hsl_to_rgb(hsl);
     string strokergb = (boost::format("stroke:rgb(%u,%u,%u)") % round(rgb.r) % round(rgb.g) % round(rgb.b)).str();
-    Path p;
-    append(p, seg);
-
-    svg.write(p, strokergb + ";stroke-width:10;");
+    svg.write(seg, strokergb + ";stroke-width:10;");
  }
 
   uint32_t count = 0;
@@ -281,7 +276,7 @@ void plot_segment_order(const Route& r, const char* filename) {
     mark.y = std::min(front.y, back.y) + b/2;
 
     svg.write(mark, "stroke:rgb(255,0,0);stroke-width:40;fill:rgb(0,0,0)");
-    svg.text((boost::format("%d") % count).str(), mark, "font-size=\"50\" fill=\"black\"");
+    svg.write((boost::format("%d") % count).str(), mark, "font-size=\"50\" fill=\"black\"");
 
     ++count;
   }
