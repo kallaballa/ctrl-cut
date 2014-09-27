@@ -49,7 +49,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   ss << boost::uuids::random_generator()();
   this->put(DUUID, ss.str());
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
-  this->put(TEMP_DIR, string("tmp"));
+  this->put(TEMP_DIR, string("/tmp"));
   this->put(AUTO_FOCUS, true);
   this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);
