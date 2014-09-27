@@ -27,7 +27,7 @@ documenting or supplying information about other laser cutters.
 License
 -------
 
-GPL V2
+GPL V2 (or later)
 
 Contact
 -------
