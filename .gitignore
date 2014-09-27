@@ -21,4 +21,5 @@ full.html
 gmon.out
 gui.tmp
 src/pclint/pclint
+src/gui/gui.app
 
