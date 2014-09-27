@@ -7,7 +7,7 @@ cd $CC_BASE
 [ ! -d "/tmp" ] && mkdir "./tmp"
 
 export RASTER_OFF="y"
-[ $# -ne 2 -a $# -ne 3 ] && error "Usage: $0 ps-file options-file commonoptions-file" 1
+[ $# -ne 2 -a $# -ne 3 ] && error "Usage: $0 ps-file outdir options-file commonoptions-file" 1
 file="$1"
 optionsfile="$2"
 commonoptionsfile="$3"
@@ -38,4 +38,5 @@ fi
 
 # using the new targetstdout option of try
 verboseexec "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
+try "$CC_RENDER 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
 exit $?

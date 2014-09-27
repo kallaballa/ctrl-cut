@@ -49,6 +49,7 @@ export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 export CC_PACKAGING="$CC_BASE/packaging"
 export CC_VERSION="0.1"
 export CC_PCLINT="src/pclint/pclint"
+export CC_RENDER="src/render2cut/render2cut"
 
 . $CC_FUNCTIONS
 
