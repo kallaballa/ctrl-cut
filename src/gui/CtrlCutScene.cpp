@@ -149,7 +149,8 @@ void CtrlCutScene::open(const QString& filename) {
 void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height) {
   typedef DocumentSettings DS;
   this->reset();
-  this->docHolder->doc = new Document();
+  if(this->docHolder->doc == NULL)
+    this->docHolder->doc = new Document();
   this->docHolder->doc->put(DS::TITLE, title.toStdString());
   this->docHolder->doc->put(DS::RESOLUTION, resolution);
   this->docHolder->doc->put(DS::WIDTH, width);
