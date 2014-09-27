@@ -74,7 +74,7 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="deleteItem"/>
+    <addaction name="editDeleteItemAction"/>
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
@@ -497,24 +497,6 @@
       </spacer>
      </item>
     </layout>
-    <zorder>directionLabel</zorder>
-    <zorder>ditherLabel</zorder>
-    <zorder>dithering</zorder>
-    <zorder>directionLabel</zorder>
-    <zorder>direction</zorder>
-    <zorder>sortLabel</zorder>
-    <zorder>sort</zorder>
-    <zorder>freqLabel</zorder>
-    <zorder>frequency</zorder>
-    <zorder>powerLabel</zorder>
-    <zorder>power</zorder>
-    <zorder>speedLabel</zorder>
-    <zorder>speed</zorder>
-    <zorder>yLabel</zorder>
-    <zorder>posY</zorder>
-    <zorder>unit</zorder>
-    <zorder>xLabel</zorder>
-    <zorder>posX</zorder>
     <zorder>verticalSpacer</zorder>
    </widget>
   </widget>
@@ -560,7 +542,7 @@
     <string>About...</string>
    </property>
   </action>
-  <action name="deleteItem">
+  <action name="editDeleteItemAction">
    <property name="text">
     <string>&amp;Delete</string>
    </property>
@@ -635,7 +617,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>deleteItem</sender>
+   <sender>editDeleteItemAction</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>on_deleteItem()</slot>

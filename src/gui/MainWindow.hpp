@@ -51,7 +51,7 @@ public slots:
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
-  void on_deleteItem();
+  void on_editDeleteItemAction_triggered();
   void on_newJob();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();

@@ -37,6 +37,9 @@
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
+
+  setupUi(this);
+
   this->undoStack = new QUndoStack(this);
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
@@ -44,8 +47,6 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   createActions();
   createUndoView();
   createContextMenu();
-
-  setupUi(this);
 
   this->scene = new CtrlCutScene(this);
   this->graphicsView->setScene(this->scene);
@@ -118,9 +119,17 @@ void MainWindow::createUndoView(){
 void MainWindow::createActions() {
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
+    this->editMenu->addAction(undoAction);
 
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
+    this->editMenu->addAction(redoAction);
+
+    // Macs usually don't have a Delete key, use Backspace instead
+    QList<QKeySequence> shortcuts;
+    shortcuts.append(QKeySequence(Qt::Key_Backspace));
+    shortcuts.append(QKeySequence::Delete);
+    this->editDeleteItemAction->setShortcuts(shortcuts);
 }
 
 void MainWindow::on_lowerItem() {
@@ -143,7 +152,7 @@ void MainWindow::on_raiseItemToTop() {
   undoStack->push(ritCmd);
 }
 
-void MainWindow::on_deleteItem() {
+void MainWindow::on_editDeleteItemAction_triggered() {
   if (this->scene->selectedItems().isEmpty())
     return;
 
