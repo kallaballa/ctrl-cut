@@ -10,6 +10,7 @@ Makefile
 *.dylib
 *.so
 *.svg
+*.cut
 src/ctrl-cut/libctrl-cut.so*
 src/gui/gui
 .gdb_history
