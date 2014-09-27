@@ -114,7 +114,7 @@
 
  OpenCommand::OpenCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
    CtrlCutUndo(scene, parent), filename(filename) {
-   setText("Open " + filename);
+   setText("Open " + QFileInfo(filename).fileName());
  }
 
  void OpenCommand::modify() {
@@ -150,7 +150,7 @@ void NewCommand::modify() {
 ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
   CtrlCutUndo(scene, parent), filename(filename) {
   if (!filename.isEmpty()) {
-    setText("Import " + filename);
+    setText("Import " + QFileInfo(filename).fileName());
   }
 }
 
