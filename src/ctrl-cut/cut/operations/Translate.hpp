@@ -29,7 +29,11 @@ template<
 >
 void translateTo(const TmultiPointRange& src, TmultiPointRange& sink, const Point& translate) {
   namespace tl = boost::geometry::strategy::transform;
+#if BOOST_VERSION >= 105500
+  tl::translate_transformer<double, 2, 2> transformer(translate.x, translate.y);
+#else
   tl::translate_transformer<Point, Point> transformer(translate.x, translate.y);
+#endif
 
   BOOST_FOREACH(const Path& path, src) {
     Path translated;
