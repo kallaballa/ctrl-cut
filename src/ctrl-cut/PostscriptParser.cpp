@@ -5,6 +5,8 @@
 #include <cups/cups.h>
 #include <cups/file.h>
 #include "config/EngraveSettings.hpp"
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 #ifdef USE_GHOSTSCRIPT_API
 #include <sstream>
@@ -258,8 +260,8 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   double width = this->conf.get(DocumentSettings::WIDTH).in(PX);
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX);
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
-  string filename = this->conf.get(DocumentSettings::FILENAME);
-  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + basename(filename.erase(filename.rfind(".")).c_str());
+  string filename = this->conf.get(DocumentSettings::FILENAME); 
+  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + fs::path(filename).parent_path().stem().c_str();
   this->filename_eps = tmpbasepath + ".eps";
 
   if (!createEps(input_file, this->filename_eps)) return false;
