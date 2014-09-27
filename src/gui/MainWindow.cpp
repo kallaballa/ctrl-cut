@@ -188,6 +188,12 @@ void MainWindow::on_fileOpenAction_triggered()
 
 void MainWindow::on_fileSaveAction_triggered()
 {
+  // FIXME: If doc modified and has filename, save, else save as
+  saveFile(QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)"));
+}
+
+void MainWindow::on_fileSaveAsAction_triggered()
+{
   saveFile(QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)"));
 }
 
@@ -251,7 +257,7 @@ void MainWindow::sceneSelectionChanged()
       if((cci = dynamic_cast<AbstractCtrlCutItem*>(item)))
         cci->setHighlighted(false);
     }
-    this->objectProperties->hide();
+    this->objectProperties->disable();
   } else {
     foreach (QGraphicsItem *item, this->scene->items()) {
       EngraveItem* ei;
@@ -260,10 +266,10 @@ void MainWindow::sceneSelectionChanged()
       if(item->isSelected()) {
         if((ei = dynamic_cast<EngraveItem*>(item))) {
           ei->setHighlighted(true);
-          this->objectProperties->show(ei);
+          this->objectProperties->enable(ei);
         } else if((ci = dynamic_cast<CutItem*>(item))) {
           ci->setHighlighted(true);
-          this->objectProperties->show(ci);
+          this->objectProperties->enable(ci);
         }
       } else {
         AbstractCtrlCutItem* cci;
@@ -306,4 +312,13 @@ MainWindow::on_helpAboutAction_triggered()
 void MainWindow::on_itemMoved(QGraphicsItem *movedItem,
                            const QPointF &oldPosition) {
     undoStack->push(new MoveCommand(this->scene, movedItem, oldPosition));
+}
+
+void MainWindow::on_windowShowPropertiesAction_triggered()
+{
+  if (windowShowPropertiesAction->isChecked()) {
+    this->objectProperties->hide();
+  } else {
+    this->objectProperties->show();
+  }
 }

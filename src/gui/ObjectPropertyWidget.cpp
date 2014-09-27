@@ -32,22 +32,22 @@ typedef EngraveSettings ES;
 typedef CutSettings CS;
 
 ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600) {
-  hide();
+  disable();
 }
 
 ObjectPropertyWidget::~ObjectPropertyWidget() {
 }
 
 void ObjectPropertyWidget::updateEngraveProperties(const EngraveSettings::KeyBase&  key) {
-  this->show(this->ei);
+  this->enable(this->ei);
 }
 
 void ObjectPropertyWidget::updateCutProperties(const CutSettings::KeyBase&  key) {
-  this->show(this->ci);
+  this->enable(this->ci);
 }
 
-void ObjectPropertyWidget::show(CutItem* ci) {
-  this->hide();
+void ObjectPropertyWidget::enable(CutItem* ci) {
+  this->disable();
   this->ci = ci;
   this->ci->cut.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
 
@@ -102,8 +102,8 @@ void ObjectPropertyWidget::show(CutItem* ci) {
   this->currentState = Cut;
 }
 
-void ObjectPropertyWidget::show(EngraveItem* ei) {
-  this->hide();
+void ObjectPropertyWidget::enable(EngraveItem* ei) {
+  this->disable();
   this->ei = ei;
   this->ei->engraving.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));
 
@@ -177,12 +177,12 @@ void ObjectPropertyWidget::show(EngraveItem* ei) {
 
 void ObjectPropertyWidget::update() {
   if(this->ci != NULL)
-    this->show(this->ci);
+    this->enable(this->ci);
   if(this->ei != NULL)
-    this->show(this->ei);
+    this->enable(this->ei);
 }
 
-void ObjectPropertyWidget::hide() {
+void ObjectPropertyWidget::disable() {
   if(this->currentState == Cut) {
     this->ci->cut.settings.deleteUpdateTrigger();
     this->ci = NULL;

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1186</width>
-    <height>595</height>
+    <width>1045</width>
+    <height>730</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -34,21 +34,101 @@
      <enum>QLayout::SetMaximumSize</enum>
     </property>
     <item>
-     <widget class="ObjectPropertyWidget" name="objectProperties" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="leftMargin">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>6</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+      <item>
+       <widget class="CtrlCutView" name="graphicsView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1045</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="toolsMoveToOriginAction"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="helpAboutAction"/>
+   </widget>
+   <widget class="QMenu" name="editMenu">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="deleteItem"/>
+   </widget>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="fileNewAction"/>
+    <addaction name="fileOpenAction"/>
+    <addaction name="fileImportAction"/>
+    <addaction name="separator"/>
+    <addaction name="fileSaveAction"/>
+    <addaction name="fileSaveAsAction"/>
+    <addaction name="separator"/>
+    <addaction name="filePrintAction"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="windowShowPropertiesAction"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="editMenu"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+   <addaction name="menuWindow"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="fileNewAction"/>
+   <addaction name="fileOpenAction"/>
+   <addaction name="fileSaveAction"/>
+   <addaction name="fileImportAction"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="ObjectPropertyWidget" name="objectProperties">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
         <widget class="QLabel" name="xLabel">
          <property name="minimumSize">
           <size>
@@ -61,48 +141,71 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLineEdit" name="posX">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>64</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>64</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-         <property name="maxLength">
-          <number>8</number>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>0</string>
-         </property>
-        </widget>
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="posX">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>64</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>64</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="maxLength">
+            <number>8</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="unit">
+           <item>
+            <property name="text">
+             <string>MM</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IN</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>PX</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item>
+       <item row="1" column="0">
         <widget class="QLabel" name="yLabel">
          <property name="text">
           <string>Y</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="1">
         <widget class="QLineEdit" name="posY">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -136,26 +239,7 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QComboBox" name="unit">
-         <item>
-          <property name="text">
-           <string>MM</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>IN</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PX</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
+       <item row="2" column="0">
         <widget class="QLabel" name="speedLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -168,7 +252,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="1">
         <widget class="QSpinBox" name="speed">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -205,7 +289,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="3" column="0">
         <widget class="QLabel" name="powerLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -218,19 +302,13 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="3" column="1">
         <widget class="QSpinBox" name="power">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>16777215</height>
-          </size>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -249,7 +327,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="4" column="0">
         <widget class="QLabel" name="freqLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -262,7 +340,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="4" column="1">
         <widget class="QSpinBox" name="frequency">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -274,12 +352,6 @@
           <size>
            <width>70</width>
            <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>70</width>
-           <height>16777215</height>
           </size>
          </property>
          <property name="alignment">
@@ -299,21 +371,15 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="5" column="0">
         <widget class="QLabel" name="sortLabel">
          <property name="text">
           <string>Sort</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="5" column="1">
         <widget class="QComboBox" name="sort">
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="currentIndex">
           <number>1</number>
          </property>
@@ -337,21 +403,15 @@
          </item>
         </widget>
        </item>
-       <item>
+       <item row="6" column="0">
         <widget class="QLabel" name="directionLabel">
          <property name="text">
           <string>Direction</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="6" column="1">
         <widget class="QComboBox" name="direction">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>0</height>
-          </size>
-         </property>
          <item>
           <property name="text">
            <string>Top-Down</string>
@@ -364,27 +424,15 @@
          </item>
         </widget>
        </item>
-       <item>
+       <item row="7" column="0">
         <widget class="QLabel" name="ditherLabel">
          <property name="text">
           <string>Dithering</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="7" column="1">
         <widget class="QComboBox" name="dithering">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
          </property>
@@ -433,91 +481,50 @@
          </item>
         </widget>
        </item>
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
-     </widget>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
-      <item>
-       <widget class="CtrlCutView" name="graphicsView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>308</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+    <zorder>directionLabel</zorder>
+    <zorder>ditherLabel</zorder>
+    <zorder>dithering</zorder>
+    <zorder>directionLabel</zorder>
+    <zorder>direction</zorder>
+    <zorder>sortLabel</zorder>
+    <zorder>sort</zorder>
+    <zorder>freqLabel</zorder>
+    <zorder>frequency</zorder>
+    <zorder>powerLabel</zorder>
+    <zorder>power</zorder>
+    <zorder>speedLabel</zorder>
+    <zorder>speed</zorder>
+    <zorder>yLabel</zorder>
+    <zorder>posY</zorder>
+    <zorder>unit</zorder>
+    <zorder>xLabel</zorder>
+    <zorder>posX</zorder>
+    <zorder>verticalSpacer</zorder>
+   </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1186</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
-    <addaction name="toolsMoveToOriginAction"/>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>Help</string>
-    </property>
-    <addaction name="helpAboutAction"/>
-   </widget>
-   <widget class="QMenu" name="editMenu">
-    <property name="title">
-     <string>&amp;Edit</string>
-    </property>
-    <addaction name="deleteItem"/>
-   </widget>
-   <widget class="QMenu" name="fileMenu">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="newJobAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileSaveAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileOpenAction"/>
-    <addaction name="fileImportAction"/>
-    <addaction name="separator"/>
-    <addaction name="filePrintAction"/>
-   </widget>
-   <addaction name="fileMenu"/>
-   <addaction name="editMenu"/>
-   <addaction name="menuTools"/>
-   <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="fileOpenAction">
    <property name="icon">
     <iconset resource="ctrl-cut.qrc">
      <normaloff>:/icons/fileopen.png</normaloff>:/icons/fileopen.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Open</string>
+    <string>&amp;Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -532,8 +539,12 @@
    </property>
   </action>
   <action name="fileImportAction">
+   <property name="icon">
+    <iconset resource="ctrl-cut.qrc">
+     <normaloff>:/icons/fileimport.png</normaloff>:/icons/fileimport.png</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Import</string>
+    <string>&amp;Import...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -562,14 +573,47 @@
     <string>Simplify</string>
    </property>
   </action>
-  <action name="newJobAction">
+  <action name="fileNewAction">
+   <property name="icon">
+    <iconset resource="ctrl-cut.qrc">
+     <normaloff>:/icons/filenew.png</normaloff>:/icons/filenew.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;New</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="fileSaveAction">
+   <property name="icon">
+    <iconset resource="ctrl-cut.qrc">
+     <normaloff>:/icons/filesave.png</normaloff>:/icons/filesave.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="fileSaveAsAction">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="windowShowPropertiesAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Properties</string>
    </property>
   </action>
  </widget>
@@ -607,7 +651,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>newJobAction</sender>
+   <sender>fileNewAction</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>on_newJob()</slot>
@@ -619,150 +663,6 @@
     <hint type="destinationlabel">
      <x>437</x>
      <y>331</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>posX</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_posX_update(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>488</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>posY</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_posY_update(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>488</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>speed</sender>
-   <signal>valueChanged(QString)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_speed_update(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>488</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>power</sender>
-   <signal>valueChanged(QString)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_power_update(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>488</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frequency</sender>
-   <signal>valueChanged(QString)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_frequency_update(QString)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>60</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>488</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sort</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_sort_update(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>604</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>500</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>direction</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_direction_update(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>767</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>500</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dithering</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_dithering_update(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>930</x>
-     <y>44</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>500</x>
-     <y>44</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>unit</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>objectProperties</receiver>
-   <slot>on_unit_update(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>268</x>
-     <y>42</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>592</x>
-     <y>42</y>
     </hint>
    </hints>
   </connection>
