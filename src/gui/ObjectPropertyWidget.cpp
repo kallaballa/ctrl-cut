@@ -22,6 +22,9 @@
 #include "config/EngraveSettings.hpp"
 #include "config/CutSettings.hpp"
 #include "config/DocumentSettings.hpp"
+#include "helpers/CutItem.hpp"
+#include "helpers/EngraveItem.hpp"
+#include <QUndoView>
 #include <assert.h>
 
 typedef DocumentSettings DS;

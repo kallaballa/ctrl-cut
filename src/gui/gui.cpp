@@ -17,7 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <QtDebug>
 #include <QApplication>
+#include <QUndoView>
 #include "MainWindow.hpp"
 #include "EventFilter.hpp"
 #include "util/Logger.hpp"

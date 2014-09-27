@@ -19,16 +19,14 @@
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
+// Workaround for https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifdef Q_MOC_RUN
+#define BOOST_LEXICAL_CAST_INCLUDED
+#define BOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+#endif
 
 #include <QMainWindow>
 #include "ui_CtrlCut.h"
-#include <QAbstractSocket>
-#include <QtGui>
-#include <assert.h>
-#include "LpdClient.hpp"
-#include "StreamUtils.hpp"
-#include "GroupItem.hpp"
-#include "helpers/Qt.hpp"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -70,7 +68,7 @@ private:
   void createActions();
   void createContextMenu();
 
-  LpdClient *lpdclient;
+  class LpdClient *lpdclient;
   class CtrlCutScene *scene;
 
   class LaserDialog *laserdialog;
@@ -79,8 +77,8 @@ private:
   QAction *undoAction;
   QAction *redoAction;
 
-  QUndoStack *undoStack;
-  QUndoView *undoView;
+  class QUndoStack *undoStack;
+  class QUndoView *undoView;
 
   QMenu* menu;
   QAction* lowerAct;

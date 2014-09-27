@@ -17,6 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <QAbstractSocket>
+#include <QtGui>
+#include <assert.h>
+#include "LpdClient.hpp"
+#include "StreamUtils.hpp"
+#include "GroupItem.hpp"
+#include "helpers/Qt.hpp"
 #include "cutters/EpilogLegend36Ext.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"

@@ -19,10 +19,15 @@
 #ifndef _WIDGETDOCK_H_
 #define _WIDGETDOCK_H_
 
-#include "helpers/CutItem.hpp"
-#include "helpers/EngraveItem.hpp"
+// Workaround for https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifdef Q_MOC_RUN
+#define BOOST_LEXICAL_CAST_INCLUDED
+#define BOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+#endif
 
 #include <QDockWidget>
+#include "config/EngraveSettings.hpp"
+#include "config/CutSettings.hpp"
 
 class ObjectPropertyWidget : public QWidget {
   Q_OBJECT
@@ -36,8 +41,8 @@ public:
 
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
-  void show(CutItem* ci);
-  void show(EngraveItem* ei);
+  void show(class CutItem* ci);
+  void show(class EngraveItem* ei);
   void hide();
   void update();
 
@@ -57,8 +62,8 @@ private:
   Unit currentUnit;
   uint32_t currentResolution;
 
-  CutItem* ci;
-  EngraveItem* ei;
+  class CutItem* ci;
+  class EngraveItem* ei;
 };
 
 #endif

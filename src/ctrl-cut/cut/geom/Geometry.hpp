@@ -13,18 +13,19 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <iostream>
+// Workaround for https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifndef Q_MOC_RUN
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/linestring.hpp>
 #include <boost/geometry/geometries/concepts/check.hpp>
-
+#include <boost/geometry/geometries/register/point.hpp>
+#include <boost/geometry/geometries/register/box.hpp>
+#include <boost/geometry/geometries/register/segment.hpp>
+#endif
 static const float CC_PI = atan2(0,-1);
 
 #include <iostream>
 
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/register/point.hpp>
-#include <boost/geometry/geometries/register/box.hpp>
-#include <boost/geometry/geometries/register/segment.hpp>
 
 typedef int32_t Coord_t;
 class Point {

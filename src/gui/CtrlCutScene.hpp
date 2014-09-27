@@ -19,6 +19,12 @@
 #ifndef CTRLCUTSCENE_H_
 #define CTRLCUTSCENE_H_
 
+// Workaround for https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifdef Q_MOC_RUN
+#define BOOST_LEXICAL_CAST_INCLUDED
+#define BOOST_TT_HAS_OPERATOR_HPP_INCLUDED
+#endif
+
 #include <QGraphicsScene>
 #include <QObject>
 #include <QGraphicsItem>
@@ -27,7 +33,6 @@
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
 #include "Document.hpp"
-
 
 class CtrlCutScene : public QGraphicsScene
 {
