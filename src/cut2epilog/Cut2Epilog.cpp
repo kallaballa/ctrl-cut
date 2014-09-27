@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
   EpilogLegend36Ext cutter;
   cutter.write(doc,oEpilog);
 
+  oEpilog << std::endl;
   clock_t end = clock() - start;
   float seconds = 1.0 * end / CLOCKS_PER_SEC;
   LOG_DEBUG(seconds);
