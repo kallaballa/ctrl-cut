@@ -9,7 +9,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>Ctrl-Cut</string>
+	<string>gui</string>
 	<key>CFBundleIdentifier</key>
 	<string>at.metalab.Ctrl-Cut</string>
 	<key>CFBundleDocumentTypes</key>
