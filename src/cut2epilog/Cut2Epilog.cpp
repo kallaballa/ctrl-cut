@@ -21,8 +21,12 @@
 #include "util/Logger.hpp"
 #include "Document.hpp"
 #include "cut/Cut.hpp"
+#include "CtrlCutException.hpp"
 #include "svg/CtrlCutParser.hpp"
 #include "cutters/EpilogLegend36Ext.hpp"
+#include <boost/filesystem.hpp>
+
+namespace bfs = boost::filesystem;
 
 int main(int argc, char *argv[]) {
   if(argc != 3) {
@@ -40,6 +44,9 @@ int main(int argc, char *argv[]) {
   Document::EngraveList newEngravings;
   string cutFile(argv[1]);
   string epilogFile(argv[2]);
+
+  if(!bfs::exists(cutFile))
+    CtrlCutException::fileNotFoundException(cutFile);
 
   CtrlCutParser parser;
   parser.load(cutFile, doc, newCuts, newEngravings);
