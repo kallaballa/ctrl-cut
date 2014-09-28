@@ -52,7 +52,9 @@ public slots:
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
-  void on_editDeleteItemAction_triggered();
+  void on_editCutAction_triggered();
+  void on_editCopyAction_triggered();
+  void on_editPasteAction_triggered();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();
@@ -92,6 +94,8 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
+
+  QList<QGraphicsItem *> itemClipboard;
 };
 
 #endif

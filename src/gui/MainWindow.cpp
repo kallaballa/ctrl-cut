@@ -138,7 +138,7 @@ void MainWindow::createActions() {
     QList<QKeySequence> shortcuts;
     shortcuts.append(QKeySequence(Qt::Key_Backspace));
     shortcuts.append(QKeySequence::Delete);
-    this->editDeleteItemAction->setShortcuts(shortcuts);
+    this->editCutAction->setShortcuts(shortcuts);
 }
 
 void MainWindow::on_lowerItem() {
@@ -161,12 +161,33 @@ void MainWindow::on_raiseItemToTop() {
   undoStack->push(ritCmd);
 }
 
-void MainWindow::on_editDeleteItemAction_triggered() {
+void MainWindow::on_editCutAction_triggered() {
   if (this->scene->selectedItems().isEmpty())
     return;
 
   QUndoCommand *deleteCommand = new DeleteCommand(this->scene);
   undoStack->push(deleteCommand);
+}
+
+void MainWindow::on_editCopyAction_triggered() {
+  this->itemClipboard.clear();
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    if (AbstractCtrlCutItem *cutItem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+      this->itemClipboard.append(item);
+    }
+  }
+  this->editPasteAction->setEnabled(!this->itemClipboard.isEmpty());
+}
+
+void MainWindow::on_editPasteAction_triggered() {
+  foreach (QGraphicsItem *item, this->itemClipboard) {
+    if (CutItem *cutItem = dynamic_cast<CutItem *>(item)) {
+      this->scene->add(*new CutItem(*cutItem));
+    }
+    else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(item)) {
+      this->scene->add(*new EngraveItem(*engraveItem));
+    }
+  }
 }
 
 bool MainWindow::maybeSave()

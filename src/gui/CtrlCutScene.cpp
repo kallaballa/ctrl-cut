@@ -202,24 +202,30 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
 }
 
-void CtrlCutScene::add(CutItem& cutItem) {
-  this->docHolder->add(cutItem);
-  this->addItem(&cutItem);
+void CtrlCutScene::add(class AbstractCtrlCutItem &item) {
+  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
+    this->docHolder->add(*cutItem);
+  }
+  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
+    this->docHolder->add(*engraveItem);
+  }
+  else {
+    return;
+  }
+  this->addItem(&item);
 }
 
-void CtrlCutScene::remove(CutItem& cutItem) {
-  this->docHolder->remove(cutItem);
-  this->removeItem(&cutItem);
-}
-
-void CtrlCutScene::add(EngraveItem& engraveItem) {
-  this->docHolder->add(engraveItem);
-  this->addItem(&engraveItem);
-}
-
-void CtrlCutScene::remove(EngraveItem& engraveItem) {
-  this->docHolder->remove(engraveItem);
-  this->removeItem(&engraveItem);
+void CtrlCutScene::remove(AbstractCtrlCutItem &item) {
+  if (CutItem *cutItem = dynamic_cast<CutItem *>(&item)) {
+    this->docHolder->remove(*cutItem);
+  }
+  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
+    this->docHolder->remove(*engraveItem);
+  }
+  else {
+    return;
+  }
+  this->removeItem(&item);
 }
 
 void CtrlCutScene::detachDocumentHolder() {

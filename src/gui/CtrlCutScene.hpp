@@ -48,10 +48,8 @@ public:
   DocumentHolder& getDocumentHolder() {
     return *this->docHolder;
   }
-  void add(class CutItem& cutItem);
-  void remove(CutItem& cutItem);
-  void add(class EngraveItem& engraveItem);
-  void remove(EngraveItem& engraveItem);
+  void add(class AbstractCtrlCutItem& cutItem);
+  void remove(AbstractCtrlCutItem& cutItem);
   void newJob(const Coord_t& resolution, const Distance& width, const Distance& height, const QString& title = "untitled");
   void open(const QString& filename);
   void load(const QString& filename, bool loadVector = true, bool loadRaster = true);

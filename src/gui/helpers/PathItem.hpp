@@ -25,9 +25,9 @@
 
 class PathItem: public QGraphicsPolygonItem {
 public:
-  Path& path;
+  const Path& path;
 
-  PathItem(Path& path);
+  PathItem(const Path& path);
   ~PathItem(){};
 
   void commit() {
