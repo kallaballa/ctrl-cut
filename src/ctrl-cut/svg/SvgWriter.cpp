@@ -33,7 +33,6 @@ SvgWriter::~SvgWriter() {
 
 void SvgWriter::writeDocumentStart() {
   using namespace boost;
-  typedef DocumentSettings DS;
 
   ostream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" << std::endl;
   ostream << "<!-- Created with Ctrl-Cut -->" << std::endl;
