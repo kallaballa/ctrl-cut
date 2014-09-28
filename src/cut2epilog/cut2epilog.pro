@@ -8,6 +8,7 @@ CONFIG += cairo-ps
 CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
+CONFIG += libpng
 CONFIG += magick++
 CONFIG += libctrl-cut
 

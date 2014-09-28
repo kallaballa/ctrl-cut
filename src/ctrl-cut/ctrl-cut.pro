@@ -5,6 +5,7 @@ CONFIG += rsvg
 CONFIG += cairo-ps
 CONFIG += gio
 CONFIG += boost_thread
+CONFIG += libpng
 CONFIG += libxml++
 CONFIG += magick++
 QMAKE_CXXFLAGS += -fPIC

@@ -9,6 +9,7 @@ CONFIG += gio
 CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
+CONFIG += libpng
 CONFIG += libctrl-cut
 
 include(common.pri)
