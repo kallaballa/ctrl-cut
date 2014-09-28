@@ -1,5 +1,6 @@
 libpng {
   message("Configuring libpng...")
   DEFINES += cimg_use_png
-  LIBS += -lpng16
+  QMAKE_CXXFLAGS += `pkg-config --cflags libpng16`
+  QMAKE_LIBS += `pkg-config --libs libpng16`
 }
