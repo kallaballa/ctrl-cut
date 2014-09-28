@@ -48,12 +48,13 @@ export CC_BINARY="$CC_BASE/src/cups-filter/cups-filter"
 export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 export CC_PACKAGING="$CC_BASE/packaging"
 export CC_VERSION="0.1"
-export CC_PCLINT="src/pclint/pclint"
+export CC_PCLINT="pclint"
 export CC_RENDER="src/render2cut/render2cut"
 
 . $CC_FUNCTIONS
 
-[ ! -x "$CC_PCLINT" -o ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
+type "$CC_PCLINT" || error "Can't find pclint"
+[ ! type "$CC_PCLINT" -o ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
 
 verbose "CC_BASE=$CC_BASE"
 verbose "CC_PRINTERNAME=$CC_PRINTERNAME"
