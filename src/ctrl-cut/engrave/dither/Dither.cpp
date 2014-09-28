@@ -86,6 +86,10 @@ BitmapImage Dither::dither(Point translate) {
   for (unsigned int y = 0; y < this->img.height(); ++y) {
     if (byteAlignOff) {
       bitmap = 0;
+
+      // Pad leftmost bits with 1's
+      bitmap |= ((0x01 << (8 - byteAlignOff)) - 1) << byteAlignOff;
+
       for (unsigned int x = 0; x < byteAlignOff; x++) {
         this->ditherPixel(x, y, pix);
 
@@ -117,6 +121,10 @@ BitmapImage Dither::dither(Point translate) {
           bitmap |= (0x80 >> x);
         }
       }
+
+      // Pad rightmost bits with 1's
+      bitmap |= (0x01 << (8 - scanlineRem)) - 1;
+
       *(data++) = bitmap;
     }
   }
