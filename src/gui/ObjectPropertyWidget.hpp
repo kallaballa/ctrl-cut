@@ -41,9 +41,9 @@ public:
 
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
-  void show(class CutItem* ci);
-  void show(class EngraveItem* ei);
-  void hide();
+  void enable(class CutItem* ci);
+  void enable(class EngraveItem* ei);
+  void disable();
   void update();
 
 public slots:

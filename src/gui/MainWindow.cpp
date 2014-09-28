@@ -33,19 +33,23 @@
 #include <qapplication.h>
 #include "Commands.hpp"
 #include <QGraphicsItem>
+#include "NewDialog.hpp"
 
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
+
   this->undoStack = new QUndoStack(this);
+  this->undoStack->setObjectName("undoStack");
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
 
-  createActions();
   createUndoView();
   createContextMenu();
 
   setupUi(this);
+
+  createActions();
 
   this->scene = new CtrlCutScene(this);
   this->graphicsView->setScene(this->scene);
@@ -68,6 +72,12 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
 MainWindow::~MainWindow()
 {}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+  if (maybeSave()) event->accept();
+  else event->ignore();
+}
 
 void MainWindow::showContextMenu(const QPoint& pos) {
   QPoint globalPos = this->scene->views()[0]->mapToGlobal(pos);
@@ -118,9 +128,17 @@ void MainWindow::createUndoView(){
 void MainWindow::createActions() {
     undoAction = undoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);
+    this->editMenu->addAction(undoAction);
 
     redoAction = undoStack->createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
+    this->editMenu->addAction(redoAction);
+
+    // Macs usually don't have a Delete key, use Backspace instead
+    QList<QKeySequence> shortcuts;
+    shortcuts.append(QKeySequence(Qt::Key_Backspace));
+    shortcuts.append(QKeySequence::Delete);
+    this->editCutAction->setShortcuts(shortcuts);
 }
 
 void MainWindow::on_lowerItem() {
@@ -143,7 +161,7 @@ void MainWindow::on_raiseItemToTop() {
   undoStack->push(ritCmd);
 }
 
-void MainWindow::on_deleteItem() {
+void MainWindow::on_editCutAction_triggered() {
   if (this->scene->selectedItems().isEmpty())
     return;
 
@@ -151,10 +169,71 @@ void MainWindow::on_deleteItem() {
   undoStack->push(deleteCommand);
 }
 
-void MainWindow::on_newJob() {
-  QUndoCommand *newCommand = new NewCommand(this->scene);
-  undoStack->push(newCommand);
-  setWindowTitle("Ctrl-Cut - " + QString(this->scene->getDocumentHolder().doc->get(DocumentSettings::TITLE).c_str()));
+void MainWindow::on_editCopyAction_triggered() {
+  this->itemClipboard.clear();
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    if (AbstractCtrlCutItem *cutItem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+      this->itemClipboard.append(item);
+    }
+  }
+  this->editPasteAction->setEnabled(!this->itemClipboard.isEmpty());
+}
+
+void MainWindow::on_editPasteAction_triggered() {
+  foreach (QGraphicsItem *item, this->itemClipboard) {
+    if (CutItem *cutItem = dynamic_cast<CutItem *>(item)) {
+      this->scene->add(*new CutItem(*cutItem));
+    }
+    else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(item)) {
+      this->scene->add(*new EngraveItem(*engraveItem));
+    }
+  }
+}
+
+bool MainWindow::maybeSave()
+{
+  if (this->undoStack->isClean()) return true;
+    
+  QMessageBox::StandardButton ret;
+  QMessageBox box(this);
+  box.setText("The document has been modified.");
+  box.setInformativeText("Do you want to save your changes?");
+  box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  box.setDefaultButton(QMessageBox::Save);
+  box.setIcon(QMessageBox::Warning);
+  box.setWindowModality(Qt::ApplicationModal);
+#ifdef Q_OS_MAC
+  // Cmd-D is the standard shortcut for this button on Mac
+  box.button(QMessageBox::Discard)->setShortcut(QKeySequence("Ctrl+D"));
+  box.button(QMessageBox::Discard)->setShortcutEnabled(true);
+#endif
+  ret = (QMessageBox::StandardButton) box.exec();
+  
+  if (ret == QMessageBox::Save) {
+    on_fileSaveAction_triggered();
+    // Returns false on failed save
+    return this->undoStack->isClean();
+  }
+  else if (ret == QMessageBox::Cancel) {
+    return false;
+  }
+  return true;
+}
+
+void MainWindow::on_fileNewAction_triggered() {
+
+  if (!maybeSave()) return;
+
+  NewDialog nd;
+  if (nd.exec() == QDialog::Accepted) {
+    int resolution = nd.getResolution();
+    this->scene->newJob(resolution,
+                        Distance(36, IN, resolution), 
+                        Distance(24, IN, resolution));
+    setWindowTitle("untitled.cut");
+    setWindowFilePath("");
+    this->undoStack->setClean();
+  }
 }
 
 void MainWindow::openFile(const QString &filename) {
@@ -163,6 +242,9 @@ void MainWindow::openFile(const QString &filename) {
 
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);
+  setWindowTitle("");
+  setWindowFilePath(filename);
+  undoStack->setClean();
 }
 
 void MainWindow::importFile(const QString &filename) {
@@ -174,19 +256,32 @@ void MainWindow::importFile(const QString &filename) {
 }
 
 void MainWindow::saveFile(const QString &filename) {
-  if(filename.isNull())
-    return;
+  if (filename.isEmpty()) return;
 
   QUndoCommand *saveCommand = new SaveCommand(this->scene, filename);
   undoStack->push(saveCommand);
+  setWindowTitle("");
+  setWindowFilePath(filename);
+  undoStack->setClean();
 }
 
 void MainWindow::on_fileOpenAction_triggered()
 {
+  if (!maybeSave()) return;
   openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Ctrl-Cut Document (*.cut)"));
 }
 
 void MainWindow::on_fileSaveAction_triggered()
+{
+  QString filename = this->scene->getDocumentHolder().filename;
+  if (filename.isEmpty()) {
+    filename = QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)");
+  }
+
+  saveFile(filename);
+}
+
+void MainWindow::on_fileSaveAsAction_triggered()
 {
   saveFile(QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)"));
 }
@@ -251,7 +346,7 @@ void MainWindow::sceneSelectionChanged()
       if((cci = dynamic_cast<AbstractCtrlCutItem*>(item)))
         cci->setHighlighted(false);
     }
-    this->objectProperties->hide();
+    this->objectProperties->disable();
   } else {
     foreach (QGraphicsItem *item, this->scene->items()) {
       EngraveItem* ei;
@@ -260,10 +355,10 @@ void MainWindow::sceneSelectionChanged()
       if(item->isSelected()) {
         if((ei = dynamic_cast<EngraveItem*>(item))) {
           ei->setHighlighted(true);
-          this->objectProperties->show(ei);
+          this->objectProperties->enable(ei);
         } else if((ci = dynamic_cast<CutItem*>(item))) {
           ci->setHighlighted(true);
-          this->objectProperties->show(ci);
+          this->objectProperties->enable(ci);
         }
       } else {
         AbstractCtrlCutItem* cci;
@@ -306,4 +401,18 @@ MainWindow::on_helpAboutAction_triggered()
 void MainWindow::on_itemMoved(QGraphicsItem *movedItem,
                            const QPointF &oldPosition) {
     undoStack->push(new MoveCommand(this->scene, movedItem, oldPosition));
+}
+
+void MainWindow::on_windowShowPropertiesAction_triggered()
+{
+  if (windowShowPropertiesAction->isChecked()) {
+    this->objectProperties->hide();
+  } else {
+    this->objectProperties->show();
+  }
+}
+
+void MainWindow::on_undoStack_cleanChanged(bool clean)
+{
+  printf("clean changed: %d\n", clean);
 }

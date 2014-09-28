@@ -74,15 +74,6 @@ private:
   QString filename;
 };
 
-class NewCommand: public CtrlCutUndo {
-public:
-  NewCommand(CtrlCutScene* scene,
-      QUndoCommand *parent = NULL);
-
-  void modify();
-};
-
-
 class SaveCommand: public CtrlCutUndo {
 public:
   SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent = NULL);

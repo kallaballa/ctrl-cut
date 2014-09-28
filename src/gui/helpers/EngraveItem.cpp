@@ -20,8 +20,16 @@
 #include "EngraveItem.hpp"
 
 EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
-  QGraphicsItemGroup::setFlags(
-      QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+  init();
+}
+
+EngraveItem::EngraveItem(const EngraveItem& engraveItem) : AbstractCtrlCutItem(), engraving(engraveItem.engraving) {
+  init();
+}
+
+void EngraveItem::init() {
+  QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | 
+                               QGraphicsItem::ItemIsMovable);
   GrayscaleImage gs = engraving.getImage();
   QImage& img = QtMake::make_QImage(gs);
   img.bits();
@@ -33,3 +41,4 @@ EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engravin
     QGraphicsItemGroup::addToGroup(pixmapItem);
   }
 }
+

@@ -28,10 +28,6 @@ NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
 NewDialog::~NewDialog() {
 }
 
-QString NewDialog::getTitle() {
-  return this->titleEdit->text();
-}
-
 int NewDialog::getResolution() {
   int index = this->resolutionCombo->currentIndex();
   switch (index) {

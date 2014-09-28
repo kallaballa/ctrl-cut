@@ -101,6 +101,7 @@ public:
     } else if(name == "Sierra3") {
         return EngraveSettings::SIERRA3;
     }
+    else assert(false);
   }
 
   static Direction parseDirectionName(const string& name) {
@@ -109,6 +110,7 @@ public:
     } else if(name == "Bottom-Up") {
       return EngraveSettings::BOTTOMUP;
     }
+    else assert(false);
   }
 
   static std::string getDitheringName(Dithering opt) {

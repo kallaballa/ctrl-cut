@@ -119,7 +119,7 @@ void traverse_onion(Route& src, Route& skins)
 
   UniqueSegmentGraph g;
   BOOST_FOREACH(const Segment& seg, segments(src)) {
-    g.add(seg);
+    g.addSegment(seg);
   }
 
   // points are sorted first by x then by y. therefore the

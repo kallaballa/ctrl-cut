@@ -84,7 +84,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
   bool loadCut = this->get(DS::LOAD_CUT);
   bool loadEngraving = this->get(DS::LOAD_ENGRAVING);
 
-  cups_file_t* input_file;
+  cups_file_t* input_file = NULL;
   FileParser *parser = NULL;
 
   if(docFormat == CTRLCUT) {

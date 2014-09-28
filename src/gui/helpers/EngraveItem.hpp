@@ -31,7 +31,10 @@ public:
   Engraving& engraving;
 
   EngraveItem(Engraving& engraving);
-  ~EngraveItem(){};
+  EngraveItem(const EngraveItem& engraveItem);
+  virtual ~EngraveItem(){};
+
+  void init();
 
   void commit() {
     const QPointF& pos = this->pos();

@@ -33,7 +33,7 @@ public:
     _Base(size)
   {}
 
-  void add(const Path& path) {
+  void addPath(const Path& path) {
     PathGraph::Vertex inV = boost::add_vertex(path.front(), *this);
     PathGraph::Vertex outV = boost::add_vertex(path.back(), *this);
     boost::add_edge(inV, outV, PathProperty(path), *this);

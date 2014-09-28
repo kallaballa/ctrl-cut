@@ -20,7 +20,7 @@
 #include <qgraphicsitem.h>
 #include <qpen.h>
 
-PathItem::PathItem(Path& path) : QGraphicsPolygonItem(), path(path) {
+PathItem::PathItem(const Path& path) : QGraphicsPolygonItem(), path(path) {
   QPolygon polygon;
 
   BOOST_FOREACH(const Point& p, path) {

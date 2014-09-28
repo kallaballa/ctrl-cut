@@ -40,7 +40,7 @@ public:
       colortable.append(qRgba(0,0,0,0));
       img->setColorTable(colortable);
     }
-     else if (dynamic_cast<GrayscaleImage*>(&image)) {
+    else if (dynamic_cast<GrayscaleImage*>(&image)) {
       img = new QImage((const uchar *)image.data(), image.width(), image.height(),
                         image.rowstride(), QImage::Format_Indexed8);
       QVector<QRgb> colortable;
@@ -48,6 +48,7 @@ public:
       colortable.append(qRgba(255,255,255,0));
       img->setColorTable(colortable);
     }
+    else assert(false);
 
     return *img;
   }

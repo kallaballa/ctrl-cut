@@ -41,16 +41,20 @@ public:
 
 public slots:
   void on_helpAboutAction_triggered();
+  void on_fileNewAction_triggered();
   void on_fileOpenAction_triggered();
   void on_fileSaveAction_triggered();
+  void on_fileSaveAsAction_triggered();
   void on_fileImportAction_triggered();
   void on_filePrintAction_triggered();
+  void on_windowShowPropertiesAction_triggered();
   void on_toolsMoveToOriginAction_triggered();
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
-  void on_deleteItem();
-  void on_newJob();
+  void on_editCutAction_triggered();
+  void on_editCopyAction_triggered();
+  void on_editPasteAction_triggered();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();
@@ -58,10 +62,15 @@ public slots:
   void on_lowerItemToBottom();
   void sceneSelectionChanged();
 
+  void on_undoStack_cleanChanged(bool);
+
   void openFile(const QString &filename);
   void importFile(const QString &filename);
   void saveFile(const QString &filename);
 private:
+  void closeEvent(QCloseEvent *event);
+  bool maybeSave();
+
   static MainWindow *inst;
   MainWindow();
   void createUndoView();
@@ -85,6 +94,8 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
+
+  QList<QGraphicsItem *> itemClipboard;
 };
 
 #endif

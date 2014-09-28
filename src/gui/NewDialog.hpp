@@ -28,7 +28,6 @@ class NewDialog : public QDialog, private Ui::NewDialog
 public:
   NewDialog(QWidget *parent = NULL);
   ~NewDialog();
-  QString getTitle();
   int getResolution();
 private:
 };
