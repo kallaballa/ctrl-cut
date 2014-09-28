@@ -48,7 +48,7 @@ public:
       return (*it).second;
   }
 
-  virtual void add(const Segment& seg) {
+  virtual void addSegment(const Segment& seg) {
     Vertex inV = this->addVertex(seg.first);
     Vertex outV = this->addVertex(seg.second);
     boost::add_edge(inV, outV, SegmentProperty(seg), *this);

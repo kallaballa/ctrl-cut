@@ -83,6 +83,7 @@ public:
     } else if(name == "Shortest Path") {
       return SHORTEST_PATH;
     }
+    else assert(false);
   }
 
   ~CutSettings() {}

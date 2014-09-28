@@ -33,7 +33,7 @@ void nearest_path_sorting(Route& src, TmultiPointRange& sink) {
   PathGraph pathGraph;
 
   BOOST_FOREACH(const Path& path, src) {
-    pathGraph.add(path);
+    pathGraph.addPath(path);
   }
 
   multimap<Point,PathGraph::Vertex> point_to_vertices;

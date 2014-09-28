@@ -134,7 +134,7 @@ void find_shared_points(const Route& r, std::vector<Point>& sharedPoints) {
   SegmentGraph g;
 
   BOOST_FOREACH(const Segment& seg, segments(r)) {
-    g.add(seg);
+    g.addSegment(seg);
   }
 
   BOOST_FOREACH(SegmentGraph::Vertex v, vertices(g)) {

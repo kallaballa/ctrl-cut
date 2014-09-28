@@ -34,6 +34,12 @@ message("RELEASE!")
 
 CONFIG += link_pkgconfig
 QMAKE_CXXFLAGS += -std=c++0x -Wno-long-long
+
+
+macx { # FIXME: Should really test for clang
+  QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-deprecated-register
+}
+
 linux:QMAKE_CXXFLAGS += -pedantic-errors
 include(boost.pri)
 include(ghostscript.pri)

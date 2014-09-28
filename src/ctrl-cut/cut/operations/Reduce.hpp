@@ -41,7 +41,7 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   UniqueSegmentGraph g;
 
   BOOST_FOREACH(const Segment& seg, segments(src)) {
-    g.add(seg);
+    g.addSegment(seg);
   }
 
   std::map<Point, UniqueSegmentGraph::Vertex> index;
