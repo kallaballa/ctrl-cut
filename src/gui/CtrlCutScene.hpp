@@ -52,7 +52,7 @@ public:
   void remove(CutItem& cutItem);
   void add(class EngraveItem& engraveItem);
   void remove(EngraveItem& engraveItem);
-  void newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height);
+  void newJob(const Coord_t& resolution, const Distance& width, const Distance& height, const QString& title = "untitled");
   void open(const QString& filename);
   void load(const QString& filename, bool loadVector = true, bool loadRaster = true);
   void reset();

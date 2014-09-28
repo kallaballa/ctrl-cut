@@ -34,6 +34,7 @@ void DocumentHolder::operator=(const DocumentHolder& other) {
   this->doc = new Document(*other.doc);
   this->cutItems = other.cutItems;
   this->engraveItems = other.engraveItems;
+  this->filename = other.filename;
 }
 
 void DocumentHolder::add(CutItem& cutItem) {

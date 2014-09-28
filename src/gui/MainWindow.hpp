@@ -41,6 +41,7 @@ public:
 
 public slots:
   void on_helpAboutAction_triggered();
+  void on_fileNewAction_triggered();
   void on_fileOpenAction_triggered();
   void on_fileSaveAction_triggered();
   void on_fileSaveAsAction_triggered();
@@ -52,7 +53,6 @@ public slots:
   void on_lpdclient_progress(int done, int total);
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_editDeleteItemAction_triggered();
-  void on_newJob();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();
@@ -60,10 +60,15 @@ public slots:
   void on_lowerItemToBottom();
   void sceneSelectionChanged();
 
+  void on_undoStack_cleanChanged(bool);
+
   void openFile(const QString &filename);
   void importFile(const QString &filename);
   void saveFile(const QString &filename);
 private:
+  void closeEvent(QCloseEvent *event);
+  bool maybeSave();
+
   static MainWindow *inst;
   MainWindow();
   void createUndoView();

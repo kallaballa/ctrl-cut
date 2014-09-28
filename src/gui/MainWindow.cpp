@@ -33,20 +33,23 @@
 #include <qapplication.h>
 #include "Commands.hpp"
 #include <QGraphicsItem>
+#include "NewDialog.hpp"
 
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
-  setupUi(this);
-
   this->undoStack = new QUndoStack(this);
+  this->undoStack->setObjectName("undoStack");
   this->lpdclient = new LpdClient(this);
   this->lpdclient->setObjectName("lpdclient");
 
-  createActions();
   createUndoView();
   createContextMenu();
+
+  setupUi(this);
+
+  createActions();
 
   this->scene = new CtrlCutScene(this);
   this->graphicsView->setScene(this->scene);
@@ -69,6 +72,12 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
 MainWindow::~MainWindow()
 {}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+  if (maybeSave()) event->accept();
+  else event->ignore();
+}
 
 void MainWindow::showContextMenu(const QPoint& pos) {
   QPoint globalPos = this->scene->views()[0]->mapToGlobal(pos);
@@ -160,10 +169,50 @@ void MainWindow::on_editDeleteItemAction_triggered() {
   undoStack->push(deleteCommand);
 }
 
-void MainWindow::on_newJob() {
-  QUndoCommand *newCommand = new NewCommand(this->scene);
-  undoStack->push(newCommand);
-  setWindowTitle("Ctrl-Cut - " + QString(this->scene->getDocumentHolder().doc->get(DocumentSettings::TITLE).c_str()));
+bool MainWindow::maybeSave()
+{
+  if (this->undoStack->isClean()) return true;
+    
+  QMessageBox::StandardButton ret;
+  QMessageBox box(this);
+  box.setText("The document has been modified.");
+  box.setInformativeText("Do you want to save your changes?");
+  box.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  box.setDefaultButton(QMessageBox::Save);
+  box.setIcon(QMessageBox::Warning);
+  box.setWindowModality(Qt::ApplicationModal);
+#ifdef Q_OS_MAC
+  // Cmd-D is the standard shortcut for this button on Mac
+  box.button(QMessageBox::Discard)->setShortcut(QKeySequence("Ctrl+D"));
+  box.button(QMessageBox::Discard)->setShortcutEnabled(true);
+#endif
+  ret = (QMessageBox::StandardButton) box.exec();
+  
+  if (ret == QMessageBox::Save) {
+    on_fileSaveAction_triggered();
+    // Returns false on failed save
+    return this->undoStack->isClean();
+  }
+  else if (ret == QMessageBox::Cancel) {
+    return false;
+  }
+  return true;
+}
+
+void MainWindow::on_fileNewAction_triggered() {
+
+  if (!maybeSave()) return;
+
+  NewDialog nd;
+  if (nd.exec() == QDialog::Accepted) {
+    int resolution = nd.getResolution();
+    this->scene->newJob(resolution,
+                        Distance(36, IN, resolution), 
+                        Distance(24, IN, resolution));
+    setWindowTitle("untitled.cut");
+    setWindowFilePath("");
+    this->undoStack->setClean();
+  }
 }
 
 void MainWindow::openFile(const QString &filename) {
@@ -172,6 +221,9 @@ void MainWindow::openFile(const QString &filename) {
 
   QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
   undoStack->push(openCommand);
+  setWindowTitle("");
+  setWindowFilePath(filename);
+  undoStack->setClean();
 }
 
 void MainWindow::importFile(const QString &filename) {
@@ -183,22 +235,29 @@ void MainWindow::importFile(const QString &filename) {
 }
 
 void MainWindow::saveFile(const QString &filename) {
-  if(filename.isNull())
-    return;
+  if (filename.isEmpty()) return;
 
   QUndoCommand *saveCommand = new SaveCommand(this->scene, filename);
   undoStack->push(saveCommand);
+  setWindowTitle("");
+  setWindowFilePath(filename);
+  undoStack->setClean();
 }
 
 void MainWindow::on_fileOpenAction_triggered()
 {
+  if (!maybeSave()) return;
   openFile(QFileDialog::getOpenFileName(this, "Open File", "", "Ctrl-Cut Document (*.cut)"));
 }
 
 void MainWindow::on_fileSaveAction_triggered()
 {
-  // FIXME: If doc modified and has filename, save, else save as
-  saveFile(QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)"));
+  QString filename = this->scene->getDocumentHolder().filename;
+  if (filename.isEmpty()) {
+    filename = QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)");
+  }
+
+  saveFile(filename);
 }
 
 void MainWindow::on_fileSaveAsAction_triggered()
@@ -330,4 +389,9 @@ void MainWindow::on_windowShowPropertiesAction_triggered()
   } else {
     this->objectProperties->show();
   }
+}
+
+void MainWindow::on_undoStack_cleanChanged(bool clean)
+{
+  printf("clean changed: %d\n", clean);
 }

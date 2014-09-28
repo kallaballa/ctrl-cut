@@ -19,7 +19,6 @@
 
 #include "Commands.hpp"
 #include "CtrlCutScene.hpp"
-#include "NewDialog.hpp"
 #include "ImportDialog.hpp"
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
@@ -121,20 +120,6 @@
    this->scene->open(filename);
  }
 
-NewCommand::NewCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   CtrlCutUndo(scene, parent) {
-   setText("New Document");
-}
-
-void NewCommand::modify() {
-  NewDialog nd;
-  if (nd.exec() == QDialog::Accepted) {
-    int resolution = nd.getResolution();
-    this->scene->newJob(nd.getTitle(), nd.getResolution(),
-        Distance(36, IN, resolution), Distance(24, IN, resolution));
-  }
-}
-
  SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
      CtrlCutUndo(scene, parent), filename(filename) {
    setText("Save");
@@ -143,8 +128,10 @@ void NewCommand::modify() {
  void SaveCommand::modify() {
    typedef DocumentSettings DS;
    Document& doc = *this->scene->getDocumentHolder().doc;
+   doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
    SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), filename.toStdString().c_str());
    svgW.write(doc, "stroke:rgb(255,0,0);stroke-width:5;");
+   this->scene->getDocumentHolder().filename = filename;
  }
 
 ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :

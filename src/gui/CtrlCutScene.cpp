@@ -51,7 +51,7 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   this->currentZ = 0;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
-  this->newJob("New Document", 600, Distance(21600,PX, 600), Distance(14400,PX, 600));
+  this->newJob(600, Distance(21600,PX, 600), Distance(14400,PX, 600));
   this->makeBackground();
 
   using namespace Qt;
@@ -91,6 +91,10 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
  }*/
 
 void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+
+  // Call QGraphicsScene's event handler first to deal with selection
+
+  QGraphicsScene::mousePressEvent(event);
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
       event->buttonDownScenePos(Qt::LeftButton).y());
   std::cerr << "press: " << mousePos.x() << ", " << mousePos.y() << std::endl;
@@ -108,7 +112,6 @@ void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   } else {
     movingItem = NULL;
   }
-  QGraphicsScene::mousePressEvent(event);
 }
 
 void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
@@ -116,6 +119,8 @@ void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
       event->buttonDownScenePos(Qt::LeftButton).y());
   std::cerr << "release: " << mousePos.x() << ", " << mousePos.y() << std::endl;
 
+  std::cerr << "movingItem: " << movingItem << std::endl;
+  std::cerr << "button: " << event->button() << std::endl;
   if (movingItem != 0 && event->button() == Qt::LeftButton) {
     std::cerr << "release: " << movingItem->pos().x() << ", " << movingItem->pos().y() << std::endl;
     if (oldPos != movingItem->pos())
@@ -146,7 +151,7 @@ void CtrlCutScene::open(const QString& filename) {
   load(filename);
 }
 
-void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const Distance& width, const Distance& height) {
+void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, const Distance& height, const QString& title) {
   typedef DocumentSettings DS;
   this->reset();
   if(this->docHolder->doc == NULL)
@@ -159,7 +164,7 @@ void CtrlCutScene::newJob(const QString& title, const Coord_t& resolution, const
 
 void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
   if (!this->docHolder->doc) {
-    this->newJob(boost::filesystem::path(filename.toStdString()).filename().c_str(), 600, Distance(36, IN, 600), Distance(24, IN, 600));
+    this->newJob(600, Distance(36, IN, 600), Distance(24, IN, 600), boost::filesystem::path(filename.toStdString()).filename().c_str());
   }
 
   Document& doc = *this->docHolder->doc;
