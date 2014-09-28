@@ -245,9 +245,6 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       if (cut)  {
         this->push_back(cut);
         newCuts.push_back(cut);
-        cut->normalize();
-        cut->sort();
-        cut->translate();
       }
     }
   }
