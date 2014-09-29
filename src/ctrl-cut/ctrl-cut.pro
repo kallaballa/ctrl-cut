@@ -98,7 +98,6 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./Document.cpp \
            ./tri_logger/tri_logger.cpp \
            ./config/EngraveSettings.cpp \
-	   ./config/BitmapSettings.cpp \
            ./config/CutSettings.cpp \
            ./config/DocumentSettings.cpp \
 	   ./svg/SvgWriter.cpp \  
