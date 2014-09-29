@@ -76,7 +76,7 @@ runtest()
     check "run cut2epilog on ps" "src/cut2epilog/cut2epilog $cutpsfile $outdir/cut.ps.raw" 2>> $logfile
     report_begin "$testdir"
     report_print "check ps equiv"
-    if check "compare prn files" "cmp $outdir/cut.ps.raw $outdir/ps.raw" 2> $logfile; then
+    if check "compare prn files" "cmp $outdir/cut.ps.raw $outdir/ps.raw" 2>> $logfile; then
       report_print "OK" green
     else
       report_print "Err" red
@@ -88,7 +88,7 @@ runtest()
     check "run cut2epilog on svg" "src/cut2epilog/cut2epilog $cutsvgfile $outdir/cut.svg.raw" 2>> $logfile
     report_begin "$testdir"
     report_print "check svg equiv"
-    if check "compare prn files" "cmp $outdir/cut.svg.raw $outdir/svg.raw" 2> $logfile; then 
+    if check "compare prn files" "cmp $outdir/cut.svg.raw $outdir/svg.raw" 2>> $logfile; then 
 			report_print "OK" green
     else
       report_print "Err" red
