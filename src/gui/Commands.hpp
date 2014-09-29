@@ -100,7 +100,7 @@ public:
   void redo();
 
   CtrlCutScene* scene;
-  QList<CutItem* > oldCutItems;
+  QList<class CutItem* > oldCutItems;
   QList<CutItem* > newCutItems;
 };
 

@@ -46,7 +46,17 @@ void ObjectPropertyWidget::updateCutProperties(const CutSettings::KeyBase&  key)
   this->enable(this->ci);
 }
 
-void ObjectPropertyWidget::enable(CutItem* ci) {
+void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
+  if (EngraveItem *ei = dynamic_cast<EngraveItem*>(item)) {
+    enableEngraveItem(ei);
+  }
+  else if (CutItem *ci = dynamic_cast<CutItem*>(item)) {
+    enableCutItem(ci);
+  }
+  // FIXME: Enable group, potentially mixed
+}
+
+void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->disable();
   this->ci = ci;
   this->ci->cut.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
@@ -102,7 +112,7 @@ void ObjectPropertyWidget::enable(CutItem* ci) {
   this->currentState = Cut;
 }
 
-void ObjectPropertyWidget::enable(EngraveItem* ei) {
+void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   this->disable();
   this->ei = ei;
   this->ei->engraving.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));

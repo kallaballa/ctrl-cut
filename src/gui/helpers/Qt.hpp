@@ -17,12 +17,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <qgraphicsitem.h>
 #include <qimage.h>
 #include "engrave/image/Image.hpp"
-#include <qgraphicseffect.h>
 #include <qstyleoption.h>
-#include <qpainter.h>
 
 #ifndef QTMAKE_H_
 #define QTMAKE_H_
@@ -51,26 +48,6 @@ public:
     else assert(false);
 
     return *img;
-  }
-};
-
-class AbstractCtrlCutItem : public QGraphicsItemGroup {
-public:
-  virtual void commit() = 0;
-
-  void setHighlighted(bool enabled) {
- /*   return;
-    // FIXME causes performance issues*/
-    QGraphicsColorizeEffect* highlight = new QGraphicsColorizeEffect();
-    highlight->setColor(Qt::green);
-    if(enabled) {
-      if(QGraphicsItemGroup::graphicsEffect() == NULL)
-        QGraphicsItemGroup::setGraphicsEffect(highlight);
-    }
-    else {
-      if(QGraphicsItemGroup::graphicsEffect() != NULL)
-        QGraphicsItemGroup::setGraphicsEffect(NULL);
-    }
   }
 };
 

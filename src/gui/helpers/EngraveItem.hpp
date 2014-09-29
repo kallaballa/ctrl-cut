@@ -23,8 +23,7 @@
 
 #include "engrave/Engrave.hpp"
 #include "config/EngraveSettings.hpp"
-#include <qgraphicsitem.h>
-#include "helpers/Qt.hpp"
+#include "GraphicsItems.hpp"
 
 class EngraveItem: public AbstractCtrlCutItem {
 public:
@@ -37,7 +36,7 @@ public:
   void init();
 
   void commit() {
-    const QPointF& pos = this->pos();
+    const QPointF& pos = this->scenePos();
     this->engraving.settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
   }
 };

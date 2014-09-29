@@ -21,7 +21,7 @@
 
 #include "cut/Cut.hpp"
 #include "config/CutSettings.hpp"
-#include "Qt.hpp"
+#include "GraphicsItems.hpp"
 
 class CutItem: public AbstractCtrlCutItem {
 public:
@@ -34,7 +34,7 @@ public:
   void init();
 
   void commit() {
-    const QPointF& pos = this->pos();
+    const QPointF& pos = this->scenePos();
     this->cut.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
   }
 };

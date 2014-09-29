@@ -51,6 +51,7 @@ HEADERS += ./MainWindow.hpp \
            ./StreamUtils.hpp \
 	   ./ObjectPropertyWidget.hpp \
            ./helpers/Qt.hpp \
+           ./helpers/GraphicsItems.hpp \
            ./helpers/PathItem.hpp \
            ./helpers/CutItem.hpp \
            ./helpers/EngraveCanvas.hpp \
@@ -67,6 +68,7 @@ SOURCES += ./gui.cpp \
            ./helpers/CutItem.cpp \
            ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
+           ./helpers/GraphicsItems.cpp \
            ./helpers/EngraveCanvas.cpp \
            ./helpers/EngraveItem.cpp \
            ./helpers/DocumentHolder.cpp \

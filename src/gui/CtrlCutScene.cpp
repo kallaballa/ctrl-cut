@@ -97,14 +97,14 @@ void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   QGraphicsScene::mousePressEvent(event);
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
       event->buttonDownScenePos(Qt::LeftButton).y());
-  std::cerr << "press: " << mousePos.x() << ", " << mousePos.y() << std::endl;
+  //  std::cerr << "press: " << mousePos.x() << ", " << mousePos.y() << std::endl;
   QList<QGraphicsItem* > selected = selectedItems();
   if (!selected.empty()) {
     movingItem = selected.first();
 
     if (movingItem != 0 && event->button() == Qt::LeftButton) {
-      std::cerr << "press: " << movingItem->pos().x() << ", "
-          << movingItem->pos().y() << std::endl;
+      //      std::cerr << "press: " << movingItem->pos().x() << ", "
+      //          << movingItem->pos().y() << std::endl;
       oldPos = movingItem->pos();
     }
 
@@ -117,12 +117,11 @@ void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
       event->buttonDownScenePos(Qt::LeftButton).y());
-  std::cerr << "release: " << mousePos.x() << ", " << mousePos.y() << std::endl;
-
-  std::cerr << "movingItem: " << movingItem << std::endl;
-  std::cerr << "button: " << event->button() << std::endl;
+  //  std::cerr << "release: " << mousePos.x() << ", " << mousePos.y() << std::endl;
+  //  std::cerr << "movingItem: " << movingItem << std::endl;
+  //  std::cerr << "button: " << event->button() << std::endl;
   if (movingItem != 0 && event->button() == Qt::LeftButton) {
-    std::cerr << "release: " << movingItem->pos().x() << ", " << movingItem->pos().y() << std::endl;
+    //    std::cerr << "release: " << movingItem->pos().x() << ", " << movingItem->pos().y() << std::endl;
     if (oldPos != movingItem->pos())
       emit itemMoved(movingItem, oldPos);
     movingItem = 0;
@@ -135,15 +134,9 @@ void CtrlCutScene::attachDocumentHolder(DocumentHolder* docHolder) {
   this->detachDocumentHolder();
   this->docHolder = docHolder;
 
-  foreach(CutItem* ci, this->docHolder->cutItems)
-    {
-      this->addItem(ci);
-    }
-
-  foreach(EngraveItem* ei, this->docHolder->engraveItems)
-    {
-      this->addItem(ei);
-    }
+  foreach(AbstractCtrlCutItem *item, this->docHolder->items) {
+    this->addItem(item);
+  }
 }
 
 void CtrlCutScene::open(const QString& filename) {
@@ -187,69 +180,42 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
     CutItem* ci = new CutItem(**it);
     ci->setZValue(++this->currentZ);
-    this->docHolder->cutItems.append(ci);
-    this->addItem(ci);
+    this->add(*ci);
   }
 
   const Document::EngraveList& engravings = doc.engravings();
   for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
     EngraveItem* ei = new EngraveItem(**it);
     ei->setZValue(++this->currentZ);
-    this->docHolder->engraveItems.append(ei);
-    this->addItem(ei);
+    this->add(*ei);
   }
 
   this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
 }
 
 void CtrlCutScene::add(class AbstractCtrlCutItem &item) {
-  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
-    this->docHolder->add(*cutItem);
-  }
-  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
-    this->docHolder->add(*engraveItem);
-  }
-  else {
-    return;
-  }
+  this->docHolder->add(item);
   this->addItem(&item);
 }
 
 void CtrlCutScene::remove(AbstractCtrlCutItem &item) {
-  if (CutItem *cutItem = dynamic_cast<CutItem *>(&item)) {
-    this->docHolder->remove(*cutItem);
-  }
-  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
-    this->docHolder->remove(*engraveItem);
-  }
-  else {
-    return;
-  }
+  this->docHolder->remove(item);
   this->removeItem(&item);
 }
 
 void CtrlCutScene::detachDocumentHolder() {
-  foreach(CutItem* ci, docHolder->cutItems)
-     {
-       this->removeItem(ci);
-     }
-
-   foreach(EngraveItem* ei, docHolder->engraveItems)
-     {
-       this->removeItem(ei);
-     }
+  foreach(AbstractCtrlCutItem *item, docHolder->items) {
+    this->removeItem(item);
+  }
 }
+
 void CtrlCutScene::reset() {
   this->detachDocumentHolder();
 
   if(this->docHolder->doc != NULL)
     this->docHolder->doc->clear();
 
-  while (!this->docHolder->cutItems.empty())
-    this->docHolder->cutItems.takeFirst();
-
-  while (!this->docHolder->engraveItems.empty())
-    this->docHolder->engraveItems.takeFirst();
+  this->docHolder->items.clear();
 }
 
 void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {

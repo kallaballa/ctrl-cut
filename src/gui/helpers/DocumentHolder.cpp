@@ -32,27 +32,28 @@ DocumentHolder::DocumentHolder(const DocumentHolder& other) {
 void DocumentHolder::operator=(const DocumentHolder& other) {
   //FIXME memory leak
   this->doc = new Document(*other.doc);
-  this->cutItems = other.cutItems;
-  this->engraveItems = other.engraveItems;
+  this->items = other.items;
   this->filename = other.filename;
 }
 
-void DocumentHolder::add(CutItem& cutItem) {
-  this->doc->push_back(&cutItem.cut);
-  this->cutItems.append(&cutItem);
+void DocumentHolder::add(AbstractCtrlCutItem &item) {
+
+  this->items.append(&item);
+  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
+    this->doc->push_back(&cutItem->cut);
+  }
+  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
+    this->doc->push_back(&engraveItem->engraving);
+  }
 }
 
-void DocumentHolder::remove(CutItem& cutItem) {
-  this->doc->remove(&cutItem.cut);
-  this->cutItems.removeOne(&cutItem);
-}
+void DocumentHolder::remove(AbstractCtrlCutItem &item) {
 
-void DocumentHolder::add(EngraveItem& engraveItem) {
-  this->doc->push_back(&engraveItem.engraving);
-  this->engraveItems.append(&engraveItem);
-}
-
-void DocumentHolder::remove(EngraveItem& engraveItem) {
-  this->doc->remove(&engraveItem.engraving);
-  this->engraveItems.removeOne(&engraveItem);
+  this->items.removeOne(&item);
+  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
+    this->doc->remove(&cutItem->cut);
+  }
+  else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
+    this->doc->remove(&engraveItem->engraving);
+  }
 }

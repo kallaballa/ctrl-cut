@@ -103,6 +103,7 @@
      CutItem* ci;
      EngraveItem* ei;
 
+     // FIXME: Handle Group items
      if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
        scene->remove(*ci);
      } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {

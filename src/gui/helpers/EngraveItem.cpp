@@ -18,6 +18,7 @@
  */
 
 #include "EngraveItem.hpp"
+#include "Qt.hpp"
 
 EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
   init();

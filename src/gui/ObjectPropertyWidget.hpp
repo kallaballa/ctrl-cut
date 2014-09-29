@@ -41,8 +41,9 @@ public:
 
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
-  void enable(class CutItem* ci);
-  void enable(class EngraveItem* ei);
+  void enable(class AbstractCtrlCutItem* item);
+  void enableCutItem(class CutItem* ci);
+  void enableEngraveItem(class EngraveItem* ei);
   void disable();
   void update();
 
