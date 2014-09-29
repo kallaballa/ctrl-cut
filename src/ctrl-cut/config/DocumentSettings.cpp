@@ -19,7 +19,6 @@
 
 #include "DocumentSettings.hpp"
 #include "EngraveSettings.hpp"
-#include "BitmapSettings.hpp"
 #include "CutSettings.hpp"
 #include "util/Measurement.hpp"
 
