@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
   parser.load(cutFile, doc, newCuts, newEngravings);
   doc.put(DocumentSettings::FILENAME, cutFile);
 
-  for(Cut* cut : newCuts) {
+  for(CutPtr cut : newCuts) {
     cut->normalize();
     cut->sort();
     cut->translate();

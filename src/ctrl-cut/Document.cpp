@@ -36,7 +36,7 @@ typedef EngraveSettings ES;
 typedef DocumentSettings DS;
 typedef CutSettings CS;
 
-void Document::push_back(Cut* cut) {
+void Document::push_back(CutPtr cut) {
   this->cutList.push_back(cut);
 }
 
@@ -44,7 +44,7 @@ void Document::push_back(Engraving* raster) {
   this->engraveList.push_back(raster);
 }
 
-void Document::remove(Cut* cut) {
+void Document::remove(CutPtr cut) {
   this->cutList.remove(cut);
 }
 
@@ -231,14 +231,14 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       }
     }
 
-    Cut *cut = NULL;
+    CutPtr cut = NULL;
     if (loadCut) {
       if (docFormat == VECTOR) {
-        cut = new Cut(this->settings());
+        cut = CutPtr(new Cut(this->settings()));
         cut->load(filename);
       }
       else if (parser) {
-        cut = new Cut(this->settings());
+        cut = CutPtr(new Cut(this->settings()));
         cut->load(parser->getVectorData());
       }
 

@@ -59,14 +59,14 @@ void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->disable();
   this->ci = ci;
-  this->ci->cut.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
+  this->ci->cut->settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
 
-  Point pos = this->ci->cut.get(CS::CPOS);
-  int speed = this->ci->cut.get(CS::CSPEED);
-  int power = this->ci->cut.get(CS::CPOWER);
-  int freq = this->ci->cut.get(CS::FREQUENCY);
-  CS::Sort sort = this->ci->cut.get(CS::SORT);
-  this->currentResolution = this->ci->cut.get(DS::RESOLUTION);
+  Point pos = this->ci->cut->get(CS::CPOS);
+  int speed = this->ci->cut->get(CS::CSPEED);
+  int power = this->ci->cut->get(CS::CPOWER);
+  int freq = this->ci->cut->get(CS::FREQUENCY);
+  CS::Sort sort = this->ci->cut->get(CS::SORT);
+  this->currentResolution = this->ci->cut->get(DS::RESOLUTION);
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
@@ -194,7 +194,7 @@ void ObjectPropertyWidget::update() {
 
 void ObjectPropertyWidget::disable() {
   if(this->currentState == Cut) {
-    this->ci->cut.settings.deleteUpdateTrigger();
+    this->ci->cut->settings.deleteUpdateTrigger();
     this->ci = NULL;
   } else if(this->currentState == Engraving) {
     this->ei->engraving.settings.deleteUpdateTrigger();
@@ -209,7 +209,7 @@ void ObjectPropertyWidget::on_power_update(const QString& p) {
     QString val = QString(p).remove(p.length() -1,1);
     std::cerr << val.toStdString() << std::endl;
     if(currentState == Cut)
-      this->ci->cut.put(CS::CPOWER, val.toInt());
+      this->ci->cut->put(CS::CPOWER, val.toInt());
     else if(currentState == Engraving) {
       this->ei->engraving.put(ES::EPOWER, val.toInt());
     }
@@ -221,7 +221,7 @@ void ObjectPropertyWidget::on_speed_update(const QString& s)  {
     QString val = QString(s).remove(s.length() -1,1);
     std::cerr << val.toStdString() << std::endl;
     if(currentState == Cut)
-      this->ci->cut.put(CS::CSPEED, val.toInt());
+      this->ci->cut->put(CS::CSPEED, val.toInt());
     else if(currentState == Engraving) {
       this->ei->engraving.put(ES::ESPEED, val.toInt());
     }
@@ -232,16 +232,16 @@ void ObjectPropertyWidget::on_frequency_update(const QString& f)  {
   if(f.length() > 0 && currentState == Cut) {
     QString val = QString(f).remove(f.length() -2,2);
     std::cerr << val.toStdString() << std::endl;
-    this->ci->cut.put(CS::FREQUENCY, val.toInt());
+    this->ci->cut->put(CS::FREQUENCY, val.toInt());
   }
 }
 
 void ObjectPropertyWidget::on_posX_update(const QString& x)  {
   if(currentState == Cut) {
-    Point pos = this->ci->cut.get(CS::CPOS);
+    Point pos = this->ci->cut->get(CS::CPOS);
     pos.x = Distance(x.toDouble(), currentUnit, currentResolution).in(PX);
 
-    this->ci->cut.put(CS::CPOS, pos);
+    this->ci->cut->put(CS::CPOS, pos);
     this->ci->setPos(pos.x, pos.y);
   }
   else if(currentState == Engraving) {
@@ -254,9 +254,9 @@ void ObjectPropertyWidget::on_posX_update(const QString& x)  {
 
 void ObjectPropertyWidget::on_posY_update(const QString& y)  {
   if(currentState == Cut) {
-    Point pos = this->ci->cut.get(CS::CPOS);
+    Point pos = this->ci->cut->get(CS::CPOS);
     pos.y = Distance(y.toDouble(), currentUnit, currentResolution).in(PX);
-    this->ci->cut.put(CS::CPOS, pos);
+    this->ci->cut->put(CS::CPOS, pos);
     this->ci->setPos(pos.x, pos.y);
   }
   else if(currentState == Engraving) {
@@ -271,13 +271,13 @@ void ObjectPropertyWidget::on_sort_update(int s) {
   if(currentState == Cut) {
     switch(s) {
     case 0:
-      this->ci->cut.put(CS::SORT, CS::SIMPLE);
+      this->ci->cut->put(CS::SORT, CS::SIMPLE);
         break;
     case 1:
-      this->ci->cut.put(CS::SORT, CS::INNER_OUTER);
+      this->ci->cut->put(CS::SORT, CS::INNER_OUTER);
         break;
     case 2:
-      this->ci->cut.put(CS::SORT, CS::SHORTEST_PATH);
+      this->ci->cut->put(CS::SORT, CS::SHORTEST_PATH);
         break;
     }
   }

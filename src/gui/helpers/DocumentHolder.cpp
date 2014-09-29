@@ -50,7 +50,7 @@ void DocumentHolder::addItem(AbstractCtrlCutItem &item)
 void DocumentHolder::addToDocument(AbstractCtrlCutItem &item)
 {
   if (CutItem *cutItem = dynamic_cast<CutItem *>(&item)) {
-    this->doc->push_back(&cutItem->cut);
+    this->doc->push_back(cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
     this->doc->push_back(&engraveItem->engraving);
@@ -71,7 +71,7 @@ void DocumentHolder::remove(AbstractCtrlCutItem &item)
 void DocumentHolder::removeFromDocument(AbstractCtrlCutItem &item)
 {
   if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
-    this->doc->remove(&cutItem->cut);
+    this->doc->remove(cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
     this->doc->remove(&engraveItem->engraving);

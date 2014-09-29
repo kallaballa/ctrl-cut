@@ -169,7 +169,7 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
   for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
-    CutItem* ci = new CutItem(**it);
+    CutItem* ci = new CutItem(*it);
     ci->setZValue(++this->currentZ);
     // Don't add to document as it's already there
     this->docHolder->addItem(*ci);

@@ -25,9 +25,9 @@
 
 class CutItem: public AbstractCtrlCutItem {
 public:
-  Cut& cut;
+  CutPtr cut;
 
-  CutItem(Cut& cut);
+  CutItem(CutPtr cut);
   CutItem(const CutItem& cutItem);
   virtual ~CutItem(){};
 
@@ -35,7 +35,7 @@ public:
 
   void commit() {
     const QPointF& pos = this->scenePos();
-    this->cut.put(CutSettings::CPOS,Point(pos.x(), pos.y()));
+    this->cut->put(CutSettings::CPOS,Point(pos.x(), pos.y()));
   }
 };
 

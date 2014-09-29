@@ -75,7 +75,7 @@ void SvgWriter::writeDocumentEnd() {
   ostream << "</svg>";
 }
 
-void SvgWriter::write(const Cut& cut, const string& style) {
+void SvgWriter::write(const CutPtr& cut, const string& style) {
   typedef CutSettings CS;
   boost::format layer = boost::format(string("<g ctrlcut:type=\"cut\" ")
       + "ctrlcut:speed=\"%d\" "
@@ -84,16 +84,16 @@ void SvgWriter::write(const Cut& cut, const string& style) {
       + "ctrlcut:sort=\"%d\" "
       + "transform=\"translate(%d, %d)\" >");
 
-  Point translate = cut.get(CS::CPOS);
+  Point translate = cut->get(CS::CPOS);
   ostream << layer
-      % cut.get(CS::CSPEED)
-      % cut.get(CS::CPOWER)
-      % cut.get(CS::FREQUENCY)
-      % cut.get(CS::SORT)
+      % cut->get(CS::CSPEED)
+      % cut->get(CS::CPOWER)
+      % cut->get(CS::FREQUENCY)
+      % cut->get(CS::SORT)
       % translate.x % translate.y
       << std::endl;
 
-  write(static_cast<const Route&>(cut), style);
+  write(static_cast<const Route&>(*cut), style);
   ostream << "</g>" << std::endl;
 }
 
@@ -137,8 +137,8 @@ void SvgWriter::write(const Document& d, const std::string& style) {
     this->write(*engraving, style);
   }
 
-  BOOST_FOREACH(const Cut* cut, d.cuts()) {
-    this->write(*cut, style);
+  BOOST_FOREACH(const CutPtr& cut, d.cuts()) {
+    this->write(cut, style);
   }
 }
 

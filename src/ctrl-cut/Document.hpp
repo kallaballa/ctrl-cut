@@ -35,7 +35,7 @@ public:
     CTRLCUT
   };
 
-  typedef std::list<Cut*> CutList;
+  typedef std::list<CutPtr> CutList;
   typedef std::list<Engraving*> EngraveList;
   typedef CutList::iterator CutIt;
   typedef EngraveList::iterator EngraveIt;
@@ -49,7 +49,7 @@ public:
     docSettings = other.docSettings;
     const CutList& c = other.cuts();
     for(CutConstIt it = c.begin(); it != c.end(); ++it) {
-      newCut() = **it;
+      newCut() = *it;
     }
 
     const EngraveList& e = other.engravings();
@@ -60,11 +60,10 @@ public:
 
   virtual ~Document() {};
 
-  Cut& newCut() {
-    //FIXME memory leak
-    Cut* cut = new Cut(settings());
+  CutPtr newCut() {
+    CutPtr cut(new Cut(settings()));
     this->push_back(cut);
-    return *cut;
+    return cut;
   }
 
   Engraving& newEngraving() {
@@ -76,8 +75,8 @@ public:
 
   void copy(const Document& other) {
     this->docSettings = other.docSettings;
-    BOOST_FOREACH(const Cut* cut, this->cuts()) {
-      this->push_back(new Cut(*cut));
+    BOOST_FOREACH(const CutPtr cut, this->cuts()) {
+      this->push_back(CutPtr(new Cut(*cut.get())));
     }
     BOOST_FOREACH(const Engraving* engrave, this->engravings()) {
       this->push_back(new Engraving(*engrave));
@@ -98,9 +97,9 @@ public:
 
   void optimize();
 
-  void push_back(Cut* cut);
+  void push_back(CutPtr cut);
   void push_back(Engraving* engraving);
-  void remove(Cut* cut);
+  void remove(CutPtr cut);
   void remove(Engraving* engraving);
 
   Format guessFileFormat(const string& filename);

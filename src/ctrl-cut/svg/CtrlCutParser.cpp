@@ -36,7 +36,7 @@ private:
   Document::CutList* newCuts;
   Document::EngraveList* newEngs;
 
-  Cut* currentCut;
+  CutPtr currentCut;
   Engraving* currentEng;
   typedef DocumentSettings DS;
   typedef CutSettings CS;
@@ -277,7 +277,7 @@ protected:
         CtrlCutException::malformedDocument("Couldn't find sorting");
       sort = boost::lexical_cast<uint32_t>(value);
 
-      currentCut = &doc->newCut();
+      currentCut = doc->newCut();
       newCuts->push_back(currentCut);
       currentCut->put(CS::FREQUENCY, freq);
       currentCut->put(CS::CPOWER, power);

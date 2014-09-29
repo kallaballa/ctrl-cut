@@ -22,7 +22,7 @@
 #include <qgraphicsitem.h>
 #include <boost/foreach.hpp>
 
-CutItem::CutItem(Cut& cut) : AbstractCtrlCutItem(), cut(cut) {
+CutItem::CutItem(CutPtr cut) : AbstractCtrlCutItem(), cut(cut) {
   init();
 }
 
@@ -32,11 +32,11 @@ CutItem::CutItem(const CutItem& cutItem) : AbstractCtrlCutItem(), cut(cutItem.cu
 
 void CutItem::init() {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
-  this->cut.crop();
-  Point pos = this->cut.get(CutSettings::CPOS);
+  this->cut->crop();
+  Point pos = this->cut->get(CutSettings::CPOS);
   setPos(QPointF(pos.x, pos.y));
 
-  BOOST_FOREACH(const Path& p, cut) {
+  BOOST_FOREACH(const Path& p, *cut) {
     PathItem* pi = new PathItem(p);
     pi->setPos(QPointF(pos.x, pos.y));
     this->addToGroup(pi);

@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
-  for(Cut* cut : doc.cuts()) {
+  for(CutPtr cut : doc.cuts()) {
     cut->normalize();
     cut->sort();
     cut->translate();

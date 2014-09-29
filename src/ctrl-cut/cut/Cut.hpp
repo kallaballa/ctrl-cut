@@ -130,7 +130,7 @@ public:
   }
 
   void normalize() {
-    typedef CutImpl<Tcontainer, Tallocator> Cut;
+    typedef CutImpl<Tcontainer, Tallocator> CutPtr;
     typedef DocumentSettings DS;
     Distance width = this->get(DS::WIDTH);
     Distance height = this->get(DS::HEIGHT);
@@ -139,12 +139,12 @@ public:
 
     Distance reduceMax(0.2,MM, dpi);
 
-    Cut& cut = *this;
+    CutPtr& cut = *this;
     plot_svg(cut, filename + "_input");
 
-    Cut clipped = make_from(cut);
-    Cut exploded = make_from(cut);
-    Cut reduced = make_from(cut);
+    CutPtr clipped = make_from(cut);
+    CutPtr exploded = make_from(cut);
+    CutPtr reduced = make_from(cut);
 
     clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
     plot_svg(clipped, filename + "_clipped");
@@ -159,11 +159,11 @@ public:
   }
 
   void sort() {
-    typedef CutImpl<Tcontainer, Tallocator> Cut;
+    typedef CutImpl<Tcontainer, Tallocator> CutPtr;
     string filename = this->get(DocumentSettings::FILENAME);
-    Cut planar_faces = make_from(*this);
-    Cut sorted = make_from(*this);
-    Cut translated = make_from(*this);
+    CutPtr planar_faces = make_from(*this);
+    CutPtr sorted = make_from(*this);
+    CutPtr translated = make_from(*this);
 
     make_planar(*this, planar_faces);
     plot_svg(planar_faces, filename + "_planar_faces");
@@ -224,13 +224,15 @@ public:
 };
 
 typedef CutImpl<std::vector, std::allocator> Cut;
+typedef shared_ptr<Cut> CutPtr;
 
-inline MultiSegmentView<const Cut> segments(const Cut& cut) {
-  return MultiSegmentView<const Cut>(cut);
+
+inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {
+  return MultiSegmentView<const Cut>(*cut.get());
 }
 
-inline MultiPointView<const Cut> points(const Cut& cut) {
-  return MultiPointView<const Cut>(cut);
+inline MultiPointView<const Cut> points(const CutPtr& cut) {
+  return MultiPointView<const Cut>(*cut.get());
 }
 
 #endif /* CUT_H_ */

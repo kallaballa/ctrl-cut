@@ -223,7 +223,7 @@ void ImportCommand::modify() {
     this->scene->load(filename, loadVector, loadRaster);
   }
 }
-
+/*
  SimplifyCommand::SimplifyCommand(CtrlCutScene* scene, QUndoCommand *parent) :
    QUndoCommand(parent), scene(scene) {
    foreach(QGraphicsItem* item, scene->selectedItems()) {
@@ -253,7 +253,7 @@ void ImportCommand::modify() {
        ci->commit();
        //FIXME memory leak
        std::cerr << ci->cut.get(CutSettings::CPOS) << std::endl;
-       Cut* newCut = new Cut(ci->cut.settings);
+       CutPtr* newCut = new CutPtr(ci->cut.settings);
        std::cerr << newCut->get(CutSettings::CPOS) << std::endl;
        reduce(ci->cut, *newCut, Distance(1, MM,75).in(PX));
        CutItem* newItem = new CutItem(*newCut);
@@ -271,7 +271,7 @@ void ImportCommand::modify() {
 
    this->scene->update();
  }
-
+*/
 LowerItemCommand::LowerItemCommand(CtrlCutScene* scene, QUndoCommand *parent) :
     CtrlCutUndo(scene, parent) {
   setText("Lower item");

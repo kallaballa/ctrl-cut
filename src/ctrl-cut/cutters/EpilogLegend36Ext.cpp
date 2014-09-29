@@ -117,7 +117,7 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
     out << PCL_SECTION_END;
 
     /* We're going to perform a vector print. */
-    BOOST_FOREACH(Cut* cutp, doc.cuts()) {
+    BOOST_FOREACH(CutPtr cutp, doc.cuts()) {
       Cut& cut = *cutp;
       Cut translated = make_from(cut);
       Point pos = cut.get(CutSettings::CPOS);
