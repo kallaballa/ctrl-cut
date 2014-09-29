@@ -325,7 +325,7 @@ void MainWindow::on_filePrintAction_triggered()
 
     EpilogLegend36Ext cutter;
     cutter.write(*this->scene->getDocumentHolder().doc,ostream);
-
+    ostream << std::endl;
     tmpfile.close();
 
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
@@ -414,7 +414,7 @@ MainWindow::on_helpAboutAction_triggered()
   qApp->setWindowIcon(QApplication::windowIcon());
   QMessageBox::information(this, "About Ctrl-Cut",
                            QString("Ctrl-Cut " TOSTRING(CTRLCUT_VERSION) " (http://github.com/metalab/ctrl-cut)\n") +
-                           QString("Copyright (C) 2009-2011 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>\n"
+                           QString("Copyright (C) 2009-2014 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>\n"
                                    "\n"
                                    "This program is free software; you can redistribute it and/or modify"
                                    "it under the terms of the GNU General Public License as published by"
