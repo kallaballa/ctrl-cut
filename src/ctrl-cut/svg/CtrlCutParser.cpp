@@ -37,7 +37,7 @@ private:
   Document::EngraveList* newEngs;
 
   CutPtr currentCut;
-  Engraving* currentEng;
+  EngravingPtr currentEng;
   typedef DocumentSettings DS;
   typedef CutSettings CS;
   typedef EngraveSettings ES;
@@ -224,7 +224,7 @@ protected:
         CtrlCutException::malformedDocument("Couldn't find dithering");
       dither = boost::lexical_cast<uint32_t>(value);
 
-      currentEng = &doc->newEngraving();
+      currentEng = doc->newEngraving();
       newEngs->push_back(currentEng);
       currentEng->put(ES::EPOWER, power);
       currentEng->put(ES::ESPEED, speed);

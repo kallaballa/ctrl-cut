@@ -31,16 +31,16 @@ using boost::format;
 
 typedef EngraveSettings ES;
 
-void PclEncoder::encode(std::ostream &out, const Engraving& raster)
+void PclEncoder::encode(std::ostream &out, const EngravingPtr raster)
 {
-  GrayscaleImage gs = raster.getImage();
-  Dither& dither = Dither::create(gs, raster.get(ES::DITHERING));
-  BitmapImage image = dither.dither(raster.get(ES::EPOS));
+  GrayscaleImage gs = raster->getImage();
+  Dither& dither = Dither::create(gs, raster->get(ES::DITHERING));
+  BitmapImage image = dither.dither(raster->get(ES::EPOS));
 
-  const Point& pos = raster.get(EngraveSettings::EPOS);
+  const Point& pos = raster->get(EngraveSettings::EPOS);
 
   LOG_DEBUG_STR("Encode raster");
-  ES::Direction direction = raster.settings.get(ES::DIRECTION);
+  ES::Direction direction = raster->settings.get(ES::DIRECTION);
   // Raster direction (1 = up)
   out << format(R_DIRECTION) % direction;
   // start at current position

@@ -27,8 +27,8 @@
 #include "engrave/dither/Dither.hpp"
 #include "image/PPMFile.hpp"
 #include <list>
+#include <memory>
 #include <Magick++.h>
-
 
 template<typename Timage>
 class EngravingImpl
@@ -46,14 +46,14 @@ public:
   EngravingImpl(const EngraveSettings& settings)
   : settings(settings) {}
 
+  ~EngravingImpl() {
+    if(image.isAllocated())
+      free(image.data());
+  }
 
   void load(const string& filename) {
     std::string suffix = filename.substr(filename.rfind(".") + 1);
     this->image = loadpbm(filename);
-  }
-
-  ~EngravingImpl() {
-     delete image.data();
   }
 
   void setImage(const Timage& image) {
@@ -95,4 +95,6 @@ public:
 };
 
 typedef EngravingImpl<GrayscaleImage> Engraving;
+typedef std::shared_ptr<Engraving> EngravingPtr;
+
 #endif

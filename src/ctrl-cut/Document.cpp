@@ -36,11 +36,28 @@ typedef EngraveSettings ES;
 typedef DocumentSettings DS;
 typedef CutSettings CS;
 
+Document::Document(const Document& other) {
+  docSettings = other.docSettings;
+  const CutList& c = other.cuts();
+  Cut* cut;
+  Engraving* eng;
+  for (CutConstIt it = c.begin(); it != c.end(); ++it) {
+    cut = newCut().get();
+    (*cut) = *(*it).get();
+  }
+
+  const EngraveList& e = other.engravings();
+  for (EngraveConstIt it = e.begin(); it != e.end(); ++it) {
+    eng = newEngraving().get();
+    (*eng) = *(*it).get();
+  }
+}
+
 void Document::push_back(CutPtr cut) {
   this->cutList.push_back(cut);
 }
 
-void Document::push_back(Engraving* raster) {
+void Document::push_back(EngravingPtr raster) {
   this->engraveList.push_back(raster);
 }
 
@@ -48,7 +65,7 @@ void Document::remove(CutPtr cut) {
   this->cutList.remove(cut);
 }
 
-void Document::remove(Engraving* engraving) {
+void Document::remove(EngravingPtr engraving) {
   this->engraveList.remove(engraving);
 }
 
@@ -186,7 +203,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     }
 
     if (loadEngraving) {
-      Engraving* engraving = new Engraving(this->settings());
+      EngravingPtr engraving(new Engraving(this->settings()));
       if (docFormat == PBM) {
         assert(false);
   /*      std::string suffix = filename.substr(filename.rfind(".") + 1);

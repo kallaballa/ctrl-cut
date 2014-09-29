@@ -90,7 +90,7 @@ public:
   uint8_t bytes_per_pixel;
   uint8_t comp;
 
-  Image() : AbstractImage(0, 0, NULL), comp(0) {}
+  Image() : AbstractImage(0, 0, NULL), bytes_per_pixel(0), comp(0) {}
 
   Image(uint32_t width, uint32_t height, uint8_t components, void *pixelbuffer = NULL) :
     AbstractImage(width, height, pixelbuffer), comp(components) {
@@ -101,7 +101,8 @@ public:
 
   Image(const Image& other) : AbstractImage(other), bytes_per_pixel(other.bytes_per_pixel), comp(other.comp){}
 
-  virtual ~Image() {}
+  virtual ~Image() {
+  }
   
   /*!
     Returns the given subrectangle of this image as a new image.

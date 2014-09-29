@@ -97,8 +97,8 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
    */
 
   if (enable_engraving) {
-    BOOST_FOREACH(const Engraving* e, doc.engravings()) {
-      PclEncoder::encode(out, *e);
+    BOOST_FOREACH(const EngravingPtr e, doc.engravings()) {
+      PclEncoder::encode(out, e);
     }
   }
 

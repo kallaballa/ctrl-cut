@@ -75,7 +75,7 @@ void SvgWriter::writeDocumentEnd() {
   ostream << "</svg>";
 }
 
-void SvgWriter::write(const CutPtr& cut, const string& style) {
+void SvgWriter::write(const CutPtr cut, const string& style) {
   typedef CutSettings CS;
   boost::format layer = boost::format(string("<g ctrlcut:type=\"cut\" ")
       + "ctrlcut:speed=\"%d\" "
@@ -97,7 +97,7 @@ void SvgWriter::write(const CutPtr& cut, const string& style) {
   ostream << "</g>" << std::endl;
 }
 
-void SvgWriter::write(const Engraving& engraving, const string& style) {
+void SvgWriter::write(const EngravingPtr engraving, const string& style) {
   typedef EngraveSettings ES;
   boost::format layer = boost::format(string("<g ctrlcut:type=\"engraving\" ")
       + "ctrlcut:speed=\"%d\" "
@@ -105,16 +105,16 @@ void SvgWriter::write(const Engraving& engraving, const string& style) {
       + "ctrlcut:direction=\"%d\" "
       + "ctrlcut:dithering=\"%d\" "
       + "transform=\"translate(%d, %d)\" >");
-  Point translate = engraving.get(ES::EPOS);
+  Point translate = engraving->get(ES::EPOS);
   ostream << layer
-      % engraving.get(ES::ESPEED)
-      % engraving.get(ES::EPOWER)
-      % engraving.get(ES::DIRECTION)
-      % engraving.get(ES::DITHERING)
+      % engraving->get(ES::ESPEED)
+      % engraving->get(ES::EPOWER)
+      % engraving->get(ES::DIRECTION)
+      % engraving->get(ES::DITHERING)
       % translate.x % translate.y
       << std::endl;
 
-  GrayscaleImage img = engraving.getImage();
+  GrayscaleImage img = engraving->getImage();
   Coord_t width = img.width() - 1;
   Coord_t height = img.height() - 1;
 
@@ -133,8 +133,8 @@ void SvgWriter::write(const Engraving& engraving, const string& style) {
 }
 
 void SvgWriter::write(const Document& d, const std::string& style) {
-  BOOST_FOREACH(const Engraving* engraving, d.engravings()) {
-    this->write(*engraving, style);
+  BOOST_FOREACH(const EngravingPtr engraving, d.engravings()) {
+    this->write(engraving, style);
   }
 
   BOOST_FOREACH(const CutPtr& cut, d.cuts()) {

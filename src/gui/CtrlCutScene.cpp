@@ -156,6 +156,7 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+//FIXME get parameters from laser cutter settings
   doc.put(DocumentSettings::RESOLUTION, 600);
   doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
   doc.put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
@@ -178,7 +179,7 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
 
   const Document::EngraveList& engravings = doc.engravings();
   for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
-    EngraveItem* ei = new EngraveItem(**it);
+    EngraveItem* ei = new EngraveItem(*it);
     ei->setZValue(++this->currentZ);
     // Don't add to document as it's already there
     this->docHolder->addItem(*ei);
@@ -270,7 +271,6 @@ void CtrlCutScene::makeBackground() {
     QPolygon polygon;
     uint32_t width = docHolder->doc->get(DocumentSettings::WIDTH).in(PX);
     uint32_t height = docHolder->doc->get(DocumentSettings::HEIGHT).in(PX);
-    uint32_t resolution = docHolder->doc->get(DocumentSettings::RESOLUTION);
 
     QPen p(Qt::blue);
     polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);

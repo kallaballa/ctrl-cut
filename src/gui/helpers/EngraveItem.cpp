@@ -20,7 +20,7 @@
 #include "EngraveItem.hpp"
 #include "Qt.hpp"
 
-EngraveItem::EngraveItem(Engraving& engraving) : AbstractCtrlCutItem(), engraving(engraving) {
+EngraveItem::EngraveItem(EngravingPtr engraving) : AbstractCtrlCutItem(), engraving(engraving) {
   init();
 }
 
@@ -31,11 +31,11 @@ EngraveItem::EngraveItem(const EngraveItem& engraveItem) : AbstractCtrlCutItem()
 void EngraveItem::init() {
   QGraphicsItemGroup::setFlags(QGraphicsItem::ItemIsSelectable | 
                                QGraphicsItem::ItemIsMovable);
-  GrayscaleImage gs = engraving.getImage();
+  GrayscaleImage gs = engraving->getImage();
   QImage& img = QtMake::make_QImage(gs);
   img.bits();
   QPixmap pixmap = QPixmap::fromImage(img);
-  Point pos = engraving.get(EngraveSettings::EPOS);
+  Point pos = engraving->get(EngraveSettings::EPOS);
   this->setPos(QPointF(pos.x, pos.y));
   if (!pixmap.isNull()) {
     QGraphicsPixmapItem* pixmapItem = new QGraphicsPixmapItem(pixmap, this);

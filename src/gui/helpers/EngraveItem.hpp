@@ -27,9 +27,9 @@
 
 class EngraveItem: public AbstractCtrlCutItem {
 public:
-  Engraving& engraving;
+  EngravingPtr engraving;
 
-  EngraveItem(Engraving& engraving);
+  EngraveItem(EngravingPtr engraving);
   EngraveItem(const EngraveItem& engraveItem);
   virtual ~EngraveItem(){};
 
@@ -37,7 +37,7 @@ public:
 
   void commit() {
     const QPointF& pos = this->scenePos();
-    this->engraving.settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
+    this->engraving->settings.put(EngraveSettings::EPOS,Point(pos.x(), pos.y()));
   }
 };
 

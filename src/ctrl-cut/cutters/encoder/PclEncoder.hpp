@@ -26,7 +26,7 @@
 
 class PclEncoder {
 public:
-	static void encode(std::ostream &out, const Engraving& raster);
+	static void encode(std::ostream &out, const EngravingPtr raster);
 };
 
 #endif /* PCL_RENDERER_H_ */

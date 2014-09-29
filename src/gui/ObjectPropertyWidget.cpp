@@ -115,14 +115,14 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
 void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   this->disable();
   this->ei = ei;
-  this->ei->engraving.settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));
+  this->ei->engraving->settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));
 
-  Point pos = this->ei->engraving.get(ES::EPOS);
-  int speed = this->ei->engraving.get(ES::ESPEED);
-  int power = this->ei->engraving.get(ES::EPOWER);
-  this->currentResolution = this->ei->engraving.get(DS::RESOLUTION);
-  ES::Dithering dither = this->ei->engraving.get(ES::DITHERING);
-  ES::Direction direction = this->ei->engraving.get(ES::DIRECTION);
+  Point pos = this->ei->engraving->get(ES::EPOS);
+  int speed = this->ei->engraving->get(ES::ESPEED);
+  int power = this->ei->engraving->get(ES::EPOWER);
+  this->currentResolution = this->ei->engraving->get(DS::RESOLUTION);
+  ES::Dithering dither = this->ei->engraving->get(ES::DITHERING);
+  ES::Direction direction = this->ei->engraving->get(ES::DIRECTION);
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
 
@@ -197,7 +197,7 @@ void ObjectPropertyWidget::disable() {
     this->ci->cut->settings.deleteUpdateTrigger();
     this->ci = NULL;
   } else if(this->currentState == Engraving) {
-    this->ei->engraving.settings.deleteUpdateTrigger();
+    this->ei->engraving->settings.deleteUpdateTrigger();
     this->ei = NULL;
   }
   QWidget::setEnabled(false);
@@ -211,7 +211,7 @@ void ObjectPropertyWidget::on_power_update(const QString& p) {
     if(currentState == Cut)
       this->ci->cut->put(CS::CPOWER, val.toInt());
     else if(currentState == Engraving) {
-      this->ei->engraving.put(ES::EPOWER, val.toInt());
+      this->ei->engraving->put(ES::EPOWER, val.toInt());
     }
   }
 }
@@ -223,7 +223,7 @@ void ObjectPropertyWidget::on_speed_update(const QString& s)  {
     if(currentState == Cut)
       this->ci->cut->put(CS::CSPEED, val.toInt());
     else if(currentState == Engraving) {
-      this->ei->engraving.put(ES::ESPEED, val.toInt());
+      this->ei->engraving->put(ES::ESPEED, val.toInt());
     }
   }
 }
@@ -245,9 +245,9 @@ void ObjectPropertyWidget::on_posX_update(const QString& x)  {
     this->ci->setPos(pos.x, pos.y);
   }
   else if(currentState == Engraving) {
-    Point pos = this->ei->engraving.get(ES::EPOS);
+    Point pos = this->ei->engraving->get(ES::EPOS);
     pos.x = Distance(x.toDouble(), currentUnit, currentResolution).in(PX);
-    this->ei->engraving.put(ES::EPOS, pos);
+    this->ei->engraving->put(ES::EPOS, pos);
     this->ei->setPos(pos.x, pos.y);
   }
 }
@@ -260,9 +260,9 @@ void ObjectPropertyWidget::on_posY_update(const QString& y)  {
     this->ci->setPos(pos.x, pos.y);
   }
   else if(currentState == Engraving) {
-    Point pos = this->ei->engraving.get(ES::EPOS);
+    Point pos = this->ei->engraving->get(ES::EPOS);
     pos.y = Distance(y.toDouble(), currentUnit, currentResolution).in(PX);
-    this->ei->engraving.put(ES::EPOS, pos);
+    this->ei->engraving->put(ES::EPOS, pos);
     this->ei->setPos(pos.x, pos.y);
   }
 }
@@ -286,9 +286,9 @@ void ObjectPropertyWidget::on_sort_update(int s) {
 void ObjectPropertyWidget::on_direction_update(int d) {
   if(currentState == Engraving) {
       if(d == 0)
-        this->ei->engraving.put(ES::DIRECTION, ES::TOPDOWN);
+        this->ei->engraving->put(ES::DIRECTION, ES::TOPDOWN);
       else
-        this->ei->engraving.put(ES::DIRECTION, ES::BOTTOMUP);
+        this->ei->engraving->put(ES::DIRECTION, ES::BOTTOMUP);
   }
 }
 
@@ -296,28 +296,28 @@ void ObjectPropertyWidget::on_dithering_update(int d) {
   if(currentState == Engraving) {
     switch(d) {
     case 0:
-      this->ei->engraving.put(ES::DITHERING, ES::DEFAULT_DITHERING);
+      this->ei->engraving->put(ES::DITHERING, ES::DEFAULT_DITHERING);
         break;
     case 1:
-      this->ei->engraving.put(ES::DITHERING, ES::BAYER);
+      this->ei->engraving->put(ES::DITHERING, ES::BAYER);
         break;
     case 2:
-      this->ei->engraving.put(ES::DITHERING, ES::FLOYD_STEINBERG);
+      this->ei->engraving->put(ES::DITHERING, ES::FLOYD_STEINBERG);
         break;
     case 3:
-      this->ei->engraving.put(ES::DITHERING, ES::JARVIS);
+      this->ei->engraving->put(ES::DITHERING, ES::JARVIS);
         break;
     case 4:
-      this->ei->engraving.put(ES::DITHERING, ES::STUCKI);
+      this->ei->engraving->put(ES::DITHERING, ES::STUCKI);
         break;
     case 5:
-      this->ei->engraving.put(ES::DITHERING, ES::BURKE);
+      this->ei->engraving->put(ES::DITHERING, ES::BURKE);
         break;
     case 6:
-      this->ei->engraving.put(ES::DITHERING, ES::SIERRA2);
+      this->ei->engraving->put(ES::DITHERING, ES::SIERRA2);
         break;
     case 7:
-      this->ei->engraving.put(ES::DITHERING, ES::SIERRA3);
+      this->ei->engraving->put(ES::DITHERING, ES::SIERRA3);
         break;
     }
   }

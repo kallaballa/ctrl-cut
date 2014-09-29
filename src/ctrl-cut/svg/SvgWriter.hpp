@@ -43,8 +43,8 @@ public:
   void write(const Path& p, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1;fill:rgb(255,255,0);fill-opacity:0.5;stroke-opacity:0.8");
   void write(const Route& r, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1;fill:rgb(255,0,0);fill-opacity:0.5;stroke-opacity:0.8");
   void write(const string& text, const Point& p, const string& style = "font-size=\"12\" fill=\"purple\"");
-  void write(const CutPtr& cut, const string& style = "");
-  void write(const Engraving& engraving, const string& style = "");
+  void write(const CutPtr cut, const string& style = "");
+  void write(const EngravingPtr engraving, const string& style = "");
   void write(const Document& d, const string& style = "");
 
 private:
