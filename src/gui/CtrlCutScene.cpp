@@ -130,15 +130,6 @@ void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QGraphicsScene::mouseReleaseEvent(event);
 }
 
-void CtrlCutScene::attachDocumentHolder(DocumentHolder* docHolder) {
-  this->detachDocumentHolder();
-  this->docHolder = docHolder;
-
-  foreach(AbstractCtrlCutItem *item, this->docHolder->items) {
-    this->addItem(item);
-  }
-}
-
 void CtrlCutScene::open(const QString& filename) {
   this->reset();
   load(filename);
@@ -180,14 +171,18 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
   for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
     CutItem* ci = new CutItem(**it);
     ci->setZValue(++this->currentZ);
-    this->add(*ci);
+    // Don't add to document as it's already there
+    this->docHolder->addItem(*ci);
+    this->addItem(ci);
   }
 
   const Document::EngraveList& engravings = doc.engravings();
   for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
     EngraveItem* ei = new EngraveItem(**it);
     ei->setZValue(++this->currentZ);
-    this->add(*ei);
+    // Don't add to document as it's already there
+    this->docHolder->addItem(*ei);
+    this->addItem(ei);
   }
 
   this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
@@ -201,6 +196,15 @@ void CtrlCutScene::add(class AbstractCtrlCutItem &item) {
 void CtrlCutScene::remove(AbstractCtrlCutItem &item) {
   this->docHolder->remove(item);
   this->removeItem(&item);
+}
+
+void CtrlCutScene::attachDocumentHolder(DocumentHolder* docHolder) {
+  this->detachDocumentHolder();
+  this->docHolder = docHolder;
+
+  foreach(AbstractCtrlCutItem *item, this->docHolder->items) {
+    this->addItem(item);
+  }
 }
 
 void CtrlCutScene::detachDocumentHolder() {

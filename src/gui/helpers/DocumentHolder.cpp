@@ -36,24 +36,49 @@ void DocumentHolder::operator=(const DocumentHolder& other) {
   this->filename = other.filename;
 }
 
-void DocumentHolder::add(AbstractCtrlCutItem &item) {
+void DocumentHolder::add(AbstractCtrlCutItem &item)
+{
+  addItem(item);
+  addToDocument(item);
+}
 
+void DocumentHolder::addItem(AbstractCtrlCutItem &item)
+{
   this->items.append(&item);
+}
+
+void DocumentHolder::addToDocument(AbstractCtrlCutItem &item)
+{
   if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
     this->doc->push_back(&cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
     this->doc->push_back(&engraveItem->engraving);
   }
+  else if (CtrlCutGroupItem *groupItem = dynamic_cast<CtrlCutGroupItem *>(&item)) {
+    foreach(QGraphicsItem *chitem, groupItem->childItems()) {
+      addToDocument(*dynamic_cast<AbstractCtrlCutItem*>(chitem));
+    }
+  }
 }
 
-void DocumentHolder::remove(AbstractCtrlCutItem &item) {
-
+void DocumentHolder::remove(AbstractCtrlCutItem &item)
+{
   this->items.removeOne(&item);
+  removeFromDocument(item);
+}
+
+void DocumentHolder::removeFromDocument(AbstractCtrlCutItem &item)
+{
   if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
     this->doc->remove(&cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
     this->doc->remove(&engraveItem->engraving);
+  }
+  else if (CtrlCutGroupItem *groupItem = dynamic_cast<CtrlCutGroupItem *>(&item)) {
+    foreach(QGraphicsItem *chitem, groupItem->childItems()) {
+      removeFromDocument(*dynamic_cast<AbstractCtrlCutItem*>(chitem));
+    }
   }
 }

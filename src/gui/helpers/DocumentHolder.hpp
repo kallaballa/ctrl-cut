@@ -33,7 +33,11 @@ public:
   DocumentHolder(const DocumentHolder& holder);
   void operator=(const DocumentHolder& other);
   void add(class AbstractCtrlCutItem &item);
+  void addItem(class AbstractCtrlCutItem &item);
   void remove(AbstractCtrlCutItem &item);
+private:
+  void addToDocument(class AbstractCtrlCutItem &item);
+  void removeFromDocument(AbstractCtrlCutItem &item);
 };
 
 #endif /* DOCUMENTHOLDER_H_ */

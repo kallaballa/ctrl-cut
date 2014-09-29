@@ -122,8 +122,10 @@
  {
    scene->clearSelection();
    
-   CtrlCutGroupItem *group = new CtrlCutGroupItem;
-   
+   CtrlCutGroupItem *group = new CtrlCutGroupItem; // New top-level group
+
+   // Calculate scene brect of all childen.
+   // We can use the scene brect since we're adding a top-level object
    QRectF childrenRect;
    foreach (QGraphicsItem *item, items) {
      childrenRect = childrenRect.united(item->sceneBoundingRect());
@@ -131,6 +133,9 @@
    
    foreach (QGraphicsItem *item, items) {
      if (AbstractCtrlCutItem *ccitem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+       // Modify item position. This is important to make the group
+       // brect calculate properly; it's only updated by addToGroup()
+       scene->remove(*ccitem);
        ccitem->setPos(ccitem->pos() - childrenRect.topLeft());
        group->addToGroup(ccitem);
      }
@@ -138,7 +143,7 @@
    
    group->setPos(childrenRect.topLeft());
    
-   scene->addItem(group);
+   scene->add(*group);
    group->setSelected(true);
    return group;
  }
@@ -162,8 +167,10 @@
    scene->clearSelection();
 
    QList<QGraphicsItem*> items = group->childItems();
+   scene->remove(*group);
    foreach(QGraphicsItem *ci, items) {
      group->removeFromGroup(ci);
+     scene->add(*dynamic_cast<AbstractCtrlCutItem*>(ci));
      ci->setSelected(true);
    }
    return items;
@@ -184,6 +191,7 @@
 
  void OpenCommand::modify() {
    this->scene->open(filename);
+   this->scene->getDocumentHolder().filename = filename;
  }
 
  SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
