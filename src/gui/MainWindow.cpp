@@ -239,6 +239,7 @@ void MainWindow::on_fileNewAction_triggered() {
     setWindowTitle("untitled.cut");
     setWindowFilePath("");
     this->undoStack->setClean();
+    this->scene->getDocumentHolder().filename = "";
   }
 }
 
