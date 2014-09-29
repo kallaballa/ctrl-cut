@@ -374,6 +374,7 @@
 		E094CF6319D88D8C001BEB5D /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		E094CF6519D88D8C001BEB5D /* Cut2Epilog.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = Cut2Epilog.o; sourceTree = "<group>"; };
 		E0AC29DE19D8CA0C00378833 /* GraphicsItems.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GraphicsItems.hpp; sourceTree = "<group>"; };
+		E0AC29E119D8E3D400378833 /* GraphicsItems.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GraphicsItems.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -807,6 +808,7 @@
 		E055277419D72F3A00771F4A /* helpers */ = {
 			isa = PBXGroup;
 			children = (
+				E0AC29E119D8E3D400378833 /* GraphicsItems.cpp */,
 				E0AC29DE19D8CA0C00378833 /* GraphicsItems.hpp */,
 				E055277519D72F3A00771F4A /* CutItem.cpp */,
 				E055277619D72F3A00771F4A /* CutItem.hpp */,

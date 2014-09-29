@@ -57,6 +57,30 @@ private:
   QPointF newPos;
 };
 
+class GroupCommand : public QUndoCommand
+{
+public:
+  GroupCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void redo();
+  virtual void undo();
+  static class CtrlCutGroupItem *groupItems(CtrlCutScene* scene, QList<QGraphicsItem*> items);
+private:
+  CtrlCutScene* scene;
+  class CtrlCutGroupItem *group;
+};
+
+class UnGroupCommand : public QUndoCommand
+{
+public:
+  UnGroupCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void redo();
+  virtual void undo();
+  static QList<QGraphicsItem*> ungroup(CtrlCutScene* scene, CtrlCutGroupItem *group);
+private:
+  CtrlCutScene* scene;
+  QList<QGraphicsItem *> items;
+};
+
 class DeleteCommand : public CtrlCutUndo
 {
 public:

@@ -93,8 +93,8 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
 void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
   // Call QGraphicsScene's event handler first to deal with selection
-
   QGraphicsScene::mousePressEvent(event);
+
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
       event->buttonDownScenePos(Qt::LeftButton).y());
   //  std::cerr << "press: " << mousePos.x() << ", " << mousePos.y() << std::endl;

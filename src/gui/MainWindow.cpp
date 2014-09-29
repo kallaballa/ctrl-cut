@@ -187,40 +187,13 @@ void MainWindow::on_editPasteAction_triggered() {
 void MainWindow::on_editGroupAction_triggered() {
   if (this->scene->selectedItems().length() <= 1) return;
 
-  QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
-
-  this->scene->clearSelection();
-
-  CtrlCutGroupItem *group = new CtrlCutGroupItem;
-  
-  QRectF childrenRect;
-  foreach (QGraphicsItem *item, selecteditems) {
-    childrenRect = childrenRect.united(item->sceneBoundingRect());
-  }
-
-  foreach (QGraphicsItem *item, selecteditems) {
-    if (AbstractCtrlCutItem *ccitem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
-      ccitem->setPos(ccitem->pos() - childrenRect.topLeft());
-      group->addToGroup(ccitem);
-    }
-  }
-
-  group->setPos(childrenRect.topLeft());
-
-  this->scene->addItem(group);
-  group->setSelected(true);
+  undoStack->push(new GroupCommand(this->scene));
 }
 
 void MainWindow::on_editUngroupAction_triggered() {
   if (this->scene->selectedItems().length() != 1) return;
 
-  CtrlCutGroupItem *gi = dynamic_cast<CtrlCutGroupItem*>(this->scene->selectedItems()[0]);
-  this->scene->clearSelection();
-
-  foreach(QGraphicsItem *ci, gi->childItems()) {
-    gi->removeFromGroup(ci);
-    ci->setSelected(true);
-  }
+  undoStack->push(new UnGroupCommand(this->scene));
 }
 
 bool MainWindow::maybeSave()

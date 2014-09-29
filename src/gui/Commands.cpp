@@ -112,6 +112,71 @@
    }
  }
 
+ GroupCommand::GroupCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+   QUndoCommand(parent), scene(scene) {
+   setText("Group items");
+ }
+
+ CtrlCutGroupItem *GroupCommand::groupItems(CtrlCutScene* scene, 
+                                            QList<QGraphicsItem*> items)
+ {
+   scene->clearSelection();
+   
+   CtrlCutGroupItem *group = new CtrlCutGroupItem;
+   
+   QRectF childrenRect;
+   foreach (QGraphicsItem *item, items) {
+     childrenRect = childrenRect.united(item->sceneBoundingRect());
+   }
+   
+   foreach (QGraphicsItem *item, items) {
+     if (AbstractCtrlCutItem *ccitem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+       ccitem->setPos(ccitem->pos() - childrenRect.topLeft());
+       group->addToGroup(ccitem);
+     }
+   }
+   
+   group->setPos(childrenRect.topLeft());
+   
+   scene->addItem(group);
+   group->setSelected(true);
+   return group;
+ }
+
+ void GroupCommand::redo() {
+   this->group = groupItems(this->scene, this->scene->selectedItems());
+ }
+
+ void GroupCommand::undo() {
+   UnGroupCommand::ungroup(this->scene, this->group);
+ }
+
+ UnGroupCommand::UnGroupCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+   QUndoCommand(parent), scene(scene) {
+   setText("Ungroup items");
+ }
+
+ QList<QGraphicsItem*> UnGroupCommand::ungroup(CtrlCutScene* scene, 
+                                               CtrlCutGroupItem *group)
+ {
+   scene->clearSelection();
+
+   QList<QGraphicsItem*> items = group->childItems();
+   foreach(QGraphicsItem *ci, items) {
+     group->removeFromGroup(ci);
+     ci->setSelected(true);
+   }
+   return items;
+ }
+
+ void UnGroupCommand::redo() {
+   this->items = ungroup(this->scene, dynamic_cast<CtrlCutGroupItem*>(this->scene->selectedItems()[0]));
+ }
+
+ void UnGroupCommand::undo() {
+   GroupCommand::groupItems(this->scene, this->items);
+ }
+
  OpenCommand::OpenCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
    CtrlCutUndo(scene, parent), filename(filename) {
    setText("Open " + QFileInfo(filename).fileName());
