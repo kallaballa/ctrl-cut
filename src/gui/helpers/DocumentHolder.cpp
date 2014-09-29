@@ -49,7 +49,7 @@ void DocumentHolder::addItem(AbstractCtrlCutItem &item)
 
 void DocumentHolder::addToDocument(AbstractCtrlCutItem &item)
 {
-  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
+  if (CutItem *cutItem = dynamic_cast<CutItem *>(&item)) {
     this->doc->push_back(&cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
