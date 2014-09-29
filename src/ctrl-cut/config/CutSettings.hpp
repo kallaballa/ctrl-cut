@@ -50,11 +50,38 @@ public:
     std::stringstream ss;
     ss << boost::uuids::random_generator()();
     this->put(CutSettings::CUUID, ss.str());
-    this->put(CutSettings::SORT, CutSettings::INNER_OUTER);
-    this->put(CutSettings::CSPEED, 33);
-    this->put(CutSettings::CPOWER, 80);
-    this->put(CutSettings::FREQUENCY, 5000);
-    this->put(CutSettings::CPOS, Point());
+
+    try{
+      this->put(CutSettings::SORT, docSettings.get(CutSettings::SORT));
+    } catch(std::exception& ex) {
+      this->put(CutSettings::SORT, CutSettings::INNER_OUTER);
+    }
+
+    try {
+      this->put(CutSettings::CSPEED, docSettings.get(CutSettings::CSPEED));
+    } catch (std::exception& ex) {
+      this->put(CutSettings::CSPEED, 33);
+    }
+
+
+    try {
+      this->put(CutSettings::CPOWER, docSettings.get(CutSettings::CPOWER));
+    } catch (std::exception& ex) {
+      this->put(CutSettings::CPOWER, 80);
+    }
+
+    try {
+      this->put(CutSettings::FREQUENCY, docSettings.get(CutSettings::FREQUENCY));
+    } catch (std::exception& ex) {
+      this->put(CutSettings::FREQUENCY, 5000);
+    }
+
+    try {
+      this->put(CutSettings::CPOS, docSettings.get(CutSettings::CPOS));
+    } catch (std::exception& ex) {
+      this->put(CutSettings::CPOS, Point());
+    }
+
   }
   CutSettings(const CutSettings& other) : Settings(other) {
     Settings::setParent(other.parent);
