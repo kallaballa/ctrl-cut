@@ -34,11 +34,11 @@ void CutItem::init() {
   QGraphicsItemGroup::setFlags(ItemIsSelectable | ItemIsMovable);
   this->cut.crop();
   Point pos = this->cut.get(CutSettings::CPOS);
-  QGraphicsItemGroup::setPos(QPointF(pos.x, pos.y));
+  setPos(QPointF(pos.x, pos.y));
 
   BOOST_FOREACH(const Path& p, cut) {
     PathItem* pi = new PathItem(p);
     pi->setPos(QPointF(pos.x, pos.y));
-    QGraphicsItemGroup::addToGroup(pi);
+    this->addToGroup(pi);
   }
 }

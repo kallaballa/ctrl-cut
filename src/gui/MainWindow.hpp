@@ -55,6 +55,8 @@ public slots:
   void on_editCutAction_triggered();
   void on_editCopyAction_triggered();
   void on_editPasteAction_triggered();
+  void on_editGroupAction_triggered();
+  void on_editUngroupAction_triggered();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();
@@ -95,7 +97,7 @@ private:
   QAction* bottomAct;
   QAction* topAct;
 
-  QList<QGraphicsItem *> itemClipboard;
+  QList<class AbstractCtrlCutItem *> itemClipboard;
 };
 
 #endif

@@ -25,18 +25,15 @@
 
 class DocumentHolder {
 public:
-  QList<class CutItem* > cutItems;
-  QList<class EngraveItem* > engraveItems;
+  QList<class AbstractCtrlCutItem*> items;
   class Document* doc;
   QString filename;
 
   DocumentHolder();
   DocumentHolder(const DocumentHolder& holder);
   void operator=(const DocumentHolder& other);
-  void add(CutItem& cutItem);
-  void remove(CutItem& cutItem);
-  void add(EngraveItem& engraveItem);
-  void remove(EngraveItem& engraveItem);
+  void add(class AbstractCtrlCutItem &item);
+  void remove(AbstractCtrlCutItem &item);
 };
 
 #endif /* DOCUMENTHOLDER_H_ */

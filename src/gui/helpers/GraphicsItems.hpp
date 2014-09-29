@@ -17,29 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef GRAPHICSITEMS_H_
+#define GRAPHICSITEMS_H_
 
-#ifndef ENGRAVINGCANVAS_H_
-#define ENGRAVINGCANVAS_H_
+#include <QGraphicsItem>
 
-#include "engrave/Engrave.hpp"
-#include "config/EngraveSettings.hpp"
-#include <qgraphicsitem.h>
-#include "GraphicsItems.hpp"
-
-class EngraveCanvas: public AbstractCtrlCutItem {
+class AbstractCtrlCutItem : public QGraphicsItemGroup {
 public:
+  virtual void commit() = 0;
 
-  EngraveCanvas(Coord_t maxWidth);
-  ~EngraveCanvas(){};
-  void nextRow(Coord_t x, Coord_t y);
-  void drawPixel(Coord_t x, Coord_t y, uint8_t r,uint8_t g,uint8_t b);
-  void commit() {};
-private:
-  Coord_t maxWidth;
-  Coord_t startX;
-  Coord_t currentX;
-  Coord_t currentY;
-  QPixmap* currentRow;
+  AbstractCtrlCutItem *clone() const;
+  void setHighlighted(bool enabled);
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 };
 
-#endif /* ENGRAVINGCANVAS_H_ */
+class CtrlCutGroupItem : public AbstractCtrlCutItem {
+public:
+  CtrlCutGroupItem();
+  CtrlCutGroupItem(const CtrlCutGroupItem& groupItem);
+  virtual ~CtrlCutGroupItem(){};
+
+  void init();
+  virtual void commit();
+
+};
+
+#endif

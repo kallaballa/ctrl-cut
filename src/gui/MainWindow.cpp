@@ -23,7 +23,7 @@
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"
 #include "GroupItem.hpp"
-#include "helpers/Qt.hpp"
+#include "helpers/GraphicsItems.hpp"
 #include "cutters/EpilogLegend36Ext.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"
@@ -162,8 +162,7 @@ void MainWindow::on_raiseItemToTop() {
 }
 
 void MainWindow::on_editCutAction_triggered() {
-  if (this->scene->selectedItems().isEmpty())
-    return;
+  if (this->scene->selectedItems().isEmpty()) return;
 
   QUndoCommand *deleteCommand = new DeleteCommand(this->scene);
   undoStack->push(deleteCommand);
@@ -172,21 +171,55 @@ void MainWindow::on_editCutAction_triggered() {
 void MainWindow::on_editCopyAction_triggered() {
   this->itemClipboard.clear();
   foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    if (AbstractCtrlCutItem *cutItem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
-      this->itemClipboard.append(item);
+    if (AbstractCtrlCutItem *ci = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+      this->itemClipboard.append(ci);
     }
   }
   this->editPasteAction->setEnabled(!this->itemClipboard.isEmpty());
 }
 
 void MainWindow::on_editPasteAction_triggered() {
-  foreach (QGraphicsItem *item, this->itemClipboard) {
-    if (CutItem *cutItem = dynamic_cast<CutItem *>(item)) {
-      this->scene->add(*new CutItem(*cutItem));
+  foreach (AbstractCtrlCutItem *item, this->itemClipboard) {
+    this->scene->add(*item->clone());
+  }
+}
+
+void MainWindow::on_editGroupAction_triggered() {
+  if (this->scene->selectedItems().length() <= 1) return;
+
+  QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
+
+  this->scene->clearSelection();
+
+  CtrlCutGroupItem *group = new CtrlCutGroupItem;
+  
+  QRectF childrenRect;
+  foreach (QGraphicsItem *item, selecteditems) {
+    childrenRect = childrenRect.united(item->sceneBoundingRect());
+  }
+
+  foreach (QGraphicsItem *item, selecteditems) {
+    if (AbstractCtrlCutItem *ccitem = dynamic_cast<AbstractCtrlCutItem *>(item)) {
+      ccitem->setPos(ccitem->pos() - childrenRect.topLeft());
+      group->addToGroup(ccitem);
     }
-    else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(item)) {
-      this->scene->add(*new EngraveItem(*engraveItem));
-    }
+  }
+
+  group->setPos(childrenRect.topLeft());
+
+  this->scene->addItem(group);
+  group->setSelected(true);
+}
+
+void MainWindow::on_editUngroupAction_triggered() {
+  if (this->scene->selectedItems().length() != 1) return;
+
+  CtrlCutGroupItem *gi = dynamic_cast<CtrlCutGroupItem*>(this->scene->selectedItems()[0]);
+  this->scene->clearSelection();
+
+  foreach(QGraphicsItem *ci, gi->childItems()) {
+    gi->removeFromGroup(ci);
+    ci->setSelected(true);
   }
 }
 
@@ -340,33 +373,50 @@ void MainWindow::sceneSelectionChanged()
 {
   printf("selectionChanged\n");
 
-  if(this->scene->selectedItems().empty()) {
+  QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
+
+  foreach(QGraphicsItem *item, selecteditems) {
+    QRectF rect = item->boundingRect();
+    QRectF chrect = item->childrenBoundingRect();
+    printf("%p: (%.0f,%.0f) [%.0f,%.0f,%.0f,%.0f]  [%.0f,%.0f,%.0f,%.0f]\n", item, item->x(), item->y(), 
+           rect.x(), rect.y(), rect.width(), rect.height(),
+           chrect.x(), chrect.y(), chrect.width(), chrect.height());
+    if (CtrlCutGroupItem *gi = dynamic_cast<CtrlCutGroupItem*>(item)) {
+      foreach(QGraphicsItem *gci, gi->childItems()) {
+        printf("  -%p: (%.0f,%.0f)  [%.0f,%.0f,%.0f,%.0f]\n", gci, gci->x(), gci->y(),
+               gci->boundingRect().x(), gci->boundingRect().y(), gci->boundingRect().width(), gci->boundingRect().height());
+      }
+    }
+  }
+
+  if (selecteditems.empty()) {
     foreach (QGraphicsItem *item, this->scene->items()) {
-      AbstractCtrlCutItem* cci;
-      if((cci = dynamic_cast<AbstractCtrlCutItem*>(item)))
-        cci->setHighlighted(false);
+      if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
+        //        cci->setHighlighted(false);
+      }
     }
     this->objectProperties->disable();
   } else {
-    foreach (QGraphicsItem *item, this->scene->items()) {
-      EngraveItem* ei;
-      CutItem* ci;
 
-      if(item->isSelected()) {
-        if((ei = dynamic_cast<EngraveItem*>(item))) {
-          ei->setHighlighted(true);
-          this->objectProperties->enable(ei);
-        } else if((ci = dynamic_cast<CutItem*>(item))) {
-          ci->setHighlighted(true);
-          this->objectProperties->enable(ci);
-        }
-      } else {
-        AbstractCtrlCutItem* cci;
-        if((cci = dynamic_cast<AbstractCtrlCutItem*>(item))) {
-          cci->setHighlighted(false);
+    CtrlCutGroupItem *gi;
+    if (selecteditems.length() == 1 &&
+        (gi = dynamic_cast<CtrlCutGroupItem*>(selecteditems[0]))) {
+      this->editUngroupAction->setEnabled(true);
+    }
+    else {
+      this->editUngroupAction->setEnabled(false);
+    }
+
+    foreach (QGraphicsItem *item, this->scene->items()) {
+      if (item->parentItem()) continue;
+      if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
+        if(item->isSelected()) {
+          //          cci->setHighlighted(true);
+          this->objectProperties->enable(cci);
+        } else {
+          //          cci->setHighlighted(false);
         }
       }
-      printf("item: %p\n", item);
     }
   }
 }
@@ -414,5 +464,4 @@ void MainWindow::on_windowShowPropertiesAction_triggered()
 
 void MainWindow::on_undoStack_cleanChanged(bool clean)
 {
-  printf("clean changed: %d\n", clean);
 }

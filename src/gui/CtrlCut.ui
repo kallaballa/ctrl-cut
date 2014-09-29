@@ -77,6 +77,8 @@
     <addaction name="editCutAction"/>
     <addaction name="editCopyAction"/>
     <addaction name="editPasteAction"/>
+    <addaction name="editGroupAction"/>
+    <addaction name="editUngroupAction"/>
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
@@ -617,6 +619,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="editGroupAction">
+   <property name="text">
+    <string>Group</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+G</string>
+   </property>
+  </action>
+  <action name="editUngroupAction">
+   <property name="text">
+    <string>Ungroup</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+U</string>
    </property>
   </action>
  </widget>

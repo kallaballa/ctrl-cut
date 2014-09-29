@@ -20,14 +20,13 @@
 #define PATHITEM_H_
 
 #include "cut/Cut.hpp"
-#include "Qt.hpp"
 #include <QGraphicsPolygonItem>
 
 class PathItem: public QGraphicsPolygonItem {
 public:
   const Path& path;
 
-  PathItem(const Path& path);
+  PathItem(const Path& path, QGraphicsItem *parent = 0);
   ~PathItem(){};
 
   void commit() {
