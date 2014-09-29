@@ -30,7 +30,8 @@
 
 Dither& Dither::create(GrayscaleImage& img, EngraveSettings::Dithering dithering){
   switch (dithering) {
-    case EngraveSettings::BAYER:
+  case EngraveSettings::DEFAULT_DITHERING:
+  case EngraveSettings::BAYER:
       return *(new DitherBayer(img));
       break;
     case EngraveSettings::FLOYD_STEINBERG:
