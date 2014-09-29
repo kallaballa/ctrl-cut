@@ -60,11 +60,36 @@ public:
     std::stringstream ss;
     ss << boost::uuids::random_generator()();
     this->put(EngraveSettings::EUUID, ss.str());
-    this->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
-    this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
-    this->put(EngraveSettings::EPOWER, 20);
-    this->put(EngraveSettings::ESPEED, 100);
-    this->put(EngraveSettings::EPOS, Point());
+
+    try {
+      this->put(EngraveSettings::DITHERING, docSettings.get(EngraveSettings::DITHERING));
+    } catch(std::exception& ex) {
+      this->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
+    }
+
+    try {
+      this->put(EngraveSettings::DIRECTION, docSettings.get(EngraveSettings::DIRECTION));
+    } catch(std::exception& ex) {
+      this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
+    }
+
+    try {
+      this->put(EngraveSettings::EPOWER, docSettings.get(EngraveSettings::EPOWER));
+    } catch(std::exception& ex) {
+      this->put(EngraveSettings::EPOWER, 20);
+    }
+
+    try {
+      this->put(EngraveSettings::ESPEED, docSettings.get(EngraveSettings::ESPEED));
+    } catch(std::exception& ex) {
+      this->put(EngraveSettings::ESPEED, 100);
+    }
+
+    try {
+      this->put(EngraveSettings::EPOS, docSettings.get(EngraveSettings::EPOS));
+    } catch(std::exception& ex) {
+      this->put(EngraveSettings::EPOS, Point());
+    }
   }
 
   EngraveSettings(const EngraveSettings& other) : Settings(other){

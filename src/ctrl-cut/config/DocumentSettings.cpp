@@ -64,7 +64,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   //FIXME dont do empty defaults
   this->put(TITLE, "");
   this->put(USER, "");
-  this->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
+/*  this->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
   this->put(EngraveSettings::DIRECTION, EngraveSettings::TOPDOWN);
   this->put(EngraveSettings::EPOWER, 20);
   this->put(EngraveSettings::ESPEED, 100);
@@ -77,4 +77,5 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(CutSettings::CPOWER, 80);
   this->put(CutSettings::FREQUENCY, 5000);
   this->put(CutSettings::CPOS, Point());
+*/
 }

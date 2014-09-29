@@ -13,7 +13,7 @@ const string CupsOptions::OPTION_STRINGS[]= {
     "VectorPower",
     "VectorFrequency",
     "VectorReduce",
-    "VectorOptimze",
+    "VectorOptimize",
     "Debug",
     "EnableEngraving",
     "EnableVector"
@@ -109,6 +109,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
     ds.put(CS::FREQUENCY, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::VECTOR_OPTIMIZE, v)) {
+    std::cerr << "v:" << v << std::endl;
     if (v == "Simple")
       ds.put(CS::SORT, CS::SIMPLE);
     else if (v == "Inner-Outer")

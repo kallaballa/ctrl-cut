@@ -13,7 +13,7 @@ const string CupsOptions::OPTION_STRINGS[]= {
     "VectorPower",
     "VectorFrequency",
     "VectorReduce",
-    "VectorOptimze",
+    "VectorOptimize",
     "Debug",
     "EnableEngraving",
     "EnableVector"

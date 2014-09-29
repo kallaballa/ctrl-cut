@@ -186,8 +186,8 @@ void plot_shared_points(const Route& r, const char* filename) {
     svg.write(p, "stroke:rgb(255,0,0);stroke-width:10;fill:none");
   }
 
-  svg.write(r.front().front(), "stroke:rgb(0,255,0);stroke-width:40;fill:rgb(0,0,0)");
-  svg.write(r.back().back(), "stroke:rgb(0,0,255);stroke-width:40;fill:rgb(0,0,0)");
+  svg.write(r.front().front(), "stroke:rgb(0,255,0);stroke-width:40;");
+  svg.write(r.back().back(), "stroke:rgb(0,0,255);stroke-width:40;");
 }
 
 void plot_path_order(const Route& r, const char* filename) {
@@ -214,16 +214,16 @@ void plot_path_order(const Route& r, const char* filename) {
     }
     rgb = hsl_to_rgb(hsl);
     string strokergb = (boost::format("stroke:rgb(%u,%u,%u)") % round(rgb.r) % round(rgb.g) % round(rgb.b)).str();
-    svg.write(path, strokergb + ";stroke-width:10;");
+    svg.write(path, strokergb + ";stroke-width:10;fill:none;");
 
-    svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;fill:rgb(0,0,0)");
-    svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;fill:rgb(0,0,0)");
+    svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;");
+    svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;");
   }
 
   uint32_t count = 0;
   BOOST_FOREACH(const Path& path, r) {
-    svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;fill:rgb(0,0,0)");
-    svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;fill:rgb(0,0,0)");
+    svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;");
+    svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;");
     svg.write((boost::format("%d") % count).str(), path.front(), "font-size=\"50\" fill=\"black\"");
     svg.write((boost::format("%d") % count).str(), path.back(), "font-size=\"50\" fill=\"black\"");
 
@@ -275,7 +275,7 @@ void plot_segment_order(const Route& r, const char* filename) {
     mark.x = std::min(front.x, back.x) + a/2;
     mark.y = std::min(front.y, back.y) + b/2;
 
-    svg.write(mark, "stroke:rgb(255,0,0);stroke-width:40;fill:rgb(0,0,0)");
+    svg.write(mark, "stroke:rgb(255,0,0);stroke-width:40;");
     svg.write((boost::format("%d") % count).str(), mark, "font-size=\"50\" fill=\"black\"");
 
     ++count;
