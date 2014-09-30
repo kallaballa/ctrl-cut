@@ -143,7 +143,7 @@ void SvgWriter::write(const Document& d, const std::string& style) {
 }
 
 void SvgWriter::write(const Point& p, const std::string& style) {
-  ostream << "<circle cx=\"" << p.x << "\" cy=\"" << p.y << "\" " << "style=\"" << style << "\"/>" << std::endl;
+  ostream << "<circle cx=\"" << p.x << "\" cy=\"" << p.y << "\" " << "r=\"10\" " << "style=\"" << style << "\"/>" << std::endl;
 }
 
 void SvgWriter::write(const Segment& seg, const std::string& style) {
