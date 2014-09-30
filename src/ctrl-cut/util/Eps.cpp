@@ -163,8 +163,8 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
               "/stroke { " // define stroke
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
-              "0 get mul 5 lt " // Check linewidth (hackish; only checks the matrix x axis scale)
-              // If linewidth < 5 points, this will be cut.
+              "0 get mul 3 lt " // Check linewidth (hackish; only checks the matrix x axis scale)
+              // If linewidth < 3 points, this will be cut.
               // FIXME: We should decide which threshold to use.
               // 5 points is ca. 1.75 mm which is way too much.
               // e.g. 0.025 mm would amount to 0.07 points.
