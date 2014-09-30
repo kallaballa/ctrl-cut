@@ -43,7 +43,7 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encodee) {
   int lastX = -1, lastY = -1;
   int lastPower = power_set;
 
-  BOOST_FOREACH(const Segment& seg, segments(encodee)) {
+  for(const SegmentPtr segPtr : segments(encodee)) {
     int power = power_set;// (seg.get(S_SET::S_POWER) != 0) ? seg.get(S_SET::S_POWER) : power_set;
     if (power != lastPower) {
       if (writingPolyline) {
@@ -75,6 +75,7 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encodee) {
       out << format(V_POWER) % epower << SEP;
     }
 
+    Segment& seg = *segPtr.get();
     int startX = seg[0][0];
     int startY = seg[0][1];
     int endX = seg[1][0];

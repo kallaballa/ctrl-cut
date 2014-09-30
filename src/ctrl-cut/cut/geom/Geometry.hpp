@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 #include <list>
+#include <memory>
 #include <assert.h>
 #include <boost/math/special_functions.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -181,6 +182,7 @@ public:
 };
 
 BOOST_GEOMETRY_REGISTER_SEGMENT(Segment, Point, first, second)
+typedef std::shared_ptr<Segment> SegmentPtr;
 
 
 enum intersection_result { ALIGN_NONE, ALIGN_INTERSECT, ALIGN_COINCIDENCE, ALIGN_PARALLEL };

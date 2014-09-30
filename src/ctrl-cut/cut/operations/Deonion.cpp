@@ -51,7 +51,7 @@ void walkTheEdge(Route& skins, UniqueSegmentGraph& graph, const Edge lastEdge, c
   double slopeDiff;
   bool found = false;
 
-  BOOST_FOREACH(Edge candidate, boost::out_edges(outV, graph)) {
+  BOOST_FOREACH(Edge candidate , boost::out_edges(outV, graph)) {
     Segment& segment = graph[candidate];
 
     //skip identical segment
@@ -118,8 +118,8 @@ void traverse_onion(Route& src, Route& skins)
   LOG_INFO_STR("Deonion");
 
   UniqueSegmentGraph g;
-  BOOST_FOREACH(const Segment& seg, segments(src)) {
-    g.addSegment(seg);
+  for(const SegmentPtr seg : segments(src)) {
+    g.addSegment(*seg.get());
   }
 
   // points are sorted first by x then by y. therefore the

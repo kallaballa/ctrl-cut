@@ -40,8 +40,8 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
   typedef SegmentGraphImpl<boost::setS, boost::setS> UniqueSegmentGraph;
   UniqueSegmentGraph g;
 
-  BOOST_FOREACH(const Segment& seg, segments(src)) {
-    g.addSegment(seg);
+  for(const SegmentPtr seg : segments(src)) {
+    g.addSegment(*seg.get());
   }
 
   std::map<Point, UniqueSegmentGraph::Vertex> index;
@@ -49,12 +49,13 @@ void reduce(TmultiPointRange& src, TmultiPointRange& sink, double maxDistance) {
     index[g[v]] = v;
   }
 
-  BOOST_FOREACH(Path& path, src) {
+  for(Path& path : src) {
     Path singleBranch;
     Path simplified;
     Point last = path.front();
     Point current;
-    BOOST_FOREACH(const Segment& seg, segments(path)) {
+    for(const SegmentPtr segPtr :  segments(path)) {
+      const Segment& seg = *segPtr.get();
       concat(singleBranch,seg);
       if(last == seg.first)
         current = seg.second;

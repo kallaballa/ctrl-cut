@@ -49,8 +49,8 @@ template<
 void make_planar(TpointRange& pointRange, TpointRange& sink) {
   LOG_INFO_STR("make planar");
   SegmentGraph segGraph;
-  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
-    segGraph.addSegment(seg);
+  for(const SegmentPtr seg : segments(pointRange)) {
+    segGraph.addSegment(*seg.get());
   }
 
   join_strings_visitor<TpointRange> vis(segGraph, sink);

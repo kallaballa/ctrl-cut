@@ -29,6 +29,7 @@
 #include "DitherSierra3.hpp"
 
 Dither& Dither::create(GrayscaleImage& img, EngraveSettings::Dithering dithering){
+  //FIXME memory leak
   switch (dithering) {
     case EngraveSettings::BAYER:
       return *(new DitherBayer(img));

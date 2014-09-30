@@ -21,7 +21,6 @@
 
 #include "cut/geom/Path.hpp"
 #include "cut/geom/Route.hpp"
-#include <boost/foreach.hpp>
 #include <boost/geometry/algorithms/append.hpp>
 
 inline bool concat_back(Path& path, const Segment& seg) {
@@ -76,10 +75,10 @@ inline bool concat(Path& path, const Segment& seg) {
 
 template<typename TpointRange>
 inline bool concat_back(Path& path, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
+  for(const SegmentPtr seg : segments(pointRange)) {
     if (path.empty()) {
-      append(path,seg);
-    } else if (!concat_back(path,seg)) {
+      append(path,*seg.get());
+    } else if (!concat_back(path,*seg.get())) {
       return false;
     }
     return true;
@@ -88,10 +87,10 @@ inline bool concat_back(Path& path, const TpointRange& pointRange) {
 
 template<typename TpointRange>
 inline bool concat_front(Path& path, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
+  for(const SegmentPtr seg : segments(pointRange)) {
     if (path.empty()) {
-      prepend(path,seg);
-    } else if (!concat_front(path,seg)) {
+      prepend(path,*seg.get());
+    } else if (!concat_front(path,*seg.get())) {
       return false;
     }
     return true;
@@ -147,10 +146,10 @@ inline bool concat(Route& route, const Segment& seg) {
 
 template<typename TpointRange>
 inline bool concat_back(Route& route, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
+  for(const SegmentPtr seg : segments(pointRange)) {
     if (route.empty()) {
-      append(route, seg);
-    } else if(!concat_back(route, seg)) {
+      append(route, *seg.get());
+    } else if(!concat_back(route, *seg.get())) {
       return false;
     }
   }
@@ -159,10 +158,10 @@ inline bool concat_back(Route& route, const TpointRange& pointRange) {
 
 template<typename TpointRange>
 inline bool concat_front(Route& route, const TpointRange& pointRange) {
-  BOOST_FOREACH(const Segment& seg, segments(pointRange)) {
+  for(const SegmentPtr seg : segments(pointRange)) {
     if (route.empty()) {
-      prepend(route, seg);
-    } else if(!concat_front(route, seg)) {
+      prepend(route, *seg.get());
+    } else if(!concat_front(route, *seg.get())) {
       return false;
     }
   }

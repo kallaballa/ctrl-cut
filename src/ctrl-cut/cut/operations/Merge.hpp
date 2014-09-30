@@ -31,14 +31,14 @@ inline void merge(Cut& src, Cut& sink) {
   if(pFrom != pInto) {
     tl::translate_transformer<Point, Point> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
 
-    BOOST_FOREACH(const Segment& seg, segments(src)) {
+    for(const SegmentPtr seg : segments(src)) {
       Segment translated;
-      boost::geometry::transform(seg, translated, transformer);
+      boost::geometry::transform(*seg.get(), translated, transformer);
       append(sink, translated);
     }
   } else {
-    BOOST_FOREACH(const Segment& seg, segments(src)) {
-      append(sink, seg);
+    for(const SegmentPtr seg : segments(src)) {
+      append(sink, *seg.get());
     }
   }
 

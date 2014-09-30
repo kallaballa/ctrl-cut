@@ -152,8 +152,8 @@ public:
 
     Point intersection;
 
-    BOOST_FOREACH(const Segment& seg, segments(src)) {
-      tree.push_back(seg);
+    for(const SegmentPtr seg : segments(src)) {
+      tree.push_back(*seg.get());
     }
 
     for(size_t n=0; n < 3; ++n) {
@@ -166,7 +166,7 @@ public:
 
        const Result& in_range = tree.findWithinRange(it_pick);
 
-       BOOST_FOREACH(TreeIter it_candidate, in_range) {
+       for(TreeIter it_candidate : in_range) {
          if(it_pick == it_candidate)
            continue;
           const Segment& candidate = *it_candidate;

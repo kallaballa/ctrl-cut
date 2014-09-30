@@ -133,8 +133,8 @@ rgb_color hsl_to_rgb(hsl_color hsl)
 void find_shared_points(const Route& r, std::vector<Point>& sharedPoints) {
   SegmentGraph g;
 
-  BOOST_FOREACH(const Segment& seg, segments(r)) {
-    g.addSegment(seg);
+  for(const SegmentPtr seg : segments(r)) {
+    g.addSegment(*seg.get());
   }
 
   BOOST_FOREACH(SegmentGraph::Vertex v, vertices(g)) {
@@ -152,12 +152,12 @@ void plot_shared_segments(const Route& r, const char* filename) {
   const string& title = r.get(DocumentSettings::TITLE);
   SvgWriter svg(width, height, resolution, title, filename);
 
-  BOOST_FOREACH(const Path& path, r) {
+  for(const Path& path : r) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:1");
 
-    BOOST_FOREACH(const Segment& seg, segments(path)) {
-      if (segidx.find(seg) != segidx.end()) {
-        svg.write(seg, "stroke:rgb(0,255,0);stroke-width:1");
+    for(const SegmentPtr seg : segments(path)) {
+      if (segidx.find(*seg.get()) != segidx.end()) {
+        svg.write(*seg.get(), "stroke:rgb(0,255,0);stroke-width:1");
         break;
       }
     }
@@ -178,11 +178,11 @@ void plot_shared_points(const Route& r, const char* filename) {
 
   find_shared_points(r, sharedPoints);
 
-  BOOST_FOREACH(const Path& path, r) {
+  for(const Path& path : r) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:10;");
   }
 
-  BOOST_FOREACH(const Point& p, sharedPoints) {
+  for(const Point& p : sharedPoints) {
     svg.write(p, "stroke:rgb(255,0,0);stroke-width:10;fill:none");
   }
 
@@ -207,7 +207,7 @@ void plot_path_order(const Route& r, const char* filename) {
   hsl.l = 50;
 
   float step = 360.0f / r.size();
-  BOOST_FOREACH(const Path& path, r) {
+  for(const Path& path : r) {
     hsl.h = (hsl.h+step);
     if (hsl.h >= 360) {
       hsl.h = 1;
@@ -221,7 +221,7 @@ void plot_path_order(const Route& r, const char* filename) {
   }
 
   uint32_t count = 0;
-  BOOST_FOREACH(const Path& path, r) {
+  for(const Path& path : r) {
     svg.write(path.front(), "stroke:rgb(255,0,0);stroke-width:40;");
     svg.write(path.back(), "stroke:rgb(0,255,0);stroke-width:35;");
     svg.write((boost::format("%d") % count).str(), path.front(), "font-size=\"50\" fill=\"black\"");
@@ -230,7 +230,7 @@ void plot_path_order(const Route& r, const char* filename) {
     ++count;
   }
 
-  BOOST_FOREACH(const Point& p, sharedPoints) {
+  for(const Point& p : sharedPoints) {
     svg.write(p, "stroke:rgb(255,0,0);stroke-width:10;fill:none");
   }
 }
@@ -252,23 +252,23 @@ void plot_segment_order(const Route& r, const char* filename) {
 
 
   float step = 360.0f / segments(r).size();
-  BOOST_FOREACH(const Segment& seg, segments(r)) {
+  for(const SegmentPtr seg : segments(r)) {
     hsl.h = (hsl.h+step);
     if (hsl.h >= 360) {
       hsl.h = 1;
     }
     rgb = hsl_to_rgb(hsl);
     string strokergb = (boost::format("stroke:rgb(%u,%u,%u)") % round(rgb.r) % round(rgb.g) % round(rgb.b)).str();
-    svg.write(seg, strokergb + ";stroke-width:10;");
+    svg.write(*seg.get(), strokergb + ";stroke-width:10;");
  }
 
   uint32_t count = 0;
   Coord_t a,b;
   Point front, back, mark;
 
-  BOOST_FOREACH(const Segment& seg, segments(r)) {
-    front = seg.front();
-    back = seg.back();
+  for(const SegmentPtr seg : segments(r)) {
+    front = seg.get()->front();
+    back = seg.get()->back();
     a = std::abs(front.x - back.x);
     b = std::abs(front.y - back.y);
 

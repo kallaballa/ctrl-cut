@@ -213,8 +213,8 @@ struct SegmentWiseIterator :
     typedef ptrdiff_t difference_type;
     typedef typename TparentIter::iterator_category iterator_category;
     typedef const Segment value_type;
-    typedef const Segment* pointer;
-    typedef const Segment& reference;
+    typedef const SegmentPtr pointer;
+    typedef const SegmentPtr reference;
 
   explicit SegmentWiseIterator() :
     _Base()
@@ -224,13 +224,11 @@ struct SegmentWiseIterator :
   {}
 
   reference operator*() const {
-    //FIXME
-    return * new Segment(*_Base::previous, *_Base::current);
+    return SegmentPtr(new Segment(*_Base::previous, *_Base::current));
   }
 
   pointer operator->() const {
-    //FIXME
-    return new Segment(*_Base::previous, *_Base::current);
+    return SegmentPtr(new Segment(*_Base::previous, *_Base::current));
   }
 };
 

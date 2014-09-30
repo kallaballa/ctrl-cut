@@ -76,7 +76,8 @@ bool chop(Path& chopped, const Segment& seg, const Distance& maxLength) {
  */
 template<typename TpointInputRange, typename TpointOutputRange>
 void clip(TpointInputRange& src, TpointOutputRange& sink, const Box& bounds) {
-  BOOST_FOREACH(const Segment& seg, segments(src)) {
+  for(const SegmentPtr segPtr : segments(src)) {
+    Segment& seg = *segPtr.get();
     double width = bounds.width();
     double height = bounds.height();
 
