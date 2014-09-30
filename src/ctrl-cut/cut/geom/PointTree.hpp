@@ -30,6 +30,15 @@ public:
     _Base::insert(point);
   }
 
+  std::pair<typename _Base::const_iterator, typename _Base::distance_type> find_nearest_not_self(const Point& point) {
+    auto result = this->find_nearest_if(point, std::numeric_limits<Coord_t>().max(), [&](const Point& candidate) {
+      return candidate != point;
+    });
+    assert(point != (*result.first));
+
+    return result;
+  }
+
   std::pair<typename _Base::const_iterator, typename _Base::distance_type> find_nearest(const Point& point) {
     return _Base::find_nearest(point);
   }
