@@ -282,9 +282,51 @@ void plot_segment_order(const Route& r, const char* filename) {
   }
 }
 
+void plot_point_order(const Route& r, const char* filename) {
+  Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
+  Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
+  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
+  const string& title = r.get(DocumentSettings::TITLE);
+
+  SvgWriter svg(width, height, resolution, title, filename);
+
+  hsl_color hsl;
+  rgb_color rgb;
+
+  hsl.h = 0;
+  hsl.s = 100;
+  hsl.l = 50;
+
+
+  float step = 360.0f / segments(r).size();
+  for(const SegmentPtr seg : segments(r)) {
+    hsl.h = (hsl.h+step);
+    if (hsl.h >= 360) {
+      hsl.h = 1;
+    }
+    rgb = hsl_to_rgb(hsl);
+    string strokergb = (boost::format("stroke:rgb(%u,%u,%u)") % round(rgb.r) % round(rgb.g) % round(rgb.b)).str();
+    svg.write(*seg.get(), strokergb + ";stroke-width:10;");
+  }
+
+  uint32_t count = 0;
+  Point last;
+  for(const Path& path : r) {
+    for(const Point& p : path) {
+      if(p == last)
+        return;
+      svg.write(p, "fill:rgb(127,127,127);stroke-width:0;");
+      svg.write((boost::format("%d") % count).str(), p, "font-size=\"50\" fill=\"black\"");
+      ++count;
+      last = p;
+    }
+  }
+}
+
 void plot_svg(const Route& r, const string& prefix) {
   plot_shared_points(r, (prefix + "_points_shared.svg").c_str());
   plot_shared_segments(r, (prefix + "_segments_shared.svg").c_str());
   plot_path_order(r, (prefix + "_path_order.svg").c_str());
   plot_segment_order(r, (prefix + "_segment_order.svg").c_str());
+  plot_point_order(r, (prefix + "_point_order.svg").c_str());
 }
