@@ -32,9 +32,9 @@
 #include "cut/operations/Explode.hpp"
 #include "cut/operations/Deonion.hpp"
 #include "cut/operations/Reduce.hpp"
-#include "cut/operations/NearestPathSorting.h"
 #include "cut/operations/Planar.hpp"
 #include <boost/filesystem.hpp>
+#include <cut/operations/NearestPathSorting.hpp>
 #include <qpixmapcache.h>
 #include <qpainter.h>
 #include <qvarlengtharray.h>

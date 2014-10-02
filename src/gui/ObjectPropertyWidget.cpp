@@ -102,6 +102,9 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   case CS::SHORTEST_PATH:
     strSort = "Shortest Path";
     break;
+  case CS::TSP:
+    strSort = "TSP";
+    break;
   default:
     assert(false && "Unhandled cut optimize setting");
     break;
@@ -278,6 +281,9 @@ void ObjectPropertyWidget::on_sort_update(int s) {
         break;
     case 2:
       this->ci->cut->put(CS::SORT, CS::SHORTEST_PATH);
+        break;
+    case 3:
+      this->ci->cut->put(CS::SORT, CS::TSP);
         break;
     }
   }

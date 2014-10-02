@@ -20,9 +20,9 @@
 #include "util/PJL.hpp"
 #include "cut/Cut.hpp"
 #include "cut/operations/Deonion.hpp"
-#include "cut/operations/NearestPathSorting.h"
 #include "cut/operations/Translate.hpp"
 #include <boost/format.hpp>
+#include <cut/operations/NearestPathSorting.hpp>
 
 using boost::format;
 

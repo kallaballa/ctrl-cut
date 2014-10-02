@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "NearestPathSorting.h"
 #include "util/Logger.hpp"
 #include "cut/Cut.hpp"
 #include "cut/geom/PointTree.hpp"
 #include "cut/graph/Algorithms.hpp"
 #include "cut/graph/PathGraph.hpp"
 #include <boost/foreach.hpp>
+#include <cut/operations/NearestPathSorting.hpp>
 
 void nearest_path_sorting(Route& src, Route& sink) {
   using namespace std;
@@ -58,7 +58,6 @@ void nearest_path_sorting(Route& src, Route& sink) {
       break;
 
     nearest = *it_tree;
-    std::cerr << source << "\t" << nearest << std::endl;
 
     it_map = point_to_vertices.find(nearest);
     if(it_map != point_to_vertices.end()) {
@@ -70,7 +69,6 @@ void nearest_path_sorting(Route& src, Route& sink) {
           boost::geometry::reverse(path);
 
         assert(nearest == path.front());
-        std::cerr << path.front() << " -> " << path.back() << std::endl;
 
         append(sink,path);
         remove_edge(e,pathGraph);

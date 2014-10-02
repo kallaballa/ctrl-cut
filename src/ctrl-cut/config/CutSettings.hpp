@@ -34,7 +34,8 @@ public:
   enum Sort {
     SIMPLE,
     INNER_OUTER,
-    SHORTEST_PATH
+    SHORTEST_PATH,
+    TSP
   };
 
   static Key<std::string> CUUID;
@@ -97,6 +98,9 @@ public:
       break;
     case SHORTEST_PATH:
       return "Shortest Path";
+    case TSP:
+      return "TSP";
+
       break;
     }
     return "Unkown";
@@ -109,8 +113,11 @@ public:
       return INNER_OUTER;
     } else if(name == "Shortest Path") {
       return SHORTEST_PATH;
-    }
-    else assert(false);
+    } else if(name == "TSP") {
+      return TSP;
+    } else
+      assert(false);
+    return SIMPLE;
   }
 
   ~CutSettings() {}

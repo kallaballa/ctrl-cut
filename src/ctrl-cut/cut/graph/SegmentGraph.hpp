@@ -1,6 +1,7 @@
 #ifndef SEGMENTGRAPH_H_
 #define SEGMENTGRAPH_H_
 
+#include "cut/geom/Geometry.hpp"
 #include "GeometryGraph.hpp"
 
 class SegmentProperty : public Segment {

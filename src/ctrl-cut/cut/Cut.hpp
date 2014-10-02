@@ -20,6 +20,7 @@
 #ifndef CUT_H_
 #define CUT_H_
 
+#include <cut/operations/NearestPathSorting.hpp>
 #include <string>
 #include <stdio.h>
 #include <iostream>
@@ -32,9 +33,9 @@
 #include "cut/operations/Explode.hpp"
 #include "cut/operations/Planar.hpp"
 #include "cut/operations/Reduce.hpp"
-#include "cut/operations/NearestPathSorting.h"
 #include "cut/operations/Translate.hpp"
 #include "cut/operations/Deonion.hpp"
+#include "cut/operations/Traveller.hpp"
 #include <limits>
 
 template<
@@ -163,15 +164,17 @@ public:
     string filename = this->get(DocumentSettings::FILENAME);
     CutPtr planar_faces = make_from(*this);
     CutPtr sorted = make_from(*this);
-    CutPtr translated = make_from(*this);
 
-    make_planar(*this, planar_faces);
+    make_planar_faces(*this, planar_faces);
     plot_svg(planar_faces, filename + "_planar_faces");
 
-    if(this->get(CutSettings::SORT) == CutSettings::INNER_OUTER)
+
+   if(this->get(CutSettings::SORT) == CutSettings::INNER_OUTER)
       traverse_onion(planar_faces, sorted);
     else if(this->get(CutSettings::SORT) == CutSettings::SHORTEST_PATH)
       nearest_path_sorting(planar_faces, sorted);
+    else if(this->get(CutSettings::SORT) == CutSettings::TSP)
+      travel(planar_faces, sorted);
 
     plot_svg(sorted, filename + "_sorted");
     this->clear();

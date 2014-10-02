@@ -31,7 +31,9 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
 	   			 ./cut/Cut.hpp \
            ./cut/operations/SvgPlot.hpp \
            ./cut/operations/Deonion.hpp \
-           ./cut/operations/NearestPathSorting.h \
+           ./cut/operations/NearestPathSorting.hpp \
+           ./cut/operations/Traveller.hpp \
+           ./cut/operations/Planar.hpp \
           ./cut/geom/algorithms/Algorithms.hpp \
            ./cut/geom/algorithms/Add.hpp \
            ./cut/geom/algorithms/Concat.hpp \
@@ -44,11 +46,9 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./cut/geom/Iterators.hpp \
            ./cut/geom/Route.hpp \
            ./cut/geom/Concepts.hpp \
-           ./cut/graph/WeightedGraph.hpp \
            ./cut/graph/SegmentGraph.hpp \
            ./cut/graph/GeometryGraph.hpp \
-           ./cut/graph/DistanceGraph.hpp \
-           ./cut/graph/Traveller.hpp \
+           ./cut/graph/CompleteDistanceGraph.hpp \
            ./cut/graph/Traverse.hpp \
            ./cut/graph/Algorithms.hpp \
            ./engrave/image/PPMFile.hpp \
@@ -88,6 +88,8 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
 	   ./cutters/EpilogLegend36Ext.cpp \
            ./cut/operations/Deonion.cpp \
            ./cut/operations/NearestPathSorting.cpp \
+           ./cut/operations/Traveller.cpp \
+           ./cut/operations/Planar.cpp \
            ./svg/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \

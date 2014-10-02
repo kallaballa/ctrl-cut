@@ -20,7 +20,6 @@
 #ifndef ALGORITHMS_H_
 #define ALGORITHMS_H_
 
-#include "cut/graph/SegmentGraph.hpp"
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/foreach.hpp>
 

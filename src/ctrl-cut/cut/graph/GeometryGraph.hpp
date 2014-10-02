@@ -24,7 +24,6 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <cut/graph/Algorithms.hpp>
-#include <cut/graph/SegmentGraph.hpp>
 
 template<
   class TedgeList = boost::setS,
