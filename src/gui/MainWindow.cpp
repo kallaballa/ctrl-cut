@@ -68,6 +68,33 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   connect(scene, SIGNAL(itemMoved(QGraphicsItem*,QPointF)), this,
       SLOT(on_itemMoved(QGraphicsItem*,QPointF)));
+
+  QObject::connect(power, SIGNAL(valueChanged(QString)),
+      objectProperties, SLOT(on_power_update(const QString&)));
+
+  QObject::connect(speed, SIGNAL(valueChanged(QString)),
+      objectProperties, SLOT(on_speed_update(const QString&)));
+
+  QObject::connect(frequency, SIGNAL(valueChanged(QString)),
+      objectProperties, SLOT(on_frequency_update(const QString&)));
+
+  QObject::connect(posX, SIGNAL(textChanged(QString)),
+      objectProperties, SLOT(on_posX_update(const QString&)));
+
+  QObject::connect(posY, SIGNAL(textChanged(QString)),
+      objectProperties, SLOT(on_posY_update(const QString&)));
+
+  QObject::connect(sort, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_sort_update(int)));
+
+  QObject::connect(direction, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_direction_update(int)));
+
+  QObject::connect(dithering, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_dithering_update(int)));
+
+  QObject::connect(unit, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_unit_update(int)));
 }
 
 MainWindow::~MainWindow()
@@ -323,8 +350,15 @@ void MainWindow::on_filePrintAction_triggered()
     this->scene->getDocumentHolder().doc->put(DocumentSettings::USER, "user");
 //    this->scene->getDocumentHolder().doc->write(tmpfile);
 
+    //make a copy and run optimization
+    Document doc = *this->scene->getDocumentHolder().doc;
+    for(CutPtr c : doc.cuts()) {
+      c->normalize();
+      c->sort();
+      c->translate();
+    }
     EpilogLegend36Ext cutter;
-    cutter.write(*this->scene->getDocumentHolder().doc,ostream);
+    cutter.write(doc,ostream);
     ostream << std::endl;
     tmpfile.close();
 
