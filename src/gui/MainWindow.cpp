@@ -34,6 +34,7 @@
 #include "Commands.hpp"
 #include <QGraphicsItem>
 #include "NewDialog.hpp"
+#include <algorithm>
 
 MainWindow *MainWindow::inst = NULL;
 
@@ -431,16 +432,18 @@ void MainWindow::sceneSelectionChanged()
 
 void MainWindow::on_toolsMoveToOriginAction_triggered()
 {
+  qreal minx = std::numeric_limits<qreal>().max();
+  qreal miny = std::numeric_limits<qreal>().max();
   foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    item->setPos(0,0);
+    const QPointF pos = item->pos();
+    minx = std::min(pos.x(), minx);
+    miny = std::min(pos.y(), miny);
   }
 
-  /* REFACTOR
-  QRectF brect = this->documentitem->boundingRect();
-  qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();
-  QPointF topleft = brect.topLeft();
-  this->documentitem->setPos(-topleft);
-  */
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    const QPointF pos = item->pos();
+    item->setPos(pos.x() - minx, pos.y() - miny);
+  }
 }
 
 #define STRINGIFY(x) #x
