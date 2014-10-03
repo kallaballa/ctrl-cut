@@ -348,6 +348,18 @@ void RaiseItemToTopCommand::modify() {
   items[0]->setZValue(maxz+1);
 }
 
+
+PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Paste");
+}
+
+void PasteCommand::modify() {
+  foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
+    this->scene->add(*item->clone());
+  }
+}
+
 QString createCommandString(QGraphicsItem *item, const QPointF &pos) {
   return QObject::tr("Pos (%2, %3)").arg(pos.x()).arg(pos.y());
 }

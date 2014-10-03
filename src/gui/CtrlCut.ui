@@ -77,8 +77,6 @@
     <addaction name="editCutAction"/>
     <addaction name="editCopyAction"/>
     <addaction name="editPasteAction"/>
-    <addaction name="editGroupAction"/>
-    <addaction name="editUngroupAction"/>
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
@@ -556,10 +554,10 @@
   </action>
   <action name="editCutAction">
    <property name="text">
-    <string>Cu&amp;t</string>
+    <string>&amp;Delete</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+X</string>
+    <string>Del, Backspace</string>
    </property>
   </action>
   <action name="simplifyAction">

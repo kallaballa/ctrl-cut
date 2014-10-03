@@ -96,8 +96,6 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
-
-  QList<class AbstractCtrlCutItem *> itemClipboard;
 };
 
 #endif

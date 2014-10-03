@@ -146,6 +146,7 @@ void MainWindow::createContextMenu() {
 }
 
 void MainWindow::createUndoView(){
+  return;
     undoView = new QUndoView(undoStack);
     undoView->setWindowTitle(tr("Command List"));
     undoView->show();
@@ -196,19 +197,18 @@ void MainWindow::on_editCutAction_triggered() {
 }
 
 void MainWindow::on_editCopyAction_triggered() {
-  this->itemClipboard.clear();
+  this->scene->itemClipboard.clear();
   foreach (QGraphicsItem *item, this->scene->selectedItems()) {
     if (AbstractCtrlCutItem *ci = dynamic_cast<AbstractCtrlCutItem *>(item)) {
-      this->itemClipboard.append(ci);
+      this->scene->itemClipboard.append(ci);
     }
   }
-  this->editPasteAction->setEnabled(!this->itemClipboard.isEmpty());
+  this->editPasteAction->setEnabled(!this->scene->itemClipboard.isEmpty());
 }
 
 void MainWindow::on_editPasteAction_triggered() {
-  foreach (AbstractCtrlCutItem *item, this->itemClipboard) {
-    this->scene->add(*item->clone());
-  }
+  QUndoCommand *pasteCommand = new PasteCommand(this->scene);
+  undoStack->push(pasteCommand);
 }
 
 void MainWindow::on_editGroupAction_triggered() {
@@ -431,6 +431,10 @@ void MainWindow::sceneSelectionChanged()
 
 void MainWindow::on_toolsMoveToOriginAction_triggered()
 {
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    item->setPos(0,0);
+  }
+
   /* REFACTOR
   QRectF brect = this->documentitem->boundingRect();
   qDebug() << "brect: " << brect.topLeft().x() << "," << brect.topLeft().y();

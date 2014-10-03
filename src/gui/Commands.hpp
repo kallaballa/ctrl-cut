@@ -152,6 +152,12 @@ public:
   virtual void modify();
 };
 
+class PasteCommand: public CtrlCutUndo {
+public:
+  PasteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
+};
+
 QString createCommandString(QGraphicsItem *item, const QPointF &point);
 
 

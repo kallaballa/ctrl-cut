@@ -39,6 +39,7 @@ class CtrlCutScene : public QGraphicsScene
   Q_OBJECT
 
 public:
+  QList<class AbstractCtrlCutItem *> itemClipboard;
 
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}
