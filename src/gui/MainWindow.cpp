@@ -55,18 +55,18 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   this->graphicsView->setScene(this->scene);
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-  connect(this->graphicsView, SIGNAL(customContextMenuRequested(const QPoint&)),
+  QObject::connect(graphicsView, SIGNAL(customContextMenuRequested(const QPoint&)),
       this, SLOT(showContextMenu(const QPoint&)));
 
-  connect(this->scene, SIGNAL(selectionChanged()), this,
+  QObject::connect(scene, SIGNAL(selectionChanged()), this,
       SLOT(sceneSelectionChanged()));
-  connect(this->scene, SIGNAL(sceneRectChanged(const QRectF&)),
+  QObject::connect(scene, SIGNAL(sceneRectChanged(const QRectF&)),
       this->graphicsView, SLOT(updateSceneRect(const QRectF&)));
 
-  connect(this->graphicsView, SIGNAL(fileDropped(const QString &)), this,
+  QObject::connect(graphicsView, SIGNAL(fileDropped(const QString &)), this,
       SLOT(openFile(const QString &)));
 
-  connect(scene, SIGNAL(itemMoved(QGraphicsItem*,QPointF)), this,
+  QObject::connect(scene, SIGNAL(itemMoved(QGraphicsItem*,QPointF)), this,
       SLOT(on_itemMoved(QGraphicsItem*,QPointF)));
 
   QObject::connect(power, SIGNAL(valueChanged(QString)),
@@ -78,10 +78,10 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(frequency, SIGNAL(valueChanged(QString)),
       objectProperties, SLOT(on_frequency_update(const QString&)));
 
-  QObject::connect(posX, SIGNAL(textChanged(QString)),
+  QObject::connect(posX, SIGNAL(textEdited(QString)),
       objectProperties, SLOT(on_posX_update(const QString&)));
 
-  QObject::connect(posY, SIGNAL(textChanged(QString)),
+  QObject::connect(posY, SIGNAL(textEdited(QString)),
       objectProperties, SLOT(on_posY_update(const QString&)));
 
   QObject::connect(sort, SIGNAL(currentIndexChanged(int)),
