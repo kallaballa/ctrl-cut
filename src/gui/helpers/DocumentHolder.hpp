@@ -22,6 +22,7 @@
 
 #include <QList>
 #include <QString>
+#include <memory>
 
 class DocumentHolder {
 public:
@@ -39,5 +40,8 @@ private:
   void addToDocument(class AbstractCtrlCutItem &item);
   void removeFromDocument(AbstractCtrlCutItem &item);
 };
+
+typedef std::shared_ptr<DocumentHolder> DocumentHolderPtr;
+
 
 #endif /* DOCUMENTHOLDER_H_ */

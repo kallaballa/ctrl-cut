@@ -44,7 +44,7 @@
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
-  this->docHolder = new DocumentHolder();
+  this->docHolder = DocumentHolderPtr(new DocumentHolder());
   this->docHolder->doc = NULL;
   this->laserbed = NULL;
   this->backgroundItem = NULL;
@@ -199,7 +199,7 @@ void CtrlCutScene::remove(AbstractCtrlCutItem &item) {
   this->removeItem(&item);
 }
 
-void CtrlCutScene::attachDocumentHolder(DocumentHolder* docHolder) {
+void CtrlCutScene::attachDocumentHolder(DocumentHolderPtr docHolder) {
   this->detachDocumentHolder();
   this->docHolder = docHolder;
 

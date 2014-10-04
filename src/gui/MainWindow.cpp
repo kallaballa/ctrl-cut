@@ -267,7 +267,7 @@ void MainWindow::on_fileNewAction_triggered() {
     setWindowTitle("untitled.cut");
     setWindowFilePath("");
     this->undoStack->setClean();
-    this->scene->getDocumentHolder().filename = "";
+    this->scene->getDocumentHolder()->filename = "";
   }
 }
 
@@ -293,8 +293,10 @@ void MainWindow::importFile(const QString &filename) {
 void MainWindow::saveFile(const QString &filename) {
   if (filename.isEmpty()) return;
 
-  QUndoCommand *saveCommand = new SaveCommand(this->scene, filename);
-  undoStack->push(saveCommand);
+  SaveCommand *saveCommand = new SaveCommand(this->scene, filename);
+  //We don't need undo for save commands, but let's keep the command pattern anyway
+  //undoStack->push(saveCommand);
+  saveCommand->modify();
   setWindowTitle("");
   setWindowFilePath(filename);
   undoStack->setClean();
@@ -308,7 +310,7 @@ void MainWindow::on_fileOpenAction_triggered()
 
 void MainWindow::on_fileSaveAction_triggered()
 {
-  QString filename = this->scene->getDocumentHolder().filename;
+  QString filename = this->scene->getDocumentHolder()->filename;
   if (filename.isEmpty()) {
     filename = QFileDialog::getSaveFileName(this, "Save File", "", "Ctrl-Cut Document (*.cut)");
   }
@@ -347,12 +349,12 @@ void MainWindow::on_filePrintAction_triggered()
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ofstream tmpfile("gui.tmp", std::ios::out | std::ios::binary);
     std::ostream ostream(&streambuf);
-    this->scene->getDocumentHolder().doc->put(DocumentSettings::TITLE, "title");
-    this->scene->getDocumentHolder().doc->put(DocumentSettings::USER, "user");
+    this->scene->getDocumentHolder()->doc->put(DocumentSettings::TITLE, "title");
+    this->scene->getDocumentHolder()->doc->put(DocumentSettings::USER, "user");
 //    this->scene->getDocumentHolder().doc->write(tmpfile);
 
     //make a copy and run optimization
-    Document doc = *this->scene->getDocumentHolder().doc;
+    Document doc = *this->scene->getDocumentHolder()->doc;
     for(CutPtr c : doc.cuts()) {
       c->normalize();
       c->sort();
@@ -432,18 +434,8 @@ void MainWindow::sceneSelectionChanged()
 
 void MainWindow::on_toolsMoveToOriginAction_triggered()
 {
-  qreal minx = std::numeric_limits<qreal>().max();
-  qreal miny = std::numeric_limits<qreal>().max();
-  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    const QPointF pos = item->pos();
-    minx = std::min(pos.x(), minx);
-    miny = std::min(pos.y(), miny);
-  }
-
-  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    const QPointF pos = item->pos();
-    item->setPos(pos.x() - minx, pos.y() - miny);
-  }
+  QUndoCommand *moveToOrigin = new MoveToOriginCommand(this->scene);
+  undoStack->push(moveToOrigin);
 }
 
 #define STRINGIFY(x) #x

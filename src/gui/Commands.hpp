@@ -37,8 +37,8 @@ public:
 
   CtrlCutScene* scene;
 private:
-  DocumentHolder* before;
-  DocumentHolder* after;
+  DocumentHolderPtr before;
+  DocumentHolderPtr after;
 };
 
 class MoveCommand: public QUndoCommand {
@@ -155,6 +155,12 @@ public:
 class PasteCommand: public CtrlCutUndo {
 public:
   PasteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  virtual void modify();
+};
+
+class MoveToOriginCommand: public CtrlCutUndo {
+public:
+  MoveToOriginCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
   virtual void modify();
 };
 

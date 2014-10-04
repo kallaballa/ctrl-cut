@@ -30,7 +30,7 @@
 
  CtrlCutUndo::CtrlCutUndo(CtrlCutScene* scene, QUndoCommand *parent)
      : QUndoCommand(parent),  scene(scene), before(NULL), after(NULL) {
-   before = &this->scene->getDocumentHolder();
+   before = this->scene->getDocumentHolder();
    after = NULL;
  }
 
@@ -41,8 +41,7 @@
 
  void CtrlCutUndo::redo() {
    if(after == NULL) {
-     //FIXME memory leak
-     after = new DocumentHolder(this->scene->getDocumentHolder());
+     after = DocumentHolderPtr(new DocumentHolder(*this->scene->getDocumentHolder().get()));
      scene->attachDocumentHolder(after);
      modify();
    } else {
@@ -191,7 +190,7 @@
 
  void OpenCommand::modify() {
    this->scene->open(filename);
-   this->scene->getDocumentHolder().filename = filename;
+   this->scene->getDocumentHolder()->filename = filename;
  }
 
  SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
@@ -201,11 +200,11 @@
 
  void SaveCommand::modify() {
    typedef DocumentSettings DS;
-   Document& doc = *this->scene->getDocumentHolder().doc;
+   Document& doc = *this->scene->getDocumentHolder()->doc;
    doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
    SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), filename.toStdString().c_str());
    svgW.write(doc, "stroke:rgb(255,0,0);stroke-width:5;");
-   this->scene->getDocumentHolder().filename = filename;
+   this->scene->getDocumentHolder()->filename = filename;
  }
 
 ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
@@ -357,6 +356,26 @@ PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
 void PasteCommand::modify() {
   foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
     this->scene->add(*item->clone());
+  }
+}
+
+MoveToOriginCommand::MoveToOriginCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent) {
+  setText("Paste");
+}
+
+void MoveToOriginCommand::modify() {
+  qreal minx = std::numeric_limits<qreal>().max();
+  qreal miny = std::numeric_limits<qreal>().max();
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    const QPointF pos = item->pos();
+    minx = std::min(pos.x(), minx);
+    miny = std::min(pos.y(), miny);
+  }
+
+  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
+    const QPointF pos = item->pos();
+    item->setPos(pos.x() - minx, pos.y() - miny);
   }
 }
 

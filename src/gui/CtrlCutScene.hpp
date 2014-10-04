@@ -29,6 +29,7 @@
 #include <QObject>
 #include <QGraphicsItem>
 #include <qevent.h>
+#include <memory>
 #include "helpers/DocumentHolder.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
@@ -44,10 +45,10 @@ public:
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}
 
-  void attachDocumentHolder(DocumentHolder* doc);
+  void attachDocumentHolder(DocumentHolderPtr doc);
 
-  DocumentHolder& getDocumentHolder() {
-    return *this->docHolder;
+  DocumentHolderPtr getDocumentHolder() {
+    return this->docHolder;
   }
   void add(class AbstractCtrlCutItem& cutItem);
   void remove(AbstractCtrlCutItem& cutItem);
@@ -68,7 +69,7 @@ protected:
    virtual void drawBackground(QPainter *painter, const QRectF &rect);
 private:
   void makeBackground();
-  DocumentHolder* docHolder;
+  DocumentHolderPtr docHolder;
   QGraphicsPolygonItem* backgroundItem;
   QGraphicsItemGroup *laserbed;
   QGraphicsItem *movingItem;
