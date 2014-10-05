@@ -203,7 +203,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     }
 
     if (loadEngraving) {
-      EngravingPtr engraving(new Engraving(this->settings()));
+      EngravingPtr engraving = newEngraving();
       if (docFormat == PBM) {
         assert(false);
   /*      std::string suffix = filename.substr(filename.rfind(".") + 1);
@@ -243,7 +243,6 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
         }
       }
       if (engraving && engraving->isAllocated()) {
-        this->push_back(engraving);
         newEngravings.push_back(engraving);
       }
     }
@@ -251,16 +250,15 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     CutPtr cut = NULL;
     if (loadCut) {
       if (docFormat == VECTOR) {
-        cut = CutPtr(new Cut(this->settings()));
+        cut = newCut();
         cut->load(filename);
       }
       else if (parser) {
-        cut = CutPtr(new Cut(this->settings()));
+        cut = newCut();
         cut->load(parser->getVectorData());
       }
 
       if (cut)  {
-        this->push_back(cut);
         newCuts.push_back(cut);
       }
     }
