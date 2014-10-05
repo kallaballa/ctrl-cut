@@ -26,7 +26,8 @@ CutItem::CutItem(CutPtr cut) : AbstractCtrlCutItem(), cut(cut) {
   init();
 }
 
-CutItem::CutItem(const CutItem& cutItem) : AbstractCtrlCutItem(), cut(cutItem.cut) {
+CutItem::CutItem(const CutItem& cutItem) : AbstractCtrlCutItem(), cut(CutPtr(new Cut(cutItem.cut->settings))) {
+  (*cut.get()) = *cutItem.cut.get();
   init();
 }
 
