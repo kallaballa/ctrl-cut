@@ -208,8 +208,9 @@ void MainWindow::on_editCopyAction_triggered() {
 }
 
 void MainWindow::on_editPasteAction_triggered() {
-  QUndoCommand *pasteCommand = new PasteCommand(this->scene);
-  undoStack->push(pasteCommand);
+  PasteCommand *pasteCommand = new PasteCommand(this->scene);
+  pasteCommand->modify();
+  //  undoStack->push(pasteCommand);
 }
 
 void MainWindow::on_editGroupAction_triggered() {
