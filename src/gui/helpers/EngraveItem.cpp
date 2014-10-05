@@ -24,7 +24,7 @@ EngraveItem::EngraveItem(EngravingPtr engraving) : AbstractCtrlCutItem(), engrav
   init();
 }
 
-EngraveItem::EngraveItem(const EngraveItem& engraveItem) : AbstractCtrlCutItem(), engraving(engraveItem.engraving) {
+EngraveItem::EngraveItem(const EngraveItem& engraveItem) : AbstractCtrlCutItem(), engraving(EngravingPtr(engraveItem.engraving->clone())) {
   init();
 }
 

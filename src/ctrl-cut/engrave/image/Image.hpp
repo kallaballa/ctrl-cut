@@ -118,6 +118,14 @@ public:
     this->performcopy(into, w * sizeof(T), h, rect.ul[0] * sizeof(T), rect.ul[1]);
   }
 
+  Image<T> clone() const {
+    Image<T> into;
+    assert(!into.isAllocated());
+    into = Image<T>(this->w,this->h,this->comp);
+    this->performcopy(into, w * sizeof(T), h, 0, 0);
+    return into;
+  }
+
   Rectangle autocrop() const {
     Rectangle byterect = AbstractImage::autocrop(this->w * sizeof(T));
     return Rectangle(byterect.ul[0] / sizeof(T), byterect.ul[1], 

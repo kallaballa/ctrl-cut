@@ -27,6 +27,7 @@
 
 AbstractCtrlCutItem *AbstractCtrlCutItem::clone() const
 {
+  //FIXME memory leak
   if (const CutItem *cutItem = dynamic_cast<const CutItem *>(this)) {
     return new CutItem(*cutItem);
   }

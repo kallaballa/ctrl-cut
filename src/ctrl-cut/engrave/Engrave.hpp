@@ -64,6 +64,12 @@ public:
     return image;
   }
 
+  EngravingImpl<Timage>* clone() const {
+    EngravingImpl<Timage>* clone = new EngravingImpl<Timage>(this->settings);
+    clone->setImage(this->getImage().clone());
+    return clone;
+  }
+
   template<typename T, typename V>
   void put(const Settings::Key<T>& key, V value) {
     settings.put(key,value);
