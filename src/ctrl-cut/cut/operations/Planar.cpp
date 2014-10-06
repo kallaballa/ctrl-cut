@@ -4,22 +4,30 @@
 #include "cut/geom/algorithms/Algorithms.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include "cut/graph/Traverse.hpp"
+#include <boost/graph/planar_face_traversal.hpp>
+
 
 using std::vector;
 using namespace boost;
 
-join_strings_visitor::join_strings_visitor(const SegmentGraph& graph, Route& sink) :
-  graph(&graph), sink(&sink) {
-}
+struct join_strings_visitor: public boost::planar_face_traversal_visitor {
+  const SegmentGraph* graph;
+  Route* sink;
+  std::set<SegmentGraph::Edge> index;
 
-void join_strings_visitor::begin_face() {}
-void join_strings_visitor::end_face() {}
-void join_strings_visitor::next_edge(SegmentGraph::Edge e) {
-  if(index.insert(e).second) {
-    const SegmentProperty* seg = &(*graph)[e];
-    add(*sink, *static_cast<const Segment*>(seg));
+  join_strings_visitor(const SegmentGraph& graph, Route& sink) :
+    graph(&graph), sink(&sink) {
   }
-}
+
+  void begin_face() {}
+  void end_face() {}
+  void next_edge(SegmentGraph::Edge e) {
+    if(index.insert(e).second) {
+      const SegmentProperty* seg = &(*graph)[e];
+      add(*sink, *static_cast<const Segment*>(seg));
+    }
+  }
+};
 
 void make_planar_faces(const Route& src, Route& sink) {
   LOG_INFO_STR("make planar");

@@ -21,6 +21,7 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
 #include <Magick++.h>
 #include "Document.hpp"
 #include "CtrlCutException.hpp"
@@ -28,6 +29,8 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+
+using std::vector;
 
 class CtrlCutSax : public SaxParser
 {

@@ -22,6 +22,7 @@
 #include "cut/geom/PointTree.hpp"
 #include "cut/graph/Algorithms.hpp"
 #include "cut/graph/PathGraph.hpp"
+#include "cut/geom/algorithms/Append.hpp"
 #include <boost/foreach.hpp>
 #include <cut/operations/NearestPathSorting.hpp>
 

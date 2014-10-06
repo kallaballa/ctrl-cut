@@ -21,6 +21,8 @@
 
 #include "cut/geom/Path.hpp"
 #include "cut/geom/Route.hpp"
+#include <cut/geom/algorithms/Append.hpp>
+#include <cut/geom/algorithms/Prepend.hpp>
 #include <boost/geometry/algorithms/append.hpp>
 
 inline bool concat_back(Path& path, const Segment& seg) {

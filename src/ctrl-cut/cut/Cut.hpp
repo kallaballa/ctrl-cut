@@ -27,7 +27,11 @@
 
 #include "config/DocumentSettings.hpp"
 #include "config/CutSettings.hpp"
+
+#include "svg/SvgPlot.hpp"
+
 #include "cut/geom/Route.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 
 #include "cut/operations/Clip.hpp"
 #include "cut/operations/Explode.hpp"
@@ -36,7 +40,9 @@
 #include "cut/operations/Translate.hpp"
 #include "cut/operations/Deonion.hpp"
 #include "cut/operations/Traveller.hpp"
+
 #include <limits>
+#include <memory>
 
 template<
 template<typename,typename> class Tcontainer = std::vector,
@@ -227,7 +233,7 @@ public:
 };
 
 typedef CutImpl<std::vector, std::allocator> Cut;
-typedef shared_ptr<Cut> CutPtr;
+typedef std::shared_ptr<Cut> CutPtr;
 
 
 inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {

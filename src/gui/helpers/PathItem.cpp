@@ -23,7 +23,7 @@
 PathItem::PathItem(const Path& path, QGraphicsItem *parent) : QGraphicsPolygonItem(parent), path(path) {
   QPolygon polygon;
 
-  BOOST_FOREACH(const Point& p, path) {
+  for(const Point& p : path) {
     polygon << QPoint(p.x, p.y);
   }
 

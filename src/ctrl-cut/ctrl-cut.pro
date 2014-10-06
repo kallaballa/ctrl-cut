@@ -33,6 +33,7 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./cut/operations/Deonion.hpp \
            ./cut/operations/NearestPathSorting.hpp \
            ./cut/operations/Traveller.hpp \
+           ./cut/operations/Clip.cpp \
            ./cut/operations/Planar.hpp \
           ./cut/geom/algorithms/Algorithms.hpp \
            ./cut/geom/algorithms/Add.hpp \
@@ -79,7 +80,6 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
 
 SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cutters/encoder/PclEncoder.cpp \
-           ./cut/operations/Explode.cpp \
            ./PostscriptParser.cpp \
            ./util/2D.cpp \
            ./util/Measurement.cpp \
@@ -90,6 +90,10 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cut/operations/NearestPathSorting.cpp \
            ./cut/operations/Traveller.cpp \
            ./cut/operations/Planar.cpp \
+           ./cut/operations/Explode.cpp \
+           ./cut/operations/Clip.cpp \
+           ./cut/operations/Reduce.cpp \
+           ./cut/operations/Translate.cpp \
            ./svg/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \

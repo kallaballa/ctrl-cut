@@ -1,22 +1,3 @@
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 #include <vector>
 #include "Document.hpp"
 #include "EpilogLegend36Ext.hpp"
@@ -26,6 +7,7 @@
 #include "encoder/PclEncoder.hpp"
 #include "CtrlCutException.hpp"
 #include "cut/operations/Translate.hpp"
+#include "cut/geom/algorithms/Algorithms.hpp"
 
 using boost::format;
 using std::list;
@@ -97,7 +79,7 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
    */
 
   if (enable_engraving) {
-    BOOST_FOREACH(const EngravingPtr e, doc.engravings()) {
+    for(const EngravingPtr e : doc.engravings()) {
       PclEncoder::encode(out, e);
     }
   }
@@ -117,7 +99,7 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
     out << PCL_SECTION_END;
 
     /* We're going to perform a vector print. */
-    BOOST_FOREACH(CutPtr cutp, doc.cuts()) {
+    for(CutPtr cutp : doc.cuts()) {
       Cut& cut = *cutp;
       Cut translated = make_from(cut);
       Point pos = cut.get(CutSettings::CPOS);

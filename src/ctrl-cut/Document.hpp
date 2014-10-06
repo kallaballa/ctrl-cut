@@ -62,10 +62,10 @@ public:
 
   void copy(const Document& other) {
     this->docSettings = other.docSettings;
-    BOOST_FOREACH(const CutPtr cut, this->cuts()) {
+    for(const CutPtr cut : this->cuts()) {
       this->push_back(CutPtr(new Cut(*cut.get())));
     }
-    BOOST_FOREACH(const EngravingPtr engrave, this->engravings()) {
+    for(const EngravingPtr engrave : this->engravings()) {
       this->push_back(EngravingPtr(new Engraving(*engrave.get())));
     }
   }

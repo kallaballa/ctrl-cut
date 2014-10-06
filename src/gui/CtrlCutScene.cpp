@@ -19,7 +19,6 @@
 #include "CtrlCutScene.hpp"
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
-#include "event/CtrlCutEvent.hpp"
 #include "ctrl-cut/config/DocumentSettings.hpp"
 #include "ctrl-cut/cut/geom/Geometry.hpp"
 #include "Commands.hpp"
