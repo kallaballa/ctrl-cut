@@ -355,7 +355,8 @@ PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
 
 void PasteCommand::modify() {
   foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
-    this->scene->add(*item->clone());
+    AbstractCtrlCutItem *clone = item->clone();
+    this->scene->add(*clone);
   }
 }
 

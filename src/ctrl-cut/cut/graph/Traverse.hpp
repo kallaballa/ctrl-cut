@@ -12,7 +12,6 @@
 
 #include <boost/graph/planar_face_traversal.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
-#include "boost/function_output_iterator.hpp"
 #include <boost/graph/properties.hpp>
 #include <boost/graph/metric_tsp_approx.hpp>
 #include "svg/SvgPlot.hpp"

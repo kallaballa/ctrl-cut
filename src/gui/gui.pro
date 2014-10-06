@@ -40,7 +40,6 @@ RESOURCES += ctrl-cut.qrc
 HEADERS += ./MainWindow.hpp \
 	   ./NewDialog.hpp \
 	   ./ImportDialog.hpp \ 
-           ./event/CtrlCutEvent.hpp \
            ./CtrlCutScene.hpp \
            ./NavigationView.hpp \
            ./Commands.hpp \
@@ -58,7 +57,6 @@ HEADERS += ./MainWindow.hpp \
            ./helpers/EngraveItem.hpp \
            ./helpers/DocumentHolder.hpp
 SOURCES += ./gui.cpp \
-           ./event/CtrlCutEvent.cpp \
            ./Commands.cpp \
            ./NewDialog.cpp \
            ./ImportDialog.cpp \	   

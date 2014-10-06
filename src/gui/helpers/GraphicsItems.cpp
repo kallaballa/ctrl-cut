@@ -29,7 +29,9 @@ AbstractCtrlCutItem *AbstractCtrlCutItem::clone() const
 {
   //FIXME memory leak
   if (const CutItem *cutItem = dynamic_cast<const CutItem *>(this)) {
-    return new CutItem(*cutItem);
+    CutItem* ci = new CutItem(*cutItem);
+    assert(ci->cut.get() != cutItem->cut.get());
+    return ci;
   }
   else if (const EngraveItem *engraveItem = dynamic_cast<const EngraveItem *>(this)) {
     return new EngraveItem(*engraveItem);

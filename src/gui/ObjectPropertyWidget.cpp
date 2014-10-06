@@ -59,7 +59,7 @@ void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->disable();
   this->ci = ci;
-  this->ci->cut->settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateCutProperties, this, _1));
+  this->ci->cut->settings.setUpdateTrigger(std::bind(&ObjectPropertyWidget::updateCutProperties, this, std::placeholders::_1));
 
   Point pos = this->ci->cut->get(CS::CPOS);
   int speed = this->ci->cut->get(CS::CSPEED);
@@ -118,7 +118,7 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
 void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   this->disable();
   this->ei = ei;
-  this->ei->engraving->settings.setUpdateTrigger(bind(&ObjectPropertyWidget::updateEngraveProperties, this, _1));
+  this->ei->engraving->settings.setUpdateTrigger(std::bind(&ObjectPropertyWidget::updateEngraveProperties, this, std::placeholders::_1));
 
   Point pos = this->ei->engraving->get(ES::EPOS);
   int speed = this->ei->engraving->get(ES::ESPEED);

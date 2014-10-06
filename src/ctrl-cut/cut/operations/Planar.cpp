@@ -1,24 +1,11 @@
 #include "Planar.hpp"
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <set>
 
 #include "cut/geom/Geometry.hpp"
 #include "cut/geom/algorithms/Algorithms.hpp"
 #include "cut/graph/SegmentGraph.hpp"
 #include "cut/graph/Traverse.hpp"
 
-#include <boost/graph/planar_face_traversal.hpp>
-#include <boost/graph/boyer_myrvold_planar_test.hpp>
-#include "boost/function_output_iterator.hpp"
-#include <boost/graph/properties.hpp>
-#include <boost/graph/metric_tsp_approx.hpp>
-
 using std::vector;
-using boost::planar_face_traversal;
-using boost::boyer_myrvold_planarity_test;
-using boost::graph_traits;
 using namespace boost;
 
 join_strings_visitor::join_strings_visitor(const SegmentGraph& graph, Route& sink) :

@@ -5,6 +5,7 @@
 #include <boost/graph/metric_tsp_approx.hpp>
 #include <boost/function_output_iterator.hpp>
 #include <cut/graph/CompleteDistanceGraph.hpp>
+#include <functional>
 
 class Traveler {
 public:
@@ -47,7 +48,7 @@ public:
         0,
         get(&DistanceProperty::distance, this->graph),
         boost::make_tsp_tour_visitor(
-            make_function_output_iterator(boost::bind<void>(rb, _1))));
+            make_function_output_iterator(rb)));
     this->sink->erase(sink->end() - 1);
   }
 };

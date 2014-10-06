@@ -31,10 +31,8 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/function.hpp>
 
 #include <boost/any.hpp>
-#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 #include "util/Measurement.hpp"
 #include "cut/geom/Geometry.hpp"
@@ -100,14 +98,14 @@ public:
 
   class Trigger {
   private:
-    boost::function<void (const KeyBase&)> func;
+    std::function<void (const KeyBase&)> func;
   public:
     Trigger()  {}
-    Trigger(boost::function<void (const KeyBase&)> func) : func(func) {}
+    Trigger(std::function<void (const KeyBase&)> func) : func(func) {}
     Trigger(const Trigger& other) : func(other.func) {}
 
     void operator()(KeyBase key) {
-      if(!func.empty())
+      if(func)
         func(key);
     }
   };
@@ -254,7 +252,7 @@ public:
     boost::throw_exception(setting_not_found(key));
   }
 
-  void setUpdateTrigger(boost::function<void (const KeyBase&)> triggerFunc) {
+  void setUpdateTrigger(std::function<void (const KeyBase&)> triggerFunc) {
     this->updateTrigger = Trigger(triggerFunc);
   }
 
