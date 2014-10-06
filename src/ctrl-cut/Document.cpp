@@ -251,11 +251,11 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     CutPtr cut = NULL;
     if (loadCut) {
       if (docFormat == VECTOR) {
-        cut = newCut();
+        cut = CutPtr(new Cut(settings()));
         cut->load(filename);
       }
       else if (parser) {
-        cut = newCut();
+        cut = CutPtr(new Cut(settings()));
         cut->load(parser->getVectorData());
       }
 
