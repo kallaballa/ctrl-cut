@@ -22,7 +22,6 @@
 #include "Concat.hpp"
 #include "cut/geom/Route.hpp"
 #include "cut/geom/Path.hpp"
-#include <boost/foreach.hpp>
 
 template<typename TpointRange>
 inline void add(Path& path , const Segment& seg) {

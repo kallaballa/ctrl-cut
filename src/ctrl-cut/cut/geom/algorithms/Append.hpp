@@ -21,7 +21,6 @@
 
 #include "cut/geom/Path.hpp"
 #include "cut/geom/Route.hpp"
-#include <boost/foreach.hpp>
 #include <boost/geometry/algorithms/append.hpp>
 
 inline void append(Path& path, const Point& p) {

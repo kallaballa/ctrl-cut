@@ -21,7 +21,6 @@
 #define MERGE_H_
 
 #include "Cut.hpp"
-#include <boost/foreach.hpp>
 
 inline void merge(Cut& src, Cut& sink) {
   namespace tl = boost::geometry::strategy::transform;

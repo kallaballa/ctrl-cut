@@ -24,9 +24,6 @@
 #include "util/Logger.hpp"
 #include "cut/geom/SegmentTree.hpp"
 #include "cut/geom/Views.hpp"
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/format.hpp>
 #include "svg/SvgPlot.hpp"
 
 //#define CC_EXPLODE_DEBUG 1

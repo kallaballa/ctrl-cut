@@ -23,7 +23,6 @@
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
-#include <boost/foreach.hpp>
 #include <algorithm>
 
 /*

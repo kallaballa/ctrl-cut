@@ -22,7 +22,6 @@
 #define _TRANSLATE_HPP_
 
 #include "cut/geom/Geometry.hpp"
-#include <boost/foreach.hpp>
 
 template<
   typename TmultiPointRange
@@ -35,7 +34,7 @@ void translateTo(const TmultiPointRange& src, TmultiPointRange& sink, const Poin
   tl::translate_transformer<Point, Point> transformer(translate.x, translate.y);
 #endif
 
-  BOOST_FOREACH(const Path& path, src) {
+  for(const Path& path : src) {
     Path translated;
     boost::geometry::transform(path, translated, transformer);
     append(sink, translated);
