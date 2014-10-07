@@ -17,18 +17,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "PathItem.hpp"
-#include <qgraphicsitem.h>
+#include <QGraphicsPathItem>
 #include <qpen.h>
 
-PathItem::PathItem(const Path& path, QGraphicsItem *parent) : QGraphicsPolygonItem(parent), path(path) {
-  QPolygon polygon;
+PathItem::PathItem(const Path& path, QGraphicsItem *parent) :
+    QGraphicsPathItem(parent), path(path) {
+  QPainterPath painter;
+  bool first=true;
+  if (!path.empty()) {
+    for (const Point& p : path) {
+      if(first)
+        painter.moveTo(p.x, p.y);
+      else
+        painter.lineTo(p.x, p.y);
+      first = false;
+    }
 
-  for(const Point& p : path) {
-    polygon << QPoint(p.x, p.y);
+    QGraphicsPathItem::setPath(painter);
+    QGraphicsPathItem::setPen(QPen(Qt::blue));
   }
-
-  QPen p(Qt::blue);
-  QGraphicsPolygonItem::setPolygon(polygon);
-  QGraphicsPolygonItem::setPen(p);
 }
 
