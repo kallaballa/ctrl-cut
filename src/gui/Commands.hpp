@@ -152,10 +152,13 @@ public:
   virtual void modify();
 };
 
-class PasteCommand: public CtrlCutUndo {
+class PasteCommand: public QUndoCommand {
+  CtrlCutScene* scene;
+  QList<class AbstractCtrlCutItem *> itemsAdded;
 public:
   PasteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void redo();
+  void undo();
 };
 
 class MoveToOriginCommand: public CtrlCutUndo {

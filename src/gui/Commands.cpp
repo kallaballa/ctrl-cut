@@ -76,7 +76,6 @@
 */
  void MoveCommand::undo()
  {
-   std::cerr << "move undo" << std::endl;
      qraphicsItem->setPos(myOldPos);
      this->scene->update();
      setText(QObject::tr("Move %1")
@@ -85,7 +84,6 @@
 
  void MoveCommand::redo()
  {
-   std::cerr << "move redo" << std::endl;
      qraphicsItem->setPos(newPos);
      this->scene->update();
      setText(QObject::tr("Move %1")
@@ -348,15 +346,30 @@ void RaiseItemToTopCommand::modify() {
 }
 
 
-PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-    CtrlCutUndo(scene, parent) {
+PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) : scene(scene) {
   setText("Paste");
 }
 
-void PasteCommand::modify() {
-  foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
-    AbstractCtrlCutItem *clone = item->clone();
-    this->scene->add(*clone);
+void PasteCommand::undo() {
+  if(!itemsAdded.empty()) {
+    foreach (AbstractCtrlCutItem *item, itemsAdded) {
+      this->scene->remove(*item);
+    }
+  }
+}
+void PasteCommand::redo() {
+  if(itemsAdded.empty()) {
+    foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
+      itemsAdded.append(item->clone());
+    }
+
+    foreach (AbstractCtrlCutItem *item, itemsAdded) {
+      this->scene->add(*item);
+    }
+  } else {
+    foreach (AbstractCtrlCutItem *item, itemsAdded) {
+      this->scene->add(*item);
+    }
   }
 }
 
