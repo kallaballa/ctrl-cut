@@ -193,11 +193,10 @@ public:
     string filename = this->get(DocumentSettings::FILENAME);
 
     translateTo(*this, translated, pos);
-
     plot_svg(translated, filename + "_translate");
-    this->put(CutSettings::CPOS, Point());
     this->clear();
     (*this) = translated;
+    this->put(CutSettings::CPOS, Point());
   }
 
   void crop() {
