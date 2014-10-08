@@ -49,7 +49,15 @@ Document::Document(const Document& other) {
   const EngraveList& e = other.engravings();
   for (EngraveConstIt it = e.begin(); it != e.end(); ++it) {
     eng = newEngraving().get();
-    (*eng) = *(*it).get();
+    (*eng) = *(*it).get()->clone();
+  }
+}
+
+void Document::optimize() {
+  for(CutPtr cut : cuts()) {
+    cut->normalize();
+    cut->sort();
+    cut->translate();
   }
 }
 
