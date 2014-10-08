@@ -18,7 +18,7 @@ include(common.pri)
 
 CONFIG += qt gio
 CONFIG += app_bundle
-QT += network
+QT += network webkit
 
 MOC_DIR = objects
 UI_DIR = objects
@@ -33,12 +33,13 @@ macx {
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
 
-FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui
+FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui PreviewDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
 HEADERS += ./MainWindow.hpp \
 	   ./NewDialog.hpp \
+     ./PreviewDialog.hpp \
 	   ./ImportDialog.hpp \ 
            ./CtrlCutScene.hpp \
            ./NavigationView.hpp \
@@ -59,6 +60,7 @@ HEADERS += ./MainWindow.hpp \
 SOURCES += ./gui.cpp \
            ./Commands.cpp \
            ./NewDialog.cpp \
+           ./PreviewDialog.cpp \
            ./ImportDialog.cpp \	   
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \

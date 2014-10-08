@@ -34,6 +34,7 @@
 #include "Commands.hpp"
 #include <QGraphicsItem>
 #include "NewDialog.hpp"
+#include "PreviewDialog.hpp"
 #include <algorithm>
 
 MainWindow *MainWindow::inst = NULL;
@@ -253,6 +254,11 @@ bool MainWindow::maybeSave()
     return false;
   }
   return true;
+}
+
+void MainWindow::on_previewAction_triggered() {
+  PreviewDialog pd(*this->scene->getDocumentHolder()->doc);
+  pd.exec();
 }
 
 void MainWindow::on_fileNewAction_triggered() {

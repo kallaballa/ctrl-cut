@@ -121,6 +121,7 @@
    <addaction name="fileOpenAction"/>
    <addaction name="fileSaveAction"/>
    <addaction name="fileImportAction"/>
+   <addaction name="previewAction"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <attribute name="dockWidgetArea">
@@ -641,6 +642,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+U</string>
+   </property>
+  </action>
+  <action name="previewAction">
+   <property name="text">
+    <string>Preview</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Preview</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>

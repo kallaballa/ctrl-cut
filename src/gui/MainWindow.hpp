@@ -41,6 +41,7 @@ public:
 
 public slots:
   void on_helpAboutAction_triggered();
+  void on_previewAction_triggered();
   void on_fileNewAction_triggered();
   void on_fileOpenAction_triggered();
   void on_fileSaveAction_triggered();
