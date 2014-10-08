@@ -70,7 +70,7 @@ void DocumentHolder::remove(AbstractCtrlCutItem &item)
 
 void DocumentHolder::removeFromDocument(AbstractCtrlCutItem &item)
 {
-  if (CutItem *cutItem = qgraphicsitem_cast<CutItem *>(&item)) {
+  if (CutItem *cutItem = dynamic_cast<CutItem *>(&item)) {
     this->doc->remove(cutItem->cut);
   }
   else if (EngraveItem *engraveItem = dynamic_cast<EngraveItem *>(&item)) {
