@@ -150,7 +150,8 @@ void plot_shared_segments(const Route& r, const char* filename) {
   uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
   uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
-  SvgWriter svg(width, height, resolution, title, filename);
+  std::ofstream os(filename);
+  SvgWriter svg(width, height, resolution, title, os);
 
   for(const Path& path : r) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:1");
@@ -169,8 +170,8 @@ void plot_shared_points(const Route& r, const char* filename) {
   uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
   uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
-
-  SvgWriter svg(width, height, resolution, title, filename);
+  std::ofstream os(filename);
+  SvgWriter svg(width, height, resolution, title, os);
   if(r.empty())
     return;
 
@@ -195,8 +196,8 @@ void plot_path_order(const Route& r, const char* filename) {
   Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
   uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
-
-  SvgWriter svg(width, height, resolution, title, filename);
+  std::ofstream os(filename);
+  SvgWriter svg(width, height, resolution, title, os);
   std::vector<Point> sharedPoints;
 
   hsl_color hsl;
@@ -240,8 +241,8 @@ void plot_segment_order(const Route& r, const char* filename) {
   Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
   uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
-
-  SvgWriter svg(width, height, resolution, title, filename);
+  std::ofstream os(filename);
+  SvgWriter svg(width, height, resolution, title, os);
 
   hsl_color hsl;
   rgb_color rgb;
@@ -288,7 +289,8 @@ void plot_point_order(const Route& r, const char* filename) {
   uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
   const string& title = r.get(DocumentSettings::TITLE);
 
-  SvgWriter svg(width, height, resolution, title, filename);
+  std::ofstream os(filename);
+  SvgWriter svg(width, height, resolution, title, os);
 
   hsl_color hsl;
   rgb_color rgb;

@@ -35,18 +35,18 @@
  }
 
  void CtrlCutUndo::undo() {
-   scene->attachDocumentHolder(before);
-   scene->update();
+ //  scene->attachDocumentHolder(before);
+ //  scene->update();
  }
 
  void CtrlCutUndo::redo() {
-   if(after == NULL) {
-     after = DocumentHolderPtr(new DocumentHolder(*this->scene->getDocumentHolder().get()));
-     scene->attachDocumentHolder(after);
+//   if(after == NULL) {
+//     after = DocumentHolderPtr(new DocumentHolder(*this->scene->getDocumentHolder().get()));
+//     scene->attachDocumentHolder(after);
      modify();
-   } else {
-     scene->attachDocumentHolder(after);
-   }
+//   } else {
+//     scene->attachDocumentHolder(after);
+ //  }
    scene->update();
  }
 
@@ -200,8 +200,9 @@
    typedef DocumentSettings DS;
    Document& doc = *this->scene->getDocumentHolder()->doc;
    doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
-   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), filename.toStdString().c_str());
-   svgW.write(doc, "stroke:rgb(255,0,0);stroke-width:5;");
+   std::ofstream os(filename.toStdString());
+   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), os);
+   svgW.write(doc);
    this->scene->getDocumentHolder()->filename = filename;
  }
 

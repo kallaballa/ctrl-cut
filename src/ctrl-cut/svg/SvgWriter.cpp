@@ -22,13 +22,12 @@
 #include <boost/format.hpp>
 #include <Magick++.h>
 
-SvgWriter::SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, const char* filename) : width(width), height(height), resolution(resolution), title(title), ostream(filename) {
+SvgWriter::SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, std::ostream& os) : width(width), height(height), resolution(resolution), title(title), ostream(os) {
   this->writeDocumentStart();
 }
 
 SvgWriter::~SvgWriter() {
   this->writeDocumentEnd();
-  this->ostream.close();
 }
 
 void SvgWriter::writeDocumentStart() {
@@ -93,7 +92,7 @@ void SvgWriter::write(const CutPtr cut, const string& style) {
       % translate.x % translate.y
       << std::endl;
 
-  write(static_cast<const Route&>(*cut), style);
+  write(static_cast<const Route&>(*cut));
   ostream << "</g>" << std::endl;
 }
 
@@ -134,11 +133,11 @@ void SvgWriter::write(const EngravingPtr engraving, const string& style) {
 
 void SvgWriter::write(const Document& d, const std::string& style) {
   BOOST_FOREACH(const EngravingPtr engraving, d.engravings()) {
-    this->write(engraving, style);
+    this->write(engraving);
   }
 
   BOOST_FOREACH(const CutPtr& cut, d.cuts()) {
-    this->write(cut, style);
+    this->write(cut);
   }
 }
 
@@ -162,7 +161,7 @@ void SvgWriter::write(const Path& path, const std::string& style) {
 
 void SvgWriter::write(const Route& r, const std::string& style) {
   BOOST_FOREACH(const Path& path, r) {
-    this->write(path, style);
+    this->write(path);
   }
 }
 
