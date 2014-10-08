@@ -15,7 +15,7 @@ PreviewDialog::PreviewDialog(Document& doc, QWidget *parent) : QDialog(parent)
   std::ofstream os(filename);
   SvgWriter svg(copy.get(DS::WIDTH).in(PX), copy.get(DS::HEIGHT).in(PX), copy.get(DS::RESOLUTION), copy.get(DS::TITLE), os);
   svg.write(copy);
-  std::cerr << "fn:" << filename << std::endl;
+  os.flush();
   this->webView->setUrl(QUrl::fromLocalFile(QString::fromStdString(filename)));
   this->webView->setZoomFactor(0.05);
   this->zoomBox->setCurrentIndex(10);
