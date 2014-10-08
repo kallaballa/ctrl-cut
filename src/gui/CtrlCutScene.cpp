@@ -27,11 +27,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include "helpers/DocumentHolder.hpp"
 #include <QGraphicsItem>
-#include "cut/operations/Clip.hpp"
-#include "cut/operations/Explode.hpp"
-#include "cut/operations/Deonion.hpp"
-#include "cut/operations/Reduce.hpp"
-#include "cut/operations/Planar.hpp"
 #include <boost/filesystem.hpp>
 #include <cut/operations/NearestPathSorting.hpp>
 #include <qpixmapcache.h>
@@ -40,6 +35,7 @@
 #include <qmenu.h>
 #include <qgraphicsview.h>
 #include <algorithm>
+#include "NewDialog.hpp"
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
@@ -50,7 +46,14 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   this->currentZ = 0;
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
-  this->newJob(600, Distance(21600,PX, 600), Distance(14400,PX, 600));
+
+  NewDialog nd;
+  if (nd.exec() == QDialog::Accepted) {
+    this->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+  } else {
+    exit(0);
+  }
+
   this->makeBackground();
 
   using namespace Qt;
@@ -146,19 +149,12 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
 }
 
 void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
-  if (!this->docHolder->doc) {
-    this->newJob(600, Distance(36, IN, 600), Distance(24, IN, 600), boost::filesystem::path(filename.toStdString()).filename().c_str());
-  }
-
+  assert(this->docHolder->doc);
   Document& doc = *this->docHolder->doc;
 
   doc.put(DocumentSettings::LOAD_CUT, loadVector);
   doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
   doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-//FIXME get parameters from laser cutter settings
-  doc.put(DocumentSettings::RESOLUTION, 600);
-  doc.put(DocumentSettings::WIDTH, Distance(21600, PX, 600));
-  doc.put(DocumentSettings::HEIGHT, Distance(14400, PX, 600));
 
   makeBackground();
 

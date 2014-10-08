@@ -28,6 +28,30 @@ NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
 NewDialog::~NewDialog() {
 }
 
+Unit NewDialog::getUnit() {
+  int index = this->unit->currentIndex();
+  switch (index) {
+  case 0:
+    return IN;
+  case 1:
+    return MM;
+  case 2:
+    return PX;
+  }
+  assert(false);
+  return IN;
+}
+
+Distance NewDialog::getWidth() {
+  double w = this->widthLine->text().toDouble();
+  return Distance(w, getUnit(), getResolution());
+}
+
+Distance NewDialog::getHeight() {
+  double h = this->heightLine->text().toDouble();
+  return Distance(h, getUnit(), getResolution());
+}
+
 int NewDialog::getResolution() {
   int index = this->resolutionCombo->currentIndex();
   switch (index) {

@@ -54,7 +54,6 @@ HEADERS += ./MainWindow.hpp \
            ./helpers/GraphicsItems.hpp \
            ./helpers/PathItem.hpp \
            ./helpers/CutItem.hpp \
-           ./helpers/EngraveCanvas.hpp \
            ./helpers/EngraveItem.hpp \
            ./helpers/DocumentHolder.hpp
 SOURCES += ./gui.cpp \
@@ -69,7 +68,6 @@ SOURCES += ./gui.cpp \
            ./helpers/PathItem.cpp \
            ./helpers/Qt.cpp \
            ./helpers/GraphicsItems.cpp \
-           ./helpers/EngraveCanvas.cpp \
            ./helpers/EngraveItem.cpp \
            ./helpers/DocumentHolder.cpp \
            ./CtrlCutScene.cpp \

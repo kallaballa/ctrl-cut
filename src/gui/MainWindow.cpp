@@ -267,10 +267,7 @@ void MainWindow::on_fileNewAction_triggered() {
 
   NewDialog nd;
   if (nd.exec() == QDialog::Accepted) {
-    int resolution = nd.getResolution();
-    this->scene->newJob(resolution,
-                        Distance(36, IN, resolution), 
-                        Distance(24, IN, resolution));
+    this->scene->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
     setWindowTitle("untitled.cut");
     setWindowFilePath("");
     this->undoStack->setClean();
