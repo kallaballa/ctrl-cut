@@ -11,6 +11,8 @@ class PreviewDialog : public QDialog, private Ui::Dialog
 public:
   PreviewDialog(Document& doc, QWidget *parent = NULL);
   ~PreviewDialog();
+public slots:
+  void on_zoom_triggered(const QString& s);
 private:
 };
 

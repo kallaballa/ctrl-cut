@@ -53,6 +53,11 @@ void SvgWriter::writeDocumentStart() {
       "ctrlcut:version=\"%s\" " +
       "viewbox=\"0 0 %d %d\" >");
 
+  format bedborder(string("<rect ") +
+      "width=\"%f\" " +
+      "height=\"%f\" " +
+  "style=\"fill:rgb(250,250,250); stroke-width:10; stroke:rgb(32,32,32);\" />");
+
   format ctrlcutDoc = format("<ctrlcut:document title=\"%s\"/>");
 
   string metadata = string("<metadata id=\"ccmetadata\">") +
@@ -68,6 +73,7 @@ void SvgWriter::writeDocumentStart() {
   ostream << (svgtag % dtd % this->width % this->height % this->resolution % version % this->width % this->height) << std::endl;
   ostream << (ctrlcutDoc % this->title) << std::endl;
   ostream << metadata << std::endl;
+  ostream << (bedborder % this->width % this->height) << std::endl;
 }
 
 void SvgWriter::writeDocumentEnd() {
