@@ -400,6 +400,7 @@ void MainWindow::sceneSelectionChanged()
 
   QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
 
+
   foreach(QGraphicsItem *item, selecteditems) {
     QRectF rect = item->boundingRect();
     QRectF chrect = item->childrenBoundingRect();
@@ -432,14 +433,15 @@ void MainWindow::sceneSelectionChanged()
       this->editUngroupAction->setEnabled(false);
     }
 
-    foreach (QGraphicsItem *item, this->scene->items()) {
-      if (item->parentItem()) continue;
-      if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
-        if(item->isSelected()) {
-          //          cci->setHighlighted(true);
-          this->objectProperties->enable(cci);
-        } else {
-          //          cci->setHighlighted(false);
+    if(selecteditems.size() > 1) {
+      this->objectProperties->disable();
+    } else {
+      foreach (QGraphicsItem *item, this->scene->items()) {
+        if (item->parentItem()) continue;
+        if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
+          if(item->isSelected()) {
+            this->objectProperties->enable(cci);
+          }
         }
       }
     }
