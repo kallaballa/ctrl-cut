@@ -47,10 +47,13 @@ void ObjectPropertyWidget::updateCutProperties(const CutSettings::KeyBase&  key)
 }
 
 void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
-  if (EngraveItem *ei = dynamic_cast<EngraveItem*>(item)) {
+  EngraveItem *ei;
+  CutItem *ci;
+
+  if ((ei = dynamic_cast<EngraveItem*>(item))) {
     enableEngraveItem(ei);
   }
-  else if (CutItem *ci = dynamic_cast<CutItem*>(item)) {
+  else if ((ci = dynamic_cast<CutItem*>(item))) {
     enableCutItem(ci);
   }
   // FIXME: Enable group, potentially mixed
@@ -83,6 +86,7 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
+  double reduce = this->ci->cut->get(CS::REDUCE).in(this->currentUnit);
 
   mainw->posX->setEnabled(true);
   mainw->posY->setEnabled(true);
@@ -93,7 +97,11 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   mainw->speed->setValue(speed);
   mainw->power->setValue(power);
   mainw->frequency->setValue(freq);
+  mainw->reduceEdit->setText(QString::number(reduce));
 
+
+  mainw->reduceEdit->show();
+  mainw->reduceLabel->show();
   mainw->frequency->show();
   mainw->freqLabel->show();
   mainw->sort->show();
@@ -148,6 +156,9 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   mainw->posY->setEnabled(true);
   mainw->speed->setEnabled(true);
   mainw->power->setEnabled(true);
+
+  mainw->reduceEdit->hide();
+  mainw->reduceLabel->hide();
   mainw->frequency->hide();
   mainw->freqLabel->hide();
   mainw->sort->hide();
@@ -225,6 +236,8 @@ void ObjectPropertyWidget::disable() {
   mainw->posY->setEnabled(false);
   mainw->speed->setEnabled(false);
   mainw->power->setEnabled(false);
+  mainw->reduceEdit->hide();
+  mainw->reduceLabel->hide();
   mainw->frequency->hide();
   mainw->freqLabel->hide();
   mainw->sort->hide();
@@ -377,4 +390,10 @@ void ObjectPropertyWidget::on_autofocus_update(int state) {
 
 void ObjectPropertyWidget::on_title_update(const QString& text) {
   this->doc->put(DocumentSettings::TITLE, text.toStdString());
+}
+
+void ObjectPropertyWidget::on_reduce_update(const QString& reduce) {
+  if(currentState == Cut) {
+    this->ci->cut->put(CS::REDUCE, Distance(reduce.toDouble(), currentUnit, currentResolution));
+  }
 }

@@ -24,35 +24,17 @@
 #include "helpers/EngraveItem.hpp"
 #include <Document.hpp>
 #include <cut/operations/Reduce.hpp>
-#include <svg/SvgWriter.hpp>
 
 #include <QtGui>
 
  CtrlCutUndo::CtrlCutUndo(CtrlCutScene* scene, QUndoCommand *parent)
-     : QUndoCommand(parent),  scene(scene), before(NULL), after(NULL) {
-   before = this->scene->getDocumentHolder();
-   after = NULL;
+     : QUndoCommand(parent),  scene(scene) {
  }
 
- void CtrlCutUndo::undo() {
- //  scene->attachDocumentHolder(before);
- //  scene->update();
- }
-
- void CtrlCutUndo::redo() {
-//   if(after == NULL) {
-//     after = DocumentHolderPtr(new DocumentHolder(*this->scene->getDocumentHolder().get()));
-//     scene->attachDocumentHolder(after);
-     modify();
-//   } else {
-//     scene->attachDocumentHolder(after);
- //  }
-   scene->update();
- }
 
  MoveCommand::MoveCommand(CtrlCutScene* scene, QGraphicsItem *item, const QPointF &oldPos,
                   QUndoCommand *parent)
-     : QUndoCommand(parent),  scene(scene)
+     : CtrlCutUndo(scene, parent)
  {
      qraphicsItem = item;
      newPos = item->pos();
@@ -91,26 +73,36 @@
  }
 
  DeleteCommand::DeleteCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   CtrlCutUndo(scene,parent) {
+   CtrlCutUndo(scene,parent), deleted(NULL) {
    setText("Delete item");
  }
 
- void DeleteCommand::modify() {
-   foreach(QGraphicsItem* graphicsItem, scene->selectedItems()) {
-     CutItem* ci;
-     EngraveItem* ei;
+ void DeleteCommand::undo() {
+   if(deleted)
+     scene->add(*deleted);
+ }
 
-     // FIXME: Handle Group items
-     if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
-       scene->remove(*ci);
-     } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {
-       scene->remove(*ei);
+ void DeleteCommand::redo() {
+   if(!deleted) {
+     foreach(QGraphicsItem* graphicsItem, scene->selectedItems()) {
+       CutItem* ci;
+       EngraveItem* ei;
+
+       // FIXME: Handle Group items
+       if((ci = dynamic_cast<CutItem* >(graphicsItem))) {
+         deleted = ci;
+         scene->remove(*ci);
+       } else if((ei = dynamic_cast<EngraveItem* >(graphicsItem))) {
+         deleted = ei;
+         scene->remove(*ei);
+       }
      }
-   }
+   } else
+     scene->remove(*deleted);
  }
 
  GroupCommand::GroupCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene) {
+    CtrlCutUndo(scene, parent) {
    setText("Group items");
  }
 
@@ -154,7 +146,7 @@
  }
 
  UnGroupCommand::UnGroupCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene) {
+    CtrlCutUndo(scene, parent) {
    setText("Ungroup items");
  }
 
@@ -181,31 +173,6 @@
    GroupCommand::groupItems(this->scene, this->items);
  }
 
- OpenCommand::OpenCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
-   CtrlCutUndo(scene, parent), filename(filename) {
-   setText("Open " + QFileInfo(filename).fileName());
- }
-
- void OpenCommand::modify() {
-   this->scene->open(filename);
-   this->scene->getDocumentHolder()->filename = filename;
- }
-
- SaveCommand::SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
-     CtrlCutUndo(scene, parent), filename(filename) {
-   setText("Save");
- }
-
- void SaveCommand::modify() {
-   typedef DocumentSettings DS;
-   Document& doc = *this->scene->getDocumentHolder()->doc;
-   doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
-   std::ofstream os(filename.toStdString());
-   SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), os);
-   svgW.write(doc);
-   this->scene->getDocumentHolder()->filename = filename;
- }
-
 ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent) :
   CtrlCutUndo(scene, parent), filename(filename) {
   if (!filename.isEmpty()) {
@@ -213,92 +180,82 @@ ImportCommand::ImportCommand(CtrlCutScene* scene, const QString& filename, QUndo
   }
 }
 
-void ImportCommand::modify() {
+void ImportCommand::undo() {
+  for(AbstractCtrlCutItem* item : imported) {
+    this->scene->remove(*item);
+  }
+}
+void ImportCommand::redo() {
   ImportDialog imd;
   if (imd.exec() == QDialog::Accepted) {
     bool loadVector = imd.isVectorDataEnabled();
     bool loadRaster = imd.isRasterDataEnabled();
-    this->scene->load(filename, loadVector, loadRaster);
+    imported = this->scene->load(filename, loadVector, loadRaster);
   }
 }
-/*
- SimplifyCommand::SimplifyCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-   QUndoCommand(parent), scene(scene) {
-   foreach(QGraphicsItem* item, scene->selectedItems()) {
-     CutItem* ci;
-     if((ci = dynamic_cast<CutItem* >(item))) {
-       oldCutItems.append(ci);
-     }
-   }
-   setText("Simplify");
- }
 
- void SimplifyCommand::undo() {
-   foreach(CutItem* ci, newCutItems) {
-     this->scene->remove(*ci);
-   }
+ZCommand::ZCommand(CtrlCutScene* scene, QUndoCommand *parent) :
+    CtrlCutUndo(scene, parent), item(NULL), oldZ(0), newZ(0) {
+  setText("ZCommand");
+}
 
-   foreach(CutItem* ci, oldCutItems) {
-     this->scene->add(*ci);
-   }
+void ZCommand::undo() {
+  if(item != NULL) {
+    item->setZValue(oldZ);
+  }
+}
 
-   this->scene->update();
- }
+void ZCommand::redo() {
+  if(item != NULL) {
+    item->setZValue(newZ);
+  }
+}
 
- void SimplifyCommand::redo() {
-   if(newCutItems.empty()) {
-     foreach(CutItem* ci, oldCutItems) {
-       ci->commit();
-       //FIXME memory leak
-       std::cerr << ci->cut.get(CutSettings::CPOS) << std::endl;
-       CutPtr* newCut = new CutPtr(ci->cut.settings);
-       std::cerr << newCut->get(CutSettings::CPOS) << std::endl;
-       reduce(ci->cut, *newCut, Distance(1, MM,75).in(PX));
-       CutItem* newItem = new CutItem(*newCut);
-       newCutItems.append(newItem);
-     }
-   }
-
-   foreach(CutItem* ci, oldCutItems) {
-     this->scene->remove(*ci);
-   }
-
-   foreach(CutItem* ci, newCutItems) {
-     this->scene->add(*ci);
-   }
-
-   this->scene->update();
- }
-*/
 LowerItemCommand::LowerItemCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-    CtrlCutUndo(scene, parent) {
+    ZCommand(scene, parent) {
   setText("Lower item");
 }
 
-void LowerItemCommand::modify() {
-  QList<QGraphicsItem *> items = scene->selectedItems();
-  qreal selZ = items[0]->zValue();
-  qreal z;
-  qreal belowZ = selZ;
+void LowerItemCommand::undo() {
+  ZCommand::undo();
+}
 
-  foreach (QGraphicsItem *i, scene->items()) {
-    z = i->zValue();
-    if ((z > belowZ || belowZ == selZ) && z < selZ) {
-      belowZ = z;
+void LowerItemCommand::redo() {
+  if(oldZ == std::numeric_limits<qreal>().max()) {
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    qreal selZ = items[0]->zValue();
+    oldZ = selZ;
+    qreal z;
+    qreal belowZ = selZ;
+
+    foreach (QGraphicsItem *i, scene->items()) {
+      z = i->zValue();
+      if ((z > belowZ || belowZ == selZ) && z < selZ) {
+        belowZ = z;
+      }
     }
+    items[0]->setZValue(belowZ-1);
+    newZ = belowZ-1;
+  } else {
+    ZCommand::redo();
   }
-
-  items[0]->setZValue(belowZ-1);
 }
 
 RaiseItemCommand::RaiseItemCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-    CtrlCutUndo(scene, parent) {
+    ZCommand(scene, parent) {
   setText("Raise item");
 }
 
-void RaiseItemCommand::modify() {
+void RaiseItemCommand::undo() {
+  ZCommand::undo();
+}
+
+void RaiseItemCommand::redo() {
+  if(item == NULL) {
   QList<QGraphicsItem *> items = scene->selectedItems();
+  item = items[0];
   qreal selZ = items[0]->zValue();
+  oldZ = selZ;
   qreal z;
   qreal aboveZ = selZ;
 
@@ -309,45 +266,68 @@ void RaiseItemCommand::modify() {
     }
   }
 
+  newZ = aboveZ+1;
   items[0]->setZValue(aboveZ+1);
+  } else
+    ZCommand::redo();
 }
 
 LowerItemToBottomCommand::LowerItemToBottomCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-    CtrlCutUndo(scene, parent) {
+    ZCommand(scene, parent) {
   setText("Lower item to bottom");
 }
 
-void LowerItemToBottomCommand::modify() {
-  QList<QGraphicsItem *> items = scene->selectedItems();
-  qreal minz = items[0]->zValue();
+void LowerItemToBottomCommand::undo() {
+  ZCommand::undo();
+}
 
-  foreach (QGraphicsItem *i, scene->items()) {
-    if (i->zValue() > -9999)
-      minz = std::min(minz, i->zValue());
-  }
+void LowerItemToBottomCommand::redo() {
+  if(item == NULL) {
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    item = items[0];
+    qreal minz = items[0]->zValue();
+    oldZ = minz;
 
-  items[0]->setZValue(minz-1);
+    foreach (QGraphicsItem *i, scene->items()) {
+      if (i->zValue() > -9999)
+        minz = std::min(minz, i->zValue());
+    }
+
+    items[0]->setZValue(minz-1);
+    newZ = minz-1;
+  } else
+    ZCommand::redo();
 }
 
 RaiseItemToTopCommand::RaiseItemToTopCommand(CtrlCutScene* scene, QUndoCommand *parent) :
-    CtrlCutUndo(scene, parent) {
+    ZCommand(scene, parent) {
   setText("Raise item to top");
 }
 
-void RaiseItemToTopCommand::modify() {
-  QList<QGraphicsItem *> items = scene->selectedItems();
-  qreal maxz = items[0]->zValue();
+void RaiseItemToTopCommand::undo() {
+  ZCommand::undo();
+}
 
-  foreach (QGraphicsItem *i, scene->items()) {
-    if (i->zValue() > -9999)
-      maxz = std::max(maxz, i->zValue());
-  }
+void RaiseItemToTopCommand::redo() {
+  if(item == NULL) {
+    QList<QGraphicsItem *> items = scene->selectedItems();
+    item = items[0];
+    qreal maxz = items[0]->zValue();
+    oldZ = maxz;
 
-  items[0]->setZValue(maxz+1);
+    foreach (QGraphicsItem *i, scene->items()) {
+      if (i->zValue() > -9999)
+        maxz = std::max(maxz, i->zValue());
+    }
+
+    items[0]->setZValue(maxz+1);
+    newZ = maxz+1;
+  } else
+    ZCommand::redo();
 }
 
 
-PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) : scene(scene) {
+PasteCommand::PasteCommand(CtrlCutScene* scene, QUndoCommand *parent) : CtrlCutUndo(scene, parent) {
   setText("Paste");
 }
 
@@ -379,18 +359,34 @@ MoveToOriginCommand::MoveToOriginCommand(CtrlCutScene* scene, QUndoCommand *pare
   setText("Paste");
 }
 
-void MoveToOriginCommand::modify() {
-  qreal minx = std::numeric_limits<qreal>().max();
-  qreal miny = std::numeric_limits<qreal>().max();
-  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    const QPointF pos = item->pos();
-    minx = std::min(pos.x(), minx);
-    miny = std::min(pos.y(), miny);
+void MoveToOriginCommand::undo() {
+  for(size_t i = 0; i < itemsMoved.size(); ++i) {
+    itemsMoved[i]->setPos(oldPositions[i]);
   }
+}
 
-  foreach (QGraphicsItem *item, this->scene->selectedItems()) {
-    const QPointF pos = item->pos();
-    item->setPos(pos.x() - minx, pos.y() - miny);
+void MoveToOriginCommand::redo() {
+  if(itemsMoved.empty()) {
+    itemsMoved = this->scene->selectedItems();
+
+    qreal minx = std::numeric_limits<qreal>().max();
+    qreal miny = std::numeric_limits<qreal>().max();
+    foreach (QGraphicsItem *item, itemsMoved) {
+      const QPointF pos = item->pos();
+      minx = std::min(pos.x(), minx);
+      miny = std::min(pos.y(), miny);
+    }
+
+    foreach (QGraphicsItem *item, itemsMoved) {
+      const QPointF pos = item->pos();
+      oldPositions.append(pos);
+      item->setPos(pos.x() - minx, pos.y() - miny);
+      newPositions.append(item->pos());
+    }
+  } else {
+    for(size_t i = 0; i < itemsMoved.size(); ++i) {
+      itemsMoved[i]->setPos(newPositions[i]);
+    }
   }
 }
 

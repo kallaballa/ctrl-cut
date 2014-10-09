@@ -59,6 +59,8 @@ public slots:
   void on_unit_update(int);
   void on_autofocus_update(int);
   void on_title_update(const QString&);
+  void on_reduce_update(const QString&);
+
 
 private:
   enum State { NONE, Engraving, Cut};

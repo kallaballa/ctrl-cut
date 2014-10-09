@@ -45,6 +45,7 @@ public:
   static Key<uint16_t> CSPEED;
   static Key<uint16_t> CPOWER;
   static Key<uint16_t> FREQUENCY;
+  static Key<Distance> REDUCE;
 
   CutSettings() : Settings() {}
   CutSettings(DocumentSettings& docSettings) : Settings(docSettings) {
@@ -52,6 +53,11 @@ public:
     ss << boost::uuids::random_generator()();
     this->put(CutSettings::CUUID, ss.str());
 
+    try {
+      this->put(CutSettings::CPOS, docSettings.get(CutSettings::CPOS));
+    } catch (std::exception& ex) {
+      this->put(CutSettings::CPOS, Point());
+    }
     try{
       this->put(CutSettings::SORT, docSettings.get(CutSettings::SORT));
     } catch(std::exception& ex) {
@@ -78,11 +84,10 @@ public:
     }
 
     try {
-      this->put(CutSettings::CPOS, docSettings.get(CutSettings::CPOS));
+      this->put(CutSettings::REDUCE, docSettings.get(CutSettings::REDUCE));
     } catch (std::exception& ex) {
-      this->put(CutSettings::CPOS, Point());
+      this->put(CutSettings::REDUCE, Distance(0.2, MM, docSettings.get(DocumentSettings::RESOLUTION)));
     }
-
   }
   CutSettings(const CutSettings& other) : Settings(other) {
     Settings::setParent(other.parent);

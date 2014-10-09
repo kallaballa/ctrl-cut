@@ -29,10 +29,7 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="sizeConstraint">
-     <enum>QLayout::SetMaximumSize</enum>
-    </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
       <item>
@@ -232,13 +229,6 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="yLabel">
-         <property name="text">
-          <string>Y</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="posY">
          <property name="sizePolicy">
@@ -273,7 +263,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="speedLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -286,7 +276,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="4" column="1">
         <widget class="QSpinBox" name="speed">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -323,7 +313,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="powerLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -336,7 +326,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="5" column="1">
         <widget class="QSpinBox" name="power">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -364,7 +354,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="freqLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -377,7 +367,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="6" column="1">
         <widget class="QSpinBox" name="frequency">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -408,14 +398,14 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="sortLabel">
          <property name="text">
           <string>Sort</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="7" column="1">
         <widget class="QComboBox" name="sort">
          <property name="currentIndex">
           <number>0</number>
@@ -445,14 +435,14 @@
          </item>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="8" column="0">
         <widget class="QLabel" name="directionLabel">
          <property name="text">
           <string>Direction</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="8" column="1">
         <widget class="QComboBox" name="direction">
          <item>
           <property name="text">
@@ -466,14 +456,14 @@
          </item>
         </widget>
        </item>
-       <item row="7" column="0">
+       <item row="9" column="0">
         <widget class="QLabel" name="ditherLabel">
          <property name="text">
           <string>Dithering</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="9" column="1">
         <widget class="QComboBox" name="dithering">
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
@@ -523,6 +513,54 @@
          </item>
         </widget>
        </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="reduceLabel">
+         <property name="text">
+          <string>Reduce</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="yLabel">
+         <property name="text">
+          <string>Y</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="reduceEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>64</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>64</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+         <property name="maxLength">
+          <number>8</number>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="placeholderText">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -540,7 +578,6 @@
      </item>
     </layout>
     <zorder>verticalSpacer</zorder>
-    <zorder>gridLayoutWidget</zorder>
     <zorder>line</zorder>
    </widget>
   </widget>

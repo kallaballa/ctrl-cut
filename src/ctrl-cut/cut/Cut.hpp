@@ -144,7 +144,7 @@ public:
     int dpi = this->get(DS::RESOLUTION);
     string filename = this->get(DS::FILENAME);
 
-    Distance reduceMax(0.2,MM, dpi);
+    Distance reduceMax = this->get(CutSettings::REDUCE);
 
     CutPtr& cut = *this;
     plot_svg(cut, filename + "_input");

@@ -148,7 +148,8 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
   this->docHolder->doc->put(DS::HEIGHT, height);
 }
 
-void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
+std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
+  std::vector<AbstractCtrlCutItem*> items;
   assert(this->docHolder->doc);
   Document& doc = *this->docHolder->doc;
 
@@ -170,6 +171,7 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
     // Don't add to document as it's already there
     this->docHolder->addItem(*ci);
     this->addItem(ci);
+    items.push_back(ci);
   }
 
   const Document::EngraveList& engravings = doc.engravings();
@@ -179,9 +181,11 @@ void CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaste
     // Don't add to document as it's already there
     this->docHolder->addItem(*ei);
     this->addItem(ei);
+    items.push_back(ei);
   }
 
   this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
+  return items;
 }
 
 void CtrlCutScene::add(class AbstractCtrlCutItem &item) {

@@ -35,6 +35,7 @@
 #include <QGraphicsItem>
 #include "NewDialog.hpp"
 #include "PreviewDialog.hpp"
+#include <svg/SvgWriter.hpp>
 #include <algorithm>
 
 MainWindow *MainWindow::inst = NULL;
@@ -106,6 +107,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(autofocusBox, SIGNAL(stateChanged(int)),
       objectProperties, SLOT(on_autofocus_update(int)));
 
+  QObject::connect(reduceEdit, SIGNAL(textEdited(QString)),
+      objectProperties, SLOT(on_reduce_update(const QString&)));
 }
 
 MainWindow::~MainWindow()
@@ -289,8 +292,8 @@ void MainWindow::openFile(const QString &filename) {
   if(filename.isNull())
     return;
 
-  QUndoCommand *openCommand = new OpenCommand(this->scene, filename);
-  undoStack->push(openCommand);
+  this->scene->open(filename);
+  this->scene->getDocumentHolder()->filename = filename;
   setWindowTitle("");
   setWindowFilePath(filename);
   undoStack->setClean();
@@ -307,10 +310,13 @@ void MainWindow::importFile(const QString &filename) {
 void MainWindow::saveFile(const QString &filename) {
   if (filename.isEmpty()) return;
 
-  SaveCommand *saveCommand = new SaveCommand(this->scene, filename);
-  //We don't need undo for save commands, but let's keep the command pattern anyway
-  //undoStack->push(saveCommand);
-  saveCommand->modify();
+  typedef DocumentSettings DS;
+  Document& doc = *this->scene->getDocumentHolder()->doc;
+  doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
+  std::ofstream os(filename.toStdString());
+  SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), os);
+  svgW.write(doc);
+  this->scene->getDocumentHolder()->filename = filename;
   setWindowTitle("");
   setWindowFilePath(filename);
   undoStack->setClean();

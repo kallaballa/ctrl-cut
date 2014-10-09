@@ -54,7 +54,7 @@ public:
   void remove(AbstractCtrlCutItem& cutItem);
   void newJob(const Coord_t& resolution, const Distance& width, const Distance& height, const QString& title = "untitled");
   void open(const QString& filename);
-  void load(const QString& filename, bool loadVector = true, bool loadRaster = true);
+  std::vector<AbstractCtrlCutItem*> load(const QString& filename, bool loadVector = true, bool loadRaster = true);
   void reset();
   void detachDocumentHolder();
   void update(const QRectF &rect = QRectF());

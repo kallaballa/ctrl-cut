@@ -27,21 +27,17 @@
 class Document;
 class CtrlCutScene;
 
+
 class CtrlCutUndo: public QUndoCommand {
 public:
   CtrlCutUndo(CtrlCutScene* scene, QUndoCommand *parent = NULL);
   virtual ~CtrlCutUndo(){};
-  void undo();
-  void redo();
-  virtual void modify() = 0;
 
   CtrlCutScene* scene;
 private:
-  DocumentHolderPtr before;
-  DocumentHolderPtr after;
 };
 
-class MoveCommand: public QUndoCommand {
+class MoveCommand: public CtrlCutUndo {
 public:
   MoveCommand(CtrlCutScene* scene, QGraphicsItem *QGraphicsItem, const QPointF &oldPos,
       QUndoCommand *parent = NULL);
@@ -51,13 +47,12 @@ public:
   //bool mergeWith(const QUndoCommand *command);
 
 private:
-  CtrlCutScene* scene;
   QGraphicsItem *qraphicsItem;
   QPointF myOldPos;
   QPointF newPos;
 };
 
-class GroupCommand : public QUndoCommand
+class GroupCommand : public CtrlCutUndo
 {
 public:
   GroupCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
@@ -65,11 +60,10 @@ public:
   virtual void undo();
   static class CtrlCutGroupItem *groupItems(CtrlCutScene* scene, QList<QGraphicsItem*> items);
 private:
-  CtrlCutScene* scene;
   class CtrlCutGroupItem *group;
 };
 
-class UnGroupCommand : public QUndoCommand
+class UnGroupCommand : public CtrlCutUndo
 {
 public:
   UnGroupCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
@@ -77,7 +71,6 @@ public:
   virtual void undo();
   static QList<QGraphicsItem*> ungroup(CtrlCutScene* scene, CtrlCutGroupItem *group);
 private:
-  CtrlCutScene* scene;
   QList<QGraphicsItem *> items;
 };
 
@@ -85,7 +78,10 @@ class DeleteCommand : public CtrlCutUndo
 {
 public:
     DeleteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-    virtual void modify();
+    void undo();
+    void redo();
+private:
+    AbstractCtrlCutItem* deleted;
 };
 
 class OpenCommand: public CtrlCutUndo {
@@ -93,7 +89,8 @@ public:
   OpenCommand(CtrlCutScene* scene, const QString &filename,
       QUndoCommand *parent = NULL);
 
-  virtual void modify();
+  void undo();
+  void redo();
 private:
   QString filename;
 };
@@ -102,7 +99,8 @@ class SaveCommand: public CtrlCutUndo {
 public:
   SaveCommand(CtrlCutScene* scene, const QString& filename, QUndoCommand *parent = NULL);
 
-  void modify();
+  void undo();
+  void redo();
 
   const QString filename;
 };
@@ -111,9 +109,11 @@ class ImportCommand: public CtrlCutUndo {
 public:
   ImportCommand(CtrlCutScene* scene, const QString &filename, QUndoCommand *parent = NULL);
 
-  void modify();
+  void undo();
+  void redo();
 
 private:
+  std::vector<AbstractCtrlCutItem*> imported;
   QString filename;
 };
 
@@ -128,43 +128,60 @@ public:
   QList<CutItem* > newCutItems;
 };
 
-class LowerItemCommand: public CtrlCutUndo {
+class ZCommand: public CtrlCutUndo {
+public:
+  ZCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  void undo();
+  void redo();
+  QGraphicsItem* item;
+  qreal oldZ;
+  qreal newZ;
+};
+
+class LowerItemCommand: public ZCommand {
 public:
   LowerItemCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void undo();
+  void redo();
 };
 
-class RaiseItemCommand: public CtrlCutUndo {
+class RaiseItemCommand: public ZCommand {
 public:
   RaiseItemCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void undo();
+  void redo();
 };
 
-class LowerItemToBottomCommand: public CtrlCutUndo {
+class LowerItemToBottomCommand: public ZCommand {
 public:
   LowerItemToBottomCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void undo();
+  void redo();
 };
 
-class RaiseItemToTopCommand: public CtrlCutUndo {
+class RaiseItemToTopCommand: public ZCommand {
 public:
   RaiseItemToTopCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void undo();
+  void redo();
 };
 
-class PasteCommand: public QUndoCommand {
-  CtrlCutScene* scene;
+class PasteCommand: public CtrlCutUndo {
   QList<class AbstractCtrlCutItem *> itemsAdded;
 public:
   PasteCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  void redo();
   void undo();
+  void redo();
 };
 
 class MoveToOriginCommand: public CtrlCutUndo {
 public:
   MoveToOriginCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
-  virtual void modify();
+  void undo();
+  void redo();
+  QList<QGraphicsItem *> itemsMoved;
+  QList<QPointF> oldPositions;
+  QList<QPointF> newPositions;
 };
 
 QString createCommandString(QGraphicsItem *item, const QPointF &point);
