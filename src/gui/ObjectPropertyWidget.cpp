@@ -24,6 +24,7 @@
 #include "config/DocumentSettings.hpp"
 #include "helpers/CutItem.hpp"
 #include "helpers/EngraveItem.hpp"
+#include "Document.hpp"
 #include <QUndoView>
 #include <assert.h>
 
@@ -32,7 +33,6 @@ typedef EngraveSettings ES;
 typedef CutSettings CS;
 
 ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600) {
-  disable();
 }
 
 ObjectPropertyWidget::~ObjectPropertyWidget() {
@@ -56,6 +56,18 @@ void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
   // FIXME: Enable group, potentially mixed
 }
 
+void ObjectPropertyWidget::setDocument(Document* doc) {
+  typedef DocumentSettings DS;
+  this->doc = doc;
+  MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
+  mainw->titleEdit->setText(QString::fromStdString(doc->get(DS::TITLE)));
+
+  if(doc->get(DS::AUTO_FOCUS))
+    mainw->autofocusBox->setChecked(true);
+  else
+    mainw->autofocusBox->setChecked(false);
+}
+
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->disable();
   this->ci = ci;
@@ -72,6 +84,10 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
 
+  mainw->posX->setEnabled(true);
+  mainw->posY->setEnabled(true);
+  mainw->speed->setEnabled(true);
+  mainw->power->setEnabled(true);
   mainw->posX->setText(QString::number(posX));
   mainw->posY->setText(QString::number(posY));
   mainw->speed->setValue(speed);
@@ -111,7 +127,6 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   }
 
   mainw->sort->setCurrentIndex(mainw->sort->findText(strSort));
-  QWidget::setEnabled(true);
   this->currentState = Cut;
 }
 
@@ -129,7 +144,10 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
 
-
+  mainw->posX->setEnabled(true);
+  mainw->posY->setEnabled(true);
+  mainw->speed->setEnabled(true);
+  mainw->power->setEnabled(true);
   mainw->frequency->hide();
   mainw->freqLabel->hide();
   mainw->sort->hide();
@@ -184,7 +202,6 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
 
   mainw->dithering->setCurrentIndex(mainw->dithering->findText(ditherstr));
   mainw->direction->setCurrentIndex(direction);
-  QWidget::setEnabled(true);
   this->currentState = Engraving;
 }
 
@@ -203,7 +220,22 @@ void ObjectPropertyWidget::disable() {
     this->ei->engraving->settings.deleteUpdateTrigger();
     this->ei = NULL;
   }
-  QWidget::setEnabled(false);
+  MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
+  mainw->posX->setEnabled(false);
+  mainw->posY->setEnabled(false);
+  mainw->speed->setEnabled(false);
+  mainw->power->setEnabled(false);
+  mainw->frequency->hide();
+  mainw->freqLabel->hide();
+  mainw->sort->hide();
+  mainw->sortLabel->hide();
+  mainw->ditherLabel->hide();
+  mainw->direction->hide();
+  mainw->directionLabel->hide();
+  mainw->dithering->hide();
+  mainw->ditherLabel->hide();
+  mainw->direction->hide();
+  mainw->directionLabel->hide();
   this->currentState = NONE;
 }
 
@@ -337,4 +369,12 @@ void ObjectPropertyWidget::on_unit_update(int d) {
 	else if(d == 2)
 		currentUnit = PX;
 	this->update();
+}
+
+void ObjectPropertyWidget::on_autofocus_update(int state) {
+  this->doc->put(DocumentSettings::AUTO_FOCUS, state);
+}
+
+void ObjectPropertyWidget::on_title_update(const QString& text) {
+  this->doc->put(DocumentSettings::TITLE, text.toStdString());
 }

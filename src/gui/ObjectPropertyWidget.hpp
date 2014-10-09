@@ -35,13 +35,13 @@ public:
   ObjectPropertyWidget(QWidget *parent = NULL);
   ~ObjectPropertyWidget();
   
-
   void applyLaserConfig(class Document &document);
   void updateLaserConfig(Document &document);
 
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
   void enable(class AbstractCtrlCutItem* item);
+  void setDocument(Document* doc);
   void enableCutItem(class CutItem* ci);
   void enableEngraveItem(class EngraveItem* ei);
   void disable();
@@ -57,12 +57,16 @@ public slots:
   void on_direction_update(int);
   void on_dithering_update(int);
   void on_unit_update(int);
+  void on_autofocus_update(int);
+  void on_title_update(const QString&);
+
 private:
   enum State { NONE, Engraving, Cut};
   State currentState;
   Unit currentUnit;
   uint32_t currentResolution;
 
+  class Document* doc;
   class CutItem* ci;
   class EngraveItem* ei;
 };

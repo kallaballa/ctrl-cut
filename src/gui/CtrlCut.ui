@@ -130,6 +130,30 @@
    <widget class="ObjectPropertyWidget" name="objectProperties">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="titleLabel">
+         <property name="text">
+          <string>Title</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="titleEdit"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="autofocusBox">
+         <property name="text">
+          <string>Autofocus</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="xLabel">
@@ -509,6 +533,7 @@
      </item>
     </layout>
     <zorder>verticalSpacer</zorder>
+    <zorder>gridLayoutWidget</zorder>
    </widget>
   </widget>
   <action name="fileOpenAction">

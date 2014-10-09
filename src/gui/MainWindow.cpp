@@ -54,6 +54,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   createActions();
 
   this->scene = new CtrlCutScene(this);
+  this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
+  this->objectProperties->disable();
   this->graphicsView->setScene(this->scene);
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -97,6 +99,13 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   QObject::connect(unit, SIGNAL(currentIndexChanged(int)),
       objectProperties, SLOT(on_unit_update(int)));
+
+  QObject::connect(titleEdit, SIGNAL(textEdited(const QString&)),
+      objectProperties, SLOT(on_title_update(const QString&)));
+
+  QObject::connect(autofocusBox, SIGNAL(stateChanged(int)),
+      objectProperties, SLOT(on_autofocus_update(int)));
+
 }
 
 MainWindow::~MainWindow()
@@ -272,6 +281,7 @@ void MainWindow::on_fileNewAction_triggered() {
     setWindowFilePath("");
     this->undoStack->setClean();
     this->scene->getDocumentHolder()->filename = "";
+    this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
   }
 }
 
