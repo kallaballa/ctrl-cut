@@ -36,7 +36,6 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   setupUi(this);
 
   createActions();
-
   this->scene = new CtrlCutScene(this);
   this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
   this->objectProperties->disable();
