@@ -2,6 +2,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QDebug>
+#include <QMimeData>
  
 CtrlCutView::CtrlCutView(QWidget* parent) : NavigationView(parent)
 {

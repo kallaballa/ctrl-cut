@@ -1,6 +1,7 @@
 
 #include <QAbstractSocket>
 #include <QtGui>
+#include <QtWidgets>
 #include <assert.h>
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"

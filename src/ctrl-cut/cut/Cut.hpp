@@ -5,6 +5,7 @@
 #include <string>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 
 #include "config/DocumentSettings.hpp"
 #include "config/CutSettings.hpp"
