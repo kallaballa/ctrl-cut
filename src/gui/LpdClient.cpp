@@ -1,4 +1,5 @@
 #include "LpdClient.hpp"
+#include <QMessageBox>
 
 LpdClient::LpdClient(QObject *parent) : QObject(parent), lpdstate(LPD_IDLE)
 {
@@ -65,7 +66,12 @@ void LpdClient::on_socket_disconnected()
 
 void LpdClient::on_socket_error(QAbstractSocket::SocketError err)
 {
-  printf("error: %s\n", this->socket->errorString().toLocal8Bit().data());
+  QMessageBox msgBox;
+  msgBox.setWindowTitle("Network Error!");
+  msgBox.setText("Unable to establish connection:");
+  msgBox.setDetailedText(this->socket->errorString());
+  msgBox.exec();
+  emit done(true);
 }
 
 void LpdClient::on_socket_bytesWritten(qint64 bytes)

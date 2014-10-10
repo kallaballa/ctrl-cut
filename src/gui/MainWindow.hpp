@@ -8,6 +8,7 @@
 #endif
 
 #include <QMainWindow>
+#include <QProgressDialog>
 #include "ui_CtrlCut.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
@@ -79,6 +80,7 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
+  QProgressDialog progressDialog;
 };
 
 #endif

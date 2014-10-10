@@ -33,7 +33,7 @@ macx {
 
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
 
-FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui PreviewDialog.ui
+FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui PreviewDialog.ui SendDialog.ui
 
 RESOURCES += ctrl-cut.qrc
 
@@ -41,6 +41,7 @@ HEADERS += ./MainWindow.hpp \
 	   ./NewDialog.hpp \
      ./PreviewDialog.hpp \
 	   ./ImportDialog.hpp \ 
+           ./SendDialog.hpp \
            ./CtrlCutScene.hpp \
            ./NavigationView.hpp \
            ./Commands.hpp \
@@ -60,6 +61,7 @@ SOURCES += ./gui.cpp \
            ./Commands.cpp \
            ./NewDialog.cpp \
            ./PreviewDialog.cpp \
+           ./SendDialog.cpp \
            ./ImportDialog.cpp \	   
            ./NavigationView.cpp \
            ./CtrlCutView.cpp \

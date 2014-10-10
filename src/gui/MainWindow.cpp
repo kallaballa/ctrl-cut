@@ -1,7 +1,6 @@
 
 #include <QAbstractSocket>
 #include <QtGui>
-#include <QtWidgets>
 #include <assert.h>
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"
@@ -19,6 +18,7 @@
 #include "NewDialog.hpp"
 #include "PreviewDialog.hpp"
 #include <svg/SvgWriter.hpp>
+#include "SendDialog.hpp"
 #include <algorithm>
 
 MainWindow *MainWindow::inst = NULL;
@@ -334,19 +334,9 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  /*
-  if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
-  if (this->laserdialog->exec() != QDialog::Accepted) return;
-
-  this->laserdialog->updateLaserConfig(*this->scene->getDocumentHolder().doc);
-*/
- QStringList items;
-  items << "Lazzzor" << "localhost";
-  bool ok;
-  QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?",
-      items, 0, false, &ok);
-  if (ok && !item.isEmpty()) {
-    QString host = (item == "Lazzzor") ? "10.20.30.27" : "localhost";
+  SendDialog sd;
+  if (sd.exec()) {
+    QString host = sd.getNetworkAddress();
 
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
@@ -368,6 +358,11 @@ void MainWindow::on_filePrintAction_triggered()
     ostream << std::endl;
     tmpfile.close();
 
+    progressDialog.setCancelButton(0);
+    progressDialog.setWindowFlags(Qt::Dialog | Qt::Desktop);
+    progressDialog.setWindowModality(Qt::ApplicationModal);
+
+    progressDialog.show();
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
 }
@@ -376,10 +371,12 @@ void MainWindow::on_lpdclient_done(bool error)
 {
   if (error) fprintf(stderr, "LPD error\n");
   else printf("LPD done\n");
+  progressDialog.hide();
 }
 
 void MainWindow::on_lpdclient_progress(int done, int total)
 {
+  progressDialog.setValue(100.0f*done/total);
   printf("Progress: %.0f%%\n", 100.0f*done/total);
 }
 
