@@ -33,11 +33,14 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++0x -Wno-long-long
+QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long
 
 
 macx { # FIXME: Should really test for clang
   QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-deprecated-register
+  QMAKE_CXXFLAGS += -stdlib=libc++
+  QMAKE_LFLAGS += -stdlib=libc++
+  QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 }
 
 linux:QMAKE_CXXFLAGS += -pedantic-errors

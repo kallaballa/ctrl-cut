@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 {
   Logger::init(CC_DEBUG);
 
-  QApplication::setGraphicsSystem("raster");
+  //  QApplication::setGraphicsSystem("raster");
   CtrlCutApplication app(argc, argv);
 
   app.installEventFilter(new EventFilter(&app));

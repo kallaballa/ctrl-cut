@@ -18,7 +18,7 @@ include(common.pri)
 
 CONFIG += qt gio
 CONFIG += app_bundle
-QT += network webkit
+QT += network webkit widgets webkitwidgets
 
 MOC_DIR = objects
 UI_DIR = objects
