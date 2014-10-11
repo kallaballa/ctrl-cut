@@ -1,12 +1,9 @@
 libpng {
 	SUSE = $$system(cat /proc/version | grep -o SUSE)
-  message("Configuring libpng...")
   contains(SUSE, SUSE): {
-		message("Detected Opensuse")
+    message("openSUSE detected")
     PKGCONFIG += libpng16
 	} else {
-		PKGCONFIG += libpng
+  	PKGCONFIG += libpng
 	}
-
-  DEFINES += cimg_use_png
 }
