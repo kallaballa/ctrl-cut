@@ -1,0 +1,13 @@
+Source: ctrl-cut
+Section: misc
+Priority: optional
+Maintainer: Amir Hassan <amir@viel-zu.org>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: http://github.com/Metalab/ctrl-cut
+
+Package: ctrl-cut
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},qt4-qmake
+Description: Simple desktop casting tool
+ Stream local desktop to a remote machine

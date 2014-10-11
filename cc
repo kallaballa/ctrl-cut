@@ -53,7 +53,6 @@ export CC_RENDER="src/render2cut/render2cut"
 
 . $CC_FUNCTIONS
 
-type "$CC_PCLINT" 1> /dev/null || error "Can't find pclint"
 [ ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
 
 verbose "CC_BASE=$CC_BASE"
