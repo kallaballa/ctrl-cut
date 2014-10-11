@@ -28,6 +28,7 @@ bool LpdClient::print(const QString &host, const QString &jobname, QByteArray rt
   this->totalprogress = 0;
 
   this->socket->connectToHost(host, 515);
+	return true;
 }
 
 void LpdClient::on_socket_connected()

@@ -21,6 +21,8 @@ AbstractCtrlCutItem *AbstractCtrlCutItem::clone() const
   else if (const CtrlCutGroupItem *groupItem = dynamic_cast<const CtrlCutGroupItem *>(this)) {
     return new CtrlCutGroupItem(*groupItem);
   }
+	assert(false);
+  return NULL;
 }
 
 void AbstractCtrlCutItem::setHighlighted(bool enabled) {
