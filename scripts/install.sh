@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cd $CC_BASE
-set -x
 export
 destdir="$DESTDIR"
 prefix="$PREFIX"
