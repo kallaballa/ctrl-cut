@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "ui_NewDialog.h"
 #include "util/Measurement.hpp"
-
+#include "GuiConfig.hpp"
 
 class NewDialog : public QDialog, private Ui::NewDialog
 {
@@ -16,6 +16,8 @@ public:
   Distance getWidth();
   Distance getHeight();
   int getResolution();
+  void loadFrom(GuiConfig& config);
+  void saveTo(GuiConfig& config);
 private:
 };
 

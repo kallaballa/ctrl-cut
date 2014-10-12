@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 
   app.installEventFilter(new EventFilter(&app));
 
+  QObject::connect(&app, SIGNAL(aboutToQuit()), MainWindow::instance(), SLOT(saveGuiConfig()));
   MainWindow::instance()->setGeometry(100, 100, 800, 500);
   MainWindow::instance()->show();
   // FIXME: Unified toolbar doesn't work with the "raster" graphics system on Qt-4.8.6

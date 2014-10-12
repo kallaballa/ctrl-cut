@@ -51,3 +51,45 @@ int NewDialog::getResolution() {
   assert(false);
   return -1;
 }
+
+void NewDialog::loadFrom(GuiConfig& config) {
+  Unit unit = config.unit;
+  string strUnit;
+  switch (unit) {
+  case MM:
+    strUnit = "MM";
+    break;
+  case PX:
+    strUnit = "PX";
+    break;
+  case IN:
+    strUnit = "IN";
+    break;
+  }
+
+  for (size_t i = 0; i < this->unit->count(); ++i) {
+    if (this->unit->itemText(i).toStdString() == strUnit) {
+      this->unit->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  size_t res = config.resolution;
+  for(size_t i = 0; i < resolutionCombo->count(); ++i) {
+    if(resolutionCombo->itemText(i).toStdString() == std::to_string(res)) {
+      resolutionCombo->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  this->widthLine->setText(QString::fromStdString(std::to_string(config.bedWidth)));
+  this->heightLine->setText(QString::fromStdString(std::to_string(config.bedHeight)));
+}
+
+void NewDialog::saveTo(GuiConfig& config) {
+  config.unit = getUnit();
+  config.resolution = getResolution();
+  config.bedWidth = getWidth().in(getUnit());
+  config.bedHeight = getHeight().in(getUnit());
+}
+

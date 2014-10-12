@@ -18,6 +18,7 @@
 #include <qgraphicsview.h>
 #include <algorithm>
 #include "NewDialog.hpp"
+#include "MainWindow.hpp"
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
@@ -29,9 +30,13 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 
+
+  MainWindow* mainw = qobject_cast<MainWindow*>(this->parent());
   NewDialog nd;
+  nd.loadFrom(mainw->guiConfig);
   if (nd.exec() == QDialog::Accepted) {
     this->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+    nd.saveTo(mainw->guiConfig);
   } else {
     exit(0);
   }

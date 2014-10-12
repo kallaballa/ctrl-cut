@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include "ui_SendDialog.h"
+#include "GuiConfig.hpp"
+
 
 class SendDialog : public QDialog, private Ui::SendDialog
 {
@@ -11,6 +13,8 @@ public:
   SendDialog(QWidget *parent = NULL);
   ~SendDialog();
   QString getNetworkAddress();
+  void loadFrom(GuiConfig& config);
+  void saveTo(GuiConfig& config);
 private:
 };
 

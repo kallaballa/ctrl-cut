@@ -20,11 +20,14 @@
 #include <svg/SvgWriter.hpp>
 #include "SendDialog.hpp"
 #include <algorithm>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
+  loadGuiConfig();
   this->undoStack = new QUndoStack(this);
   this->undoStack->setObjectName("undoStack");
   this->lpdclient = new LpdClient(this);
@@ -258,10 +261,11 @@ void MainWindow::on_previewAction_triggered() {
 void MainWindow::on_fileNewAction_triggered() {
 
   if (!maybeSave()) return;
-
   NewDialog nd;
+  nd.loadFrom(this->guiConfig);
   if (nd.exec() == QDialog::Accepted) {
     this->scene->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+    nd.saveTo(this->guiConfig);
     setWindowTitle("untitled.cut");
     setWindowFilePath("");
     this->undoStack->setClean();
@@ -334,9 +338,10 @@ void MainWindow::on_fileImportAction_triggered()
 void MainWindow::on_filePrintAction_triggered()
 {
   SendDialog sd;
+  sd.loadFrom(guiConfig);
   if (sd.exec()) {
     QString host = sd.getNetworkAddress();
-
+    sd.saveTo(guiConfig);
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ofstream tmpfile("gui.tmp", std::ios::out | std::ios::binary);
@@ -472,4 +477,41 @@ void MainWindow::on_windowShowPropertiesAction_triggered()
 
 void MainWindow::on_undoStack_cleanChanged(bool clean)
 {
+}
+
+void MainWindow::saveGuiConfig() {
+  using boost::property_tree::ptree;
+
+  QDir dir(QDir::homePath() + QDir::separator() + ".ctrl-cut");
+  if (!dir.exists()) {
+      dir.mkpath(".");
+  }
+
+  std::ofstream of((dir.path() + QDir::separator()).toStdString() + "config");
+  ptree config;
+  config.put("Driver",guiConfig.driver);
+  config.put("Unit",guiConfig.unit);
+  config.put("Resolution",guiConfig.resolution);
+  config.put("BedWidth",guiConfig.bedWidth);
+  config.put("BedHeight",guiConfig.bedHeight);
+  config.put("NetworkAddress",guiConfig.networkAddress);
+  write_ini( of, config);
+}
+
+void MainWindow::loadGuiConfig() {
+  using boost::property_tree::ptree;
+  ptree config;
+  using boost::property_tree::ptree;
+
+  QFile file(QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config");
+  if (file.exists()) {
+    std::ifstream is((QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString());
+    read_ini(is, config);
+    guiConfig.driver = (LaserCutter::Driver) config.get<int>("Driver");
+    guiConfig.unit = (Unit) config.get<int>("Unit");
+    guiConfig.resolution = config.get<size_t>("Resolution");
+    guiConfig.bedWidth = config.get<double>("BedWidth");
+    guiConfig.bedHeight = config.get<double>("BedHeight");
+    guiConfig.networkAddress = config.get<string>("NetworkAddress");
+  }
 }

@@ -9,12 +9,15 @@
 
 #include <QMainWindow>
 #include <QProgressDialog>
+#include "GuiConfig.hpp"
 #include "ui_CtrlCut.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
   Q_OBJECT
 public:
+  GuiConfig guiConfig;
+
   ~MainWindow();
 
   static MainWindow *instance() { 
@@ -53,6 +56,8 @@ public slots:
   void openFile(const QString &filename);
   void importFile(const QString &filename);
   void saveFile(const QString &filename);
+  void saveGuiConfig();
+
 private:
   void closeEvent(QCloseEvent *event);
   bool maybeSave();
@@ -62,6 +67,7 @@ private:
   void createUndoView();
   void createActions();
   void createContextMenu();
+  void loadGuiConfig();
 
   class LpdClient *lpdclient;
   class CtrlCutScene *scene;
