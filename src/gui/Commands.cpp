@@ -358,15 +358,23 @@ void MoveToOriginCommand::redo() {
       miny = std::min(pos.y(), miny);
     }
 
+    AbstractCtrlCutItem* acci;
     foreach (QGraphicsItem *item, itemsMoved) {
       const QPointF pos = item->pos();
       oldPositions.append(pos);
       item->setPos(pos.x() - minx, pos.y() - miny);
       newPositions.append(item->pos());
+      if((acci = dynamic_cast<AbstractCtrlCutItem*>(item))) {
+        acci->commit();
+      }
     }
   } else {
+    AbstractCtrlCutItem* acci;
     for(size_t i = 0; i < itemsMoved.size(); ++i) {
       itemsMoved[i]->setPos(newPositions[i]);
+      if((acci = dynamic_cast<AbstractCtrlCutItem*>(itemsMoved[i]))) {
+        acci->commit();
+      }
     }
   }
 }
