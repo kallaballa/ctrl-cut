@@ -1,22 +1,3 @@
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
 #include "ObjectPropertyWidget.hpp"
 #include "MainWindow.hpp"
 #include "config/EngraveSettings.hpp"
@@ -72,7 +53,8 @@ void ObjectPropertyWidget::setDocument(Document* doc) {
 }
 
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
-  this->disable();
+  if(this->currentState != Cut)
+    this->disable();
   this->ci = ci;
   this->ci->cut->settings.setUpdateTrigger(std::bind(&ObjectPropertyWidget::updateCutProperties, this, std::placeholders::_1));
 
@@ -92,13 +74,19 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   mainw->posY->setEnabled(true);
   mainw->speed->setEnabled(true);
   mainw->power->setEnabled(true);
-  mainw->posX->setText(QString::number(posX));
-  mainw->posY->setText(QString::number(posY));
-  mainw->speed->setValue(speed);
-  mainw->power->setValue(power);
-  mainw->frequency->setValue(freq);
-  mainw->reduceEdit->setText(QString::number(reduce));
 
+  if(!mainw->posX->hasFocus())
+    mainw->posX->setText(QString::number(posX));
+  if(!mainw->posY->hasFocus())
+    mainw->posY->setText(QString::number(posY));
+  if(!mainw->speed->hasFocus())
+    mainw->speed->setValue(speed);
+  if(!mainw->power->hasFocus())
+    mainw->power->setValue(power);
+  if(!mainw->frequency->hasFocus())
+    mainw->frequency->setValue(freq);
+  if(!mainw->reduceEdit->hasFocus())
+    mainw->reduceEdit->setText(QString::number(reduce));
 
   mainw->reduceEdit->show();
   mainw->reduceLabel->show();
@@ -139,7 +127,8 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
 }
 
 void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
-  this->disable();
+  if(this->currentState != Engraving)
+    this->disable();
   this->ei = ei;
   this->ei->engraving->settings.setUpdateTrigger(std::bind(&ObjectPropertyWidget::updateEngraveProperties, this, std::placeholders::_1));
 
@@ -175,10 +164,14 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
 
-  mainw->posX->setText(QString::number(posX));
-  mainw->posY->setText(QString::number(posY));
-  mainw->speed->setValue(speed);
-  mainw->power->setValue(power);
+  if(!mainw->posX->hasFocus())
+    mainw->posX->setText(QString::number(posX));
+  if(!mainw->posY->hasFocus())
+    mainw->posY->setText(QString::number(posY));
+  if(!mainw->speed->hasFocus())
+    mainw->speed->setValue(speed);
+  if(!mainw->power->hasFocus())
+    mainw->power->setValue(power);
 
   QString ditherstr;
   switch (dither) {
@@ -211,8 +204,10 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
     break;
   }
 
-  mainw->dithering->setCurrentIndex(mainw->dithering->findText(ditherstr));
-  mainw->direction->setCurrentIndex(direction);
+  if(!mainw->dithering->hasFocus())
+    mainw->dithering->setCurrentIndex(mainw->dithering->findText(ditherstr));
+  if(!mainw->direction->hasFocus())
+    mainw->direction->setCurrentIndex(direction);
   this->currentState = Engraving;
 }
 

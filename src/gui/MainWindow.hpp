@@ -1,21 +1,3 @@
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 #ifndef MAINWINDOW_H_
 #define MAINWINDOW_H_
 
@@ -26,12 +8,16 @@
 #endif
 
 #include <QMainWindow>
+#include <QProgressDialog>
+#include "GuiConfig.hpp"
 #include "ui_CtrlCut.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
   Q_OBJECT
 public:
+  GuiConfig guiConfig;
+
   ~MainWindow();
 
   static MainWindow *instance() { 
@@ -71,6 +57,8 @@ public slots:
   void openFile(const QString &filename);
   void importFile(const QString &filename);
   void saveFile(const QString &filename);
+  void saveGuiConfig();
+
 private:
   void closeEvent(QCloseEvent *event);
   bool maybeSave();
@@ -80,6 +68,7 @@ private:
   void createUndoView();
   void createActions();
   void createContextMenu();
+  void loadGuiConfig();
 
   class LpdClient *lpdclient;
   class CtrlCutScene *scene;
@@ -98,6 +87,7 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
+  QProgressDialog progressDialog;
 };
 
 #endif

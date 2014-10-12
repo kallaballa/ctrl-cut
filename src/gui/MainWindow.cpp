@@ -1,25 +1,6 @@
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #include <QAbstractSocket>
 #include <QtGui>
-#include <QtWidgets>
 #include <assert.h>
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"
@@ -37,12 +18,16 @@
 #include "NewDialog.hpp"
 #include "PreviewDialog.hpp"
 #include <svg/SvgWriter.hpp>
+#include "SendDialog.hpp"
 #include <algorithm>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
 
 MainWindow *MainWindow::inst = NULL;
 
 MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
+  loadGuiConfig();
   this->undoStack = new QUndoStack(this);
   this->undoStack->setObjectName("undoStack");
   this->lpdclient = new LpdClient(this);
@@ -54,7 +39,6 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   setupUi(this);
 
   createActions();
-
   this->scene = new CtrlCutScene(this);
   this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
   this->objectProperties->disable();
@@ -277,10 +261,11 @@ void MainWindow::on_previewAction_triggered() {
 void MainWindow::on_fileNewAction_triggered() {
 
   if (!maybeSave()) return;
-
   NewDialog nd;
+  nd.loadFrom(this->guiConfig);
   if (nd.exec() == QDialog::Accepted) {
     this->scene->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+    nd.saveTo(this->guiConfig);
     setWindowTitle("untitled.cut");
     setWindowFilePath("");
     this->undoStack->setClean();
@@ -352,20 +337,11 @@ void MainWindow::on_fileImportAction_triggered()
 
 void MainWindow::on_filePrintAction_triggered()
 {
-  /*
-  if (!this->laserdialog) this->laserdialog = new LaserDialog(this);
-  if (this->laserdialog->exec() != QDialog::Accepted) return;
-
-  this->laserdialog->updateLaserConfig(*this->scene->getDocumentHolder().doc);
-*/
- QStringList items;
-  items << "Lazzzor" << "localhost";
-  bool ok;
-  QString item = QInputDialog::getItem(this, "Send to where?", "Send to where?",
-      items, 0, false, &ok);
-  if (ok && !item.isEmpty()) {
-    QString host = (item == "Lazzzor") ? "10.20.30.27" : "localhost";
-
+  SendDialog sd;
+  sd.loadFrom(guiConfig);
+  if (sd.exec()) {
+    QString host = sd.getNetworkAddress();
+    sd.saveTo(guiConfig);
     QByteArray rtlbuffer;
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ofstream tmpfile("gui.tmp", std::ios::out | std::ios::binary);
@@ -386,6 +362,11 @@ void MainWindow::on_filePrintAction_triggered()
     ostream << std::endl;
     tmpfile.close();
 
+    progressDialog.setCancelButton(0);
+    progressDialog.setWindowFlags(Qt::Dialog | Qt::Desktop);
+    progressDialog.setWindowModality(Qt::ApplicationModal);
+
+    progressDialog.show();
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
 }
@@ -394,10 +375,12 @@ void MainWindow::on_lpdclient_done(bool error)
 {
   if (error) fprintf(stderr, "LPD error\n");
   else printf("LPD done\n");
+  progressDialog.hide();
 }
 
 void MainWindow::on_lpdclient_progress(int done, int total)
 {
+  progressDialog.setValue(100.0f*done/total);
   printf("Progress: %.0f%%\n", 100.0f*done/total);
 }
 
@@ -499,4 +482,41 @@ void MainWindow::on_propertiesDockWidget_visibilityChanged(bool visible)
 
 void MainWindow::on_undoStack_cleanChanged(bool clean)
 {
+}
+
+void MainWindow::saveGuiConfig() {
+  using boost::property_tree::ptree;
+
+  QDir dir(QDir::homePath() + QDir::separator() + ".ctrl-cut");
+  if (!dir.exists()) {
+      dir.mkpath(".");
+  }
+
+  std::ofstream of((dir.path() + QDir::separator()).toStdString() + "config");
+  ptree config;
+  config.put("Driver",guiConfig.driver);
+  config.put("Unit",guiConfig.unit);
+  config.put("Resolution",guiConfig.resolution);
+  config.put("BedWidth",guiConfig.bedWidth);
+  config.put("BedHeight",guiConfig.bedHeight);
+  config.put("NetworkAddress",guiConfig.networkAddress);
+  write_ini( of, config);
+}
+
+void MainWindow::loadGuiConfig() {
+  using boost::property_tree::ptree;
+  ptree config;
+  using boost::property_tree::ptree;
+
+  QFile file(QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config");
+  if (file.exists()) {
+    std::ifstream is((QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString());
+    read_ini(is, config);
+    guiConfig.driver = (LaserCutter::Driver) config.get<int>("Driver");
+    guiConfig.unit = (Unit) config.get<int>("Unit");
+    guiConfig.resolution = config.get<size_t>("Resolution");
+    guiConfig.bedWidth = config.get<double>("BedWidth");
+    guiConfig.bedHeight = config.get<double>("BedHeight");
+    guiConfig.networkAddress = config.get<string>("NetworkAddress");
+  }
 }

@@ -17,18 +17,18 @@
 
 Summary: Laser Cutter Software (Epilog Legend 36EXT)
 Name: ctrl-cut
-Version: 0.2
+Version: 1.0
 Release: 1
 License: GPLv2+
 Group: Hardware/Other
 URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
-BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11
-PreReq: /bin/chmod cups cups-client ncurses-utils
-Requires: cups ghostscript-library
+BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel libQtWebKit-devel
+PreReq: /bin/chmod ncurses-utils
+Requires: libboost_filesystem1_53_0 libboost_system1_53_0 libopenssl1_0_0 glibc glibc libdrm2 libexpat1 libffi4 fontconfig libfreetype6 libgcc_s1 Mesa-libglapi0 libglib-2_0-0 Mesa-libGL1 libgmodule-2_0-0 libgobject-2_0-0 libgstapp-0_10-0 libgstreamer-0_10-0 libgstinterfaces-0_10-0 libgstinterfaces-0_10-0 libgstreamer-0_10-0 libgstinterfaces-0_10-0 libICE6 libjpeg8 liblzma5 glibc liborc-0_4-0 libpcre1 libpng16-16 glibc libqt4 libqt4-x11 libqt4 libqt4-x11 libQtWebKit4 glibc libSM6 libsqlite3-0 libopenssl1_0_0 libstdc++6 libuuid1 libwebp4 libX11-6 libX11-xcb1 libXau6 libxcb-dri2-0 libxcb-glx0 libxcb1 libXcursor1 libXdamage1 libXext6 libXfixes3 libXinerama1 libXi6 libxml2-2 libXrandr2 libXrender1 libxslt1 libXxf86vm1 libz1
 %else
-BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11 desktop-file-utils xdg-utils
+BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11 desktop-file-utils xdg-utils cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel libpng16-devel librsvg-devel libX11-devel
 Requires: cups ghostscript ncurses
 %endif
 Source:       %{name}-%{version}.tar.bz2
@@ -45,27 +45,19 @@ Initially, this is targetted at Epilog laser cutters.
 
 %build
 %if %{defined fedora_version}
-qmake-qt4 -recursive VERSION=0.2 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
+qmake-qt4 -recursive VERSION=1 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 %else
-qmake -recursive VERSION=0.2 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
+qmake -recursive VERSION=1 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 %endif
-make %{?jobs:-j%jobs}
+make
 
 %install
 export CC_BASE=`pwd`
-export CUPS_SERVER_BIN=$RPM_BUILD_ROOT/usr/lib/cups/
-export CUPS_SERVER_DATA=$RPM_BUILD_ROOT/usr/share/cups/
-
-mkdir -p $CUPS_SERVER_BIN/filter
-mkdir -p $CUPS_SERVER_BIN/backend
-mkdir -p $CUPS_SERVER_DATA/model
+export DESTDIR="%{buildroot}"
+export PREFIX="%{_prefix}"
 ./cc install
 
 %post
- test -x /etc/init.d/cups && \
-         /etc/init.d/cups status >/dev/null && \
-         /etc/init.d/cups reload >/dev/null
- # exit 0 needed here to ignore test return code
  exit 0
 
 %clean
@@ -75,12 +67,6 @@ mkdir -p $CUPS_SERVER_DATA/model
 %files
 %defattr(-,root,root,-)
 %doc README.md LICENSE
-%dir /usr/lib/cups/backend/
-%dir /usr/lib/cups/filter/
-%dir /usr/share/cups/model
-%dir /usr/share/cups/model/Epilog
 
-/usr/lib/cups/filter/ctrl-cut
-/usr/lib/cups/backend/lpd-epilog
-/usr/share/cups/model/Epilog/
-/usr/share/cups/model/Epilog/Legend36EXT.ppd
+%{_libdir}/libctrl-cut.so.1
+%{_bindir}/ctrl-cut

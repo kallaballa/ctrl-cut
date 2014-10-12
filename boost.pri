@@ -8,11 +8,11 @@ boost_thread {
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib64
   }
-  LIBS += -lboost_thread-mt
-  LIBS += -lboost_iostreams-mt
-  LIBS += -lboost_regex-mt
-  LIBS += -lboost_filesystem-mt
-  LIBS += -lboost_system-mt
+  LIBS += -lboost_thread
+  LIBS += -lboost_iostreams
+  LIBS += -lboost_regex
+  LIBS += -lboost_filesystem
+  LIBS += -lboost_system
 
   QMAKE_CXXFLAGS += -DBOOST_IOSTREAMS_USE_DEPRECATED
 }

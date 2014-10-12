@@ -1,21 +1,3 @@
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 #include "NewDialog.hpp"
 #include <QString>
 #include <assert.h>
@@ -69,3 +51,45 @@ int NewDialog::getResolution() {
   assert(false);
   return -1;
 }
+
+void NewDialog::loadFrom(GuiConfig& config) {
+  Unit unit = config.unit;
+  string strUnit;
+  switch (unit) {
+  case MM:
+    strUnit = "MM";
+    break;
+  case PX:
+    strUnit = "PX";
+    break;
+  case IN:
+    strUnit = "IN";
+    break;
+  }
+
+  for (size_t i = 0; i < this->unit->count(); ++i) {
+    if (this->unit->itemText(i).toStdString() == strUnit) {
+      this->unit->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  size_t res = config.resolution;
+  for(size_t i = 0; i < resolutionCombo->count(); ++i) {
+    if(resolutionCombo->itemText(i).toStdString() == std::to_string(res)) {
+      resolutionCombo->setCurrentIndex(i);
+      break;
+    }
+  }
+
+  this->widthLine->setText(QString::fromStdString(std::to_string(config.bedWidth)));
+  this->heightLine->setText(QString::fromStdString(std::to_string(config.bedHeight)));
+}
+
+void NewDialog::saveTo(GuiConfig& config) {
+  config.unit = getUnit();
+  config.resolution = getResolution();
+  config.bedWidth = getWidth().in(getUnit());
+  config.bedHeight = getHeight().in(getUnit());
+}
+

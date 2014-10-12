@@ -1,0 +1,14 @@
+Source: ctrl-cut
+Section: misc
+Priority: optional
+Maintainer: Amir Hassan <amir@viel-zu.org>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: http://github.com/Metalab/ctrl-cut
+
+Package: ctrl-cut
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-filesystem1.49.0, libboost-iostreams1.49.0, libboost-regex1.49.0, libboost-system1.49.0, libboost-thread1.49.0, libcairo2, libcups2, libcupsimage2, libgdk-pixbuf2.0-0, libglib2.0-0, libmagick++5, libpixman-1-0, libpng12-0, libqt4-network, libqt4-opengl, libqt4-xmlpatterns, libqtcore4, libqtgui4, libqtwebkit4, librsvg2-2, libx11-6, libxml++2.6-2
+Description: Laser Cutter Software (Epilog Legend 36EXT)
+ Ctrl-Cut is an initiative to produce Open Source toolchain for talking to laser cutters without being restricted to proprietery drivers and the chosen operating system of the laser cutter vendor.
+ Initially, this is targetted at Epilog laser cutters.
