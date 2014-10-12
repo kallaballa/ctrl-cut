@@ -42,11 +42,11 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package
-	# The DESTDIR Has To Be Exactly /usr/src/packages/BUILD/debian/debian/<nameOfPackage>
-  export CC_BASE=`pwd`
-	export DESTDIR="/usr/src/packages/BUILD/debian/debian/ctrl-cut"
+	# The DESTDIR Has To Be Exactly /usr/src/packages/BUILD/debian/<nameOfPackage>
+	export CC_BASE=`pwd`
+	export DESTDIR="/usr/src/packages/BUILD/debian/ctrl-cut"
 	export PREFIX="/usr"
-	./cc install
+	DESTDIR="/usr/src/packages/BUILD/debian/ctrl-cut" PREFIX="/usr" ./cc install
 	# --- end custom part for installing
 
 # Build architecture-independent files here.
