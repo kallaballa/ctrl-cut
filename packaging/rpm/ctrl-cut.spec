@@ -24,8 +24,8 @@ Group: Hardware/Other
 URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
-BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel libpng16-devel librsvg-devel libX11-devel libQtWebKit-devel libpng16-compat-devel
-PreReq: /bin/chmod cups cups-client ncurses-utils
+BuildRequires: boost-devel cups-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel libQtWebKit-devel
+PreReq: /bin/chmod ncurses-utils
 Requires: libboost_filesystem1_53_0 libboost_system1_53_0 libopenssl1_0_0 glibc glibc libdrm2 libexpat1 libffi4 fontconfig libfreetype6 libgcc_s1 Mesa-libglapi0 libglib-2_0-0 Mesa-libGL1 libgmodule-2_0-0 libgobject-2_0-0 libgstapp-0_10-0 libgstreamer-0_10-0 libgstinterfaces-0_10-0 libgstinterfaces-0_10-0 libgstreamer-0_10-0 libgstinterfaces-0_10-0 libICE6 libjpeg8 liblzma5 glibc liborc-0_4-0 libpcre1 libpng16-16 glibc libqt4 libqt4-x11 libqt4 libqt4-x11 libQtWebKit4 glibc libSM6 libsqlite3-0 libopenssl1_0_0 libstdc++6 libuuid1 libwebp4 libX11-6 libX11-xcb1 libXau6 libxcb-dri2-0 libxcb-glx0 libxcb1 libXcursor1 libXdamage1 libXext6 libXfixes3 libXinerama1 libXi6 libxml2-2 libXrandr2 libXrender1 libxslt1 libXxf86vm1 libz1
 %else
 BuildRequires: gcc-c++ boost-devel cups-devel ghostscript ghostscript-devel qt4-devel qt4-x11 desktop-file-utils xdg-utils cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel libpng16-devel librsvg-devel libX11-devel
