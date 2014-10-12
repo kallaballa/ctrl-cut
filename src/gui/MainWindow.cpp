@@ -1,6 +1,9 @@
 
 #include <QAbstractSocket>
 #include <QtGui>
+#include <QUndoView>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <assert.h>
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"
