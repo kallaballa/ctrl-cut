@@ -20,6 +20,7 @@ private:
   void scaleView(qreal scaleFactor, QPointF center);
   
   void keyPressEvent(QKeyEvent *event);
+  void keyReleaseEvent(QKeyEvent *event);
   void wheelEvent(QWheelEvent* event);
   void mouseDoubleClickEvent(QMouseEvent *event);
   void paintEvent(QPaintEvent *event);

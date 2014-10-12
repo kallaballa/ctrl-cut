@@ -52,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>691</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
@@ -122,7 +122,7 @@
    <addaction name="fileImportAction"/>
    <addaction name="previewAction"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="propertiesDockWidget">
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>

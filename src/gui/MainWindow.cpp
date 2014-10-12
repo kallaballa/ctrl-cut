@@ -1,6 +1,9 @@
 
 #include <QAbstractSocket>
 #include <QtGui>
+#include <QUndoView>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <assert.h>
 #include "LpdClient.hpp"
 #include "StreamUtils.hpp"
@@ -496,10 +499,15 @@ void MainWindow::on_itemMoved(QGraphicsItem *movedItem,
 void MainWindow::on_windowShowPropertiesAction_triggered()
 {
   if (windowShowPropertiesAction->isChecked()) {
-    this->objectProperties->hide();
+    this->propertiesDockWidget->show();
   } else {
-    this->objectProperties->show();
+    this->propertiesDockWidget->close();
   }
+}
+
+void MainWindow::on_propertiesDockWidget_visibilityChanged(bool visible)
+{
+  windowShowPropertiesAction->setChecked(visible);
 }
 
 void MainWindow::on_undoStack_cleanChanged(bool clean)

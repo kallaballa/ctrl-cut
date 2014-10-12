@@ -35,6 +35,7 @@ public slots:
   void on_fileImportAction_triggered();
   void on_filePrintAction_triggered();
   void on_windowShowPropertiesAction_triggered();
+  void on_propertiesDockWidget_visibilityChanged(bool visible);
   void on_toolsMoveToOriginAction_triggered();
   void on_lpdclient_done(bool error);
   void on_lpdclient_progress(int done, int total);

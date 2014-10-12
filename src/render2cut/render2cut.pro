@@ -6,7 +6,6 @@ CONFIG += cups
 CONFIG += rsvg
 CONFIG += cairo-ps
 CONFIG += gio
-CONFIG += boost_thread
 CONFIG += libxml++
 CONFIG += magick++
 CONFIG += libpng
