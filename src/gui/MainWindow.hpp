@@ -41,7 +41,9 @@ public slots:
   void on_itemMoved(QGraphicsItem *item, const QPointF &moveStartPosition);
   void on_editCutAction_triggered();
   void on_editCopyAction_triggered();
+  void on_editCopySettingsAction_triggered();
   void on_editPasteAction_triggered();
+  void on_editPasteSettingsAction_triggered();
   void on_editGroupAction_triggered();
   void on_editUngroupAction_triggered();
   void showContextMenu(const QPoint& pos);

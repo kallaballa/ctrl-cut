@@ -16,6 +16,7 @@
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
 #include "Document.hpp"
+#include "config/Settings.hpp"
 
 class CtrlCutScene : public QGraphicsScene
 {
@@ -23,6 +24,7 @@ class CtrlCutScene : public QGraphicsScene
 
 public:
   QList<class AbstractCtrlCutItem *> itemClipboard;
+  QList<Settings *> settingsClipboard;
 
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}

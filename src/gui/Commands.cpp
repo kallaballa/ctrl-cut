@@ -5,6 +5,7 @@
 #include "helpers/EngraveItem.hpp"
 #include <Document.hpp>
 #include <cut/operations/Reduce.hpp>
+#include "MainWindow.hpp"
 
 #include <QtGui>
 
@@ -333,6 +334,66 @@ void PasteCommand::redo() {
       this->scene->add(*item);
     }
   }
+}
+
+PasteSettingsCommand::PasteSettingsCommand(CtrlCutScene* scene, QUndoCommand *parent) : CtrlCutUndo(scene, parent) {
+  setText("Paste settings");
+}
+
+void PasteSettingsCommand::undo() {
+  CutItem* ci;
+  EngraveItem* ei;
+  QGraphicsItem *item;
+  for(size_t i = 0; i < itemsChanged.size(); ++i) {
+    item = itemsChanged[i];
+
+    if((ci = dynamic_cast<CutItem* >(item))) {
+      ci->cut->settings = *static_cast<CutSettings*>(&oldSettings[i]);
+    } else if((ei = dynamic_cast<EngraveItem* >(item))) {
+      ei->engraving->settings = *static_cast<EngraveSettings*>(&oldSettings[i]);
+    }
+  }
+  MainWindow* mainw = qobject_cast<MainWindow*>(this->scene->parent());
+  mainw->objectProperties->update();
+}
+void PasteSettingsCommand::redo() {
+  CutItem* ci;
+  CutSettings* cs;
+  EngraveItem* ei;
+  EngraveSettings* es;
+
+  if(itemsChanged.empty()) {
+    newSetting = *this->scene->settingsClipboard[0];
+
+    foreach(QGraphicsItem *item, this->scene->selectedItems()) {
+      if((ci = dynamic_cast<CutItem* >(item))) {
+        itemsChanged.append(ci);
+        oldSettings.append(ci->cut->settings);
+        if((cs = static_cast<CutSettings*>(&newSetting))) {
+          ci->cut->settings = *cs;
+        }
+      } else if((ei = dynamic_cast<EngraveItem* >(item))) {
+        itemsChanged.append(ei);
+        oldSettings.append(ei->engraving->settings);
+        if((es = static_cast<EngraveSettings*>(&newSetting))) {
+          ei->engraving->settings = *es;
+        }
+      }
+    }
+  } else {
+    QGraphicsItem *item;
+    for(size_t i = 0; i < itemsChanged.size(); ++i) {
+      item = itemsChanged[i];
+
+      if((ci = dynamic_cast<CutItem* >(item))) {
+        ci->cut->settings = *static_cast<CutSettings*>(&newSetting);
+      } else if((ei = dynamic_cast<EngraveItem* >(item))) {
+        ei->engraving->settings = *static_cast<EngraveSettings*>(&newSetting);
+      }
+    }
+  }
+  MainWindow* mainw = qobject_cast<MainWindow*>(this->scene->parent());
+  mainw->objectProperties->update();
 }
 
 MoveToOriginCommand::MoveToOriginCommand(CtrlCutScene* scene, QUndoCommand *parent) :

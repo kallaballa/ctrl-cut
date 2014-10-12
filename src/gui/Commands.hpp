@@ -4,6 +4,7 @@
 #include <QUndoCommand>
 #include <QGraphicsItem>
 #include "helpers/DocumentHolder.hpp"
+#include "config/Settings.hpp"
 
 class Document;
 class CtrlCutScene;
@@ -154,6 +155,17 @@ public:
   void undo();
   void redo();
 };
+
+class PasteSettingsCommand: public CtrlCutUndo {
+  QList<class AbstractCtrlCutItem *> itemsChanged;
+  QList<Settings> oldSettings;
+  Settings newSetting;
+public:
+  PasteSettingsCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  void undo();
+  void redo();
+};
+
 
 class MoveToOriginCommand: public CtrlCutUndo {
 public:

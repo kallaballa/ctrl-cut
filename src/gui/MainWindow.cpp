@@ -94,6 +94,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   QObject::connect(reduceEdit, SIGNAL(textEdited(QString)),
       objectProperties, SLOT(on_reduce_update(const QString&)));
+  this->editCopySettingsAction->setEnabled(false);
+  this->editPasteSettingsAction->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -205,10 +207,29 @@ void MainWindow::on_editCopyAction_triggered() {
   this->editPasteAction->setEnabled(!this->scene->itemClipboard.isEmpty());
 }
 
+void MainWindow::on_editCopySettingsAction_triggered() {
+  assert(this->scene->selectedItems().size() == 1);
+  this->scene->settingsClipboard.clear();
+  QGraphicsItem *item = this->scene->selectedItems()[0];
+
+  if (CutItem *ci = dynamic_cast<CutItem *>(item)) {
+    this->scene->settingsClipboard.append(&ci->cut->settings);
+  }
+  if (EngraveItem *ei = dynamic_cast<EngraveItem *>(item)) {
+    this->scene->settingsClipboard.append(&ei->engraving->settings);
+  }
+
+  this->editPasteSettingsAction->setEnabled(!this->scene->settingsClipboard.empty());
+}
+
 void MainWindow::on_editPasteAction_triggered() {
   PasteCommand *pasteCommand = new PasteCommand(this->scene);
- // pasteCommand->modify();
-   undoStack->push(pasteCommand);
+  undoStack->push(pasteCommand);
+}
+
+void MainWindow::on_editPasteSettingsAction_triggered() {
+  PasteSettingsCommand *pasteSettings = new PasteSettingsCommand(this->scene);
+  undoStack->push(pasteSettings);
 }
 
 void MainWindow::on_editGroupAction_triggered() {
@@ -390,7 +411,6 @@ void MainWindow::sceneSelectionChanged()
 
   QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
 
-
   foreach(QGraphicsItem *item, selecteditems) {
     QRectF rect = item->boundingRect();
     QRectF chrect = item->childrenBoundingRect();
@@ -434,6 +454,13 @@ void MainWindow::sceneSelectionChanged()
           }
         }
       }
+    }
+
+    if(selecteditems.size() == 1) {
+      this->editCopySettingsAction->setEnabled(true);
+    }
+    else {
+      this->editCopySettingsAction->setEnabled(false);
     }
   }
 }

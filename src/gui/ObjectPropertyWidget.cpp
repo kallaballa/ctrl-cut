@@ -13,7 +13,7 @@ typedef DocumentSettings DS;
 typedef EngraveSettings ES;
 typedef CutSettings CS;
 
-ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600) {
+ObjectPropertyWidget::ObjectPropertyWidget(QWidget *parent) : QWidget(parent), currentState(NONE), currentUnit(MM),currentResolution(600), doc(NULL), ci(NULL), ei(NULL) {
 }
 
 ObjectPropertyWidget::~ObjectPropertyWidget() {

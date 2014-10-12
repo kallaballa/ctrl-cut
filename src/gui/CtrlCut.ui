@@ -74,6 +74,8 @@
     <addaction name="editCutAction"/>
     <addaction name="editCopyAction"/>
     <addaction name="editPasteAction"/>
+    <addaction name="editCopySettingsAction"/>
+    <addaction name="editPasteSettingsAction"/>
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
@@ -723,6 +725,22 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="editCopySettingsAction">
+   <property name="text">
+    <string>C&amp;opy settings</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
+  </action>
+  <action name="editPasteSettingsAction">
+   <property name="text">
+    <string>P&amp;aste settings</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+V</string>
    </property>
   </action>
  </widget>
