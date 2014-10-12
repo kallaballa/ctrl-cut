@@ -12,6 +12,7 @@
 #undef signals
 #include <gio/gunixinputstream.h>
 #include <librsvg/rsvg.h>
+#include <librsvg/rsvg-cairo.h>
 
 #include <cairo-ps.h>
 #include <cairo-pdf.h>
