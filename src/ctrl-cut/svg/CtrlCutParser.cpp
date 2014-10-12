@@ -169,10 +169,19 @@ protected:
 
   void handleDocument(const AttributeList& prop) {
     string value;
+
     if(!findValue(prop, "title",value))
       CtrlCutException::malformedDocument("Title not found");
 
     doc->put(DS::TITLE,value);
+
+    if(!findValue(prop, "autofocus",value))
+      CtrlCutException::malformedDocument("Autofocus not found");
+
+    if(value == "true")
+      doc->put(DS::AUTO_FOCUS,true);
+    else
+      doc->put(DS::AUTO_FOCUS,false);
   }
 
   void handleG(const AttributeList& prop) {

@@ -13,7 +13,7 @@ PreviewDialog::PreviewDialog(Document& doc, QWidget *parent) : QDialog(parent)
   copy.optimize();
   string filename = (boost::filesystem::temp_directory_path() /= boost::filesystem::unique_path()).native() + ".svg";
   std::ofstream os(filename);
-  SvgWriter svg(copy.get(DS::WIDTH).in(PX), copy.get(DS::HEIGHT).in(PX), copy.get(DS::RESOLUTION), copy.get(DS::TITLE), os);
+  SvgWriter svg(copy, os);
   svg.write(copy);
   os.flush();
   this->webView->setUrl(QUrl::fromLocalFile(QString::fromStdString(filename)));

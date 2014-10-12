@@ -37,7 +37,10 @@ void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
   else if ((ci = dynamic_cast<CutItem*>(item))) {
     enableCutItem(ci);
   }
-  // FIXME: Enable group, potentially mixed
+
+  if(doc) {
+    setDocument(doc);
+  }
 }
 
 void ObjectPropertyWidget::setDocument(Document* doc) {

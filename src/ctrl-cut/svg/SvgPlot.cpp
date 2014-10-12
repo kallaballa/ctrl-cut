@@ -125,7 +125,7 @@ void find_shared_points(const Route& r, std::vector<Point>& sharedPoints) {
     }
   }
 }
-
+/* FIXME REFACTOR
 void plot_shared_segments(const Route& r, const char* filename) {
   std::set<Segment> segidx;
   uint32_t width = r.get(DocumentSettings::WIDTH).in(PX);
@@ -306,11 +306,11 @@ void plot_point_order(const Route& r, const char* filename) {
     }
   }
 }
-
+*/
 void plot_svg(const Route& r, const string& prefix) {
-  plot_shared_points(r, (prefix + "_points_shared.svg").c_str());
+/*  plot_shared_points(r, (prefix + "_points_shared.svg").c_str());
   plot_shared_segments(r, (prefix + "_segments_shared.svg").c_str());
   plot_path_order(r, (prefix + "_path_order.svg").c_str());
   plot_segment_order(r, (prefix + "_segment_order.svg").c_str());
-  plot_point_order(r, (prefix + "_point_order.svg").c_str());
+  plot_point_order(r, (prefix + "_point_order.svg").c_str());*/
 }

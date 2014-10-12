@@ -10,15 +10,10 @@
 
 class SvgWriter {
 public:
-  Coord_t width;
-  Coord_t height;
-  Coord_t resolution;
-  const string title;
+  Document& doc;
   std::ostream& ostream;
 
-
-  SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, const char* filename);
-  SvgWriter(Coord_t width, Coord_t height, Coord_t resolution, const string& title, std::ostream& os);
+  SvgWriter(Document& doc, std::ostream& os);
  virtual ~SvgWriter();
 
   void write(const Point& point, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1;fill:rgb(0,255,255);fill-opacity:0.5;stroke-opacity:0.8");

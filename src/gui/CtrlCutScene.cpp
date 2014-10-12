@@ -129,6 +129,7 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
   this->reset();
   if(this->docHolder->doc == NULL)
     this->docHolder->doc = new Document();
+
   this->docHolder->doc->put(DS::TITLE, title.toStdString());
   this->docHolder->doc->put(DS::RESOLUTION, resolution);
   this->docHolder->doc->put(DS::WIDTH, width);

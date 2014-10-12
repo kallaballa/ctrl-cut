@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
   
-  SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), std::cout);
+  SvgWriter svgW(doc, std::cout);
   svgW.write(doc, "stroke:rgb(255,0,0);stroke-width:5;");
 
   clock_t end = clock() - start;

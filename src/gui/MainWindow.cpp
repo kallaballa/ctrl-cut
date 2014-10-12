@@ -296,6 +296,7 @@ void MainWindow::on_fileNewAction_triggered() {
     this->scene->getDocumentHolder()->filename = "";
     this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
   }
+
 }
 
 void MainWindow::openFile(const QString &filename) {
@@ -304,6 +305,7 @@ void MainWindow::openFile(const QString &filename) {
 
   this->scene->open(filename);
   this->scene->getDocumentHolder()->filename = filename;
+  this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
   setWindowTitle("");
   setWindowFilePath(filename);
   undoStack->setClean();
@@ -322,9 +324,10 @@ void MainWindow::saveFile(const QString &filename) {
 
   typedef DocumentSettings DS;
   Document& doc = *this->scene->getDocumentHolder()->doc;
-  doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
+  if(doc.get(DS::TITLE) == "untitled")
+    doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
   std::ofstream os(filename.toStdString());
-  SvgWriter svgW(doc.get(DS::WIDTH).in(PX), doc.get(DS::HEIGHT).in(PX), doc.get(DS::RESOLUTION), doc.get(DS::TITLE), os);
+  SvgWriter svgW(doc, os);
   svgW.write(doc);
   this->scene->getDocumentHolder()->filename = filename;
   setWindowTitle("");
