@@ -46,6 +46,9 @@ void NavigationView::keyPressEvent(QKeyEvent *event)
   QRectF g = this->mapToScene(0, 0, this->viewport()->geometry().width(), this->viewport()->geometry().height()).boundingRect();
 
   switch (event->key()) {
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::RubberBandDrag);
+    break;
   case Qt::Key_Plus:
     scaleView(1.2, mapToScene(this->mapFromGlobal(QCursor::pos())));
     break;
@@ -54,6 +57,16 @@ void NavigationView::keyPressEvent(QKeyEvent *event)
     break;
   default:
     QGraphicsView::keyPressEvent(event);
+  }
+}
+
+void NavigationView::keyReleaseEvent(QKeyEvent *event) {
+  switch (event->key()) {
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    break;
+  default:
+    QGraphicsView::keyReleaseEvent(event);
   }
 }
 
