@@ -130,15 +130,11 @@ void find_shared_points(const Route& r, std::vector<Point>& sharedPoints) {
     }
   }
 }
-/* FIXME REFACTOR
+
 void plot_shared_segments(const Route& r, const char* filename) {
   std::set<Segment> segidx;
-  uint32_t width = r.get(DocumentSettings::WIDTH).in(PX);
-  uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
-  const string& title = r.get(DocumentSettings::TITLE);
   std::ofstream os(filename);
-  SvgWriter svg(width, height, resolution, title, os);
+  SvgWriter svg(r, os);
 
   for(const Path& path : r) {
     svg.write(path, "stroke:rgb(0,0,0);stroke-width:1");
@@ -153,12 +149,8 @@ void plot_shared_segments(const Route& r, const char* filename) {
 }
 
 void plot_shared_points(const Route& r, const char* filename) {
-  uint32_t width = r.get(DocumentSettings::WIDTH).in(PX);
-  uint32_t height = r.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
-  const string& title = r.get(DocumentSettings::TITLE);
   std::ofstream os(filename);
-  SvgWriter svg(width, height, resolution, title, os);
+  SvgWriter svg(r, os);
   if(r.empty())
     return;
 
@@ -179,12 +171,8 @@ void plot_shared_points(const Route& r, const char* filename) {
 }
 
 void plot_path_order(const Route& r, const char* filename) {
-  Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
-  Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
-  const string& title = r.get(DocumentSettings::TITLE);
   std::ofstream os(filename);
-  SvgWriter svg(width, height, resolution, title, os);
+  SvgWriter svg(r, os);
   std::vector<Point> sharedPoints;
 
   hsl_color hsl;
@@ -224,12 +212,8 @@ void plot_path_order(const Route& r, const char* filename) {
 }
 
 void plot_segment_order(const Route& r, const char* filename) {
-  Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
-  Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
-  const string& title = r.get(DocumentSettings::TITLE);
   std::ofstream os(filename);
-  SvgWriter svg(width, height, resolution, title, os);
+  SvgWriter svg(r, os);
 
   hsl_color hsl;
   rgb_color rgb;
@@ -271,13 +255,8 @@ void plot_segment_order(const Route& r, const char* filename) {
 }
 
 void plot_point_order(const Route& r, const char* filename) {
-  Coord_t width = r.get(DocumentSettings::WIDTH).in(PX);
-  Coord_t height = r.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = r.get(DocumentSettings::RESOLUTION);
-  const string& title = r.get(DocumentSettings::TITLE);
-
   std::ofstream os(filename);
-  SvgWriter svg(width, height, resolution, title, os);
+  SvgWriter svg(r, os);
 
   hsl_color hsl;
   rgb_color rgb;
@@ -311,11 +290,11 @@ void plot_point_order(const Route& r, const char* filename) {
     }
   }
 }
-*/
+
 void plot_svg(const Route& r, const string& prefix) {
-/*  plot_shared_points(r, (prefix + "_points_shared.svg").c_str());
+  plot_shared_points(r, (prefix + "_points_shared.svg").c_str());
   plot_shared_segments(r, (prefix + "_segments_shared.svg").c_str());
   plot_path_order(r, (prefix + "_path_order.svg").c_str());
   plot_segment_order(r, (prefix + "_segment_order.svg").c_str());
-  plot_point_order(r, (prefix + "_point_order.svg").c_str());*/
+  plot_point_order(r, (prefix + "_point_order.svg").c_str());
 }

@@ -51,7 +51,6 @@ void AbstractCtrlCutItem::paint(QPainter *painter,
 {
   if (!this->parentItem() && this->isSelected()) {
     QRectF rect = this->childrenBoundingRect();
-    printf("paint rect: [%.0f,%.0f,%.0f,%.0f]\n", rect.x(), rect.y(), rect.width(), rect.height());
     painter->drawRect(this->childrenBoundingRect());
   }
 }

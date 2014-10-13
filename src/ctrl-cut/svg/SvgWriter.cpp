@@ -9,7 +9,23 @@
 #include <boost/format.hpp>
 #include <Magick++.h>
 
-SvgWriter::SvgWriter(Document& doc, std::ostream& os) : doc(doc), ostream(os) {
+SvgWriter::SvgWriter(const Route& r, std::ostream& os) :
+width(r.get(DocumentSettings::WIDTH).in(PX)),
+height(r.get(DocumentSettings::HEIGHT).in(PX)),
+resolution(r.get(DocumentSettings::RESOLUTION)),
+title(r.get(DocumentSettings::TITLE)),
+autofocus(r.get(DocumentSettings::AUTO_FOCUS)),
+ostream(os) {
+  writeDocumentStart();
+}
+
+SvgWriter::SvgWriter(const Document& doc, std::ostream& os) :
+width(doc.get(DocumentSettings::WIDTH).in(PX)),
+height(doc.get(DocumentSettings::HEIGHT).in(PX)),
+resolution(doc.get(DocumentSettings::RESOLUTION)),
+title(doc.get(DocumentSettings::TITLE)),
+autofocus(doc.get(DocumentSettings::AUTO_FOCUS)),
+ostream(os) {
   writeDocumentStart();
 }
 
@@ -56,11 +72,6 @@ void SvgWriter::writeDocumentStart() {
         "</cc:Work>" +
       "</rdf:RDF>" +
     "</metadata>";
-  uint32_t width = doc.get(DocumentSettings::WIDTH).in(PX);
-  uint32_t height = doc.get(DocumentSettings::HEIGHT).in(PX);
-  uint32_t resolution = doc.get(DocumentSettings::RESOLUTION);
-  const string& title = doc.get(DocumentSettings::TITLE);
-  bool autofocus = doc.get(DocumentSettings::AUTO_FOCUS);
 
   ostream << (svgtag % dtd % width % height % resolution % version % width % height) << std::endl;
   ostream << (ctrlcutDoc % title % (autofocus ? "true" : "false")) << std::endl;

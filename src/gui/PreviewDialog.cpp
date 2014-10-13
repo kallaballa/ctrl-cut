@@ -9,11 +9,11 @@
 #include "svg/SvgWriter.hpp"
 #include <fstream>
 #include <boost/filesystem.hpp>
+
 PreviewDialog::PreviewDialog(Document& doc, QWidget *parent) : QDialog(parent)
 {
   setupUi(this);
 
-  typedef DocumentSettings DS;
   Document copy = doc;
   copy.optimize();
   string filename = (boost::filesystem::temp_directory_path() /= boost::filesystem::unique_path()).native() + ".svg";

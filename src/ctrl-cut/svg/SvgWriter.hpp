@@ -15,11 +15,17 @@
 
 class SvgWriter {
 public:
-  Document& doc;
+  uint32_t width;
+  uint32_t height;
+  uint32_t resolution;
+  string title;
+  bool autofocus;
   std::ostream& ostream;
 
-  SvgWriter(Document& doc, std::ostream& os);
- virtual ~SvgWriter();
+  SvgWriter(const Route& doc, std::ostream& os);
+  SvgWriter(const Document& doc, std::ostream& os);
+
+  virtual ~SvgWriter();
 
   void write(const Point& point, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1;fill:rgb(0,255,255);fill-opacity:0.5;stroke-opacity:0.8");
   void write(const Segment& seg, const std::string& style = "stroke:rgb(0,0,0);stroke-width:1;fill:rgb(255,0,255);fill-opacity:0.5;stroke-opacity:0.8");
