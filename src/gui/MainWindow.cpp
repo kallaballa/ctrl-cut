@@ -98,6 +98,10 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   QObject::connect(reduceEdit, SIGNAL(textEdited(QString)),
       objectProperties, SLOT(on_reduce_update(const QString&)));
+
+  QObject::connect(quitAction, SIGNAL(triggered()),
+      QApplication::instance(), SLOT(quit()));
+
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
 }
