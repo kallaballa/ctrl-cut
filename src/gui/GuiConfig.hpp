@@ -11,6 +11,7 @@ struct GuiConfig {
   double bedWidth = 36;
   double bedHeight = 24;
   string networkAddress;
+  string version;
 };
 
 #endif /* SRC_GUI_GUICONFIG_HPP_ */

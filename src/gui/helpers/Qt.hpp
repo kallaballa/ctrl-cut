@@ -2,9 +2,12 @@
 #include <qimage.h>
 #include "engrave/image/Image.hpp"
 #include <qstyleoption.h>
+#include <string>
 
 #ifndef QTMAKE_H_
 #define QTMAKE_H_
+
+void showErrorDialog(std::string text, std::string detail);
 
 class QtMake {
 public:

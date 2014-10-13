@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include "helpers/Qt.hpp"
 
 MainWindow *MainWindow::inst = NULL;
 
@@ -432,11 +433,6 @@ void MainWindow::sceneSelectionChanged()
   }
 
   if (selecteditems.empty()) {
-    foreach (QGraphicsItem *item, this->scene->items()) {
-      if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
-        //        cci->setHighlighted(false);
-      }
-    }
     this->objectProperties->disable();
   } else {
 
@@ -524,16 +520,23 @@ void MainWindow::saveGuiConfig() {
   if (!dir.exists()) {
       dir.mkpath(".");
   }
+  string filename = (dir.path() + QDir::separator()).toStdString() + "config";
+  try {
+    std::ofstream of(filename);
 
-  std::ofstream of((dir.path() + QDir::separator()).toStdString() + "config");
-  ptree config;
-  config.put("Driver",guiConfig.driver);
-  config.put("Unit",guiConfig.unit);
-  config.put("Resolution",guiConfig.resolution);
-  config.put("BedWidth",guiConfig.bedWidth);
-  config.put("BedHeight",guiConfig.bedHeight);
-  config.put("NetworkAddress",guiConfig.networkAddress);
-  write_ini( of, config);
+    ptree config;
+    config.put("Driver",guiConfig.driver);
+    config.put("Unit",guiConfig.unit);
+    config.put("Resolution",guiConfig.resolution);
+    config.put("BedWidth",guiConfig.bedWidth);
+    config.put("BedHeight",guiConfig.bedHeight);
+    config.put("NetworkAddress",guiConfig.networkAddress);
+    config.put("Version",TOSTRING(CTRLCUT_VERSION));
+
+    write_ini( of, config);
+  } catch(std::exception& ex) {
+    showErrorDialog("Unable to save startup config: " + filename, ex.what());
+  }
 }
 
 void MainWindow::loadGuiConfig() {
@@ -542,14 +545,21 @@ void MainWindow::loadGuiConfig() {
   using boost::property_tree::ptree;
 
   QFile file(QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config");
+  string filename = (QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString();
   if (file.exists()) {
-    std::ifstream is((QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString());
-    read_ini(is, config);
-    guiConfig.driver = (LaserCutter::Driver) config.get<int>("Driver");
-    guiConfig.unit = (Unit) config.get<int>("Unit");
-    guiConfig.resolution = config.get<size_t>("Resolution");
-    guiConfig.bedWidth = config.get<double>("BedWidth");
-    guiConfig.bedHeight = config.get<double>("BedHeight");
-    guiConfig.networkAddress = config.get<string>("NetworkAddress");
+    try {
+      std::ifstream is(filename);
+      read_ini(is, config);
+      guiConfig.driver = (LaserCutter::Driver) config.get<int>("Driver");
+      guiConfig.unit = (Unit) config.get<int>("Unit");
+      guiConfig.resolution = config.get<size_t>("Resolution");
+      guiConfig.bedWidth = config.get<double>("BedWidth");
+      guiConfig.bedHeight = config.get<double>("BedHeight");
+      guiConfig.networkAddress = config.get<string>("NetworkAddress");
+      guiConfig.version = config.get<string>("Version");
+    } catch(std::exception& ex) {
+       showErrorDialog("Unable to load startup config: " + filename, ex.what());
+    }
   }
+
 }
