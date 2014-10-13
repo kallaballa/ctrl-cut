@@ -107,8 +107,12 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(quitAction, SIGNAL(triggered()),
       QApplication::instance(), SLOT(quit()));
 
+  QObject::connect(mergeAction, SIGNAL(triggered()),
+      this, SLOT(on_toolsMerge()));
+
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
+  this->mergeAction->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -330,18 +334,21 @@ void MainWindow::importFile(const QString &filename) {
 }
 
 void MainWindow::saveFile(const QString &filename) {
-  if (filename.isEmpty()) return;
+  QString f = filename;
+  if (f.isEmpty()) return;
+  if(!f.endsWith(".cut", Qt::CaseInsensitive))
+    f += ".cut";
 
   typedef DocumentSettings DS;
   Document& doc = *this->scene->getDocumentHolder()->doc;
   if(doc.get(DS::TITLE) == "untitled")
-    doc.put(DS::TITLE, QFileInfo(filename).baseName().toStdString());
-  std::ofstream os(filename.toStdString());
+    doc.put(DS::TITLE, QFileInfo(f).baseName().toStdString());
+  std::ofstream os(f.toStdString());
   SvgWriter svgW(doc, os);
   svgW.write(doc);
-  this->scene->getDocumentHolder()->filename = filename;
+  this->scene->getDocumentHolder()->filename = f;
   setWindowTitle("");
-  setWindowFilePath(filename);
+  setWindowFilePath(f);
   undoStack->setClean();
 }
 
@@ -389,11 +396,7 @@ void MainWindow::on_filePrintAction_triggered()
 
     //make a copy and run optimization
     Document doc = *this->scene->getDocumentHolder()->doc;
-    for(CutPtr c : doc.cuts()) {
-      c->normalize();
-      c->sort();
-      c->translate();
-    }
+    doc.optimize();
     EpilogLegend36Ext cutter;
     cutter.write(doc,ostream);
     ostream << std::endl;
@@ -456,6 +459,13 @@ void MainWindow::sceneSelectionChanged()
 
     if(selecteditems.size() > 1) {
       this->objectProperties->disable();
+      bool allCutItems = true;
+      foreach (QGraphicsItem *item, this->scene->items()) {
+        if(dynamic_cast<AbstractCtrlCutItem*>(item) != NULL && dynamic_cast<CutItem*>(item) == NULL) {
+          allCutItems = false;
+        }
+      }
+      this->mergeAction->setEnabled(allCutItems);
     } else {
       foreach (QGraphicsItem *item, this->scene->items()) {
         if (item->parentItem()) continue;
@@ -520,6 +530,11 @@ void MainWindow::on_propertiesDockWidget_visibilityChanged(bool visible)
 
 void MainWindow::on_undoStack_cleanChanged(bool clean)
 {
+}
+
+void MainWindow::on_toolsMerge() {
+  MergeCommand* m = new MergeCommand(this->scene);
+  undoStack->push(m);
 }
 
 void MainWindow::saveGuiConfig() {

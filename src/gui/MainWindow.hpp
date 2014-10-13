@@ -52,6 +52,7 @@ public slots:
   void on_editPasteSettingsAction_triggered();
   void on_editGroupAction_triggered();
   void on_editUngroupAction_triggered();
+  void on_toolsMerge();
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();

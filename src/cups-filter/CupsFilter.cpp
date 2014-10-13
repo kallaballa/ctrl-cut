@@ -31,11 +31,7 @@ int main(int argc, char *argv[]) {
   Document doc;
   CupsOptions cupsOpts = CupsGetOpt::load_document(doc, argc, argv);
 
-  for(CutPtr cut : doc.cuts()) {
-    cut->normalize();
-    cut->sort();
-    cut->translate();
-  }
+  doc.optimize();
 
   stringstream ss;
 

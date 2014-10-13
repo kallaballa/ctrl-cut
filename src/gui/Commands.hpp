@@ -182,6 +182,14 @@ public:
   QList<QPointF> newPositions;
 };
 
+class MergeCommand: public CtrlCutUndo {
+public:
+  MergeCommand(CtrlCutScene* scene, QUndoCommand *parent = NULL);
+  void undo();
+  void redo();
+  QList<CutItem *> itemsRemoved;
+  CutItem * itemGenerated;
+};
 QString createCommandString(QGraphicsItem *item, const QPointF &point);
 
 

@@ -34,6 +34,7 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./cut/operations/Traveller.hpp \
            ./cut/operations/Clip.cpp \
            ./cut/operations/Planar.hpp \
+           ./cut/operations/Merge.hpp \
           ./cut/geom/algorithms/Algorithms.hpp \
            ./cut/geom/algorithms/Add.hpp \
            ./cut/geom/algorithms/Concat.hpp \
@@ -93,6 +94,7 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cut/operations/Clip.cpp \
            ./cut/operations/Reduce.cpp \
            ./cut/operations/Translate.cpp \
+           ./cut/operations/Merge.cpp \
            ./svg/SvgPlot.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \

@@ -10,6 +10,7 @@
 #include "helpers/EngraveItem.hpp"
 #include <Document.hpp>
 #include <cut/operations/Reduce.hpp>
+#include "cut/operations/Merge.hpp"
 #include "MainWindow.hpp"
 
 #include <QtGui>
@@ -442,6 +443,47 @@ void MoveToOriginCommand::redo() {
         acci->commit();
       }
     }
+  }
+}
+
+MergeCommand::MergeCommand(CtrlCutScene* scene, QUndoCommand *parent) : CtrlCutUndo(scene, parent), itemGenerated(NULL) {
+  setText("Merge");
+}
+
+void MergeCommand::undo() {
+  foreach(AbstractCtrlCutItem* item, this->itemsRemoved) {
+    this->scene->add(*item);
+  }
+  this->scene->remove(*itemGenerated);
+}
+
+void MergeCommand::redo() {
+  if(itemGenerated == NULL) {
+    if(this->scene->selectedItems().size() < 1)
+      return;
+
+    bool first = true;
+    CutPtr merged = this->scene->getDocumentHolder()->doc->newCut();
+    foreach(QGraphicsItem* item, this->scene->selectedItems()) {
+      CutItem* ci = dynamic_cast<CutItem*>(item);
+      assert(ci);
+      if(first)
+        merged->settings = ci->cut->settings;
+
+      merge(*ci->cut.get(), *merged.get());
+      this->scene->remove(*ci);
+      itemsRemoved.append(ci);
+      first = false;
+    }
+
+    itemGenerated = new CutItem(merged);
+    this->scene->addItem(itemGenerated);
+    this->scene->getDocumentHolder()->addItem(*itemGenerated);
+  } else {
+    foreach(AbstractCtrlCutItem* item, this->itemsRemoved) {
+      this->scene->remove(*item);
+    }
+    this->scene->add(*itemGenerated);
   }
 }
 

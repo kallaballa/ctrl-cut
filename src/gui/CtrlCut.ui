@@ -60,6 +60,7 @@
      <string>Tools</string>
     </property>
     <addaction name="toolsMoveToOriginAction"/>
+    <addaction name="mergeAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -751,6 +752,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="mergeAction">
+   <property name="text">
+    <string>Merge</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>
