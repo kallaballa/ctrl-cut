@@ -19,6 +19,7 @@
 #include <algorithm>
 #include "NewDialog.hpp"
 #include "MainWindow.hpp"
+#include "helpers/Qt.hpp"
 
 CtrlCutScene::CtrlCutScene(QObject *parent) :
   QGraphicsScene(parent) {
@@ -138,41 +139,46 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
 
 std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
   std::vector<AbstractCtrlCutItem*> items;
-  assert(this->docHolder->doc);
-  Document& doc = *this->docHolder->doc;
 
-  doc.put(DocumentSettings::LOAD_CUT, loadVector);
-  doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
-  doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+  try {
+    assert(this->docHolder->doc);
+    Document& doc = *this->docHolder->doc;
 
-  makeBackground();
+    doc.put(DocumentSettings::LOAD_CUT, loadVector);
+    doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
+    doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
 
-  std::pair<Document::CutList, Document::EngraveList> loaded = doc.load(filename.toStdString());
+    makeBackground();
 
-  qreal width = doc.get(DocumentSettings::WIDTH).in(PX);
-  qreal height = doc.get(DocumentSettings::HEIGHT).in(PX);
-  QPixmapCache::setCacheLimit((width * height) / 8 * 2);
+    std::pair<Document::CutList, Document::EngraveList> loaded = doc.load(filename.toStdString());
 
-  for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
-    CutItem* ci = new CutItem(*it);
-    ci->setZValue(++this->currentZ);
-    // Don't add to document as it's already there
-    this->docHolder->addItem(*ci);
-    this->addItem(ci);
-    items.push_back(ci);
+    qreal width = doc.get(DocumentSettings::WIDTH).in(PX);
+    qreal height = doc.get(DocumentSettings::HEIGHT).in(PX);
+    QPixmapCache::setCacheLimit((width * height) / 8 * 2);
+
+    for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
+      CutItem* ci = new CutItem(*it);
+      ci->setZValue(++this->currentZ);
+      // Don't add to document as it's already there
+      this->docHolder->addItem(*ci);
+      this->addItem(ci);
+      items.push_back(ci);
+    }
+
+    const Document::EngraveList& engravings = doc.engravings();
+    for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
+      EngraveItem* ei = new EngraveItem(*it);
+      ei->setZValue(++this->currentZ);
+      // Don't add to document as it's already there
+      this->docHolder->addItem(*ei);
+      this->addItem(ei);
+      items.push_back(ei);
+    }
+
+    this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
+  } catch(std::exception& ex) {
+    showErrorDialog("Unable to load file:" + filename.toStdString(), ex.what());
   }
-
-  const Document::EngraveList& engravings = doc.engravings();
-  for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
-    EngraveItem* ei = new EngraveItem(*it);
-    ei->setZValue(++this->currentZ);
-    // Don't add to document as it's already there
-    this->docHolder->addItem(*ei);
-    this->addItem(ei);
-    items.push_back(ei);
-  }
-
-  this->views()[0]->setSceneRect(QRectF(width/-4, height/-4, width * 1.5, height * 1.5));
   return items;
 }
 
