@@ -1,3 +1,8 @@
+/*
+ * Ctrl-Cut - Laser cutter toolchain
+ * See LICENSE file
+ * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
+ */
 
 #ifndef DITHERSIERRA_H_
 #define DITHERSIERRA_H_

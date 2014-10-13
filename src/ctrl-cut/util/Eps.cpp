@@ -1,4 +1,9 @@
 /*
+ * Ctrl-Cut - Laser cutter toolchain
+ * See LICENSE file
+ * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
+ */
+/*
  * Ctrl-Cut - A laser cutter CUPS driver
  * Copyright (C) 2002-2008 Andrews & Arnold Ltd <info@aaisp.net.uk>
  * Copyright (C) 2008 AS220 Labs <brandon@as220.org>
