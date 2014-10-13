@@ -52,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>691</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTools">
@@ -89,6 +89,8 @@
     <addaction name="fileSaveAsAction"/>
     <addaction name="separator"/>
     <addaction name="filePrintAction"/>
+    <addaction name="separator"/>
+    <addaction name="quitAction"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -741,6 +743,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+V</string>
+   </property>
+  </action>
+  <action name="quitAction">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>
