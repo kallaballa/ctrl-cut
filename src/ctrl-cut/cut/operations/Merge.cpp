@@ -12,7 +12,7 @@ void merge(Cut& src, Cut& sink) {
   Point pInto = sink.get(CutSettings::CPOS);
 
   if(pFrom != pInto) {
-    tl::translate_transformer<Point, Point> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
+    tl::translate_transformer<Coord_t, 2, 2> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
 
     for(const SegmentPtr seg : segments(src)) {
       Segment translated;
