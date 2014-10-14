@@ -38,7 +38,6 @@
 /* Begin PBXFileReference section */
 		E0034E1F19AA8409009F0BD0 /* dummy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dummy.c; sourceTree = SOURCE_ROOT; };
 		E0034E3E19AA8651009F0BD0 /* gui.app */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gui.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E0034E4919AA868F009F0BD0 /* gui.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; name = gui.app; path = ../gui.app; sourceTree = SOURCE_ROOT; };
 		E0333D3419D88533005EDF2B /* cut2epilog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cut2epilog; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0333D3619D88533005EDF2B /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		E0333D3819D88533005EDF2B /* cut2epilog.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = cut2epilog.1; sourceTree = "<group>"; };
@@ -393,7 +392,6 @@
 				E018B43719AA8B2D004C9DF7 /* dummy sources */,
 				E0333D3519D88533005EDF2B /* cut2epilog */,
 				E056783C19AA721200F5650C /* Products */,
-				E0034E4919AA868F009F0BD0 /* gui.app */,
 			);
 			sourceTree = "<group>";
 		};

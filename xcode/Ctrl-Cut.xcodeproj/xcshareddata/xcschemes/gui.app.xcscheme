@@ -44,7 +44,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/kintel/code/Ctrl-Cut/ctrl-cut-gui"
+      customWorkingDirectory = "/Users/kintel/code/Ctrl-Cut/ctrl-cut"
       buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
@@ -65,13 +65,13 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = ""
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "DYLD_LIBRARY_PATH"
-            value = "$PROJECT_DIR/../src/ctrl-cut"
+            value = "/Users/kintel/code/Ctrl-Cut/ctrl-cut/src/ctrl-cut"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
