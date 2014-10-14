@@ -140,6 +140,11 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
   this->docHolder->doc->put(DS::RESOLUTION, resolution);
   this->docHolder->doc->put(DS::WIDTH, width);
   this->docHolder->doc->put(DS::HEIGHT, height);
+  if(this->backgroundItem)
+    delete this->backgroundItem;
+
+  this->backgroundItem = NULL;
+  makeBackground();
 }
 
 std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
