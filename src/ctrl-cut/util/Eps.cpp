@@ -71,7 +71,7 @@ bool get_bbox_from_string(const char *str, int &lower_left_x, int &lower_left_y,
  *
  * @return Return true if the function completes its task, false otherwise.
  */
-bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
+bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
 {
   bool created_by_cairo = false;
   bool bboxfound = false;
@@ -160,6 +160,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
       }
     }
     else if (!startfound && !strncasecmp((char *) buf, "%!PS", 2)) { // Start of document
+      double linethreshold = (resolution / 600)  * 1.8;
       startfound = true;
       // Define === to print whatever is on the stack
       fprintf(eps_file, "/=== { (        ) cvs print } def\n");
@@ -168,7 +169,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
               "/stroke { " // define stroke
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
-              "0 get mul 1.5 lt " // Check linewidth (hackish; only checks the matrix x axis scale)
+              "0 get mul %d lt " // Check linewidth (hackish; only checks the matrix x axis scale)
               // If linewidth < 3 points, this will be cut.
               // FIXME: We should decide which threshold to use.
               // 5 points is ca. 1.75 mm which is way too much.
@@ -185,7 +186,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file)
               // If linewidth >= 5, this will be lasercut:
               "{stroke}"
               "ifelse "              // The actual ifelse statement - reverse boolean ftw!
-              "} bind def\n"); // end define stroke
+              "} bind def\n", linethreshold); // end define stroke
       // Redefine showpage to first print "X"
       fprintf(eps_file, "/showpage { (X)= showpage } bind def\n");
     }
