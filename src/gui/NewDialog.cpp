@@ -81,7 +81,7 @@ void NewDialog::loadFrom(GuiConfig& config) {
 
   size_t res = config.resolution;
   for(size_t i = 0; i < resolutionCombo->count(); ++i) {
-    if(resolutionCombo->itemText(i).toStdString() == std::to_string(res)) {
+    if(resolutionCombo->itemText(i).toStdString() == (std::to_string(res) + " DPI")) {
       resolutionCombo->setCurrentIndex(i);
       break;
     }
