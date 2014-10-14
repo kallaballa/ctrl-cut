@@ -110,6 +110,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(mergeAction, SIGNAL(triggered()),
       this, SLOT(on_toolsMerge()));
 
+  QObject::connect(selectAllAction, SIGNAL(triggered()),
+      this, SLOT(on_SelectAll()));
 
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
@@ -575,6 +577,15 @@ void MainWindow::on_undoStack_cleanChanged(bool clean)
 void MainWindow::on_toolsMerge() {
   MergeCommand* m = new MergeCommand(this->scene);
   undoStack->push(m);
+}
+
+void MainWindow::on_SelectAll() {
+  AbstractCtrlCutItem *cci;
+  foreach(QGraphicsItem* item, this->scene->items()) {
+    if((cci = dynamic_cast<AbstractCtrlCutItem* >(item))) {
+      item->setSelected(true);
+    }
+  }
 }
 
 void MainWindow::saveGuiConfig() {

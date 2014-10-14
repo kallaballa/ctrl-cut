@@ -77,6 +77,7 @@
     <addaction name="editPasteAction"/>
     <addaction name="editCopySettingsAction"/>
     <addaction name="editPasteSettingsAction"/>
+    <addaction name="selectAllAction"/>
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
@@ -765,6 +766,14 @@
   <action name="autoMergeAction">
    <property name="text">
     <string>&amp;Auto merge</string>
+   </property>
+  </action>
+  <action name="selectAllAction">
+   <property name="text">
+    <string>&amp;Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>

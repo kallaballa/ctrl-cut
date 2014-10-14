@@ -53,6 +53,8 @@ public slots:
   void on_editGroupAction_triggered();
   void on_editUngroupAction_triggered();
   void on_toolsMerge();
+  void on_SelectAll();
+
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();
   void on_raiseItem();
