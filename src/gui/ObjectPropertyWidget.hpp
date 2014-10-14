@@ -27,10 +27,10 @@ public:
 
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
-  void enable(class AbstractCtrlCutItem* item);
+  void enable(const std::vector<class AbstractCtrlCutItem*> &items);
   void setDocument(Document* doc);
-  void enableCutItem(class CutItem* ci);
-  void enableEngraveItem(class EngraveItem* ei);
+  void enableCutItems(const std::vector<class CutItem *> &items);
+  void enableEngraveItems(const std::vector<class EngraveItem *> &items);
   void disable();
   void update();
 
@@ -50,14 +50,17 @@ public slots:
 
 
 private:
+  template<typename T> void setLineEditValue(const std::vector<CutItem *> &items, const Settings::Key<T> &key, class QLineEdit *widget);
+
   enum State { NONE, Engraving, Cut};
   State currentState;
   Unit currentUnit;
   uint32_t currentResolution;
 
   class Document* doc;
-  class CutItem* ci;
-  class EngraveItem* ei;
+
+  std::vector<class CutItem *> cuts;
+  std::vector<class EngraveItem *> engravings;
 };
 
 #endif

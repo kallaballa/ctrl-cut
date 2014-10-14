@@ -457,8 +457,7 @@ void MainWindow::sceneSelectionChanged()
       this->editUngroupAction->setEnabled(false);
     }
 
-    if(selecteditems.size() > 1) {
-      this->objectProperties->disable();
+    if (selecteditems.size() >= 1) {
       bool allCutItems = true;
       foreach (QGraphicsItem *item, this->scene->items()) {
         if(dynamic_cast<AbstractCtrlCutItem*>(item) != NULL && dynamic_cast<CutItem*>(item) == NULL) {
@@ -466,18 +465,15 @@ void MainWindow::sceneSelectionChanged()
         }
       }
       this->mergeAction->setEnabled(allCutItems);
-    } else {
+
+      std::vector<AbstractCtrlCutItem *> selecteditems;
       foreach (QGraphicsItem *item, this->scene->items()) {
         if (item->parentItem()) continue;
         if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
-          if(item->isSelected()) {
-            this->objectProperties->enable(cci);
-          }
+          if (item->isSelected()) selecteditems.push_back(cci);
         }
       }
-    }
-
-    if(selecteditems.size() == 1) {
+      this->objectProperties->enable(selecteditems);
       this->editCopySettingsAction->setEnabled(true);
     }
     else {
