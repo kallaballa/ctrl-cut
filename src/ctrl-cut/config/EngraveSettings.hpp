@@ -170,6 +170,18 @@ public:
       break;
     }
   }
+
+  virtual bool operator==(const EngraveSettings& other) {
+    return this->properties.size() == other.properties.size()
+        && std::equal(this->properties.begin(), this->properties.end(), other.properties.begin(),
+            [&](const SettingsMap::value_type& one, const SettingsMap::value_type& two) {
+      if(one.first == EngraveSettings::EPOS || one.first == EngraveSettings::EUUID)
+        return true;
+
+      bool result = one.first == two.first && value(one) == value(two);
+      return result;
+    });
+  }
 };
 
 #endif /* ENGRAVE_SETTINGS_H_ */

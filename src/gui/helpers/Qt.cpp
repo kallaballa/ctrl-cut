@@ -13,3 +13,13 @@ void showErrorDialog(std::string text, std::string detail) {
   msgBox.setDetailedText(QString::fromStdString(detail));
   msgBox.exec();
 }
+
+int showWarningDialog(std::string text, std::string detail) {
+  QMessageBox msgBox;
+  msgBox.setWindowTitle("Warning!");
+  msgBox.setText(QString::fromStdString(text));
+  msgBox.setDetailedText(QString::fromStdString(detail));
+  msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+  msgBox.setDefaultButton(QMessageBox::No);
+  return msgBox.exec();
+}

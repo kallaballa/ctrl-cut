@@ -11,10 +11,12 @@
 #include <QString>
 #include <memory>
 
+typedef std::shared_ptr<class Document> DocumentPtr;
+
 class DocumentHolder {
 public:
   QList<class AbstractCtrlCutItem*> items;
-  class Document* doc;
+  DocumentPtr doc;
   QString filename;
 
   DocumentHolder();

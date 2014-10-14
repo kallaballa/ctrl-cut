@@ -137,20 +137,16 @@ public:
     plot_svg(cut, filename + "_input");
 
     CutPtr clipped = make_from(cut);
-    CutPtr exploded1 = make_from(cut);
-    CutPtr exploded2 = make_from(cut);
+    CutPtr exploded = make_from(cut);
     CutPtr reduced = make_from(cut);
 
     clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
     plot_svg(clipped, filename + "_clipped");
 
-    explode(clipped, exploded1);
-    plot_svg(exploded1, filename + "_exploded1");
+    explode(clipped, exploded);
+    plot_svg(exploded, filename + "_exploded");
 
-    explode(exploded1, exploded2);
-    plot_svg(exploded2, filename + "_exploded2");
-
-    reduce(exploded2, reduced, reduceMax.in(PX));
+    reduce(exploded, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
     this->clear();
     (*this) = reduced;
@@ -219,6 +215,25 @@ public:
     this->settings = other.settings;
     this->clear();
     Route_t::operator=(other);
+  }
+
+  Box findBoundingBox() {
+    Box b;
+    Coord_t minx = std::numeric_limits<Coord_t>::max();
+    Coord_t miny = std::numeric_limits<Coord_t>::max();
+    Coord_t maxx = 0;
+    Coord_t maxy = 0;
+    Point translate = Route_t::get(CutSettings::CPOS);
+    for(const Path& pt : *this) {
+      for(const Point& p : pt) {
+        minx = std::min(p.x + translate.x, minx);
+        miny = std::min(p.y + translate.y, miny);
+        maxx = std::max(p.x + translate.x, maxx);
+        maxy = std::max(p.y + translate.y, maxy);
+      }
+    }
+
+    return Box(minx, miny, maxx, maxy);
   }
 };
 

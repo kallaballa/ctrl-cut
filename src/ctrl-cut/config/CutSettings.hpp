@@ -124,6 +124,18 @@ public:
     this->get(CutSettings::CPOS).toJson(os);
     os << std::endl << "}" ;
   }
+
+  virtual bool operator==(const CutSettings& other) {
+    return this->properties.size() == other.properties.size()
+        && std::equal(this->properties.begin(), this->properties.end(), other.properties.begin(),
+            [&](const SettingsMap::value_type& one, const SettingsMap::value_type& two) {
+      if(one.first == CutSettings::CPOS || one.first == CutSettings::CUUID)
+        return true;
+
+      bool result = one.first == two.first && value(one) == value(two);
+      return result;
+    });
+  }
 };
 
 #endif /* CUT_SETTINGS_H_ */

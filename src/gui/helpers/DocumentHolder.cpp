@@ -17,8 +17,7 @@ DocumentHolder::DocumentHolder(const DocumentHolder& other) {
 }
 
 void DocumentHolder::operator=(const DocumentHolder& other) {
-  //FIXME memory leak
-  this->doc = new Document(*other.doc);
+  this->doc = DocumentPtr(new Document(*other.doc));
   this->items = other.items;
   this->filename = other.filename;
 }

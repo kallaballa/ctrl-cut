@@ -13,6 +13,7 @@
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
 #include "svg/CtrlCutParser.hpp"
+#include "cut/operations/Merge.hpp"
 
 using boost::format;
 using std::list;
@@ -45,6 +46,21 @@ void Document::optimize() {
     cut->normalize();
     cut->sort();
     cut->translate();
+  }
+}
+
+void Document::mergeCuts() {
+  for(CutPtr cut1 : cuts()) {
+    for(CutPtr cut2 : cuts()) {
+      if(cut1 == cut2)
+        continue;
+
+      if(cut1->settings == cut2->settings) {
+        merge(*cut2, *cut1);
+        this->remove(cut2);
+        break;
+      }
+    }
   }
 }
 

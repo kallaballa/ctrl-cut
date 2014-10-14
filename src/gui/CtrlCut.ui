@@ -57,14 +57,14 @@
    </property>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>Tools</string>
+     <string>&amp;Tools</string>
     </property>
     <addaction name="toolsMoveToOriginAction"/>
     <addaction name="mergeAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="helpAboutAction"/>
    </widget>
@@ -80,7 +80,7 @@
    </widget>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="fileNewAction"/>
     <addaction name="fileOpenAction"/>
@@ -95,7 +95,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>Window</string>
+     <string>&amp;Window</string>
     </property>
     <addaction name="windowShowPropertiesAction"/>
    </widget>
@@ -681,7 +681,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show Properties</string>
+    <string>Show &amp;Properties</string>
    </property>
   </action>
   <action name="editCopyAction">
@@ -756,10 +756,15 @@
   </action>
   <action name="mergeAction">
    <property name="text">
-    <string>Merge</string>
+    <string>M&amp;erge</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="autoMergeAction">
+   <property name="text">
+    <string>&amp;Auto merge</string>
    </property>
   </action>
  </widget>

@@ -103,7 +103,7 @@ public:
 
   template<typename ToutIter>
   void findWithinRange(const _SegmentNode& node, ToutIter outIter) const {
-    kdtree.find_within_range(node.center(), node.range(), outIter);
+    kdtree.find_within_range(node.center(), node.range() * 2, outIter);
   }
 
   void insert(const _SegmentNode& node) {

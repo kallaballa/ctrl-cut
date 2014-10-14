@@ -88,6 +88,7 @@ public:
   };
 
   void optimize();
+  void mergeCuts();
 
   void push_back(CutPtr cut);
   void push_back(EngravingPtr engraving);

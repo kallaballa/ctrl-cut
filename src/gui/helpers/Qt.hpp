@@ -13,6 +13,7 @@
 #define QTMAKE_H_
 
 void showErrorDialog(std::string text, std::string detail);
+int showWarningDialog(std::string text, std::string detail);
 
 class QtMake {
 public:

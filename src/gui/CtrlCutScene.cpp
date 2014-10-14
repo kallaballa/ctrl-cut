@@ -134,7 +134,7 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
   typedef DocumentSettings DS;
   this->reset();
   if(this->docHolder->doc == NULL)
-    this->docHolder->doc = new Document();
+    this->docHolder->doc = DocumentPtr(new Document());
 
   this->docHolder->doc->put(DS::TITLE, title.toStdString());
   this->docHolder->doc->put(DS::RESOLUTION, resolution);
@@ -147,18 +147,18 @@ std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bo
 
   try {
     assert(this->docHolder->doc);
-    Document& doc = *this->docHolder->doc;
+    DocumentPtr doc = this->docHolder->doc;
 
-    doc.put(DocumentSettings::LOAD_CUT, loadVector);
-    doc.put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
-    doc.put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
+    doc->put(DocumentSettings::LOAD_CUT, loadVector);
+    doc->put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
+    doc->put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
 
     makeBackground();
 
-    std::pair<Document::CutList, Document::EngraveList> loaded = doc.load(filename.toStdString());
+    std::pair<Document::CutList, Document::EngraveList> loaded = doc->load(filename.toStdString());
 
-    qreal width = doc.get(DocumentSettings::WIDTH).in(PX);
-    qreal height = doc.get(DocumentSettings::HEIGHT).in(PX);
+    qreal width = doc->get(DocumentSettings::WIDTH).in(PX);
+    qreal height = doc->get(DocumentSettings::HEIGHT).in(PX);
     QPixmapCache::setCacheLimit((width * height) / 8 * 2);
 
     for(Document::CutConstIt it = loaded.first.begin(); it != loaded.first.end(); ++it) {
@@ -170,7 +170,7 @@ std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bo
       items.push_back(ci);
     }
 
-    const Document::EngraveList& engravings = doc.engravings();
+    const Document::EngraveList& engravings = doc->engravings();
     for(Document::EngraveConstIt it = loaded.second.begin(); it != loaded.second.end(); ++it) {
       EngraveItem* ei = new EngraveItem(*it);
       ei->setZValue(++this->currentZ);
@@ -187,7 +187,7 @@ std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bo
   return items;
 }
 
-void CtrlCutScene::add(class AbstractCtrlCutItem &item) {
+void CtrlCutScene::add(AbstractCtrlCutItem &item) {
   this->docHolder->add(item);
   this->addItem(&item);
 }

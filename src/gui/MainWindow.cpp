@@ -110,6 +110,7 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(mergeAction, SIGNAL(triggered()),
       this, SLOT(on_toolsMerge()));
 
+
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
   this->mergeAction->setEnabled(false);
@@ -340,7 +341,7 @@ void MainWindow::saveFile(const QString &filename) {
     f += ".cut";
 
   typedef DocumentSettings DS;
-  Document& doc = *this->scene->getDocumentHolder()->doc;
+  Document doc = *this->scene->getDocumentHolder()->doc.get();
   if(doc.get(DS::TITLE) == "untitled")
     doc.put(DS::TITLE, QFileInfo(f).baseName().toStdString());
   std::ofstream os(f.toStdString());
@@ -378,6 +379,12 @@ void MainWindow::on_fileImportAction_triggered()
   importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.vector *.svg)"));
 }
 
+bool intersects(Box b1, Box b2) {
+      return   ((b1.min_corner.x < b2.min_corner.x && b1.max_corner.x > b2.min_corner.x)
+             && (b1.min_corner.y < b2.min_corner.y && b1.max_corner.y > b2.min_corner.y))
+          ||   ((b1.min_corner.x < b2.max_corner.x && b1.max_corner.x > b2.max_corner.x)
+             && (b1.min_corner.y < b2.max_corner.y && b1.max_corner.y > b2.max_corner.y));
+}
 
 void MainWindow::on_filePrintAction_triggered()
 {
@@ -396,7 +403,40 @@ void MainWindow::on_filePrintAction_triggered()
 
     //make a copy and run optimization
     Document doc = *this->scene->getDocumentHolder()->doc;
+    doc.mergeCuts();
+    //couldn't merge all cuts
+    if(doc.cuts().size() > 1) {
+      std::vector<Box> bboxes;
+
+      for(CutPtr cut: doc.cuts()) {
+        bboxes.push_back(cut->findBoundingBox());
+      }
+
+      bool overlap = false;
+      for(Box& b1 : bboxes) {
+        for(Box& b2 : bboxes) {
+          if(&b1 == &b2)
+            continue;
+
+          std::cerr << b1.min_corner << b1.max_corner << std::endl;
+          std::cerr << b2.min_corner << b2.max_corner << std::endl;
+
+          overlap = intersects(b1, b2) || intersects(b2, b1);
+          if(overlap)
+            break;
+        }
+      }
+
+      if(overlap) {
+        if(showWarningDialog("You have overlapping cuts with different settings. That might lead to undesired behavior. Do you want to continue?","The two cuts will be executed in two different passes and optimization will also be applied separately. That might break the correctness of the inner-outer sorting.") == QMessageBox::No) {
+          return;
+        }
+      }
+    }
+
+
     doc.optimize();
+
     EpilogLegend36Ext cutter;
     cutter.write(doc,ostream);
     ostream << std::endl;

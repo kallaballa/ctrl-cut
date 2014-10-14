@@ -16,6 +16,8 @@
 #include "config/EngraveSettings.hpp"
 #include "config/CutSettings.hpp"
 
+typedef std::shared_ptr<class Document> DocumentPtr;
+
 class ObjectPropertyWidget : public QWidget {
   Q_OBJECT
 public:
@@ -28,7 +30,7 @@ public:
   void updateEngraveProperties(const EngraveSettings::KeyBase&  key);
   void updateCutProperties(const CutSettings::KeyBase&  key);
   void enable(class AbstractCtrlCutItem* item);
-  void setDocument(Document* doc);
+  void setDocument(DocumentPtr doc);
   void enableCutItem(class CutItem* ci);
   void enableEngraveItem(class EngraveItem* ei);
   void disable();
@@ -55,7 +57,7 @@ private:
   Unit currentUnit;
   uint32_t currentResolution;
 
-  class Document* doc;
+  DocumentPtr doc;
   class CutItem* ci;
   class EngraveItem* ei;
 };

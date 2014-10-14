@@ -12,9 +12,13 @@ void merge(Cut& src, Cut& sink) {
   Point pInto = sink.get(CutSettings::CPOS);
 
   if(pFrom != pInto) {
-    tl::translate_transformer<Coord_t, 2, 2> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
 
-    for(const SegmentPtr seg : segments(src)) {
+#if BOOST_VERSION >= 105500
+    tl::translate_transformer<Coord_t, 2, 2> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
+#else
+    tl::translate_transformer<Point, Point> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
+#endif
+   for(const SegmentPtr seg : segments(src)) {
       Segment translated;
       boost::geometry::transform(*seg.get(), translated, transformer);
       append(sink, translated);

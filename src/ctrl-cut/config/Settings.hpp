@@ -62,12 +62,12 @@ public:
        name(other.name)
      {};
 
-    bool operator<(const KeyBase& other) const{
+    bool operator<(const KeyBase& other) const {
       return this->name < other.name;
     }
 
-    void operator==(const KeyBase& other){
-      this->name = other.name;
+    bool operator==(const KeyBase& other) const {
+      return this->name == other.name;
     }
 
     operator std::string() const{
@@ -113,6 +113,27 @@ public:
 
   string key(const_iterator it) const {
     return (*it).first;
+  }
+
+  string value(SettingsMap::value_type v) const {
+    boost::any prop = v.second;
+
+    if(prop.type() == typeid(Distance)) {
+      return boost::lexical_cast<string>(boost::any_cast<Distance>(prop));
+    } else if(prop.type() == typeid(Point)) {
+      return boost::lexical_cast<string>(boost::any_cast<Point>(prop));
+    } else if(prop.type() == typeid(string)){
+      return boost::lexical_cast<string>(boost::any_cast<string>(prop));
+    } else if(prop.type() == typeid(float)){
+      return boost::lexical_cast<string>(boost::any_cast<float>(prop));
+    } else if(prop.type() == typeid(bool)){
+      return boost::lexical_cast<string>(boost::any_cast<bool>(prop));
+    } else if(prop.type() == typeid(uint16_t)){
+      return boost::lexical_cast<string>(boost::any_cast<uint16_t>(prop));
+    } else if(prop.type() == typeid(uint32_t)){
+      return boost::lexical_cast<string>(boost::any_cast<uint32_t>(prop));
+    }
+    return "unknown type: " + v.first.name;
   }
 
   string value(const_iterator it) const {
@@ -263,6 +284,14 @@ public:
     this->properties = other.properties;
   }
 
+  virtual bool operator==(const Settings& other) {
+    return this->properties.size() == other.properties.size()
+        && std::equal(this->properties.begin(), this->properties.end(), other.properties.begin(),
+            [&](const SettingsMap::value_type& one, const SettingsMap::value_type& two) {
+      bool result = one.first == two.first && value(one) == value(two);
+      return result;
+    });
+  }
 protected:
   Settings* parent;
   SettingsMap properties;

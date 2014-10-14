@@ -64,8 +64,6 @@ bool build_planar_embedding(typename Tgraph::Embedding& embedding, Tgraph& graph
 
 template<typename Visitor>
 inline void traverse_planar_faces(SegmentGraph& graph, Visitor& visitor) {
-  SegmentGraph::Embedding Embedding;
-
   std::map<SegmentGraph::Edge, graph_traits<SegmentGraph>::edges_size_type > e_index_map;
   graph_traits<SegmentGraph>::edges_size_type edge_count = 0;
   graph_traits<SegmentGraph>::edge_iterator ei, ei_end;

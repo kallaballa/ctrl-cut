@@ -48,7 +48,7 @@ void ObjectPropertyWidget::enable(AbstractCtrlCutItem* item) {
   }
 }
 
-void ObjectPropertyWidget::setDocument(Document* doc) {
+void ObjectPropertyWidget::setDocument(DocumentPtr doc) {
   typedef DocumentSettings DS;
   this->doc = doc;
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
