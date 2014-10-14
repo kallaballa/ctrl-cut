@@ -399,9 +399,6 @@ void MainWindow::on_filePrintAction_triggered()
     ByteArrayOStreambuf streambuf(rtlbuffer);
     std::ofstream tmpfile("gui.tmp", std::ios::out | std::ios::binary);
     std::ostream ostream(&streambuf);
-    this->scene->getDocumentHolder()->doc->put(DocumentSettings::TITLE, "title");
-    this->scene->getDocumentHolder()->doc->put(DocumentSettings::USER, "user");
-//    this->scene->getDocumentHolder().doc->write(tmpfile);
 
     //make a copy and run optimization
     Document doc = *this->scene->getDocumentHolder()->doc;
