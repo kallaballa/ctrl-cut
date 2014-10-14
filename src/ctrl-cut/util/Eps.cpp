@@ -160,7 +160,10 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
       }
     }
     else if (!startfound && !strncasecmp((char *) buf, "%!PS", 2)) { // Start of document
-      double linethreshold = 1.9 - (1 - (resolution / 600));
+      double linethreshold = 1.9 - (1.0 - (resolution / 600.0));
+      if(resolution == 1200)
+        linethreshold += 5;
+
       startfound = true;
       // Define === to print whatever is on the stack
       fprintf(eps_file, "/=== { (        ) cvs print } def\n");
