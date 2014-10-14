@@ -82,6 +82,10 @@ void LpdClient::on_socket_bytesWritten(qint64 bytes)
   emit progress(this->totalprogress, this->totalsize);
 }
 
+void LpdClient::on_cancel() {
+  this->socket->close();
+}
+
 void LpdClient::handle_lpd()
 {
   switch (this->lpdstate) {

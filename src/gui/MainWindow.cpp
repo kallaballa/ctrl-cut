@@ -402,23 +402,18 @@ void MainWindow::on_filePrintAction_triggered()
 
     //make a copy and run optimization
     Document doc = *this->scene->getDocumentHolder()->doc;
-    doc.mergeCuts();
     //couldn't merge all cuts
     if(doc.cuts().size() > 1) {
-      std::vector<Box> bboxes;
-
-      for(CutPtr cut: doc.cuts()) {
-        bboxes.push_back(cut->findBoundingBox());
-      }
-
       bool overlap = false;
-      for(Box& b1 : bboxes) {
-        for(Box& b2 : bboxes) {
-          if(&b1 == &b2)
+      for(CutPtr cut1: doc.cuts()) {
+        for(CutPtr cut2: doc.cuts()) {
+          if(cut1 == cut2 || cut1->settings == cut2->settings)
             continue;
 
-          std::cerr << b1.min_corner << b1.max_corner << std::endl;
-          std::cerr << b2.min_corner << b2.max_corner << std::endl;
+          Box b1 = cut1->findBoundingBox();
+          Box b2 = cut2->findBoundingBox();
+//          std::cerr << b1.min_corner << b1.max_corner << std::endl;
+//          std::cerr << b2.min_corner << b2.max_corner << std::endl;
 
           overlap = intersects(b1, b2) || intersects(b2, b1);
           if(overlap)
@@ -433,7 +428,7 @@ void MainWindow::on_filePrintAction_triggered()
       }
     }
 
-
+    doc.mergeCuts();
     doc.optimize();
 
     EpilogLegend36Ext cutter;
@@ -441,9 +436,9 @@ void MainWindow::on_filePrintAction_triggered()
     ostream << std::endl;
     tmpfile.close();
 
-    progressDialog.setCancelButton(0);
     progressDialog.setWindowFlags(Qt::Dialog | Qt::Desktop);
     progressDialog.setWindowModality(Qt::ApplicationModal);
+    QObject::connect(&progressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
     progressDialog.show();
     this->lpdclient->print(host, "MyDocument", rtlbuffer);

@@ -28,7 +28,7 @@ private slots:
   void on_socket_error(QAbstractSocket::SocketError);
   void on_socket_readyRead();
   void on_socket_bytesWritten(qint64 bytes);
-
+  void on_cancel();
 private:
   void handle_lpd();
 
