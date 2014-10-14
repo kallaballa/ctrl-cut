@@ -140,5 +140,5 @@ void traverse_onion(Route& src, Route& skins)
 
   }
 
-  reverse(skins.begin(), skins.begin());
+  reverse(skins.begin(), skins.end());
 }
