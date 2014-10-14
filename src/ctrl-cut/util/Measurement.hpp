@@ -46,6 +46,13 @@ public:
 
     os << ", \"resolution\":" << resolution << " }";
   }
+  bool operator==(const Distance &other) {
+    return
+      this->value == other.value &&
+      this->unit == other.unit &&
+      this->resolution == other.resolution;
+  }
+  bool operator!=(const Distance &other) { return !(*this == other); }
 };
 
 inline std::ostream& operator<<(std::ostream &os, const Distance& m)  {
