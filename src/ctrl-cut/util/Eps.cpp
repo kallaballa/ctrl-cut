@@ -160,7 +160,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
       }
     }
     else if (!startfound && !strncasecmp((char *) buf, "%!PS", 2)) { // Start of document
-      double linethreshold = (resolution / 600)  * 1.8;
+      double linethreshold = 1.9 - (1 - (resolution / 600));
       startfound = true;
       // Define === to print whatever is on the stack
       fprintf(eps_file, "/=== { (        ) cvs print } def\n");
@@ -169,7 +169,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
               "/stroke { " // define stroke
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
-              "0 get mul %d lt " // Check linewidth (hackish; only checks the matrix x axis scale)
+              "0 get mul %f lt " // Check linewidth (hackish; only checks the matrix x axis scale)
               // If linewidth < 3 points, this will be cut.
               // FIXME: We should decide which threshold to use.
               // 5 points is ca. 1.75 mm which is way too much.

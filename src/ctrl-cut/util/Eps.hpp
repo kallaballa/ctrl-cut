@@ -10,6 +10,6 @@
 #include <cups/file.h>
 #include "config/DocumentSettings.hpp"
 
-extern bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file);
+extern bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution);
 
 #endif

@@ -80,7 +80,7 @@ public:
   static PostscriptParser *instance() { return PostscriptParser::inst; }
   static PostscriptParser *inst;
 private:
-  bool createEps(cups_file_t *input_file, const std::string &filename_eps);
+  bool createEps(cups_file_t *input_file, const std::string &filename_eps, uint32_t resolution );
 
   std::string filename_eps;
   std::string filename_bitmap;

@@ -269,7 +269,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + fs::path(filename).parent_path().stem().c_str();
   this->filename_eps = tmpbasepath + ".eps";
 
-  if (!createEps(input_file, this->filename_eps)) return false;
+  if (!createEps(input_file, this->filename_eps, resolution)) return false;
 
   std::vector<std::string> argstrings;
   argstrings.push_back("gs");
@@ -343,7 +343,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   return true;
 }
 
-bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename_eps)
+bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename_eps, uint32_t resolution)
 {
   // Open the encapsulated postscript file for writing.
   FILE *file_eps = fopen(filename_eps.c_str(), "w");
@@ -354,7 +354,7 @@ bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename
   LOG_DEBUG_MSG("Converting to EPS file", filename_eps);
   
   // Convert PS to EPS (for vector extraction)
-  if (!ps_to_eps(input_file, file_eps)) {
+  if (!ps_to_eps(input_file, file_eps, resolution)) {
     LOG_FATAL_STR("ps_to_eps failed");
     fclose(file_eps);
     return false;
