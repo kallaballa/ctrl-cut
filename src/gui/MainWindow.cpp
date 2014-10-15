@@ -381,13 +381,6 @@ void MainWindow::on_fileImportAction_triggered()
   importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.vector *.svg)"));
 }
 
-bool intersects(Box b1, Box b2) {
-      return   ((b1.min_corner.x < b2.min_corner.x && b1.max_corner.x > b2.min_corner.x)
-             && (b1.min_corner.y < b2.min_corner.y && b1.max_corner.y > b2.min_corner.y))
-          ||   ((b1.min_corner.x < b2.max_corner.x && b1.max_corner.x > b2.max_corner.x)
-             && (b1.min_corner.y < b2.max_corner.y && b1.max_corner.y > b2.max_corner.y));
-}
-
 void MainWindow::on_filePrintAction_triggered()
 {
   SendDialog sd;
@@ -494,7 +487,7 @@ void MainWindow::sceneSelectionChanged()
     if(selecteditems.size() > 1) {
       this->objectProperties->disable();
       bool allCutItems = true;
-      foreach (QGraphicsItem *item, this->scene->items()) {
+      foreach (QGraphicsItem *item, selecteditems) {
         if(dynamic_cast<AbstractCtrlCutItem*>(item) != NULL && dynamic_cast<CutItem*>(item) == NULL) {
           allCutItems = false;
         }

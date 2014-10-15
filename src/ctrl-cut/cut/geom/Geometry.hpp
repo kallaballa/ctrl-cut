@@ -283,6 +283,12 @@ public:
 
 BOOST_GEOMETRY_REGISTER_BOX(Box, Point, min_corner, max_corner)
 
+inline bool intersects(Box b1, Box b2) {
+      return   ((b1.min_corner.x < b2.min_corner.x && b1.max_corner.x > b2.min_corner.x)
+             && (b1.min_corner.y < b2.min_corner.y && b1.max_corner.y > b2.min_corner.y))
+          ||   ((b1.min_corner.x < b2.max_corner.x && b1.max_corner.x > b2.max_corner.x)
+             && (b1.min_corner.y < b2.max_corner.y && b1.max_corner.y > b2.max_corner.y));
+}
 
 class Sphere {
 public:
