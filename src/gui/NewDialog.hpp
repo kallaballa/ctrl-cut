@@ -23,7 +23,11 @@ public:
   int getResolution();
   void loadFrom(GuiConfig& config);
   void saveTo(GuiConfig& config);
+
+public slots:
+  void on_unitChange();
 private:
+  Unit currentUnit;
 };
 
 #endif

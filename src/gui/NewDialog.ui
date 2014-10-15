@@ -154,12 +154,12 @@
           </property>
           <item>
            <property name="text">
-            <string>IN</string>
+            <string>MM</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>MM</string>
+            <string>IN</string>
            </property>
           </item>
           <item>

@@ -10,6 +10,9 @@
 NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
 {
   setupUi(this);
+  QObject::connect(unit, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(on_unitChange()));
+  currentUnit = getUnit();
 }
 
 NewDialog::~NewDialog() {
@@ -19,9 +22,9 @@ Unit NewDialog::getUnit() {
   int index = this->unit->currentIndex();
   switch (index) {
   case 0:
-    return IN;
-  case 1:
     return MM;
+  case 1:
+    return IN;
   case 2:
     return PX;
   }
@@ -59,6 +62,7 @@ int NewDialog::getResolution() {
 
 void NewDialog::loadFrom(GuiConfig& config) {
   Unit unit = config.unit;
+  currentUnit = unit;
   string strUnit;
   switch (unit) {
   case MM:
@@ -97,4 +101,14 @@ void NewDialog::saveTo(GuiConfig& config) {
   config.bedWidth = getWidth().in(getUnit());
   config.bedHeight = getHeight().in(getUnit());
 }
+
+void NewDialog::on_unitChange() {
+  double w = this->widthLine->text().toDouble();
+  double h = this->heightLine->text().toDouble();
+
+  this->widthLine->setText(QString::number(Distance(w, currentUnit, getResolution()).in(getUnit())));
+  this->heightLine->setText(QString::number(Distance(h, currentUnit, getResolution()).in(getUnit())));
+  this->currentUnit = getUnit();
+}
+
 
