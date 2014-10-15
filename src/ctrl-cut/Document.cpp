@@ -50,18 +50,23 @@ void Document::optimize() {
 }
 
 void Document::mergeCuts() {
+  CutList newCuts;
   for(CutPtr cut1 : cuts()) {
+    CutPtr merged = CutPtr(new Cut(cut1->settings));
+    merge(*cut1, *merged);
     for(CutPtr cut2 : cuts()) {
       if(cut1 == cut2)
         continue;
 
       if(cut1->settings == cut2->settings) {
-        merge(*cut2, *cut1);
+        merge(*cut2, *merged);
         this->remove(cut2);
         break;
       }
     }
+    newCuts.push_back(merged);
   }
+  this->cutList = newCuts;
 }
 
 void Document::push_back(CutPtr cut) {
