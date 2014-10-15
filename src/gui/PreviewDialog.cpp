@@ -15,7 +15,9 @@ PreviewDialog::PreviewDialog(Document& doc, QWidget *parent) : QDialog(parent)
   setupUi(this);
 
   Document copy = doc;
+  copy.mergeCuts();
   copy.optimize();
+
   string filename = (boost::filesystem::temp_directory_path() /= boost::filesystem::unique_path()).native() + ".svg";
   std::ofstream os(filename);
   SvgWriter svg(copy, os);
