@@ -72,7 +72,7 @@ public:
     try {
       this->put(CutSettings::REDUCE, docSettings.get(CutSettings::REDUCE));
     } catch (std::exception& ex) {
-      this->put(CutSettings::REDUCE, Distance(0.2, MM, docSettings.get(DocumentSettings::RESOLUTION)));
+      this->put(CutSettings::REDUCE, Distance(0.025, MM, docSettings.get(DocumentSettings::RESOLUTION)));
     }
   }
   CutSettings(const CutSettings& other) : Settings(other) {
