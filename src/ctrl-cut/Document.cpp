@@ -52,19 +52,26 @@ void Document::optimize() {
 void Document::mergeCuts() {
   CutList newCuts;
   for(CutPtr cut1 : cuts()) {
-    CutPtr merged = CutPtr(new Cut(cut1->settings));
-    merge(*cut1, *merged);
-    for(CutPtr cut2 : cuts()) {
-      if(cut1 == cut2)
+    CutPtr copy = CutPtr(new Cut(cut1->settings));
+    (*copy.get()) = (*cut1.get());
+    if(newCuts.empty()) {
+      newCuts.push_back(copy);
+      continue;
+    }
+
+    bool merged = false;
+    for(CutPtr newCut : newCuts) {
+      if(cut1 == newCut)
         continue;
 
-      if(cut1->settings == cut2->settings) {
-        merge(*cut2, *merged);
-        this->remove(cut2);
+      if(cut1->settings == newCut->settings) {
+        merge(*copy, *newCut);
+        merged = true;
         break;
       }
     }
-    newCuts.push_back(merged);
+    if(!merged)
+      newCuts.push_back(copy);
   }
   this->cutList = newCuts;
 }
