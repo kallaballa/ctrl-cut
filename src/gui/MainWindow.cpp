@@ -378,7 +378,7 @@ void MainWindow::on_fileSaveAsAction_triggered()
 
 void MainWindow::on_fileImportAction_triggered()
 {
-  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.vector *.svg)"));
+  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.eps *.vector *.svg)"));
 }
 
 void MainWindow::on_filePrintAction_triggered()
@@ -415,7 +415,7 @@ void MainWindow::on_filePrintAction_triggered()
       }
 
       if(overlap) {
-        if(showWarningDialog("You have overlapping cuts with different settings. That might lead to undesired behavior. Do you want to continue?","The two cuts will be executed in two different passes and optimization will also be applied separately. That might break the correctness of the inner-outer sorting.") == QMessageBox::No) {
+        if(showYesNoDialog("Warning!", "You have overlapping cuts with different settings. That might lead to undesired behavior. Do you want to continue?","The two cuts will be executed in two different passes and optimization will also be applied separately. That might break the correctness of the inner-outer sorting.") == QMessageBox::No) {
           return;
         }
       }

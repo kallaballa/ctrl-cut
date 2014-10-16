@@ -13,7 +13,9 @@
 #define QTMAKE_H_
 
 void showErrorDialog(std::string text, std::string detail);
-int showWarningDialog(std::string text, std::string detail);
+void showWarningDialog(std::string text, std::string detail);
+int showYesNoDialog(std::string title, std::string text, std::string detail);
+
 
 class QtMake {
 public:
