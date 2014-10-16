@@ -24,7 +24,7 @@ endif
 build: build-stamp
 build-stamp:
 	dh_testdir
-	qmake -recursive VERSION=1 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
+	qmake -recursive VERSION=1.0 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 	make
 	# --- end custom part for compiling
 
