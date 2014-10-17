@@ -7,8 +7,10 @@
 #define PREVIEWDIALOG_H_
 
 #include <QDialog>
+#include <QProgressDialog>
 #include "ui_PreviewDialog.h"
 #include "Document.hpp"
+
 
 class PreviewDialog : public QDialog, private Ui::Dialog
 {
@@ -18,7 +20,9 @@ public:
   ~PreviewDialog();
 public slots:
   void on_zoom_triggered(const QString& s);
+  void on_cancel();
 private:
+  QProgressDialog progressDialog;
 };
 
 #endif

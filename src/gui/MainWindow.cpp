@@ -54,6 +54,9 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   this->graphicsView->setScene(this->scene);
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
+  sendProgressDialog.setWindowFlags(Qt::Dialog | Qt::Desktop);
+  sendProgressDialog.setWindowModality(Qt::ApplicationModal);
+
   QObject::connect(graphicsView, SIGNAL(customContextMenuRequested(const QPoint&)),
       this, SLOT(showContextMenu(const QPoint&)));
 
@@ -112,6 +115,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   QObject::connect(selectAllAction, SIGNAL(triggered()),
       this, SLOT(on_SelectAll()));
+
+  QObject::connect(&sendProgressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
@@ -429,11 +434,8 @@ void MainWindow::on_filePrintAction_triggered()
     ostream << std::endl;
     tmpfile.close();
 
-    progressDialog.setWindowFlags(Qt::Dialog | Qt::Desktop);
-    progressDialog.setWindowModality(Qt::ApplicationModal);
-    QObject::connect(&progressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
-    progressDialog.show();
+    sendProgressDialog.show();
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
 }
@@ -442,12 +444,12 @@ void MainWindow::on_lpdclient_done(bool error)
 {
   if (error) fprintf(stderr, "LPD error\n");
   else printf("LPD done\n");
-  progressDialog.hide();
+  sendProgressDialog.hide();
 }
 
 void MainWindow::on_lpdclient_progress(int done, int total)
 {
-  progressDialog.setValue(100.0f*done/total);
+  sendProgressDialog.setValue(100.0f*done/total);
   printf("Progress: %.0f%%\n", 100.0f*done/total);
 }
 

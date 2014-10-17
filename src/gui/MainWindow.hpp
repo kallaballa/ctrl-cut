@@ -97,7 +97,7 @@ private:
   QAction* raiseAct;
   QAction* bottomAct;
   QAction* topAct;
-  QProgressDialog progressDialog;
+  QProgressDialog sendProgressDialog;
 };
 
 #endif
