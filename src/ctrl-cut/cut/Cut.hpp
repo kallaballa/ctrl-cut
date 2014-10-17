@@ -136,15 +136,15 @@ public:
     CutPtr& cut = *this;
     plot_svg(cut, filename + "_input");
 
-    CutPtr clipped = make_from(cut);
     CutPtr exploded = make_from(cut);
+    CutPtr clipped = make_from(cut);
     CutPtr reduced = make_from(cut);
 
-    clip(cut, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
-    plot_svg(clipped, filename + "_clipped");
-
-    explode(clipped, exploded);
+    explode(cut, exploded);
     plot_svg(exploded, filename + "_exploded");
+
+    clip(exploded, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
+    plot_svg(clipped, filename + "_clipped");
 
     reduce(exploded, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
