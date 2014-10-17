@@ -100,11 +100,18 @@
     </property>
     <addaction name="windowShowPropertiesAction"/>
    </widget>
+   <widget class="QMenu" name="menuDebug">
+    <property name="title">
+     <string>E&amp;xtra</string>
+    </property>
+    <addaction name="sendToFileAction"/>
+   </widget>
    <addaction name="fileMenu"/>
    <addaction name="editMenu"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
    <addaction name="menuWindow"/>
+   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -777,6 +784,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="sendToFileAction">
+   <property name="text">
+    <string>Send to &amp;File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
  </widget>

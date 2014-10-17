@@ -39,6 +39,7 @@ public slots:
   void on_fileSaveAsAction_triggered();
   void on_fileImportAction_triggered();
   void on_filePrintAction_triggered();
+  void on_extraSendToFileAction_triggered();
   void on_windowShowPropertiesAction_triggered();
   void on_propertiesDockWidget_visibilityChanged(bool visible);
   void on_toolsMoveToOriginAction_triggered();
@@ -53,7 +54,7 @@ public slots:
   void on_editGroupAction_triggered();
   void on_editUngroupAction_triggered();
   void on_toolsMerge();
-  void on_SelectAll();
+  void on_selectAll();
 
   void showContextMenu(const QPoint& pos);
   void on_lowerItem();

@@ -114,7 +114,10 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
       this, SLOT(on_toolsMerge()));
 
   QObject::connect(selectAllAction, SIGNAL(triggered()),
-      this, SLOT(on_SelectAll()));
+      this, SLOT(on_selectAll()));
+
+  QObject::connect(sendToFileAction, SIGNAL(triggered()),
+      this, SLOT(on_extraSendToFileAction_triggered()));
 
   QObject::connect(&sendProgressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
@@ -432,12 +435,36 @@ void MainWindow::on_filePrintAction_triggered()
     EpilogLegend36Ext cutter;
     cutter.write(doc,ostream);
     ostream << std::endl;
-    tmpfile.close();
+    tmpfile.flush();
 
 
     sendProgressDialog.show();
     this->lpdclient->print(host, "MyDocument", rtlbuffer);
   }
+}
+
+void MainWindow::on_extraSendToFileAction_triggered()
+{
+  QString filename = QFileDialog::getSaveFileName(this, "Save File", "", "Raw format (*.raw)");
+  if(filename.isEmpty())
+    return;
+
+  if(!filename.endsWith(".raw", Qt::CaseInsensitive))
+    filename += ".raw";
+
+  QByteArray rtlbuffer;
+  std::ofstream os(filename.toStdString(), std::ios::out | std::ios::binary);
+
+  //make a copy and run optimization
+  Document doc = *this->scene->getDocumentHolder()->doc;
+
+  doc.mergeCuts();
+  doc.optimize();
+
+  EpilogLegend36Ext cutter;
+  cutter.write(doc,os);
+  os << std::endl;
+  os.flush();
 }
 
 void MainWindow::on_lpdclient_done(bool error)
@@ -566,7 +593,7 @@ void MainWindow::on_toolsMerge() {
   undoStack->push(m);
 }
 
-void MainWindow::on_SelectAll() {
+void MainWindow::on_selectAll() {
   AbstractCtrlCutItem *cci;
   foreach(QGraphicsItem* item, this->scene->items()) {
     if((cci = dynamic_cast<AbstractCtrlCutItem* >(item))) {
