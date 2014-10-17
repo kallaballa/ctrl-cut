@@ -9,6 +9,6 @@
 
 #include "cut/Cut.hpp"
 
-void merge(Cut& src, Cut& sink);
+void merge(const Cut& src, Cut& sink);
 
 #endif

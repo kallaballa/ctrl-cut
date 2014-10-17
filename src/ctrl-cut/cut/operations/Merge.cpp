@@ -6,27 +6,18 @@
 
 #include "Merge.hpp"
 
-void merge(Cut& src, Cut& sink) {
+void merge(const Cut& src, Cut& sink) {
   namespace tl = boost::geometry::strategy::transform;
-  Point pFrom = src.get(CutSettings::CPOS);
-  Point pInto = sink.get(CutSettings::CPOS);
 
-  if(pFrom != pInto) {
+  Cut srcTrans = make_from(src);
+  Cut sinkTrans = make_from(sink);
 
-#if BOOST_VERSION >= 105500
-    tl::translate_transformer<Coord_t, 2, 2> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
-#else
-    tl::translate_transformer<Point, Point> transformer(pFrom.x + (pInto.x * -1), pFrom.y + (pInto.y * -1));
-#endif
-   for(const SegmentPtr seg : segments(src)) {
-      Segment translated;
-      boost::geometry::transform(*seg.get(), translated, transformer);
-      append(sink, translated);
-    }
-  } else {
-    for(const SegmentPtr seg : segments(src)) {
-      append(sink, *seg.get());
-    }
+  translateTo(src, srcTrans, src.get(CutSettings::CPOS));
+  translateTo(sink, sinkTrans, sink.get(CutSettings::CPOS));
+  for(const SegmentPtr seg : segments(srcTrans)) {
+    append(sinkTrans, *seg.get());
   }
+  sink = sinkTrans;
+  sink.put(CutSettings::CPOS, Point());
 }
 
