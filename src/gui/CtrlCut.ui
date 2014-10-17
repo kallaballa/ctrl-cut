@@ -793,6 +793,21 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>graphicsView</tabstop>
+  <tabstop>titleEdit</tabstop>
+  <tabstop>autofocusBox</tabstop>
+  <tabstop>posX</tabstop>
+  <tabstop>unit</tabstop>
+  <tabstop>posY</tabstop>
+  <tabstop>reduceEdit</tabstop>
+  <tabstop>speed</tabstop>
+  <tabstop>power</tabstop>
+  <tabstop>frequency</tabstop>
+  <tabstop>sort</tabstop>
+  <tabstop>direction</tabstop>
+  <tabstop>dithering</tabstop>
+ </tabstops>
  <resources>
   <include location="ctrl-cut.qrc"/>
  </resources>
