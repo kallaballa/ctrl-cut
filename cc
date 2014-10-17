@@ -53,7 +53,7 @@ export CC_RENDER="src/render2cut/render2cut"
 
 . $CC_FUNCTIONS
 
-[ ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
+#[ ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
 
 verbose "CC_BASE=$CC_BASE"
 verbose "CC_PRINTERNAME=$CC_PRINTERNAME"
