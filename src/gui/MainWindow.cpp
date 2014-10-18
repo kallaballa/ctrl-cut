@@ -413,8 +413,6 @@ void MainWindow::on_filePrintAction_triggered()
 
           Box b1 = cut1->findBoundingBox();
           Box b2 = cut2->findBoundingBox();
-//          std::cerr << b1.min_corner << b1.max_corner << std::endl;
-//          std::cerr << b2.min_corner << b2.max_corner << std::endl;
 
           overlap = intersects(b1, b2) || intersects(b2, b1);
           if(overlap)
