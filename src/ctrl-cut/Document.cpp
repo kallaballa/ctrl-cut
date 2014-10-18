@@ -124,7 +124,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
   bool loadCut = this->get(DS::LOAD_CUT);
   bool loadEngraving = this->get(DS::LOAD_ENGRAVING);
 
-  cups_file_t* input_file = NULL;
+  FILE* input_file = NULL;
   FileParser *parser = NULL;
 
   if(docFormat == CTRLCUT) {
@@ -148,11 +148,11 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
         Svg2Ps converter(svgFd, convertPipe[1]);
         boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
 
-        if ((input_file = cupsFileOpenFd(convertPipe[0], "r")) == NULL) {
+        if ((input_file = fdopen(convertPipe[0], "r")) == NULL) {
           CtrlCutException::generalError("unable to open print file:" + filename);
         }
       } else if(docFormat == POSTSCRIPT){
-        if ((input_file = cupsFileOpen(filename.c_str(), "r")) == NULL) {
+        if ((input_file = fopen(filename.c_str(), "r")) == NULL) {
           CtrlCutException::generalError("unable to open print file:" + filename);
         }
       }

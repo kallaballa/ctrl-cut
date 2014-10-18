@@ -7,8 +7,6 @@
 #define FILEPARSER_H_
 
 #include <string>
-#include <cups/cups.h>
-#include <cups/file.h>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -55,7 +53,7 @@ public:
   void setComponents(uint8_t components) {this->components = components;}
   uint8_t getComponents() const {return this->components;}
 
-  bool parse(cups_file_t *ps_file);
+  bool parse(FILE *ps_file);
   std::istream &getVectorData();
 
   virtual bool hasImageData() {return this->bmimage.isAllocated() ||  this->gsimage.isAllocated(); }
@@ -80,18 +78,18 @@ public:
   static PostscriptParser *instance() { return PostscriptParser::inst; }
   static PostscriptParser *inst;
 private:
-  bool createEps(cups_file_t *input_file, const std::string &filename_eps, uint32_t resolution );
+  bool createEps(FILE *input_file, const std::string &filename_eps, uint32_t resolution );
 
   std::string filename_eps;
   std::string filename_bitmap;
 #ifndef USE_GHOSTSCRIPT_API
-  bool execute_ghostscript_cmd(const std::vector<std::string> &argstrings)
+  bool execute_ghostscript_cmd(const std::vector<std::string> &argstrings);
 
   std::string filename_vector;
   std::ifstream vectorfile;
 #else
   bool execute_ghostscript(const std::vector<std::string> &argstrings);
-
+#endif
   bool rendertofile;
   RasterFormat rasterformat;
   uint8_t components;
@@ -99,7 +97,7 @@ private:
   Rectangle cropbox;
   GrayscaleImage gsimage;
   BitmapImage bmimage;
-#endif
+
 };
 
 #endif

@@ -3,29 +3,7 @@
  * See LICENSE file
  * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
  */
-/*
- * Ctrl-Cut - A laser cutter CUPS driver
- * Copyright (C) 2002-2008 Andrews & Arnold Ltd <info@aaisp.net.uk>
- * Copyright (C) 2008 AS220 Labs <brandon@as220.org>
- * Copyright (C) 2009-2010 Amir Hassan <amir@viel-zu.org> and Marius Kintel <marius@kintel.net>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <    >.
- *========================================================================
- *
- */
 #include "Eps.hpp"
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,12 +14,13 @@
   This hack searches for a bbox at the end of the file, but in a really dumb way.
   Returns true if a bbox was found.
 */
-bool get_bbox_from_end(cups_file_t *ps_file, 
+bool get_bbox_from_end(FILE *ps_file,
                        int &lower_left_x, int &lower_left_y, 
                        int &upper_right_x, int &upper_right_y)
 {
   char buf[102400];
-  while (cupsFileGets(ps_file, buf, sizeof(buf))) {
+  size_t len = 102400;
+  while (fgets(buf, sizeof(buf), ps_file)) {
     if (!strncasecmp(buf, "%%BoundingBox:", 14)) {
       if (sscanf(buf + 14, "%d %d %d %d",
                  &lower_left_x, &lower_left_y, &upper_right_x, &upper_right_y) == 4) {
@@ -71,7 +50,7 @@ bool get_bbox_from_string(const char *str, int &lower_left_x, int &lower_left_y,
  *
  * @return Return true if the function completes its task, false otherwise.
  */
-bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
+bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
 {
   bool created_by_cairo = false;
   bool bboxfound = false;
@@ -79,8 +58,9 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
   bool portrait = false;
   bool startfound = false;
   char buf[102400];
+  size_t len = 102400;
   int l;
-  while (cupsFileGetLine(ps_file, (char *) buf, sizeof(buf))) {
+  while (fgets(buf, sizeof(buf), ps_file)) {
     fprintf(eps_file, "%s", (char *) buf);
     if (*buf != '%') {
       continue; // We're only looking for comment lines
@@ -194,7 +174,7 @@ bool ps_to_eps(cups_file_t *ps_file, FILE *eps_file, uint32_t resolution)
       fprintf(eps_file, "/showpage { (X)= showpage } bind def\n");
     }
   }
-  while ((l = cupsFileRead(ps_file, (char *) buf, sizeof(buf))) > 0) {
+  while ((l = fread((char *) buf, 1, sizeof(buf), ps_file)) > 0) {
     fwrite((char *) buf, 1, l, eps_file);
   }
   return true;

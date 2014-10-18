@@ -7,10 +7,9 @@
 #include "util/Logger.hpp"
 #include "util/Eps.hpp"
 #include "cut/geom/Geometry.hpp"
-#include <cups/cups.h>
-#include <cups/file.h>
 #include "config/EngraveSettings.hpp"
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 namespace fs = boost::filesystem;
 
 #ifdef USE_GHOSTSCRIPT_API
@@ -32,6 +31,7 @@ using boost::format;
 #endif
 
 using std::string;
+using boost::format;
 
 PostscriptParser *PostscriptParser::inst = NULL;
 
@@ -259,7 +259,7 @@ PostscriptParser::~PostscriptParser()
   PostscriptParser::inst = NULL;
 }
 
-bool PostscriptParser::parse(cups_file_t *input_file)
+bool PostscriptParser::parse(FILE *input_file)
 {
   uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);
   double width = this->conf.get(DocumentSettings::WIDTH).in(PX);
@@ -320,6 +320,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
     default:
       assert(false && "Illegal raster format");
     }
+
     argstrings.push_back(str(format("-dDisplayFormat=%d") % formatflags));
     LOG_DEBUG("Running ghostscript...");
   }
@@ -343,7 +344,7 @@ bool PostscriptParser::parse(cups_file_t *input_file)
   return true;
 }
 
-bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename_eps, uint32_t resolution)
+bool PostscriptParser::createEps(FILE *input_file, const string &filename_eps, uint32_t resolution)
 {
   // Open the encapsulated postscript file for writing.
   FILE *file_eps = fopen(filename_eps.c_str(), "w");
@@ -361,7 +362,7 @@ bool PostscriptParser::createEps(cups_file_t *input_file, const string &filename
   }
   // Cleanup after encapsulated postscript creation.
   fclose(file_eps);
-  if (input_file != cupsFileStdin()) cupsFileClose(input_file);
+  fclose(input_file);
 
   return true;
 }
