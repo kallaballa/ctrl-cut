@@ -22,8 +22,6 @@
 #include "stdint.h"
 #include <iostream>
 
-#include <cups/cups.h>
-#include <cups/file.h>
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
 
