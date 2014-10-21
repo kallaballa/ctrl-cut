@@ -150,7 +150,7 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
 std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
   std::vector<AbstractCtrlCutItem*> items;
   if(filename.endsWith(".svg", Qt::CaseInsensitive)) {
-    showWarningDialog("SVG text elements currently not supported. Please make sure all text is converted to paths.","");
+    showWarningDialog("SVG text elements currently not supported. Please make sure all text is converted to paths or use the eps file format.","");
   }
 
   try {
