@@ -7,6 +7,21 @@
 #include <QString>
 #include <assert.h>
 
+
+    #include<sstream>
+    template <typename T>
+    std::string to_string(T value)
+    {
+      //create an output string stream
+      std::ostringstream os ;
+
+      //throw the value into the string stream
+      os << value ;
+
+      //convert the string stream into a string and return
+      return os.str() ;
+    }
+
 NewDialog::NewDialog(QWidget *parent) : QDialog(parent)
 {
   setupUi(this);
@@ -85,14 +100,14 @@ void NewDialog::loadFrom(GuiConfig& config) {
 
   size_t res = config.resolution;
   for(size_t i = 0; i < resolutionCombo->count(); ++i) {
-    if(resolutionCombo->itemText(i).toStdString() == (std::to_string(res) + " DPI")) {
+    if(resolutionCombo->itemText(i).toStdString() == (to_string(res) + " DPI")) {
       resolutionCombo->setCurrentIndex(i);
       break;
     }
   }
 
-  this->widthLine->setText(QString::fromStdString(std::to_string(config.bedWidth)));
-  this->heightLine->setText(QString::fromStdString(std::to_string(config.bedHeight)));
+  this->widthLine->setText(QString::fromStdString(to_string(config.bedWidth)));
+  this->heightLine->setText(QString::fromStdString(to_string(config.bedHeight)));
 }
 
 void NewDialog::saveTo(GuiConfig& config) {
