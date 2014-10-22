@@ -3,11 +3,11 @@
  * See LICENSE file
  * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
  */
-#ifndef EXPLODE_H_
-#define EXPLODE_H_
+#ifndef CHOP_H_
+#define CHOP_H_
 
 #include "cut/geom/Route.hpp"
 
-void explode(const Route& src, Route& sink);
+void chop(const Route& src, Route& sink, double maxLength);
 
 #endif

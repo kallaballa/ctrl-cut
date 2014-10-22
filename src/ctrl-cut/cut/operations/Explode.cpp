@@ -96,7 +96,7 @@ void checkStableSlopeEmitted(const Segment& s0, const Segment& s1, const Segment
  */
 class Explode {
 private:
-  Route& src;
+  const Route& src;
   Route& sink;
 
   IndexedSegmentTree tree;
@@ -105,7 +105,7 @@ private:
   typedef IndexedSegmentTree::Result Result;
   typedef IndexedSegmentTree::Result::const_iterator ResultIter;
 public:
-  Explode(Route& src, Route& sink) :
+  Explode(const Route& src, Route& sink) :
     src(src), sink(sink){
   }
 
@@ -251,7 +251,7 @@ public:
   }
 };
 
-void explode(Route& src, Route& sink) {
+void explode(const Route& src, Route& sink) {
   Explode exploder(src,sink);
   exploder();
 }
