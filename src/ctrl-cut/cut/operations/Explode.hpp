@@ -8,6 +8,6 @@
 
 #include "cut/geom/Route.hpp"
 
-void explode(Route& src, Route& sink);
+void explode(const Route& src, Route& sink);
 
 #endif

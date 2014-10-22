@@ -124,9 +124,16 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
   }
 
   // generate a viewBox in pixels reflecting the resolution
-  if(viewBox.empty())
-    viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
-
+  if(viewBox.empty()) {
+    if(generator == Inkscape) {
+      // inkscape uses a default resoluton of 90 dpi while rsvg assumes 72 dpi
+      Distance w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
+      Distance h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
+      viewBox = document.make_viewboxstring(0, 0, w, h);
+    } else {
+      viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
+    }
+  }
   writeSvg(viewBox + ">");
 }
 

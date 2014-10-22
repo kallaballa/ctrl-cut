@@ -13,6 +13,8 @@
 #include "boost/filesystem.hpp"
 #include "svg/Svg2Ps.hpp"
 #include "svg/CtrlCutParser.hpp"
+#include <cstdio>
+#include <cstring>
 #include "cut/operations/Merge.hpp"
 
 using boost::format;
