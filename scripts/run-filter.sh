@@ -37,6 +37,9 @@ fi
 [ $CC_VERBOSE ] && options="$options Debug"
 
 # using the new targetstdout option of try
-verboseexec "$CC_RENDER 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" > $file.cut
-verboseexec "$CC_BINARY 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file"
+cutfile="`mktemp`"
+verboseexec "$CC_RENDER2CUT 32 kintel $file 1 \"$commonoptions $options $CC_FILTER_OPTIONS\" $file" > $cutfile
+verboseexec "$CC_CUT2EPILOG $cutfile /dev/stdout"
+rm -fr $cutfile &> /dev/null
+
 exit $?
