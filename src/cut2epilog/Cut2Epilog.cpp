@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
   parser.load(cutFile, doc, newCuts, newEngravings);
   doc.put(DocumentSettings::FILENAME, cutFile);
 
+  doc.mergeCuts();
   doc.optimize();
 
   std::ofstream oEpilog(epilogFile);
