@@ -33,7 +33,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long
+QMAKE_CXXFLAGS += -std=gnu++0x -Wno-long-long
 
 
 macx { # FIXME: Should really test for clang
@@ -48,7 +48,6 @@ include(boost.pri)
 include(ghostscript.pri)
 include(X11.pri)
 include(ImageMagick.pri)
-include(cups.pri)
 include(rsvg.pri)
 include(cairo-ps.pri)
 include(png.pri)
