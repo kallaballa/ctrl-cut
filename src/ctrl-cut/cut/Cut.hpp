@@ -146,7 +146,7 @@ public:
     clip(exploded, clipped, Box(Point(0,0), Point(width.in(PX),height.in(PX))));
     plot_svg(clipped, filename + "_clipped");
 
-    reduce(exploded, reduced, reduceMax.in(PX));
+    reduce(clipped, reduced, reduceMax.in(PX));
     plot_svg(reduced, filename + "_reduced");
     this->clear();
     (*this) = reduced;
@@ -243,10 +243,6 @@ typedef std::shared_ptr<Cut> CutPtr;
 
 inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {
   return MultiSegmentView<const Cut>(*cut.get());
-}
-
-inline MultiPointView<const Cut> points(const CutPtr& cut) {
-  return MultiPointView<const Cut>(*cut.get());
 }
 
 #endif /* CUT_H_ */

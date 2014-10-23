@@ -12,6 +12,7 @@ CONFIG += libpng
 CONFIG += libctrl-cut
 
 include(common.pri)
+include(cups.pri)
 
 DEFINES += ETLOG DEBUG=4
 

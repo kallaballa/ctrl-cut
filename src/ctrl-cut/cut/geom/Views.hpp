@@ -61,25 +61,6 @@ struct SegmentView :
   {}
 };
 
-
-template<typename TmultiPointRange>
-struct MultiPointView :
-  public View<
-    MultiIter<typename TmultiPointRange::const_iterator>,
-    typename TmultiPointRange::const_iterator
-  >
-{
-  typedef View<MultiIter<typename TmultiPointRange::const_iterator>,typename TmultiPointRange::const_iterator > _Base;
-
-  MultiPointView(TmultiPointRange mpr) :
-    _Base(mpr.begin(),mpr.end())
-  {}
-  MultiPointView(typename TmultiPointRange::const_iterator begin, typename TmultiPointRange::const_iterator end) :
-    _Base(begin,end)
-  {};
-};
-
-
 template<typename TmultiPointRange>
 struct MultiSegmentView :
   public View<
