@@ -23,4 +23,6 @@ gmon.out
 gui.tmp
 src/pclint/pclint
 src/gui/gui.app
+src/render2cut/render2cut
+src/cut2epilog/cut2epilog
 

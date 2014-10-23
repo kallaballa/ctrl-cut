@@ -23,8 +23,6 @@ done
 shift $(($OPTIND - 1))
 
 
-[ -z "$CUPS_SERVER_BIN" ] && export CUPS_SERVER_BIN="`cups-config --serverbin`"
-[ -z "$CUPS_SERVER_DATA" ] && export CUPS_SERVER_DATA="`cups-config --databin`"
 [ -z "$CC_BASE" ] && export CC_BASE="`pwd`"
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:src/ctrl-cut/"
@@ -44,16 +42,14 @@ export CC_TEST_DATA="$CC_BASE/test-data"
 export CC_TEST_CODE="$CC_BASE/test-code"
 export CC_PYTHON="$CC_BASE/python"
 export CC_ETC="$CC_BASE/etc"
-export CC_BINARY="$CC_BASE/src/cups-filter/cups-filter"
 export CC_PYSVG_URL="http://pysvg.googlecode.com/files/pysvg-0.2.1.zip"
 export CC_PACKAGING="$CC_BASE/packaging"
 export CC_VERSION="0.1"
 export CC_PCLINT="pclint"
-export CC_RENDER="src/render2cut/render2cut"
+export CC_RENDER2CUT="src/render2cut/render2cut"
+export CC_CUT2EPILOG="src/cut2epilog/cut2epilog"
 
 . $CC_FUNCTIONS
-
-#[ ! -x "$CC_BINARY" ] && error "Can't find ctrl-cut binaries"
 
 verbose "CC_BASE=$CC_BASE"
 verbose "CC_PRINTERNAME=$CC_PRINTERNAME"

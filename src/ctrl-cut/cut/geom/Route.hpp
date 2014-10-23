@@ -10,6 +10,7 @@
 #include "cut/geom/Path.hpp"
 #include "Views.hpp"
 #include <config/CutSettings.hpp>
+#include <boost/geometry/multi/geometries/register/multi_linestring.hpp>
 
 #include <algorithm>
 
@@ -149,12 +150,10 @@ public:
 
 typedef RouteImpl<std::vector, std::allocator> Route;
 
+BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(Route);
+
 inline MultiSegmentView<const Route> segments(const Route& route) {
   return MultiSegmentView<const Route>(route);
-}
-
-inline MultiPointView<const Route> points(const Route& route) {
-  return MultiPointView<const Route>(route);
 }
 
 #endif
