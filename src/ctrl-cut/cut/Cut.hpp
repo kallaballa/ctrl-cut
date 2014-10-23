@@ -245,8 +245,4 @@ inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {
   return MultiSegmentView<const Cut>(*cut.get());
 }
 
-inline MultiPointView<const Cut> points(const CutPtr& cut) {
-  return MultiPointView<const Cut>(*cut.get());
-}
-
 #endif /* CUT_H_ */
