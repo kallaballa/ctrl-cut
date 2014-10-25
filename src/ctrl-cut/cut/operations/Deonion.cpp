@@ -99,9 +99,9 @@ bool find_steapest(Edge& found, const Vertex& v, const UniqueSegmentGraph& g) {
   return f;
 }
 
-void traverse_onion(Route& src, Route& skins)
+void traverse_onion(const Route& src, Route& skins)
 {
-  LOG_INFO_STR("Deonion");
+  LOG_DEBUG(src.size());
 
   UniqueSegmentGraph g;
   for(const SegmentPtr seg : segments(src)) {
@@ -141,4 +141,5 @@ void traverse_onion(Route& src, Route& skins)
   }
 
   reverse(skins.begin(), skins.end());
+  LOG_DEBUG(skins.size());
 }

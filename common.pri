@@ -44,6 +44,8 @@ macx { # FIXME: Should really test for clang
 }
 
 linux:QMAKE_CXXFLAGS += -pedantic-errors
+
+include(CGAL.pri)
 include(boost.pri)
 include(ghostscript.pri)
 include(X11.pri)

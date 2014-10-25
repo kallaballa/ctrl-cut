@@ -120,6 +120,20 @@ public:
     // FIXME lost segments - but they don't affect the model since they would have been removed anyway
     if(it != kdtree.end())
       kdtree.erase(it);
+    else
+      assert(false);
+  }
+
+  size_t size() const {
+    return kdtree.size();
+  }
+
+  bool empty() const {
+    return kdtree.empty();
+  }
+
+  void clear() {
+    kdtree.clear();
   }
 };
 template<
@@ -173,6 +187,11 @@ public:
 
   iterator end() {
     return iterator(index.end(), true);
+  }
+
+  void clear() {
+    index.clear();
+    _Parent::clear();
   }
 };
 

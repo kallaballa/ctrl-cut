@@ -26,13 +26,6 @@ template<
   template<typename , typename > class Tcontainer = std::vector,
   template<typename > class Tallocator = std::allocator
 >
-struct MultiSegment : MultiGeometry<Segment, Tcontainer, Tallocator>
-{};
-
-template<
-  template<typename , typename > class Tcontainer = std::vector,
-  template<typename > class Tallocator = std::allocator
->
 struct MultiLineString : MultiGeometry<Path, Tcontainer, Tallocator>
 {};
 

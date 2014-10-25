@@ -71,7 +71,11 @@ void streamline(Route& r) {
 }
 
 void travel(const Route& src, Route& sink) {
+  LOG_DEBUG(src.size());
+
   Traveler traveler(src, sink);
   traveler();
   streamline(sink);
+
+  LOG_DEBUG(sink.size());
 }

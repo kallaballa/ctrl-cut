@@ -35,7 +35,7 @@ struct join_strings_visitor: public boost::planar_face_traversal_visitor {
 };
 
 void make_planar_faces(const Route& src, Route& sink) {
-  LOG_INFO_STR("make planar faces");
+  LOG_DEBUG(src.size());
   SegmentGraph segGraph;
   for(const SegmentPtr seg : segments(src)) {
     segGraph.addSegment(*seg.get());
@@ -43,4 +43,5 @@ void make_planar_faces(const Route& src, Route& sink) {
 
   join_strings_visitor vis(segGraph, sink);
   traverse_planar_faces(segGraph , vis);
+  LOG_DEBUG(sink.size());
 }

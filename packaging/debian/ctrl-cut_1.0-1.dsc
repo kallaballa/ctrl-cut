@@ -6,9 +6,9 @@ Version: 1.0-1
 Maintainer: Amir Hassan <amir@viel-zu.org>
 Homepage: http://github.com/Metalab/ctrl-cut
 Standards-Version: 3.8.4
-Build-Depends: debhelper (>= 7.0.50~), pkg-config, qt4-qmake,  librsvg2-dev, libcairo2-dev, libxml++2.6-dev, libmagick++-dev, build-essential, libboost-system-dev, libboost-filesystem-dev, libboost-iostreams-dev, libboost-regex-dev, libboost-thread-dev, libcups2-dev, libgs-dev, libqt4-dev, libqtwebkit-dev
+Build-Depends: debhelper (>= 7.0.50~), pkg-config, qt4-qmake,  librsvg2-dev, libcairo2-dev, libxml++2.6-dev, libmagick++-dev, build-essential, libboost-system-dev, libboost-filesystem-dev, libboost-iostreams-dev, libboost-regex-dev, libboost-thread-dev, libcups2-dev, libgs-dev, libqt4-dev, libqtwebkit-dev, libcgal-dev
 Package-List: 
  ctrl-cut deb misc optional
 Files: 
- e7bca535658eecbc7dc31b986c4d749c 3720977 ctrl-cut-1.0.tar.bz2
+ d35715a17809982588fa0ad997411c82 2975505 ctrl-cut-1.0.tar.bz2
 
