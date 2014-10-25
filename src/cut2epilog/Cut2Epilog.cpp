@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     std::cerr << "Usage: cut2epilog <cut-file> <output file>" << std::endl;
     exit(1);
   }
-  Logger::init(CC_WARNING);
+  Logger::init(CC_DEBUG);
   clock_t start = clock();
 
   // Make sure status messages are not buffered

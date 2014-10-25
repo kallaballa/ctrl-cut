@@ -9,6 +9,6 @@
 
 #include "cut/geom/Route.hpp"
 
-void nearest_path_sorting(Route& src, Route& sink);
+void nearest_path_sorting(const Route& src, Route& sink);
 
 #endif /* NEARESTPATHSORTING_H_ */

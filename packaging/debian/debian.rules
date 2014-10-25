@@ -16,9 +16,9 @@ CFLAGS += -O2
 endif
 
 ifeq ($(shell dpkg-vendor --derives-from Ubuntu && echo yes),yes)
-SUBSTVARS = -Vdist:Depends="libboost-filesystem1.55.0, libboost-iostreams1.55.0, libboost-regex1.55.0, libboost-system1.55.0, libboost-thread1.55.0, libcairo2, libcups2, libcupsimage2, libgdk-pixbuf2.0-0, libglib2.0-0, libmagick++5, libpixman-1-0, libpng12-0, libqt4-network, libqt4-opengl, libqt4-xmlpatterns, libqtcore4, libqtgui4, libqtwebkit4, librsvg2-2, libx11-6, libxml++2.6-2"
+SUBSTVARS = -Vdist:Depends="libboost-filesystem1.55.0, libboost-iostreams1.55.0, libboost-regex1.55.0, libboost-system1.55.0, libboost-thread1.55.0, libcairo2, libcups2, libcupsimage2, libgdk-pixbuf2.0-0, libglib2.0-0, libmagick++5, libpixman-1-0, libpng12-0, libqt4-network, libqt4-opengl, libqt4-xmlpatterns, libqtcore4, libqtgui4, libqtwebkit4, librsvg2-2, libx11-6, libxml++2.6-2, libcgal10" 
 else
-SUBSTVARS = -Vdist:Depends="libboost-filesystem1.49.0, libboost-iostreams1.49.0, libboost-regex1.49.0, libboost-system1.49.0, libboost-thread1.49.0, libcairo2, libcups2, libcupsimage2, libgdk-pixbuf2.0-0, libglib2.0-0, libmagick++5, libpixman-1-0, libpng12-0, libqt4-network, libqt4-opengl, libqt4-xmlpatterns, libqtcore4, libqtgui4, libqtwebkit4, librsvg2-2, libx11-6, libxml++2.6-2"
+SUBSTVARS = -Vdist:Depends="libboost-filesystem1.49.0, libboost-iostreams1.49.0, libboost-regex1.49.0, libboost-system1.49.0, libboost-thread1.49.0, libcairo2, libcups2, libcupsimage2, libgdk-pixbuf2.0-0, libglib2.0-0, libmagick++5, libpixman-1-0, libpng12-0, libqt4-network, libqt4-opengl, libqt4-xmlpatterns, libqtcore4, libqtgui4, libqtwebkit4, librsvg2-2, libx11-6, libxml++2.6-2, libcgal9"
 endif
 
 build: build-stamp
