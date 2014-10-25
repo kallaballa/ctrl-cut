@@ -8,6 +8,6 @@
 #ifndef DEONION_H_
 #define DEONION_H_
 
-void traverse_onion(Route& src, Route& skins);
+void traverse_onion(const Route& src, Route& skins);
 
 #endif

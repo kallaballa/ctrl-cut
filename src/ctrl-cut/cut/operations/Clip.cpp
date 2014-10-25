@@ -14,6 +14,8 @@
  * Clips segments agains a box
  */
 void clip(Route& src, Route& sink, const Box& bounds) {
+  LOG_DEBUG(src.size());
+
   for(const SegmentPtr segPtr : segments(src)) {
     Segment& seg = *segPtr.get();
     double width = bounds.width();
@@ -44,7 +46,7 @@ void clip(Route& src, Route& sink, const Box& bounds) {
 
     if (clipped.first.y < 0 || clipped.second.y < 0) {
       if (clipped.first.y < 0 && clipped.second.y < 0) {
-        return;
+        continue;
       }
 
       if (intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
@@ -61,7 +63,7 @@ void clip(Route& src, Route& sink, const Box& bounds) {
         || greater_than(clipped.second.x, width - 1)) {
       if (greater_than(clipped.first.x, width - 1)
           && greater_than(clipped.second.x, width - 1)) {
-        return;
+        continue;
       }
 
       if (intersects(clipped, rightBedBorder, intersection) == ALIGN_INTERSECT) {
@@ -76,7 +78,7 @@ void clip(Route& src, Route& sink, const Box& bounds) {
 
     if (clipped.first.y > height - 1 || clipped.second.y > height - 1) {
       if (clipped.first.y > height - 1 && clipped.second.y > height - 1) {
-        return;
+        continue;
       }
       if (intersects(clipped, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
         if (clipped.first.y <= clipped.second.y)
@@ -88,4 +90,5 @@ void clip(Route& src, Route& sink, const Box& bounds) {
 
     add(sink, clipped);
   }
+  LOG_DEBUG(sink.size());
 }

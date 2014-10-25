@@ -17,7 +17,7 @@ inline bool is_collapsed(const Path& path, const Path& simplified) {
 
 
 void reduce(Route& src, Route& sink, double maxDistance) {
-  LOG_INFO_STR("Reduce");
+  LOG_DEBUG(src.size());
 
   typedef SegmentGraphImpl<boost::setS, boost::setS> UniqueSegmentGraph;
   UniqueSegmentGraph g;

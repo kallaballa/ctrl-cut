@@ -20,6 +20,8 @@ typedef CGAL::Arr_segment_traits_2<Kernel>              Traits_2;
 typedef Traits_2::Curve_2                               Segment_2;
 
 void explode(const Route& src, Route& sink) {
+  LOG_DEBUG(src.size());
+
   std::vector<Segment_2> segs;
   for(const SegmentPtr& seg : segments(src)) {
     if(seg->first != seg->second)
@@ -36,4 +38,5 @@ void explode(const Route& src, Route& sink) {
     double y2 = CGAL::to_double(subseg.target()[1]);
     append(sink, Segment(Point(x1,y1), Point(x2,y2)));
   }
+  LOG_DEBUG(sink.size());
 }

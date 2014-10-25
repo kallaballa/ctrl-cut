@@ -13,7 +13,9 @@
 #include <boost/foreach.hpp>
 #include <cut/operations/NearestPathSorting.hpp>
 
-void nearest_path_sorting(Route& src, Route& sink) {
+void nearest_path_sorting(const Route& src, Route& sink) {
+  LOG_DEBUG(src.size());
+
   using namespace std;
   PathGraph pathGraph;
 
@@ -70,5 +72,7 @@ void nearest_path_sorting(Route& src, Route& sink) {
     std::cerr << std::endl;
 
   }
+
+  LOG_DEBUG(sink.size());
 }
 
