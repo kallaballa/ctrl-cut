@@ -33,7 +33,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long
+QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long -frounding-math
 
 
 macx { # FIXME: Should really test for clang
