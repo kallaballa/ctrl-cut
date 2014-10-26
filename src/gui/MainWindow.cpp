@@ -119,6 +119,9 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(sendToFileAction, SIGNAL(triggered()),
       this, SLOT(on_extraSendToFileAction_triggered()));
 
+  QObject::connect(toolsPreviewAction, SIGNAL(triggered()),
+      this, SLOT(on_previewAction_triggered()));
+
   QObject::connect(&sendProgressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
   this->editCopySettingsAction->setEnabled(false);
