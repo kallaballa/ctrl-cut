@@ -1,7 +1,7 @@
 CTRLCUT_ROOT = $$PWD
 message("Root dir:" $$CTRLCUT_ROOT)
 
-isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
+isEmpty(VERSION) VERSION = $$system(git describe --abbrev=4 --dirty --always)
 DEFINES += CTRLCUT_VERSION=$$VERSION
 
 CONFIG -= qt
