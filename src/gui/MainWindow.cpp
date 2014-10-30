@@ -485,8 +485,9 @@ void MainWindow::sceneSelectionChanged()
 {
   printf("selectionChanged\n");
 
-  QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
 
+  QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
+/*
   foreach(QGraphicsItem *item, selecteditems) {
     QRectF rect = item->boundingRect();
     QRectF chrect = item->childrenBoundingRect();
@@ -500,7 +501,7 @@ void MainWindow::sceneSelectionChanged()
       }
     }
   }
-
+*/
   if (selecteditems.empty()) {
     this->objectProperties->disable();
   } else {
