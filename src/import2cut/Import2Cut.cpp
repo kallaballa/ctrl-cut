@@ -56,6 +56,9 @@ int main(int argc, char *argv[]) {
 
   Document doc;
   doc.put(DocumentSettings::RESOLUTION, resolution);
+  doc.put(DocumentSettings::ENABLE_ENGRAVING, true);
+  doc.put(DocumentSettings::LOAD_ENGRAVING, true);
+
   doc.load(inputFile);
   
   std::ofstream os(outputFile);
