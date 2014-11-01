@@ -8,6 +8,7 @@
 #include "Document.hpp"
 #include "svg/SvgWriter.hpp"
 #include <boost/program_options.hpp>
+#include "config/EngraveSettings.hpp"
 #include <fstream>
 #include <string>
 
@@ -58,6 +59,8 @@ int main(int argc, char *argv[]) {
   doc.put(DocumentSettings::RESOLUTION, resolution);
   doc.put(DocumentSettings::ENABLE_ENGRAVING, true);
   doc.put(DocumentSettings::LOAD_ENGRAVING, true);
+  doc.put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
+
 
   doc.load(inputFile);
   
