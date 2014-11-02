@@ -6,10 +6,12 @@
 #include "FileParser.hpp"
 #include "util/Logger.hpp"
 #include "util/Eps.hpp"
+#include "util/Util.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "config/EngraveSettings.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
+#include <stdio.h>
 namespace fs = boost::filesystem;
 
 #ifdef USE_GHOSTSCRIPT_API
@@ -266,8 +268,8 @@ bool PostscriptParser::parse(FILE *input_file)
   double height = this->conf.get(DocumentSettings::HEIGHT).in(PX);
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
   string filename = this->conf.get(DocumentSettings::FILENAME); 
-  string tmpbasepath = this->conf.get(DocumentSettings::TEMP_DIR) + "/" + fs::path(filename).parent_path().stem().c_str();
-  this->filename_eps = tmpbasepath + ".eps";
+
+  this->filename_eps = Util::make_temp_filename() + ".eps";
 
   if (!createEps(input_file, this->filename_eps, resolution)) return false;
 
@@ -283,7 +285,7 @@ bool PostscriptParser::parse(FILE *input_file)
   if (!loadEngraving) {
     argstrings.push_back("-sDEVICE=nullpage");
   } else if (this->rendertofile) {
-    this->filename_bitmap = tmpbasepath;
+    this->filename_bitmap = Util::make_temp_filename();
     switch (this->rasterformat) {
     case BITMAP: 
       argstrings.push_back("-sDEVICE=pbmraw");

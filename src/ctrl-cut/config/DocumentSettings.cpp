@@ -12,7 +12,6 @@ const DocumentSettings::Key<string>  DocumentSettings::DUUID = "duuid";
 const DocumentSettings::Key<LaserCutter::Driver>  DocumentSettings::DRIVER = "driver";
 const DocumentSettings::Key<string> DocumentSettings::USER = "user";
 const DocumentSettings::Key<string> DocumentSettings::TITLE = "title";
-const DocumentSettings::Key<string> DocumentSettings::TEMP_DIR = "tmpDir";
 const DocumentSettings::Key<string> DocumentSettings::DATA_DIR = "dataDir";
 const DocumentSettings::Key<string> DocumentSettings::FILENAME = "filename";
 
@@ -34,7 +33,6 @@ DocumentSettings::DocumentSettings() : Settings() {
   ss << boost::uuids::random_generator()();
   this->put(DUUID, ss.str());
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
-  this->put(TEMP_DIR, string("/tmp"));
   this->put(AUTO_FOCUS, true);
   this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);

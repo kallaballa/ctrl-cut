@@ -19,7 +19,6 @@ public:
   const static Key<LaserCutter::Driver> DRIVER;
   const static Key<string> USER;
   const static Key<string> TITLE;
-  const static Key<string>  TEMP_DIR;
   const static Key<string>  DATA_DIR;
   const static Key<string>  FILENAME;
 
