@@ -33,7 +33,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=gnu++0x -Wno-long-long
+QMAKE_CXXFLAGS += -std=gnu++0x -Wno-long-long -D__USE_ISOC99=1
 
 
 macx { # FIXME: Should really test for clang
