@@ -376,13 +376,13 @@ void PasteSettingsCommand::redo() {
         itemsChanged.append(ci);
         oldSettings.append(ci->cut->settings);
         if((cs = static_cast<CutSettings*>(&newSetting))) {
-          ci->cut->settings = *cs;
+          ci->cut->settings.copy(*cs);
         }
       } else if((ei = dynamic_cast<EngraveItem* >(item))) {
         itemsChanged.append(ei);
         oldSettings.append(ei->engraving->settings);
         if((es = static_cast<EngraveSettings*>(&newSetting))) {
-          ei->engraving->settings = *es;
+          ei->engraving->settings.copy(*es);
         }
       }
     }
@@ -392,9 +392,9 @@ void PasteSettingsCommand::redo() {
       item = itemsChanged[i];
 
       if((ci = dynamic_cast<CutItem* >(item))) {
-        ci->cut->settings = *static_cast<CutSettings*>(&newSetting);
+        ci->cut->settings.copy(*static_cast<CutSettings*>(&newSetting));
       } else if((ei = dynamic_cast<EngraveItem* >(item))) {
-        ei->engraving->settings = *static_cast<EngraveSettings*>(&newSetting);
+        ei->engraving->settings.copy(*static_cast<EngraveSettings*>(&newSetting));
       }
     }
   }

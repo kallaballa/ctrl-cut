@@ -60,9 +60,30 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
   char buf[102400];
   size_t len = 102400;
   int l;
+  unsigned char c;
+
+  // skip everything at the start of the file until you hit ps code
+  while ((c = fgetc(ps_file)) != EOF && c != '%')
+  {}
+
+  fprintf(eps_file, "%c", '%');
+
   while (fgets(buf, sizeof(buf), ps_file)) {
+    size_t bufLen = strlen(buf);
+    //convert windows line ending to unix line ending
+    if(bufLen > 1 && !strncmp(buf + bufLen - 2, "\r\n", 2)) {
+      buf[bufLen - 2] = '\n';
+      buf[bufLen - 1] = '\0';
+    }
+
     fprintf(eps_file, "%s", (char *) buf);
-    if (*buf != '%') {
+
+    //immediatly stop at EOF because some programs inject thumbnails after the document
+    if (!strncasecmp((char *) buf, "%%EOF", 5)) {
+      return true;
+    }
+
+    if (*buf != '%' && *buf != '!') {
       continue; // We're only looking for comment lines
     }
     if (!strncasecmp((char *) buf, "%%Creator: cairo", 16)) {
@@ -139,7 +160,7 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
         //        fprintf(eps_file, "0 %d translate\n", lconf->height - upper_right_y);
       }
     }
-    else if (!startfound && !strncasecmp((char *) buf, "%!PS", 2)) { // Start of document
+    else if (!startfound && (!strncasecmp((char *) buf, "%!PS", 4) || !strncasecmp((char *) buf, "!PS", 3))) { // Start of document
       double linethreshold = 1.9 - (1.0 - (resolution / 600.0));
       if(resolution == 1200)
         linethreshold += 5;

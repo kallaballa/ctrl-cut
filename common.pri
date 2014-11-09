@@ -1,7 +1,6 @@
 CTRLCUT_ROOT = $$PWD
 message("Root dir:" $$CTRLCUT_ROOT)
-
-isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
+isEmpty(VERSION) VERSION = $$system(git describe --abbrev=7 --dirty --always)
 DEFINES += CTRLCUT_VERSION=$$VERSION
 
 CONFIG -= qt
@@ -33,7 +32,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long
+QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long -frounding-math
 
 
 macx { # FIXME: Should really test for clang
