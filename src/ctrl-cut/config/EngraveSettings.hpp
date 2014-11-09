@@ -182,6 +182,15 @@ public:
       return result;
     });
   }
+
+  void copy(const EngraveSettings& other) {
+    for(auto one : other.properties) {
+      if(one.first == EngraveSettings::EPOS || one.first == EngraveSettings::EUUID)
+        continue;
+
+      this->properties[one.first] = one.second;
+    }
+  }
 };
 
 #endif /* ENGRAVE_SETTINGS_H_ */

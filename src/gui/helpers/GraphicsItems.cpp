@@ -32,7 +32,6 @@ AbstractCtrlCutItem *AbstractCtrlCutItem::clone() const
 
 void AbstractCtrlCutItem::setHighlighted(bool enabled) {
 
-  printf("%p: setHighlighted(%d)\n", this, enabled);
   /*   return;
   // FIXME causes performance issues*/
   QGraphicsColorizeEffect* highlight = new QGraphicsColorizeEffect();

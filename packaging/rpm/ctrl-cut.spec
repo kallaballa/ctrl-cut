@@ -26,7 +26,7 @@ Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
 BuildRequires: boost-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel
 PreReq: /bin/chmod ncurses-utils
-Requires: libboost_filesystem1_53_0 libboost_system1_53_0 ghostscript libqt4 libqt4-x11 libQtWebKit4 libpng16-16 libcairo2 libMagick++-6_Q16-2 libMagickCore-6_Q16-1 libxml++-2_6-2 librsvg-2-2 libX11-6 libCGAL10
+Requires: libboost_filesystem1_54_0 libboost_system1_54_0 ghostscript libqt4 libqt4-x11 libQtWebKit4 libpng16-16 libcairo2 libMagick++-6_Q16-5 libMagickCore-6_Q16-2 libxml++-2_6-2 librsvg-2-2 libX11-6 libCGAL10
 %else
 BuildRequires: gcc-c++ boost-devel ghostscript ghostscript-devel qt4-devel qt4-x11 qtwebkit-devel desktop-file-utils xdg-utils cairo-devel glib2-devel ImageMagick-devel ImageMagick-c++-devel libxml++-devel libpng-devel librsvg2-devel libX11-devel CGAL-devel
 Requires: ghostscript boost-filesystem boost-system qt qt-x11 qtwebkit libpng cairo ImageMagick-c++ ImageMagick libxml++ librsvg2 libX11 CGAL

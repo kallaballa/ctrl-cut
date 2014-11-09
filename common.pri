@@ -1,7 +1,6 @@
 CTRLCUT_ROOT = $$PWD
 message("Root dir:" $$CTRLCUT_ROOT)
-
-isEmpty(VERSION) VERSION = $$system(date "+%Y.%m.%d")
+isEmpty(VERSION) VERSION = $$system(git describe --abbrev=7 --dirty --always)
 DEFINES += CTRLCUT_VERSION=$$VERSION
 
 CONFIG -= qt
@@ -33,8 +32,8 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=gnu++0x -Wno-long-long -D__USE_ISOC99=1
-
+QMAKE_CXXFLAGS += -std=gnu++0x -Wno-long-long -D__USE_ISOC99=1 
+-frounding-math
 
 macx { # FIXME: Should really test for clang
   QMAKE_CXXFLAGS_WARN_ON = -Wall -Wno-deprecated-register

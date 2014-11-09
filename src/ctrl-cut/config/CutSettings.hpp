@@ -136,6 +136,15 @@ public:
       return result;
     });
   }
+
+  void copy(const CutSettings& other) {
+    for(auto one : other.properties) {
+      if(one.first == CutSettings::CPOS || one.first == CutSettings::CUUID)
+        continue;
+
+      this->properties[one.first] = one.second;
+    }
+  }
 };
 
 #endif /* CUT_SETTINGS_H_ */

@@ -20,14 +20,14 @@ boost {
       BMT_TEST4 = /usr/local/lib/libboost*thread-mt* # homebrew
       BMT_TEST5 = /opt/local/lib/libboost*thread-mt* # macports
       exists($$BMT_TEST1)|exists($$BMT_TEST2)|exists($$BMT_TEST3)|exists($$BMT_TEST4)|exists($$BMT_TEST5) {
-        BOOST_LINK_FLAGS = -lboost_thread-mt -lboost_iostreams-mt -lboost_filesystem-mt -lboost_system-mt -lboost_regex-mt
+        BOOST_LINK_FLAGS = -lboost_thread-mt -lboost_iostreams-mt -lboost_filesystem-mt -lboost_system-mt -lboost_regex-mt -lboost_program_options-mt
       }
     }
   }
 
   isEmpty(BOOST_LINK_FLAGS) {
     unix|macx {
-      BOOST_LINK_FLAGS = -lboost_thread -lboost_iostreams -lboost_filesystem -lboost_system -lboost_regex
+      BOOST_LINK_FLAGS = -lboost_thread -lboost_iostreams -lboost_filesystem -lboost_system -lboost_regex -lboost_program_options
     }
   }
 

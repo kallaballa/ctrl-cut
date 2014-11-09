@@ -7,6 +7,7 @@
 #include <vector>
 #include "Document.hpp"
 #include "util/Measurement.hpp"
+#include "util/Util.hpp"
 #include "config/CutSettings.hpp"
 #include "cut/operations/Translate.hpp"
 #include "CtrlCutException.hpp"
@@ -160,7 +161,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       }
 
       string fname = filename;
-      string file_basename = this->get(DS::TEMP_DIR)+ "/" + fname.erase(fname.rfind("."));
+      string file_basename = Util::make_temp_filename();
 
       // Write out the incoming cups data if debug is enabled.
       // FIXME: This is disabled for now since it has a bug:

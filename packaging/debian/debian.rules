@@ -36,6 +36,7 @@ clean:
 	rm -f build-stamp
 
 	# Add here commands to clean up after the build process.
+	qmake -recursive VERSION=1.0 CONFIG+=deploy CONFIG-=debug ctrl-cut.pro
 	make clean
 	# --- end custom part for cleaning up
 

@@ -61,6 +61,7 @@
     </property>
     <addaction name="toolsMoveToOriginAction"/>
     <addaction name="mergeAction"/>
+    <addaction name="toolsPreviewAction"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -792,6 +793,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="toolsPreviewAction">
+   <property name="text">
+    <string>Preview</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>
