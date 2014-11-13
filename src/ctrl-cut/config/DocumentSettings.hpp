@@ -13,6 +13,15 @@
 class DocumentSettings : public Settings
 {
 public:
+  enum Center {
+    CENTER_NONE,
+    CENTER_CENTER,
+    CENTER_LEFT,
+    CENTER_RIGHT,
+    CENTER_TOP,
+    CENTER_BOTTOM
+  };
+
   const static Key<string> DUUID;
 
   // the configured laser cutter hardware
@@ -26,6 +35,7 @@ public:
   const static Key<Distance> WIDTH;
   const static Key<Distance> HEIGHT;
   const static Key<bool> AUTO_FOCUS;
+  const static Key<Center> CENTER;
   const static Key<uint16_t> SCREEN;
 
   const static Key<bool> ENABLE_ENGRAVING;
@@ -45,6 +55,44 @@ public:
     os << "\"height\":" << this->get(DocumentSettings::HEIGHT) << "," << std::endl;
     os << "\"resolution\":" << this->get(DocumentSettings::RESOLUTION) << std::endl;
     os << "}" ;
+  }
+
+
+  static Center parseCenterName(const string& name) {
+    if(name == "None") {
+      return CENTER_NONE;
+    } else if(name == "Center") {
+      return CENTER_CENTER;
+    } else if(name == "Left") {
+        return CENTER_LEFT;
+    } else if(name == "Right") {
+        return CENTER_RIGHT;
+    } else if(name == "Top") {
+        return CENTER_TOP;
+    } else if(name == "Bottom") {
+        return CENTER_BOTTOM;
+    }
+    else assert(false);
+    return CENTER_NONE;
+  }
+
+  static std::string getCenterName(Center c) {
+    switch(c) {
+      case CENTER_NONE:
+        return "None";
+      case CENTER_CENTER:
+        return "Center";
+      case CENTER_LEFT:
+        return "Left";
+      case CENTER_RIGHT:
+        return "Right";
+      case CENTER_TOP:
+        return "Center-Top";
+      case CENTER_BOTTOM:
+        return "Bottom";
+      default:
+        return "Unknown";
+    }
   }
 };
 

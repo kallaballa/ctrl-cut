@@ -15,6 +15,7 @@ height(r.get(DocumentSettings::HEIGHT).in(PX)),
 resolution(r.get(DocumentSettings::RESOLUTION)),
 title(r.get(DocumentSettings::TITLE)),
 autofocus(r.get(DocumentSettings::AUTO_FOCUS)),
+center(r.get(DocumentSettings::CENTER)),
 ostream(os) {
   writeDocumentStart();
 }
@@ -25,6 +26,7 @@ height(doc.get(DocumentSettings::HEIGHT).in(PX)),
 resolution(doc.get(DocumentSettings::RESOLUTION)),
 title(doc.get(DocumentSettings::TITLE)),
 autofocus(doc.get(DocumentSettings::AUTO_FOCUS)),
+center(doc.get(DocumentSettings::CENTER)),
 ostream(os) {
   writeDocumentStart();
 }
@@ -61,7 +63,7 @@ void SvgWriter::writeDocumentStart() {
       "height=\"%f\" " +
   "style=\"fill:rgb(250,250,250); stroke-width:10; stroke:rgb(32,32,32);\" />");
 
-  format ctrlcutDoc = format("<ctrlcut:document title=\"%s\" autofocus=\"%s\"/>");
+  format ctrlcutDoc = format("<ctrlcut:document title=\"%s\" autofocus=\"%s\" center=\"%s\"/>");
 
   string metadata = string("<metadata id=\"ccmetadata\">") +
       "<rdf:RDF>" +
@@ -74,7 +76,7 @@ void SvgWriter::writeDocumentStart() {
     "</metadata>";
 
   ostream << (svgtag % dtd % width % height % resolution % version % width % height) << std::endl;
-  ostream << (ctrlcutDoc % title % (autofocus ? "true" : "false")) << std::endl;
+  ostream << (ctrlcutDoc % title % (autofocus ? "true" : "false") % DocumentSettings::getCenterName(center)) << std::endl;
   ostream << metadata << std::endl;
   ostream << (bedborder % width % height) << std::endl;
 }

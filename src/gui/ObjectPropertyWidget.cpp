@@ -58,6 +58,8 @@ void ObjectPropertyWidget::setDocument(DocumentPtr doc) {
     mainw->autofocusBox->setChecked(true);
   else
     mainw->autofocusBox->setChecked(false);
+
+  mainw->center->setCurrentIndex(mainw->center->findText(QString::fromStdString(DS::getCenterName(doc->get(DS::CENTER)))));
 }
 
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
@@ -375,6 +377,33 @@ void ObjectPropertyWidget::on_dithering_update(int d) {
         break;
     }
   }
+}
+
+void ObjectPropertyWidget::on_center_update(int d) {
+  typedef DocumentSettings DS;
+  DS::Center c;
+  switch(d) {
+    case 0:
+      c = DS::CENTER_NONE;
+      break;
+    case 1:
+      c = DS::CENTER_CENTER;
+      break;
+    case 2:
+      c = DS::CENTER_LEFT;
+      break;
+    case 3:
+      c = DS::CENTER_RIGHT;
+      break;
+    case 4:
+      c = DS::CENTER_TOP;
+      break;
+    case 5:
+      c = DS::CENTER_BOTTOM;
+      break;
+    }
+
+    this->doc->put(DocumentSettings::CENTER, c);
 }
 
 void ObjectPropertyWidget::on_unit_update(int d) {

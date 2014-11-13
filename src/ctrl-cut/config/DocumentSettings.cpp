@@ -19,6 +19,7 @@ const DocumentSettings::Key<uint16_t> DocumentSettings::RESOLUTION = "resolution
 const DocumentSettings::Key<Distance> DocumentSettings::WIDTH = "width";
 const DocumentSettings::Key<Distance> DocumentSettings::HEIGHT = "height";
 const DocumentSettings::Key<bool> DocumentSettings::AUTO_FOCUS = "autoFocus";
+const DocumentSettings::Key<DocumentSettings::Center> DocumentSettings::CENTER = "center";
 const DocumentSettings::Key<uint16_t> DocumentSettings::SCREEN = "screen";
 
 const DocumentSettings::Key<bool> DocumentSettings::ENABLE_ENGRAVING = "enableRaster";
@@ -34,6 +35,7 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(DUUID, ss.str());
   this->put(DRIVER, LaserCutter::UNINITIALIZED);
   this->put(AUTO_FOCUS, true);
+  this->put(CENTER, CENTER_NONE);
   this->put(RESOLUTION, 75);
   this->put(SCREEN, 8);
   this->put(ENABLE_CUT, true);

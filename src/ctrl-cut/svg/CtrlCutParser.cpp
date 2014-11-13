@@ -187,6 +187,11 @@ protected:
       doc->put(DS::AUTO_FOCUS,true);
     else
       doc->put(DS::AUTO_FOCUS,false);
+
+    if(!findValue(prop, "center",value))
+      CtrlCutException::malformedDocument("center not found");
+
+    doc->put(DS::CENTER,DS::parseCenterName(value));
   }
 
   void handleG(const AttributeList& prop) {

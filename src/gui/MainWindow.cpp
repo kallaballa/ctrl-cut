@@ -95,6 +95,9 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(dithering, SIGNAL(currentIndexChanged(int)),
       objectProperties, SLOT(on_dithering_update(int)));
 
+  QObject::connect(center, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_center_update(int)));
+
   QObject::connect(unit, SIGNAL(currentIndexChanged(int)),
       objectProperties, SLOT(on_unit_update(int)));
 
@@ -435,7 +438,6 @@ void MainWindow::on_filePrintAction_triggered()
 
     EpilogLegend36Ext cutter;
     cutter.write(doc,ostream);
-    ostream << std::endl;
     tmpfile.flush();
 
 
@@ -464,8 +466,6 @@ void MainWindow::on_extraSendToFileAction_triggered()
 
   EpilogLegend36Ext cutter;
   cutter.write(doc,os);
-  os << std::endl;
-  os.flush();
 }
 
 void MainWindow::on_lpdclient_done(bool error)

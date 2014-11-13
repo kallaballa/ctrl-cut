@@ -42,17 +42,21 @@ PJL_STRING(PCL_OFF_X, "\x1B&l%dU")
  */
 PJL_STRING(PCL_OFF_Y, "\x1B&l%dZ")
 
+// issued after a center engraving. don't understand what id exactly does
+PJL_STRING(PCL_UPPERLEFT_X, "\x1B&l%dW")
+PJL_STRING(PCL_UPPERLEFT_Y, "\x1B&l%dV")
+
 /* Resolution of the print. */
 PJL_STRING(PCL_PRINT_RESOLUTION, "\x1B&u%dD")
 
 /* PCL resolution. */
 PJL_STRING(PCL_RESOLUTION, "\x1B*t%dR")
 
-/* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO, "\x1B&y0C")
+/* enable center engraving */
+PJL_STRING(PCL_CENTER_ENGRAVE, "\x1B&y%dZ")
 
 /* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO2, "\x1B&y0Z")
+PJL_STRING(PCL_UNKNOWN_BLAFOO, "\x1B&y0C")
 
 /* FIXME: unknown purpose. */
 PJL_STRING(PCL_UNKNOWN_BLAFOO3, "\x1B&z2A")
@@ -82,11 +86,11 @@ PJL_STRING(R_POWER, "\x1B&y%dP")
 /* Raster speed */
 PJL_STRING(R_SPEED, "\x1B&z%dS")
 
-/* Raster height */
-PJL_STRING(R_HEIGHT, "\x1B*r%dT")
+/* Bed height */
+PJL_STRING(R_BED_HEIGHT, "\x1B*r%dT")
 
-/* Raster width */
-PJL_STRING(R_WIDTH, "\x1B*r%dS")
+/* Bed width */
+PJL_STRING(R_BED_WIDTH, "\x1B*r%dS")
 
 /* Raster compression */
 PJL_STRING(R_COMPRESSION, "\x1B*b%dM")
