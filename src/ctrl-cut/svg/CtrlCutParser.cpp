@@ -196,7 +196,7 @@ protected:
     if(!findValue(prop, "airAssist",value))
       CtrlCutException::malformedDocument("Air assist not found");
 
-    doc->put(DS::AIR_ASSIST,DS::parseCenterName(value));
+    doc->put(DS::AIR_ASSIST,DS::parseAirAssistName(value));
   }
 
   void handleG(const AttributeList& prop) {
@@ -250,27 +250,24 @@ protected:
 
       switch(dither) {
       case 0:
-        currentEng->put(ES::DITHERING, ES::DEFAULT_DITHERING);
-        break;
-      case 1:
         currentEng->put(ES::DITHERING, ES::BAYER);
         break;
-      case 2:
+      case 1:
         currentEng->put(ES::DITHERING, ES::FLOYD_STEINBERG);
         break;
-      case 3:
+      case 2:
         currentEng->put(ES::DITHERING, ES::JARVIS);
         break;
-      case 4:
+      case 3:
         currentEng->put(ES::DITHERING, ES::BURKE);
         break;
-      case 5:
+      case 4:
         currentEng->put(ES::DITHERING, ES::STUCKI);
         break;
-      case 6:
+      case 5:
         currentEng->put(ES::DITHERING, ES::SIERRA2);
         break;
-      case 7:
+      case 6:
         currentEng->put(ES::DITHERING, ES::SIERRA3);
         break;
       }

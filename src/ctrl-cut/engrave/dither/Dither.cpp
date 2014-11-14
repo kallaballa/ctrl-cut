@@ -21,7 +21,6 @@ Dither& Dither::create(GrayscaleImage& img, EngraveSettings::Dithering dithering
     case EngraveSettings::BAYER:
       return *(new DitherBayer(img));
       break;
-    case EngraveSettings::DEFAULT_DITHERING:
     case EngraveSettings::FLOYD_STEINBERG:
       return *(new DitherFloydSteinberg(img));
       break;

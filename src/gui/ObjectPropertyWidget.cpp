@@ -220,9 +220,6 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   case EngraveSettings::SIERRA3:
     ditherstr = "Sierra3";
     break;
-  case EngraveSettings::DEFAULT_DITHERING:
-    ditherstr = "Default";
-    break;
   default:
     assert(false && "Unhandled raster dithering setting");
     break;
@@ -366,27 +363,24 @@ void ObjectPropertyWidget::on_dithering_update(int d) {
   if(currentState == Engraving) {
     switch(d) {
     case 0:
-      this->ei->engraving->put(ES::DITHERING, ES::DEFAULT_DITHERING);
-        break;
-    case 1:
       this->ei->engraving->put(ES::DITHERING, ES::BAYER);
         break;
-    case 2:
+    case 1:
       this->ei->engraving->put(ES::DITHERING, ES::FLOYD_STEINBERG);
         break;
-    case 3:
+    case 2:
       this->ei->engraving->put(ES::DITHERING, ES::JARVIS);
         break;
-    case 4:
+    case 3:
       this->ei->engraving->put(ES::DITHERING, ES::STUCKI);
         break;
-    case 5:
+    case 4:
       this->ei->engraving->put(ES::DITHERING, ES::BURKE);
         break;
-    case 6:
+    case 5:
       this->ei->engraving->put(ES::DITHERING, ES::SIERRA2);
         break;
-    case 7:
+    case 6:
       this->ei->engraving->put(ES::DITHERING, ES::SIERRA3);
         break;
     }

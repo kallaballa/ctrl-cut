@@ -175,7 +175,76 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="centerLabel">
+         <property name="text">
+          <string>Center Engrave</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="airAssistBox">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>Global</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Raster only</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cut only</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Off</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="airAssistLabel">
+         <property name="text">
+          <string>Air Assist</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="1">
+        <widget class="QComboBox" name="unit">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>MM</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>IN</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PX</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="1">
         <widget class="QComboBox" name="center">
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
@@ -211,75 +280,6 @@
          <item>
           <property name="text">
            <string>Bottom</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="centerLabel">
-         <property name="text">
-          <string>Center Engrave</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QComboBox" name="unit">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <item>
-          <property name="text">
-           <string>MM</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>IN</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>PX</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="airAssistLabel">
-         <property name="text">
-          <string>Air Assist</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QComboBox" name="airAssistBox">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <item>
-          <property name="text">
-           <string>Global</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Raster only</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Cut only</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Off</string>
           </property>
          </item>
         </widget>
@@ -666,11 +666,6 @@
          <property name="frame">
           <bool>true</bool>
          </property>
-         <item>
-          <property name="text">
-           <string>Default</string>
-          </property>
-         </item>
          <item>
           <property name="text">
            <string>Bayer</string>

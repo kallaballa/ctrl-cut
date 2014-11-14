@@ -75,9 +75,7 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
     ds.put(ES::EPOWER, lexical_cast<uint16_t> (v));
   }
   if (cupsOpts.get(CupsOptions::RASTER_DITHERING, v)) {
-    if (v == "Default")
-      ds.put(ES::DITHERING, ES::DEFAULT_DITHERING);
-    else if (v == "Bayer")
+    if (v == "Bayer")
       ds.put(ES::DITHERING, ES::BAYER);
     else if (v == "FloydSteinberg")
       ds.put(ES::DITHERING, ES::FLOYD_STEINBERG);

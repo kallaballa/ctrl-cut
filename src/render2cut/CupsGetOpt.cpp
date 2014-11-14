@@ -20,7 +20,7 @@ CupsOptions CupsGetOpt::load_document(Document& doc, int argc, char *argv[]) {
   // Extract non-CUPS cmd-line parameters
   typedef DocumentSettings DS;
   // use gs dithering as default for the cups-filter
-  doc.put(EngraveSettings::DITHERING, EngraveSettings::DEFAULT_DITHERING);
+  doc.put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
   doc.put(DocumentSettings::LOAD_ENGRAVING, true);
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
