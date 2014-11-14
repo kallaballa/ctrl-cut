@@ -69,7 +69,9 @@ public slots:
   void importFile(const QString &filename);
   void saveFile(const QString &filename);
   void saveGuiConfig();
-
+  class CtrlCutScene* getScene() {
+    return scene;
+  }
 private:
   void closeEvent(QCloseEvent *event);
   bool maybeSave();

@@ -49,8 +49,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   createActions();
   this->scene = new CtrlCutScene(this);
-  this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
-  this->objectProperties->disable();
+  // this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
+ // this->objectProperties->disable();
   this->graphicsView->setScene(this->scene);
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
