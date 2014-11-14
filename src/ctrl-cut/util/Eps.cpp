@@ -19,7 +19,6 @@ bool get_bbox_from_end(FILE *ps_file,
                        int &upper_right_x, int &upper_right_y)
 {
   char buf[102400];
-  size_t len = 102400;
   while (fgets(buf, sizeof(buf), ps_file)) {
     if (!strncasecmp(buf, "%%BoundingBox:", 14)) {
       if (sscanf(buf + 14, "%d %d %d %d",
@@ -58,7 +57,6 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
   bool portrait = false;
   bool startfound = false;
   char buf[102400];
-  size_t len = 102400;
   int l;
   unsigned char c;
 

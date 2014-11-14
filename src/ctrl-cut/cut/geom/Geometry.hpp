@@ -28,12 +28,12 @@
 #include <boost/geometry/geometries/register/box.hpp>
 #include <boost/geometry/geometries/register/segment.hpp>
 #endif
-static const float CC_PI = atan2(0,-1);
+static const double CC_PI = atan2(0,-1);
 
 #include <iostream>
 
 
-typedef int32_t Coord_t;
+typedef double Coord_t;
 class Point {
 public:
   Coord_t x;
