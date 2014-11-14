@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>691</width>
+    <width>678</width>
     <height>615</height>
    </rect>
   </property>
@@ -51,7 +51,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>691</width>
+     <width>678</width>
      <height>24</height>
     </rect>
    </property>
@@ -139,9 +139,22 @@
     <number>2</number>
    </attribute>
    <widget class="ObjectPropertyWidget" name="objectProperties">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="autofocusBox">
+         <property name="text">
+          <string>Auto Focus</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="titleEdit"/>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="titleLabel">
          <property name="text">
@@ -149,17 +162,126 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="titleEdit"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="autofocusBox">
-         <property name="text">
-          <string>Autofocus</string>
+       <item row="2" column="0">
+        <widget class="QLabel" name="unitLabel">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
-         <property name="checked">
+         <property name="text">
+          <string>Unit</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="centerLabel">
+         <property name="text">
+          <string>Center Engrave</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="airAssistBox">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>Global</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Raster only</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cut only</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Off</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="airAssistLabel">
+         <property name="text">
+          <string>Air Assist</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="unit">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>MM</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>IN</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>PX</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="center">
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+         </property>
+         <property name="frame">
           <bool>true</bool>
          </property>
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Center</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Left</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Right</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Top</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Bottom</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -173,8 +295,8 @@
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="xLabel">
+       <item row="1" column="0">
+        <widget class="QLabel" name="posLabel">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -182,11 +304,89 @@
           </size>
          </property>
          <property name="text">
-          <string>X</string>
+          <string>Pos</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLineEdit" name="widthEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>64</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>64</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="maxLength">
+            <number>8</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="heightEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>64</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>64</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="maxLength">
+            <number>8</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLineEdit" name="posX">
@@ -223,61 +423,42 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="unit">
-           <item>
-            <property name="text">
-             <string>MM</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>IN</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>PX</string>
-            </property>
-           </item>
+          <widget class="QLineEdit" name="posY">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>64</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>64</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+           <property name="maxLength">
+            <number>8</number>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="placeholderText">
+            <string>0</string>
+           </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="posY">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>64</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>64</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-         <property name="maxLength">
-          <number>8</number>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="placeholderText">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="speedLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -290,7 +471,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="5" column="1">
         <widget class="QSpinBox" name="speed">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -327,7 +508,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="powerLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -340,7 +521,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="6" column="1">
         <widget class="QSpinBox" name="power">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -368,7 +549,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="freqLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -381,7 +562,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="7" column="1">
         <widget class="QSpinBox" name="frequency">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -412,14 +593,14 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
+       <item row="8" column="0">
         <widget class="QLabel" name="sortLabel">
          <property name="text">
           <string>Sort</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="8" column="1">
         <widget class="QComboBox" name="sort">
          <property name="currentIndex">
           <number>0</number>
@@ -449,14 +630,14 @@
          </item>
         </widget>
        </item>
-       <item row="8" column="0">
+       <item row="9" column="0">
         <widget class="QLabel" name="directionLabel">
          <property name="text">
           <string>Direction</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
+       <item row="9" column="1">
         <widget class="QComboBox" name="direction">
          <item>
           <property name="text">
@@ -470,14 +651,14 @@
          </item>
         </widget>
        </item>
-       <item row="9" column="0">
+       <item row="10" column="0">
         <widget class="QLabel" name="ditherLabel">
          <property name="text">
           <string>Dithering</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
+       <item row="10" column="1">
         <widget class="QComboBox" name="dithering">
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
@@ -485,11 +666,6 @@
          <property name="frame">
           <bool>true</bool>
          </property>
-         <item>
-          <property name="text">
-           <string>Default</string>
-          </property>
-         </item>
          <item>
           <property name="text">
            <string>Bayer</string>
@@ -527,21 +703,21 @@
          </item>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="reduceLabel">
          <property name="text">
           <string>Reduce</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="yLabel">
+       <item row="2" column="0">
+        <widget class="QLabel" name="sizeLabel">
          <property name="text">
-          <string>Y</string>
+          <string>Size</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
+       <item row="4" column="1">
         <widget class="QLineEdit" name="reduceEdit">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -593,6 +769,7 @@
     </layout>
     <zorder>verticalSpacer</zorder>
     <zorder>line</zorder>
+    <zorder></zorder>
    </widget>
   </widget>
   <action name="fileOpenAction">
@@ -820,10 +997,7 @@
  <tabstops>
   <tabstop>graphicsView</tabstop>
   <tabstop>titleEdit</tabstop>
-  <tabstop>autofocusBox</tabstop>
   <tabstop>posX</tabstop>
-  <tabstop>unit</tabstop>
-  <tabstop>posY</tabstop>
   <tabstop>reduceEdit</tabstop>
   <tabstop>speed</tabstop>
   <tabstop>power</tabstop>

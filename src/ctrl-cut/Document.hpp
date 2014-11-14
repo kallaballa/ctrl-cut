@@ -77,8 +77,59 @@ public:
     return this->cutList;
   }
 
+
   const EngraveList& engravings() const {
     return this->engraveList;
+  }
+
+  Box findEngravingBox() const {
+    Coord_t minx = std::numeric_limits<Coord_t>::max();
+    Coord_t miny = std::numeric_limits<Coord_t>::max();
+    Coord_t maxx = 0;
+    Coord_t maxy = 0;
+
+    for(const EngravingPtr eng : engravings()) {
+        Box b = eng->findBoundingBox();
+        minx = std::min(b.min_corner.x , minx);
+        miny = std::min(b.min_corner.y , miny);
+        maxx = std::max(b.max_corner.x , maxx);
+        maxy = std::max(b.max_corner.y , maxy);
+    }
+
+    return Box(minx, miny, maxx, maxy);
+  }
+
+  Box findCutBox() const {
+    Coord_t minx = std::numeric_limits<Coord_t>::max();
+    Coord_t miny = std::numeric_limits<Coord_t>::max();
+    Coord_t maxx = 0;
+    Coord_t maxy = 0;
+    for(const CutPtr cut : cuts()) {
+        Box b = cut->findBoundingBox();
+        minx = std::min(b.min_corner.x , minx);
+        miny = std::min(b.min_corner.y , miny);
+        maxx = std::max(b.max_corner.x , maxx);
+        maxy = std::max(b.max_corner.y , maxy);
+    }
+
+    return Box(minx, miny, maxx, maxy);
+  }
+
+  Box findDocumentBox() const {
+    Coord_t minx = std::numeric_limits<Coord_t>::max();
+    Coord_t miny = std::numeric_limits<Coord_t>::max();
+    Coord_t maxx = 0;
+    Coord_t maxy = 0;
+    auto boxes = { findEngravingBox(), findCutBox() };
+
+    for(const Box& b: boxes) {
+        minx = std::min(b.min_corner.x , minx);
+        miny = std::min(b.min_corner.y , miny);
+        maxx = std::max(b.max_corner.x , maxx);
+        maxy = std::max(b.max_corner.y , maxy);
+    }
+
+    return Box(minx, miny, maxx, maxy);
   }
 
   DocumentSettings& settings() {

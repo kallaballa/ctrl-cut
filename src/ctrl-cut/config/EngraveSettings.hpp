@@ -21,7 +21,6 @@ class EngraveSettings : public Settings
 {
 public:
   enum Dithering {
-    DEFAULT_DITHERING,
     BAYER,
     FLOYD_STEINBERG,
     JARVIS,
@@ -147,9 +146,6 @@ public:
       break;
     case EngraveSettings::SIERRA3:
       return "Sierra3";
-      break;
-    case EngraveSettings::DEFAULT_DITHERING:
-      return "Default";
       break;
     default:
       return "Unknown";

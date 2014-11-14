@@ -202,9 +202,6 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       //    psparser->setRenderToFile(true);
       if (loadEngraving) {
         switch (this->get(ES::DITHERING)) {
-        case ES::DEFAULT_DITHERING:
-  //        psparser->setRasterFormat(PostscriptParser::BITMAP);
-          //break;
         case ES::BAYER:
         case ES::FLOYD_STEINBERG:
         case ES::JARVIS:
