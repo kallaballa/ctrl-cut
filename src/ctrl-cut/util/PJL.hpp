@@ -55,11 +55,11 @@ PJL_STRING(PCL_RESOLUTION, "\x1B*t%dR")
 /* enable center engraving */
 PJL_STRING(PCL_CENTER_ENGRAVE, "\x1B&y%dZ")
 
-/* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO, "\x1B&y0C")
+/* enable global air assist  */
+PJL_STRING(PCL_GLOBAL_AIR_ASSIST, "\x1B&y%dC")
 
-/* FIXME: unknown purpose. */
-PJL_STRING(PCL_UNKNOWN_BLAFOO3, "\x1B&z2A")
+/* Enable air assist for raster  */
+PJL_STRING(PCL_RASTER_AIR_ASSIST, "\x1B&z%dA")
 
 /* Position cursor absolute on the X-axis */
 PJL_STRING(PCL_POS_X, "\x1B*p%dX")

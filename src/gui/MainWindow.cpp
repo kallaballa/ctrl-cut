@@ -98,6 +98,9 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(center, SIGNAL(currentIndexChanged(int)),
       objectProperties, SLOT(on_center_update(int)));
 
+  QObject::connect(airAssistBox, SIGNAL(currentIndexChanged(int)),
+      objectProperties, SLOT(on_airAssist_update(int)));
+
   QObject::connect(unit, SIGNAL(currentIndexChanged(int)),
       objectProperties, SLOT(on_unit_update(int)));
 

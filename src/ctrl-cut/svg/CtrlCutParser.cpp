@@ -180,8 +180,8 @@ protected:
 
     doc->put(DS::TITLE,value);
 
-    if(!findValue(prop, "autofocus",value))
-      CtrlCutException::malformedDocument("Autofocus not found");
+    if(!findValue(prop, "autoFocus",value))
+      CtrlCutException::malformedDocument("Auto focus not found");
 
     if(value == "true")
       doc->put(DS::AUTO_FOCUS,true);
@@ -189,9 +189,14 @@ protected:
       doc->put(DS::AUTO_FOCUS,false);
 
     if(!findValue(prop, "center",value))
-      CtrlCutException::malformedDocument("center not found");
+      CtrlCutException::malformedDocument("Center not found");
 
     doc->put(DS::CENTER,DS::parseCenterName(value));
+
+    if(!findValue(prop, "airAssist",value))
+      CtrlCutException::malformedDocument("Air assist not found");
+
+    doc->put(DS::AIR_ASSIST,DS::parseCenterName(value));
   }
 
   void handleG(const AttributeList& prop) {

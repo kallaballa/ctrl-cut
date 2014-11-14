@@ -22,6 +22,13 @@ public:
     CENTER_BOTTOM
   };
 
+  enum AirAssist {
+    GLOBAL,
+    RASTER_ONLY,
+    CUT_ONLY,
+    OFF
+  };
+
   const static Key<string> DUUID;
 
   // the configured laser cutter hardware
@@ -35,6 +42,7 @@ public:
   const static Key<Distance> WIDTH;
   const static Key<Distance> HEIGHT;
   const static Key<bool> AUTO_FOCUS;
+  const static Key<AirAssist> AIR_ASSIST;
   const static Key<Center> CENTER;
   const static Key<uint16_t> SCREEN;
 
@@ -90,6 +98,35 @@ public:
         return "Center-Top";
       case CENTER_BOTTOM:
         return "Bottom";
+      default:
+        return "Unknown";
+    }
+  }
+
+  static AirAssist parseAirAssistName(const string& name) {
+    if(name == "Global") {
+      return GLOBAL;
+    } else if(name == "Raster only") {
+      return RASTER_ONLY;
+    } else if(name == "Cut only") {
+      return CUT_ONLY;
+    }else if(name == "Off") {
+        return OFF;
+    }
+    else assert(false);
+    return GLOBAL;
+  }
+
+  static std::string getAirAssistName(AirAssist c) {
+    switch(c) {
+      case GLOBAL:
+        return "Global";
+      case RASTER_ONLY:
+        return "Raster only";
+      case CUT_ONLY:
+        return "Cut only";
+      case OFF:
+        return "Off";
       default:
         return "Unknown";
     }
