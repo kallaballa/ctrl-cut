@@ -45,6 +45,8 @@ public slots:
   void on_sort_update(int);
   void on_direction_update(int);
   void on_dithering_update(int);
+  void on_center_update(int);
+  void on_airAssist_update(int);
   void on_unit_update(int);
   void on_autofocus_update(int);
   void on_title_update(const QString&);

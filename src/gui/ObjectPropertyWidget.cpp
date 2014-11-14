@@ -58,6 +58,10 @@ void ObjectPropertyWidget::setDocument(DocumentPtr doc) {
     mainw->autofocusBox->setChecked(true);
   else
     mainw->autofocusBox->setChecked(false);
+
+  mainw->center->setCurrentIndex(mainw->center->findText(QString::fromStdString(DS::getCenterName(doc->get(DS::CENTER)))));
+  mainw->airAssistBox->setCurrentIndex(mainw->airAssistBox->findText(QString::fromStdString(DS::getAirAssistName(doc->get(DS::AIR_ASSIST)))));
+
 }
 
 void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
@@ -74,6 +78,9 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->currentResolution = this->ci->cut->get(DS::RESOLUTION);
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
+  Box bbox = ci->cut->findBoundingBox();
+  double width = Distance(bbox.width(),PX,this->currentResolution).in(this->currentUnit);
+  double height = Distance(bbox.height(),PX,this->currentResolution).in(this->currentUnit);
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
   double reduce = this->ci->cut->get(CS::REDUCE).in(this->currentUnit);
@@ -95,6 +102,9 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
     mainw->frequency->setValue(freq);
   if(!mainw->reduceEdit->hasFocus())
     mainw->reduceEdit->setText(QString::number(reduce));
+
+  mainw->widthEdit->setText(QString::number(width));
+  mainw->heightEdit->setText(QString::number(height));
 
   mainw->reduceEdit->show();
   mainw->reduceLabel->show();
@@ -169,8 +179,11 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   mainw->direction->show();
   mainw->directionLabel->show();
 
+  Box bbox = ei->engraving->findBoundingBox();
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
+  double width = Distance(bbox.width(),PX,this->currentResolution).in(this->currentUnit);
+  double height = Distance(bbox.height(),PX,this->currentResolution).in(this->currentUnit);
 
   if(!mainw->posX->hasFocus())
     mainw->posX->setText(QString::number(posX));
@@ -180,6 +193,9 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
     mainw->speed->setValue(speed);
   if(!mainw->power->hasFocus())
     mainw->power->setValue(power);
+
+  mainw->widthEdit->setText(QString::number(width));
+  mainw->heightEdit->setText(QString::number(height));
 
   QString ditherstr;
   switch (dither) {
@@ -203,9 +219,6 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
     break;
   case EngraveSettings::SIERRA3:
     ditherstr = "Sierra3";
-    break;
-  case EngraveSettings::DEFAULT_DITHERING:
-    ditherstr = "Default";
     break;
   default:
     assert(false && "Unhandled raster dithering setting");
@@ -350,31 +363,75 @@ void ObjectPropertyWidget::on_dithering_update(int d) {
   if(currentState == Engraving) {
     switch(d) {
     case 0:
-      this->ei->engraving->put(ES::DITHERING, ES::DEFAULT_DITHERING);
-        break;
-    case 1:
       this->ei->engraving->put(ES::DITHERING, ES::BAYER);
         break;
-    case 2:
+    case 1:
       this->ei->engraving->put(ES::DITHERING, ES::FLOYD_STEINBERG);
         break;
-    case 3:
+    case 2:
       this->ei->engraving->put(ES::DITHERING, ES::JARVIS);
         break;
-    case 4:
+    case 3:
       this->ei->engraving->put(ES::DITHERING, ES::STUCKI);
         break;
-    case 5:
+    case 4:
       this->ei->engraving->put(ES::DITHERING, ES::BURKE);
         break;
-    case 6:
+    case 5:
       this->ei->engraving->put(ES::DITHERING, ES::SIERRA2);
         break;
-    case 7:
+    case 6:
       this->ei->engraving->put(ES::DITHERING, ES::SIERRA3);
         break;
     }
   }
+}
+
+void ObjectPropertyWidget::on_airAssist_update(int d) {
+  typedef DocumentSettings DS;
+  DS::AirAssist aa;
+  switch(d) {
+    case 0:
+      aa = DS::GLOBAL;
+      break;
+    case 1:
+      aa = DS::RASTER_ONLY;
+      break;
+    case 2:
+      aa = DS::CUT_ONLY;
+      break;
+    case 3:
+      aa = DS::OFF;
+      break;
+    }
+
+    this->doc->put(DocumentSettings::AIR_ASSIST, aa);
+}
+void ObjectPropertyWidget::on_center_update(int d) {
+  typedef DocumentSettings DS;
+  DS::Center c;
+  switch(d) {
+    case 0:
+      c = DS::CENTER_NONE;
+      break;
+    case 1:
+      c = DS::CENTER_CENTER;
+      break;
+    case 2:
+      c = DS::CENTER_LEFT;
+      break;
+    case 3:
+      c = DS::CENTER_RIGHT;
+      break;
+    case 4:
+      c = DS::CENTER_TOP;
+      break;
+    case 5:
+      c = DS::CENTER_BOTTOM;
+      break;
+    }
+
+    this->doc->put(DocumentSettings::CENTER, c);
 }
 
 void ObjectPropertyWidget::on_unit_update(int d) {

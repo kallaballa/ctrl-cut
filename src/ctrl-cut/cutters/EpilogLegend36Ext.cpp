@@ -24,11 +24,14 @@ typedef CutSettings C_SET;
 void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
   string title = doc.get(D_SET::TITLE);
   int resolution = doc.get(D_SET::RESOLUTION);
-  bool enable_engraving = doc.get(D_SET::ENABLE_ENGRAVING) && !doc.engravings().empty();
-  bool enable_cut = doc.get(D_SET::ENABLE_CUT) && !doc.cuts().empty();
+  bool enableEngraving = doc.get(D_SET::ENABLE_ENGRAVING) && !doc.engravings().empty();
+  bool enableCut = doc.get(D_SET::ENABLE_CUT) && !doc.cuts().empty();
+  D_SET::Center centerEngrave = doc.get(D_SET::CENTER);
+  D_SET::AirAssist airAssist = doc.get(D_SET::AIR_ASSIST);
+
   int raster_power = 1;
   int raster_speed = 100;
-  if(enable_engraving) {
+  if(enableEngraving) {
     raster_power = doc.engravings().front()->get(E_SET::EPOWER);
     raster_speed = doc.engravings().front()->get(E_SET::ESPEED);
   }
@@ -42,9 +45,9 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
 
   out << format(PCL_AUTOFOCUS) % focus;
   /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO;
-  /* FIXME unknown purpose. */
-  out << PCL_UNKNOWN_BLAFOO2;
+  out << format(PCL_GLOBAL_AIR_ASSIST) % (airAssist == D_SET::GLOBAL || airAssist == D_SET::CUT_ONLY ? 1 : 0);
+  /* enable or disable center engraving. */
+  out << format(PCL_CENTER_ENGRAVE) % (centerEngrave != D_SET::CENTER_NONE ? 1 : 0);
   /* Left (long-edge) offset registration.  Adjusts the position of the
    * logical page across the width of the page.
    */
@@ -71,9 +74,16 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
   // Raster speed
   out << format(R_SPEED) % raster_speed;
 
-  out << PCL_UNKNOWN_BLAFOO3;
-  out << format(R_HEIGHT) % height;
-  out << format(R_WIDTH) % width;
+  int rasterAirAssist = 0;
+  if(airAssist == D_SET::GLOBAL)
+    rasterAirAssist = 2;
+  else if(airAssist == D_SET::RASTER_ONLY) {
+    rasterAirAssist = 1;
+  }
+
+  out << format(PCL_RASTER_AIR_ASSIST) % rasterAirAssist;
+  out << format(R_BED_HEIGHT) % height;
+  out << format(R_BED_WIDTH) % width;
   // Raster compression
   int compressionLevel = 2;
 
@@ -83,13 +93,58 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
    * information to the print job.
    */
 
-  if (enable_engraving) {
+  if (enableEngraving) {
+    bool first = true;
+
     for(const EngravingPtr e : doc.engravings()) {
       PclEncoder::encode(out, e);
     }
+
+    if(centerEngrave != D_SET::CENTER_NONE) {
+      Box ebox = doc.findEngravingBox();
+
+      //correct the coordinate system
+      Point pos = ebox.min_corner;
+      Coord_t width = ebox.max_corner.x - ebox.min_corner.x;
+      Coord_t height = ebox.max_corner.y - ebox.min_corner.y;
+      Coord_t center_x = (width - pos.x) / 2 + pos.x;
+      Coord_t center_y = (height - pos.y) / 2 + pos.y;
+      switch(centerEngrave) {
+      case D_SET::CENTER_CENTER:
+        out << format(PCL_OFF_X) % center_x;
+        out << format(PCL_OFF_Y) % center_y;
+        out << format(PCL_UPPERLEFT_X) % 1;
+        out << format(PCL_UPPERLEFT_Y) % 1;
+      break;
+      case D_SET::CENTER_LEFT:
+        out << format(PCL_OFF_X) % 1;
+        out << format(PCL_OFF_Y) % center_y;
+        out << format(PCL_UPPERLEFT_X) % 1;
+        out << format(PCL_UPPERLEFT_Y) % 1;
+      break;
+      case D_SET::CENTER_RIGHT:
+        out << format(PCL_OFF_X) % width;
+        out << format(PCL_OFF_Y) % center_y;
+        out << format(PCL_UPPERLEFT_X) % 1;
+        out << format(PCL_UPPERLEFT_Y) % 1;
+      break;
+      case D_SET::CENTER_TOP:
+        out << format(PCL_OFF_X) % center_x;
+        out << format(PCL_OFF_Y) % 1;
+        out << format(PCL_UPPERLEFT_X) % 1;
+        out << format(PCL_UPPERLEFT_Y) % 1;
+      break;
+      case D_SET::CENTER_BOTTOM:
+        out << format(PCL_OFF_X) % center_x;
+        out << format(PCL_OFF_Y) % height;
+        out << format(PCL_UPPERLEFT_X) % 1;
+        out << format(PCL_UPPERLEFT_Y) % 1;
+      break;
+      }
+    }
   }
 
-  if (enable_cut) {
+  if (enableCut) {
     // FIXME: This is to emulate the LT bug in the Epilog drivers:
     // Check if any clipping has been done in any of the passes, and
     // inject the stray "LT" string. This has no function, just for bug compatibility
@@ -120,5 +175,6 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
   for (int i = 0; i < 4092; i++) {
     out << ' ';
   }
-  out << "Mini]";
+  out << "Mini]" << std::endl;
+  out.flush();
 }

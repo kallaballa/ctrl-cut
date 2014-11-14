@@ -20,6 +20,8 @@ public:
   uint32_t resolution;
   string title;
   bool autofocus;
+  DocumentSettings::Center center;
+  DocumentSettings::AirAssist airAssist;
   std::ostream& ostream;
 
   SvgWriter(const Route& doc, std::ostream& os);

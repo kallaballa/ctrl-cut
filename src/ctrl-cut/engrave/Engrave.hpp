@@ -71,6 +71,11 @@ public:
     return this->image.isAllocated();
   }
 
+  Box findBoundingBox() const {
+    Point pos = this->get(EngraveSettings::EPOS);
+    return Box(pos, Point(pos.x + image.width(), pos.y + image.height()));
+  }
+
   void toJson(std::ostream& os) const {
     GrayscaleImage img = this->getImage();
     Coord_t height = img.height() - 1;
