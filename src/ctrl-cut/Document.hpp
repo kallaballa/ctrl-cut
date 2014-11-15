@@ -33,6 +33,7 @@ public:
     UNSPECIFIED,
     POSTSCRIPT,
     SVG,
+    PDF,
     VECTOR,
     PBM,
     CTRLCUT

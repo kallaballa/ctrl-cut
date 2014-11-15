@@ -395,7 +395,7 @@ void MainWindow::on_fileSaveAsAction_triggered()
 
 void MainWindow::on_fileImportAction_triggered()
 {
-  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.eps *.vector *.svg)"));
+  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.eps *.pdf *.vector *.svg)"));
 }
 
 void MainWindow::on_filePrintAction_triggered()

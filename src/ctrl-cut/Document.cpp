@@ -108,6 +108,8 @@ Document::Format Document::guessFileFormat(const string& filename) {
     return SVG;
   else if (suffix == "cut")
     return CTRLCUT;
+  else if (suffix == "pdf")
+    return PDF;
   else
     return POSTSCRIPT;
 }
@@ -134,7 +136,8 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
     CtrlCutParser parser;
     parser.load(filename, *this, newCuts, newEngravings);
   } else {
-    if (docFormat == POSTSCRIPT || docFormat == SVG) {
+    if (docFormat == POSTSCRIPT || docFormat == SVG || docFormat == PDF) {
+      PostscriptParser *psparser = new PostscriptParser(this->settings());
       if (docFormat == SVG) {
         int convertPipe[2];
 
@@ -152,11 +155,20 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
         boost::thread svg_converter_thread(&Svg2Ps::convert, converter);
 
         if ((input_file = fdopen(convertPipe[0], "r")) == NULL) {
-          CtrlCutException::generalError("unable to open print file:" + filename);
+          CtrlCutException::generalError("unable to open input file:" + filename);
         }
       } else if(docFormat == POSTSCRIPT){
         if ((input_file = fopen(filename.c_str(), "r")) == NULL) {
-          CtrlCutException::generalError("unable to open print file:" + filename);
+          CtrlCutException::generalError("unable to open input file:" + filename);
+        }
+      } else if(docFormat == PDF) {
+        string psFile = Util::make_temp_filename();
+        if (!psparser->pdfToPs(filename, psFile)) {
+          CtrlCutException::generalError("unable to convert pdf:" + filename);
+        }
+
+        if ((input_file = fopen(psFile.c_str(), "r")) == NULL) {
+          CtrlCutException::generalError("unable to open input file:" + psFile);
         }
       }
 
@@ -196,7 +208,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       }
   #endif
 
-      PostscriptParser *psparser = new PostscriptParser(this->settings());
+
       // Uncomment this to force ghostscript to render to file using the ppmraw
       // backend, instead of in-memory rendering
       //    psparser->setRenderToFile(true);

@@ -53,6 +53,7 @@ public:
   void setComponents(uint8_t components) {this->components = components;}
   uint8_t getComponents() const {return this->components;}
 
+  bool pdfToPs(const string& pdfFile, const string& psFile);
   bool parse(FILE *ps_file);
   std::istream &getVectorData();
 
