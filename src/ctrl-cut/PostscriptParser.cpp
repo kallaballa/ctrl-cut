@@ -267,7 +267,7 @@ bool PostscriptParser::pdfToPs(const string& pdfFile, const string& psFile) {
   argstrings.push_back("-q");
   argstrings.push_back("-dBATCH");
   argstrings.push_back("-dNOPAUSE");
-  argstrings.push_back("-sDEVICE=pswrite");
+  argstrings.push_back("-sDEVICE=ps2write");
   argstrings.push_back(str(format("-sOutputFile=%s") % psFile));
   argstrings.push_back(pdfFile);
   if (!execute_ghostscript(argstrings)) {
