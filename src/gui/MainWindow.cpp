@@ -49,8 +49,8 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
 
   createActions();
   this->scene = new CtrlCutScene(this);
-  this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
-  this->objectProperties->disable();
+  // this->objectProperties->setDocument(this->scene->getDocumentHolder()->doc);
+ // this->objectProperties->disable();
   this->graphicsView->setScene(this->scene);
   this->graphicsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -395,7 +395,7 @@ void MainWindow::on_fileSaveAsAction_triggered()
 
 void MainWindow::on_fileImportAction_triggered()
 {
-  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.eps *.vector *.svg)"));
+  importFile(QFileDialog::getOpenFileName(this, "Import File", "", "Supported files (*.ps *.eps *.pdf *.vector *.svg)"));
 }
 
 void MainWindow::on_filePrintAction_triggered()

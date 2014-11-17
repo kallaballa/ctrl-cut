@@ -261,6 +261,22 @@ PostscriptParser::~PostscriptParser()
   PostscriptParser::inst = NULL;
 }
 
+bool PostscriptParser::pdfToPs(const string& pdfFile, const string& psFile) {
+  std::vector<std::string> argstrings;
+  argstrings.push_back("gs");
+  argstrings.push_back("-q");
+  argstrings.push_back("-dBATCH");
+  argstrings.push_back("-dNOPAUSE");
+  argstrings.push_back("-sDEVICE=ps2write");
+  argstrings.push_back(str(format("-sOutputFile=%s") % psFile));
+  argstrings.push_back(pdfFile);
+  if (!execute_ghostscript(argstrings)) {
+    LOG_FATAL_STR("ghostscript failed");
+    return false;
+  }
+  return true;
+}
+
 bool PostscriptParser::parse(FILE *input_file)
 {
   uint32_t resolution = this->conf.get(DocumentSettings::RESOLUTION);

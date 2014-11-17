@@ -11,6 +11,8 @@
 #include "EventFilter.hpp"
 #include "util/Logger.hpp"
 #include "config/DocumentSettings.hpp"
+#include "CtrlCutScene.hpp"
+#include "NewDialog.hpp"
 
 class CtrlCutApplication : public QApplication {
 public:
@@ -40,6 +42,16 @@ int main(int argc, char **argv)
 
   QObject::connect(&app, SIGNAL(aboutToQuit()), MainWindow::instance(), SLOT(saveGuiConfig()));
   MainWindow::instance()->setGeometry(100, 100, 800, 500);
+  if(argc < 2 || Document::guessFileFormat(argv[1]) != Document::CTRLCUT) {
+    NewDialog nd;
+    nd.loadFrom(MainWindow::instance()->guiConfig);
+    if (nd.exec() == QDialog::Accepted) {
+      MainWindow::instance()->getScene()->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+      nd.saveTo(MainWindow::instance()->guiConfig);
+    } else {
+      exit(0);
+    }
+  }
   MainWindow::instance()->show();
   // FIXME: Unified toolbar doesn't work with the "raster" graphics system on Qt-4.8.6
   MainWindow::instance()->setUnifiedTitleAndToolBarOnMac(false);

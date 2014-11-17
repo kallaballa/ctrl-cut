@@ -36,16 +36,7 @@ CtrlCutScene::CtrlCutScene(QObject *parent) :
   this->setBackgroundBrush(Qt::NoBrush);
   setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 
-
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parent());
-  NewDialog nd;
-  nd.loadFrom(mainw->guiConfig);
-  if (nd.exec() == QDialog::Accepted) {
-    this->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
-    nd.saveTo(mainw->guiConfig);
-  } else {
-    exit(0);
-  }
 
   this->makeBackground();
 
@@ -130,7 +121,7 @@ void CtrlCutScene::open(const QString& filename) {
   load(filename);
 }
 
-void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, const Distance& height, const QString& title) {
+void CtrlCutScene::newJob(const Coord_t resolution, const Distance width, const Distance height, const QString title) {
   typedef DocumentSettings DS;
   this->reset();
   if(this->docHolder->doc == NULL)
@@ -147,23 +138,23 @@ void CtrlCutScene::newJob(const Coord_t& resolution, const Distance& width, cons
   makeBackground();
 }
 
-std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString& filename, bool loadVector, bool loadRaster) {
+std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString filename, bool loadVector, bool loadRaster) {
   std::vector<AbstractCtrlCutItem*> items;
   if(filename.endsWith(".svg", Qt::CaseInsensitive)) {
     showWarningDialog("SVG text elements currently not supported. Please make sure all text is converted to paths or use the eps file format.","");
   }
 
   try {
-    assert(this->docHolder->doc);
+    if(!this->docHolder->doc)
+      newJob(1, Distance(), Distance(), "untitled");
     DocumentPtr doc = this->docHolder->doc;
 
     doc->put(DocumentSettings::LOAD_CUT, loadVector);
     doc->put(DocumentSettings::LOAD_ENGRAVING, loadRaster);
-    doc->put(EngraveSettings::DITHERING, EngraveSettings::BAYER);
-
-    makeBackground();
+    doc->put(EngraveSettings::DITHERING, EngraveSettings::FLOYD_STEINBERG);
 
     std::pair<Document::CutList, Document::EngraveList> loaded = doc->load(filename.toStdString());
+    makeBackground();
 
     qreal width = doc->get(DocumentSettings::WIDTH).in(PX);
     qreal height = doc->get(DocumentSettings::HEIGHT).in(PX);
