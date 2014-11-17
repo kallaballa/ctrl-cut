@@ -33,6 +33,7 @@ public:
     UNSPECIFIED,
     POSTSCRIPT,
     SVG,
+    PDF,
     VECTOR,
     PBM,
     CTRLCUT
@@ -144,7 +145,7 @@ public:
   void remove(CutPtr cut);
   void remove(EngravingPtr engraving);
 
-  Format guessFileFormat(const string& filename);
+  static Format guessFileFormat(const string& filename);
   std::pair<CutList, EngraveList> load(const string& filename, Format docFormat = UNSPECIFIED);
 
   template<typename T, typename V>

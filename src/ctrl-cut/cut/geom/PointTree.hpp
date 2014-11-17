@@ -51,7 +51,7 @@ public:
 
 typedef PointTreeImpl<
     Point,
-    std::pointer_to_binary_function<Point, int, int32_t>
+    std::pointer_to_binary_function<Point, int, Coord_t>
 > PointTree;
 
 #endif
