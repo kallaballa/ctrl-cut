@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Ctrl-Cut
+GenericName=Laser Cutter Software
+Comment=Laser cutting on your desktop
+Exec=ctrl-cut %U
+TryExec=ctrl-cut
+Icon=ctrl-cut
+Terminal=false
+Categories=Graphics;2DGraphics;RasterGraphics;VectorGraphics;Qt;Engineering
+StartupNotify=true
+MimeType=application/postscript;image/svg+xml;application/pdf;
+
