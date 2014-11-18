@@ -13,6 +13,9 @@
 #include "config/DocumentSettings.hpp"
 #include "CtrlCutScene.hpp"
 #include "NewDialog.hpp"
+#include <QSplashScreen>
+#include <QBitmap>
+#include <thread>
 
 class CtrlCutApplication : public QApplication {
 public:
@@ -37,11 +40,11 @@ int main(int argc, char **argv)
 
   //  QApplication::setGraphicsSystem("raster");
   CtrlCutApplication app(argc, argv);
-
   app.installEventFilter(new EventFilter(&app));
 
   QObject::connect(&app, SIGNAL(aboutToQuit()), MainWindow::instance(), SLOT(saveGuiConfig()));
   MainWindow::instance()->setGeometry(100, 100, 800, 500);
+
   if(argc < 2 || Document::guessFileFormat(argv[1]) != Document::CTRLCUT) {
     NewDialog nd;
     nd.loadFrom(MainWindow::instance()->guiConfig);
@@ -52,12 +55,26 @@ int main(int argc, char **argv)
       exit(0);
     }
   }
+  QPixmap aPixmap("images/Ctrl-Cut_splash.png");
+  QSplashScreen* aSplashScreen = new QSplashScreen(aPixmap);
+
   MainWindow::instance()->show();
+  aSplashScreen->show();
+
+  std::thread t = std::thread([&]() {
+    std::chrono::milliseconds dura( 1500 );
+    std::this_thread::sleep_for( dura );
+    aSplashScreen->hide();
+  });
+
   // FIXME: Unified toolbar doesn't work with the "raster" graphics system on Qt-4.8.6
   MainWindow::instance()->setUnifiedTitleAndToolBarOnMac(false);
 
-  for(int i = 1; i < argc; i++) {
-    MainWindow::instance()->openFile(argv[i]);
-  }
+  std::thread t2 = std::thread([&]() {
+    for(int i = 1; i < argc; i++) {
+      MainWindow::instance()->openFile(argv[i]);
+    }
+  });
+
   return app.exec();
 }
