@@ -8,7 +8,7 @@ Exec=ctrl-cut %U
 TryExec=ctrl-cut
 Icon=ctrl-cut
 Terminal=false
-Categories=Graphics;2DGraphics;RasterGraphics;VectorGraphics;Qt;Engineering
+Categories=Graphics;2DGraphics;RasterGraphics;VectorGraphics;Qt;Engineering;
 StartupNotify=true
 MimeType=application/postscript;image/svg+xml;application/pdf;
 
