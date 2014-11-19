@@ -55,13 +55,11 @@ int main(int argc, char **argv)
       exit(0);
     }
   }
+  MainWindow::instance()->show();
   QPixmap aPixmap("/usr/share/ctrl-cut/splash.png");
   QSplashScreen* aSplashScreen = new QSplashScreen(aPixmap);
-
-  MainWindow::instance()->show();
   aSplashScreen->show();
 
-  // FIXME: Unified toolbar doesn't work with the "raster" graphics system on Qt-4.8.6
   MainWindow::instance()->setUnifiedTitleAndToolBarOnMac(false);
 
   for(int i = 1; i < argc; i++) {
@@ -69,6 +67,5 @@ int main(int argc, char **argv)
   }
 
   aSplashScreen->hide();
-
   return app.exec();
 }
