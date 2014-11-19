@@ -61,20 +61,14 @@ int main(int argc, char **argv)
   MainWindow::instance()->show();
   aSplashScreen->show();
 
-  std::thread t = std::thread([&]() {
-    std::chrono::milliseconds dura( 1500 );
-    std::this_thread::sleep_for( dura );
-    aSplashScreen->hide();
-  });
-
   // FIXME: Unified toolbar doesn't work with the "raster" graphics system on Qt-4.8.6
   MainWindow::instance()->setUnifiedTitleAndToolBarOnMac(false);
 
-  std::thread t2 = std::thread([&]() {
-    for(int i = 1; i < argc; i++) {
-      MainWindow::instance()->openFile(argv[i]);
-    }
-  });
+  for(int i = 1; i < argc; i++) {
+    MainWindow::instance()->openFile(argv[i]);
+  }
+
+  aSplashScreen->hide();
 
   return app.exec();
 }
