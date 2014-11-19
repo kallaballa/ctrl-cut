@@ -55,7 +55,7 @@ int main(int argc, char **argv)
       exit(0);
     }
   }
-  QPixmap aPixmap("images/Ctrl-Cut_splash.png");
+  QPixmap aPixmap("/usr/share/ctrl-cut/splash.png");
   QSplashScreen* aSplashScreen = new QSplashScreen(aPixmap);
 
   MainWindow::instance()->show();
