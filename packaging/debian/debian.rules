@@ -54,6 +54,8 @@ install: build
 	export DESTDIR="/usr/src/packages/BUILD/debian/ctrl-cut"
 	export PREFIX="/usr"
 	DESTDIR="/usr/src/packages/BUILD/debian/ctrl-cut" PREFIX="/usr" ./cc install
+	mkdir -p /usr/src/packages/BUILD/debian/ctrl-cut/usr/share/applications/
+	cp etc/ctrl-cut.desktop /usr/src/packages/BUILD/debian/ctrl-cut/usr/share/applications/
 	# --- end custom part for installing
 
 # Build architecture-independent files here.
