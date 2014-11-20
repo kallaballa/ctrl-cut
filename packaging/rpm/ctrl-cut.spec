@@ -24,7 +24,7 @@ Group: Hardware/Other
 URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
-BuildRequires: boost-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel
+BuildRequires: update-desktop-files boost-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel
 PreReq: /bin/chmod ncurses-utils
 Requires: libboost_filesystem1_54_0 libboost_system1_54_0 ghostscript libqt4 libqt4-x11 libQtWebKit4 libpng16-16 libcairo2 libMagick++-6_Q16-5 libMagickCore-6_Q16-2 libxml++-2_6-2 librsvg-2-2 libX11-6 libCGAL10
 %else
@@ -56,6 +56,11 @@ export CC_BASE=`pwd`
 export DESTDIR="%{buildroot}"
 export PREFIX="%{_prefix}"
 ./cc install
+%if %{defined suse_version}
+  %suse_update_desktop_file -c %name Ctrl-Cut "Laser Cutter Control Panel" %name "" Graphics 2DGraphics Qt Engineering
+%else
+  cp etc/ctrl-cut.desktop $DESTDIR/$PREFIX/share/applications/
+%endif
 
 %post
  exit 0
@@ -70,3 +75,11 @@ export PREFIX="%{_prefix}"
 
 %{_libdir}/libctrl-cut.so.1
 %{_bindir}/ctrl-cut
+%{_prefix}/share/ctrl-cut
+%{_prefix}/share/ctrl-cut/EpilogLegend36EXT.png
+%{_prefix}/share/ctrl-cut/EpilogZing16.png
+%{_prefix}/share/ctrl-cut/EpilogZing24.png
+%{_prefix}/share/ctrl-cut/logo.svg
+%{_prefix}/share/ctrl-cut/splash.png
+%{_prefix}/share/applications/ctrl-cut.desktop
+
