@@ -10,5 +10,5 @@ Build-Depends: debhelper (>= 7.0.50~), pkg-config, qt4-qmake,  librsvg2-dev, lib
 Package-List: 
  ctrl-cut deb misc optional
 Files: 
- 3bec42ab150a18d48f8389a56c3500c6 2959821 ctrl-cut-1.0.tar.bz2
+ 893464fa7fef5ac8be73cafe5c36607c 3732292 ctrl-cut-1.0.tar.bz2
 

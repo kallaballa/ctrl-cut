@@ -133,6 +133,7 @@
    <addaction name="fileSaveAction"/>
    <addaction name="fileImportAction"/>
    <addaction name="previewAction"/>
+   <addaction name="fileSendAction"/>
   </widget>
   <widget class="QDockWidget" name="propertiesDockWidget">
    <attribute name="dockWidgetArea">
@@ -978,6 +979,11 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="fileSendAction">
+   <property name="text">
+    <string>Send</string>
    </property>
   </action>
  </widget>

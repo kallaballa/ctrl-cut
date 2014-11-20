@@ -43,7 +43,6 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   this->lpdclient->setObjectName("lpdclient");
 
   createUndoView();
-  createContextMenu();
 
   setupUi(this);
 
@@ -128,11 +127,15 @@ MainWindow::MainWindow() : laserdialog(NULL), simdialog(NULL) {
   QObject::connect(toolsPreviewAction, SIGNAL(triggered()),
       this, SLOT(on_previewAction_triggered()));
 
+  QObject::connect(fileSendAction, SIGNAL(triggered()),
+      this, SLOT(on_filePrintAction_triggered()));
+
   QObject::connect(&sendProgressDialog, SIGNAL(canceled()), this->lpdclient, SLOT(on_cancel()));
 
   this->editCopySettingsAction->setEnabled(false);
   this->editPasteSettingsAction->setEnabled(false);
   this->mergeAction->setEnabled(false);
+  createContextMenu();
 }
 
 MainWindow::~MainWindow()
@@ -181,6 +184,10 @@ void MainWindow::createContextMenu() {
   menu->addAction(raiseAct);
   menu->addAction(bottomAct);
   menu->addAction(topAct);
+  menu->addAction(editCopyAction);
+  menu->addAction(editPasteAction);
+  menu->addAction(editCopySettingsAction);
+  menu->addAction(editPasteSettingsAction);
 }
 
 void MainWindow::createUndoView(){
