@@ -285,7 +285,7 @@ bool PostscriptParser::parse(FILE *input_file)
   bool loadEngraving = this->conf.get(DocumentSettings::LOAD_ENGRAVING);
   string filename = this->conf.get(DocumentSettings::FILENAME); 
 
-  this->filename_eps = Util::make_temp_filename() + ".eps";
+  this->filename_eps = make_temp_filename(".eps");
 
   if (!createEps(input_file, this->filename_eps, resolution)) return false;
 
@@ -301,7 +301,7 @@ bool PostscriptParser::parse(FILE *input_file)
   if (!loadEngraving) {
     argstrings.push_back("-sDEVICE=nullpage");
   } else if (this->rendertofile) {
-    this->filename_bitmap = Util::make_temp_filename();
+    this->filename_bitmap = make_temp_filename();
     switch (this->rasterformat) {
     case BITMAP: 
       argstrings.push_back("-sDEVICE=pbmraw");
@@ -443,8 +443,8 @@ void PostscriptParser::copyPage() {
 
     // For debugging, we can export the image here:
     #if 1
-      if (bmimage.isAllocated()) bmimage.saveAsPBM("/tmp/out.pbm");
-      if (gsimage.isAllocated()) gsimage.saveAsPGM("/tmp/out.pgm");
+      if (bmimage.isAllocated()) bmimage.saveAsPBM(make_temp_filename(".pbm"));
+      if (gsimage.isAllocated()) gsimage.saveAsPGM(make_temp_filename(".pgm"));
     #endif
   }
 }

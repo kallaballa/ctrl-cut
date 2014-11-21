@@ -28,8 +28,6 @@ const DocumentSettings::Key<bool> DocumentSettings::ENABLE_CUT = "enableVector";
 const DocumentSettings::Key<bool> DocumentSettings::LOAD_CUT = "loadCut";
 const DocumentSettings::Key<bool> DocumentSettings::LOAD_ENGRAVING = "loadEngraving";
 
-const DocumentSettings::Key<bool> DocumentSettings::DUMP_XML = "dumpXml";
-
 DocumentSettings::DocumentSettings() : Settings() {
   std::stringstream ss;
   ss << boost::uuids::random_generator()();
@@ -47,7 +45,6 @@ DocumentSettings::DocumentSettings() : Settings() {
 
   this->put(WIDTH, Distance(2700,PX,75));
   this->put(HEIGHT, Distance(1800,PX,75));
-  this->put(DUMP_XML, false);
   //FIXME dont do empty defaults
   this->put(TITLE, "");
   this->put(USER, "");

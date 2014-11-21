@@ -269,7 +269,7 @@ void CtrlCutScene::makeBackground() {
     uint32_t width = docHolder->doc->get(DocumentSettings::WIDTH).in(PX);
     uint32_t height = docHolder->doc->get(DocumentSettings::HEIGHT).in(PX);
 
-    QPen p(Qt::blue);
+    QPen p(Qt::black);
     polygon << QPoint(0, 0) << QPoint(width, 0) << QPoint(width, height) << QPoint(0, height) << QPoint(0,0);
     backgroundItem->setPolygon(polygon);
     backgroundItem->setPen(p);
