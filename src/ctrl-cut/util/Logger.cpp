@@ -5,11 +5,13 @@
  */
 
 #include "Logger.hpp"
+#include "Util.hpp"
 
 Logger* Logger::instance = NULL;
 
 void Logger::init(const LogLevel l) {
   Logger::instance = new Logger(l);
+  install_signal_handlers();
 }
 
 Logger& Logger::getInstance() {

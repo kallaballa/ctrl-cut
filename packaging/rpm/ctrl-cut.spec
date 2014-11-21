@@ -24,11 +24,11 @@ Group: Hardware/Other
 URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
-BuildRequires: update-desktop-files boost-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel
+BuildRequires: hicolor-icon-theme update-desktop-files boost-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel
 PreReq: /bin/chmod ncurses-utils
 Requires: libboost_filesystem1_54_0 libboost_system1_54_0 ghostscript libqt4 libqt4-x11 libQtWebKit4 libpng16-16 libcairo2 libMagick++-6_Q16-5 libMagickCore-6_Q16-2 libxml++-2_6-2 librsvg-2-2 libX11-6 libCGAL10
 %else
-BuildRequires: gcc-c++ boost-devel ghostscript ghostscript-devel qt4-devel qt4-x11 qtwebkit-devel desktop-file-utils xdg-utils cairo-devel glib2-devel ImageMagick-devel ImageMagick-c++-devel libxml++-devel libpng-devel librsvg2-devel libX11-devel CGAL-devel
+BuildRequires: hicolor-icon-theme gcc-c++ boost-devel ghostscript ghostscript-devel qt4-devel qt4-x11 qtwebkit-devel desktop-file-utils xdg-utils cairo-devel glib2-devel ImageMagick-devel ImageMagick-c++-devel libxml++-devel libpng-devel librsvg2-devel libX11-devel CGAL-devel
 Requires: ghostscript boost-filesystem boost-system qt qt-x11 qtwebkit libpng cairo ImageMagick-c++ ImageMagick libxml++ librsvg2 libX11 CGAL
 %endif
 Source:       %{name}-%{version}.tar.bz2
@@ -56,14 +56,26 @@ export CC_BASE=`pwd`
 export DESTDIR="%{buildroot}"
 export PREFIX="%{_prefix}"
 ./cc install
+install -d %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
+install -c -m 644 images/logo.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/ctrl-cut.svg
+
 %if %{defined suse_version}
-  %suse_update_desktop_file -c %name Ctrl-Cut "Laser Cutter Control Panel" %name "" Graphics 2DGraphics Qt Engineering
+  %suse_update_desktop_file -c %name Ctrl-Cut "Laser Cutter Control Panel" %name %name Graphics 2DGraphics Qt Engineering
 %else
   cp etc/ctrl-cut.desktop $DESTDIR/$PREFIX/share/applications/
 %endif
 
+%if 0%{?suse_version} >= 1140
 %post
- exit 0
+	%icon_theme_cache_post
+	%desktop_database_post
+%endif
+
+%if 0%{?suse_version} >= 1140
+%postun
+	%icon_theme_cache_postun
+	%desktop_database_postun
+%endif
 
 %clean
 # clean up the hard disc after build
@@ -75,11 +87,15 @@ export PREFIX="%{_prefix}"
 
 %{_libdir}/libctrl-cut.so.1
 %{_bindir}/ctrl-cut
-%{_prefix}/share/ctrl-cut
-%{_prefix}/share/ctrl-cut/EpilogLegend36EXT.png
-%{_prefix}/share/ctrl-cut/EpilogZing16.png
-%{_prefix}/share/ctrl-cut/EpilogZing24.png
-%{_prefix}/share/ctrl-cut/logo.svg
-%{_prefix}/share/ctrl-cut/splash.png
-%{_prefix}/share/applications/ctrl-cut.desktop
+%dir %{_datadir}/ctrl-cut
+%{_datadir}/ctrl-cut/EpilogLegend36EXT.png
+%{_datadir}/ctrl-cut/EpilogZing16.png
+%{_datadir}/ctrl-cut/EpilogZing24.png
+%{_datadir}/ctrl-cut/logo.svg
+%{_datadir}/ctrl-cut/splash.png
+%{_datadir}/applications/ctrl-cut.desktop
+%dir %{_datadir}/icons/hicolor
+%dir %{_datadir}/icons/hicolor/scalable
+%dir %{_datadir}/icons/hicolor/scalable/apps
+%{_datadir}/icons/hicolor/scalable/apps/*.svg
 

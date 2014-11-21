@@ -4,7 +4,12 @@
  * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
  */
 
+#include "cut/geom/Geometry.hpp"
+#include "CtrlCutException.hpp"
+#include "util/2D.hpp"
 #include "SvgFix.hpp"
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 class SvgSax : public SaxParser
 {
@@ -20,7 +25,8 @@ protected:
   }
 
   virtual void on_comment(const Glib::ustring& text){
-    svgFix.findGenerator(text);
+    //inkscape preserves the generator comment, so we can't use this anymore
+    //    svgFix.findGenerator(text);
   }
 
   virtual void on_cdata_block(const Glib::ustring& text) {
@@ -33,6 +39,7 @@ protected:
 
   virtual void on_start_element(const Glib::ustring& name, const AttributeList& properties) {
     if (name == "svg") {
+      svgFix.findInkscapeVersion(name, properties);
       svgFix.fixViewbox(name, properties);
     } else if (name == "image") {
       svgFix.fixJpeg(name, properties);
@@ -55,13 +62,14 @@ void SvgFix::writeSvg(const Glib::ustring& name, const SaxParser::AttributeList&
   writeSvg(">");
 }
 
+
 void SvgFix::findGenerator(const Glib::ustring& text) {
   if(text.find("Inkscape") != string::npos) {
     this->generator = SvgFix::Inkscape;
-    /* Inkscape uses 90dpi as default resolution for the coordinates
-     * in the svg but doesn't use a viewbox to make it scale correctly.
-     * -> set the resolution to 90dpi so that the viewbox will correct the scale.
-     */
+    // Inkscape uses 90dpi as default resolution for the coordinates
+    // in the svg but doesn't use a viewbox to make it scale correctly.
+    // -> set the resolution to 90dpi so that the viewbox will correct the scale.
+
     this->document.dpi = SvgDocument::INKSCAPE_DEFAULT_RES;
   } else if (text.find("CorelDRAW") != string::npos) {
     this->generator = SvgFix::CorelDraw;
@@ -104,6 +112,16 @@ void SvgFix::fixJpeg(const Glib::ustring& name, const SaxParser::AttributeList& 
   writeSvg(">");
 }
 
+void SvgFix::findInkscapeVersion(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
+  for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
+    Attribute attr = *it;
+
+    if (attr.name == "inkscape:version") {
+      this->inkscapeVersion = attr.value;
+    }
+  }
+}
+
 void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
 
@@ -114,25 +132,50 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
     if (viewBox.empty() && attr.name == "viewBox") {
         viewBox = document.make_attriburestring(attr);
     } else {
-      if (attr.name == "width")
+      if (attr.name == "width") {
         document.width = document.parseDistance(attr.value);
-      else if (attr.name == "height")
+        if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
+          attr.value = boost::lexical_cast<string>(document.width.in(PX)* 1.42);
+        }
+      }
+      else if (attr.name == "height") {
         document.height = document.parseDistance(attr.value);
-
+        if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
+          attr.value = boost::lexical_cast<string>(document.height.in(PX) * 1.42);
+        }
+      }
       writeSvg(document.make_attriburestring(attr));
     }
   }
 
   // generate a viewBox in pixels reflecting the resolution
-  if(viewBox.empty()) {
-    if(generator == Inkscape) {
-      // inkscape uses a default resoluton of 90 dpi while rsvg assumes 72 dpi
+  if(generator != Inkscape && !this->inkscapeVersion.empty()) {
+  /*  std::vector<std::string> tokens1;
+    boost::split(tokens1, viewBox, boost::is_any_of("\""));
+    if(tokens1.size() != 3)
+      CtrlCutException::malformedDocument("Invalid viewBox detected");
+
+    std::vector<std::string> tokens2;
+    boost::split(tokens2, tokens1[1], boost::is_any_of(" "));
+    if(tokens2.size() != 4)
+      CtrlCutException::malformedDocument("Invalid viewBox detected");
+    double dpiFactor = (90.0/72.0);
+    Coord_t x = boost::lexical_cast<Coord_t>(tokens2[0]) * dpiFactor;
+    Coord_t y = boost::lexical_cast<Coord_t>(tokens2[1]) * dpiFactor;
+    Distance w = Distance(boost::lexical_cast<Coord_t>(tokens2[2]) * dpiFactor, PX, document.width.resolution);
+    Distance h = Distance(boost::lexical_cast<Coord_t>(tokens2[3]) * dpiFactor, PX, document.height.resolution);
+
+    viewBox = document.make_viewboxstring(x, y, w, h);*/
+
+  } else if(generator == Inkscape) {
+    if(viewBox.empty()) {
+    // inkscape uses a default resoluton of 90 dpi while rsvg assumes 72 dpi
       Distance w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
       Distance h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
       viewBox = document.make_viewboxstring(0, 0, w, h);
-    } else {
-      viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
     }
+  } else {
+    viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
   }
   writeSvg(viewBox + ">");
 }

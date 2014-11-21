@@ -98,7 +98,7 @@ void Document::remove(EngravingPtr engraving) {
 Document::Format Document::guessFileFormat(const string& filename) {
   string base = basename(strdup(filename.c_str()));
   string suffix = base.substr(base.rfind(".") + 1);
-  transform ( suffix.begin(), suffix.end(), suffix.begin(), &Util::lower_case );
+  transform ( suffix.begin(), suffix.end(), suffix.begin(), lower_case );
 
   if (suffix == "vector")
     return VECTOR;
@@ -162,7 +162,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
           CtrlCutException::generalError("unable to open input file:" + filename);
         }
       } else if(docFormat == PDF) {
-        string psFile = Util::make_temp_filename();
+        string psFile = make_temp_filename();
         if (!psparser->pdfToPs(filename, psFile)) {
           CtrlCutException::generalError("unable to convert pdf:" + filename);
         }
@@ -173,7 +173,7 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       }
 
       string fname = filename;
-      string file_basename = Util::make_temp_filename();
+      string file_basename = make_temp_filename();
 
       // Write out the incoming cups data if debug is enabled.
       // FIXME: This is disabled for now since it has a bug:

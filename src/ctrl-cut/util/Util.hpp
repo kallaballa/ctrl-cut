@@ -7,17 +7,9 @@
 #define UTIL_H_
 
 #include <string>
-#include <boost/filesystem.hpp>
 
-class Util {
-public:
-  static int lower_case (int c) {
-    return tolower(c);
-  }
-
-  static string make_temp_filename() {
-    return (boost::filesystem::temp_directory_path() /= boost::filesystem::unique_path()).native();
-  }
-};
+int lower_case (int c);
+void install_signal_handlers();
+std::string make_temp_filename(const std::string suffix = "");
 
 #endif /* UTIL_H_ */

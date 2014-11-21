@@ -11,7 +11,6 @@ void CupsGetOpt::print_usage(const string &name) {
   cerr << name << " " << STRINGIFY(CTRLCUT_VERSION) << endl;
   cerr << "Usage: " << name << " [options] job-id user title copies options [file]" << endl << endl;
   cerr << "Options:" << endl;
-  cerr << "  -x        Output xml files for debugging" << endl;
   cerr << "  -f <file> Read vectors from the given file instead of the postscript" << endl;
   exit(1);
 }
@@ -25,9 +24,6 @@ CupsOptions CupsGetOpt::load_document(Document& doc, int argc, char *argv[]) {
   int c;
   while ((c = getopt(argc, argv, "x")) != -1) {
     switch (c) {
-    case 'x':
-      doc.put(DS::DUMP_XML, true);
-      break;
     case ':':
       print_usage(argv[0]);
       break;

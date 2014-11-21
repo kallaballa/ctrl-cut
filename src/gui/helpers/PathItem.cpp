@@ -21,7 +21,7 @@ PathItem::PathItem(const Path& path, QGraphicsItem *parent) :
     }
 
     QGraphicsPathItem::setPath(painter);
-    QGraphicsPathItem::setPen(QPen(Qt::blue));
+    QGraphicsPathItem::setPen(QPen(Qt::red));
   }
 }
 

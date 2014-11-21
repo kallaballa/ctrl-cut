@@ -611,17 +611,7 @@
          </property>
          <item>
           <property name="text">
-           <string>Simple</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>Inner-Outer</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Shortest Path</string>
           </property>
          </item>
          <item>
