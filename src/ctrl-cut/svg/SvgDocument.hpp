@@ -35,6 +35,8 @@ public:
   const static double SVG_DEFAULT_RES;
   const static double INKSCAPE_DEFAULT_RES;
 
+  Distance x;
+  Distance y;
   Distance width;
   Distance height;
   double dpi;

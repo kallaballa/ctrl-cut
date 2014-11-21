@@ -497,7 +497,19 @@ void MainWindow::sceneSelectionChanged()
 
 
   QList<QGraphicsItem *> selecteditems = this->scene->selectedItems();
-/*
+  foreach(QGraphicsItem *item, this->scene->items()) {
+    if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
+      cci->setHighlighted(false);
+    }
+  }
+
+  foreach(QGraphicsItem *item, selecteditems) {
+    if (AbstractCtrlCutItem *cci = dynamic_cast<AbstractCtrlCutItem*>(item)) {
+      cci->setHighlighted(true);
+    }
+  }
+
+  /*
   foreach(QGraphicsItem *item, selecteditems) {
     QRectF rect = item->boundingRect();
     QRectF chrect = item->childrenBoundingRect();

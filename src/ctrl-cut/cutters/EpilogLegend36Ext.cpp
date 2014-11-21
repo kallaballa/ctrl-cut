@@ -140,6 +140,8 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
         out << format(PCL_UPPERLEFT_X) % 1;
         out << format(PCL_UPPERLEFT_Y) % 1;
       break;
+      default:
+        break;
       }
     }
   }

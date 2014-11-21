@@ -50,7 +50,6 @@ public:
   const static Key<bool> ENABLE_CUT;
   const static Key<bool> LOAD_CUT;
   const static Key<bool> LOAD_ENGRAVING;
-  const static Key<bool> DUMP_XML;
 
   DocumentSettings();
   ~DocumentSettings() {}
