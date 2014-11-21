@@ -47,10 +47,12 @@ public:
   };
   SvgDocument document;
   DocGenerator generator;
+  string inkscapeVersion;
   void writeSvg(const string& s);
   void writeSvg(const Glib::ustring& name, const SaxParser::AttributeList& properties);
   void findGenerator(const Glib::ustring& text);
   void fixJpeg(const Glib::ustring& name, const AttributeList& properties);
+  void findInkscapeVersion(const Glib::ustring& name, const SaxParser::AttributeList& properties);
   void fixViewbox(const Glib::ustring& name, const AttributeList& properties);
   void writeBase64Image(const string& mimetype, string& pngBase64);
 

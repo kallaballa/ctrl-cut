@@ -7,12 +7,14 @@
 #ifndef CTRLCUTEXCEPTION_H_
 #define CTRLCUTEXCEPTION_H_
 
+#include <string>
 #include "boost/filesystem.hpp"
 #include "boost/exception/all.hpp"
 #include "boost/system/error_code.hpp"
 
 namespace bfs = boost::filesystem;
 namespace berrc = boost::system::errc;
+using std::string;
 
 class CtrlCutException {
   class setting_not_found : public std::exception
