@@ -335,15 +335,9 @@ void ObjectPropertyWidget::on_sort_update(int s) {
   if(currentState == Cut) {
     switch(s) {
     case 0:
-      this->ci->cut->put(CS::SORT, CS::SIMPLE);
-        break;
-    case 1:
       this->ci->cut->put(CS::SORT, CS::INNER_OUTER);
         break;
-    case 2:
-      this->ci->cut->put(CS::SORT, CS::SHORTEST_PATH);
-        break;
-    case 3:
+    case 1:
       this->ci->cut->put(CS::SORT, CS::TSP);
         break;
     }
