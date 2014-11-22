@@ -88,7 +88,8 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
 	   ./cutters/EpilogLegend36Ext.cpp \
-           ./cut/operations/Deonion.cpp \
+           ./cut/Cut.cpp \
+					 ./cut/operations/Deonion.cpp \
            ./cut/operations/NearestPathSorting.cpp \
            ./cut/operations/Traveller.cpp \
            ./cut/operations/Planar.cpp \

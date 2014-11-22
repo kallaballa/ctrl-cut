@@ -51,78 +51,6 @@ public:
     this->clear();
   }
 
-  /*!
-   Loads vector data from EPS/Ghostscript output
-   */
-  bool load(std::istream &input) {
-    std::string line;
-    char first;
-    int power, x, y;
-    int lx = 0, ly = 0;
-    int mx = 0, my = 0;
-    LOG_INFO_STR("Load vector data");
-    int segmentCnt = 0;
-
-    while (std::getline(input, line)) {
-      first = line[0];
-      //std::cerr << line << std::endl;
-
-      if (first == 'X') { // End of output
-        break;
-      }
-
-      if (isalpha(first)) {
-        switch (first) {
-        case 'M': // move to
-          if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-            lx = x;
-            ly = y;
-            mx = x;
-            my = y;
-          }
-          break;
-        case 'C': // close
-          if (lx != mx || ly != my) {
-            segmentCnt++;
-            add(*this, Segment(Point(lx,ly),Point(mx,my)));
-          }
-          break;
-        case 'P': // power
-          if (sscanf(line.c_str() + 1, "%d", &x) == 1) {
-            // FIXME: While testing, ignore the strange color-intensity-is-power convension
-            //          power = x;
-            power = -1;
-          }
-          break;
-        case 'L': // line to
-          if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
-            segmentCnt++;
-            add(*this, Segment(Point(lx,ly),Point(x,y)));
-            lx = x;
-            ly = y;
-          }
-          break;
-        }
-      }
-    }
-
-    LOG_DEBUG_MSG("loaded segments", segmentCnt);
-
-    if (this->empty()) {
-      return false;
-    }
-
-    return true;
-  }
-
-  /*!
-   Loads vector data from EPS/Ghostscript output from the given file
-   */
-  bool load(const std::string &filename) {
-    std::ifstream infile(filename.c_str(), std::ios_base::in);
-    return this->load(infile);
-  }
-
   void normalize() {
     typedef CutImpl<Tcontainer, Tallocator> CutPtr;
     typedef DocumentSettings DS;
@@ -244,5 +172,8 @@ typedef std::shared_ptr<Cut> CutPtr;
 inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {
   return MultiSegmentView<const Cut>(*cut.get());
 }
+
+std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input);
+std::vector<CutPtr> load_cuts(DocumentSettings& ds, const std::string &filename);
 
 #endif /* CUT_H_ */
