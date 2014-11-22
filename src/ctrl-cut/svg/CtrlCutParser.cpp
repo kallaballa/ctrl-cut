@@ -205,8 +205,6 @@ protected:
     uint32_t speed, power;
     Point pos;
 
-    if(findValue(prop, "inkscape:version",value))
-
     if(!findValue(prop, "ctrlcut:type",value))
       CtrlCutException::malformedDocument("Couldn't determine layer type");
     type = value;
@@ -307,7 +305,7 @@ protected:
         break;
       }
     } else {
-      CtrlCutException::malformedDocument("Unknown layer type encountered");
+      CtrlCutException::malformedDocument("Unknown layer type encountered: " + type);
     }
   }
 

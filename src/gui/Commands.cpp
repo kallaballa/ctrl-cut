@@ -179,6 +179,13 @@ void ImportCommand::redo() {
     bool loadVector = imd.isVectorDataEnabled();
     bool loadRaster = imd.isRasterDataEnabled();
     imported = this->scene->load(filename, loadVector, loadRaster);
+    foreach(QGraphicsItem* item, this->scene->items()) {
+      item->setSelected(false);
+    }
+
+    foreach(QGraphicsItem* item, imported) {
+      item->setSelected(true);
+    }
   }
 }
 
@@ -331,14 +338,10 @@ void PasteCommand::redo() {
     foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
       itemsAdded.append(item->clone());
     }
+  }
 
-    foreach (AbstractCtrlCutItem *item, itemsAdded) {
-      this->scene->add(*item);
-    }
-  } else {
-    foreach (AbstractCtrlCutItem *item, itemsAdded) {
-      this->scene->add(*item);
-    }
+  foreach (AbstractCtrlCutItem *item, itemsAdded) {
+    this->scene->add(*item);
   }
 }
 

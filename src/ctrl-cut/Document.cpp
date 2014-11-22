@@ -283,18 +283,16 @@ std::pair<Document::CutList, Document::EngraveList> Document::load(const string&
       }
     }
 
-    CutPtr cut = NULL;
     if (loadCut) {
+      std::vector<CutPtr> cuts;
       if (docFormat == VECTOR) {
-        cut = CutPtr(new Cut(settings()));
-        cut->load(filename);
+        cuts = load_cuts(settings(), filename);
       }
       else if (parser) {
-        cut = CutPtr(new Cut(settings()));
-        cut->load(parser->getVectorData());
+        cuts = load_cuts(settings(), parser->getVectorData());
       }
 
-      if (cut)  {
+      for(CutPtr cut : cuts) {
         this->push_back(cut);
         newCuts.push_back(cut);
       }
