@@ -338,14 +338,10 @@ void PasteCommand::redo() {
     foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
       itemsAdded.append(item->clone());
     }
+  }
 
-    foreach (AbstractCtrlCutItem *item, itemsAdded) {
-      this->scene->add(*item);
-    }
-  } else {
-    foreach (AbstractCtrlCutItem *item, itemsAdded) {
-      this->scene->add(*item);
-    }
+  foreach (AbstractCtrlCutItem *item, itemsAdded) {
+    this->scene->add(*item);
   }
 }
 
