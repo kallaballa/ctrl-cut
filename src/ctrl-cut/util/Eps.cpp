@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
-
+#include <locale>
+#include <sstream>
 
 /*!
   This hack searches for a bbox at the end of the file, but in a really dumb way.
@@ -163,6 +164,10 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
       if(resolution == 1200)
         linethreshold += 5;
 
+      std::stringstream ss;
+      ss.imbue(std::locale("C"));
+      ss << linethreshold;
+
       startfound = true;
       // Define === to print whatever is on the stack
       fprintf(eps_file, "/=== { (        ) cvs print } def\n");
@@ -171,7 +176,7 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
               "/stroke { " // define stroke
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
-              "0 get mul %f lt " // Check linewidth (hackish; only checks the matrix x axis scale)
+              "0 get mul %s lt " // Check linewidth (hackish; only checks the matrix x axis scale)
               // If linewidth < 3 points, this will be cut.
               // FIXME: We should decide which threshold to use.
               // 5 points is ca. 1.75 mm which is way too much.
@@ -188,7 +193,7 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
               // If linewidth >= 5, this will be lasercut:
               "{stroke}"
               "ifelse "              // The actual ifelse statement - reverse boolean ftw!
-              "} bind def\n", linethreshold); // end define stroke
+              "} bind def\n", ss.str().c_str()); // end define stroke
       // Redefine showpage to first print "X"
       fprintf(eps_file, "/showpage { (X)= showpage } bind def\n");
     }
