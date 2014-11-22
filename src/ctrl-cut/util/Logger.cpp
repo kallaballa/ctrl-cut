@@ -10,7 +10,6 @@
 Logger* Logger::instance = NULL;
 
 void Logger::init(const LogLevel l) {
-  setlocale(LC_NUMERIC, "C");
   Logger::instance = new Logger(l);
   install_signal_handlers();
 }
