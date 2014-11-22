@@ -183,6 +183,7 @@ std::vector<AbstractCtrlCutItem*> CtrlCutScene::load(const QString filename, boo
   } catch(std::exception& ex) {
     showErrorDialog("Unable to load file:" + filename.toStdString(), ex.what());
   }
+
   return items;
 }
 

@@ -179,6 +179,13 @@ void ImportCommand::redo() {
     bool loadVector = imd.isVectorDataEnabled();
     bool loadRaster = imd.isRasterDataEnabled();
     imported = this->scene->load(filename, loadVector, loadRaster);
+    foreach(QGraphicsItem* item, this->scene->items()) {
+      item->setSelected(false);
+    }
+
+    foreach(QGraphicsItem* item, imported) {
+      item->setSelected(true);
+    }
   }
 }
 
