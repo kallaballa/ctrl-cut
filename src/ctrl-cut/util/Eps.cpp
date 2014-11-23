@@ -183,7 +183,7 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
               // 5 points is ca. 1.75 mm which is way too much.
               // e.g. 0.025 mm would amount to 0.07 points.
               // Print "P" followed by a number for the amount of red (0-100)
-              "{ (P)=== currentrgbcolor pop pop 100 mul round cvi = "
+              "{ "
               "flattenpath " // Convert all graphics to lines
               "{transform (M)=== 1 sub round cvi === (,)=== 1 sub round cvi =}" // move
               "{transform (L)=== 1 sub round cvi === (,)=== 1 sub round cvi =}" // line
