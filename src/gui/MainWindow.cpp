@@ -427,8 +427,8 @@ void MainWindow::on_filePrintAction_triggered()
           if(cut1 == cut2 || cut1->settings == cut2->settings)
             continue;
 
-          Box b1 = cut1->findBoundingBox();
-          Box b2 = cut2->findBoundingBox();
+          Box b1 = find_bounding_box(*cut1.get());
+          Box b2 = find_bounding_box(*cut2.get());
 
           overlap = intersects(b1, b2) || intersects(b2, b1);
           if(overlap)

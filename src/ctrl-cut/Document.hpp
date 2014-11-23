@@ -90,7 +90,7 @@ public:
     Coord_t maxy = 0;
 
     for(const EngravingPtr eng : engravings()) {
-        Box b = eng->findBoundingBox();
+        Box b = find_bounding_box(*eng.get());
         minx = std::min(b.min_corner.x , minx);
         miny = std::min(b.min_corner.y , miny);
         maxx = std::max(b.max_corner.x , maxx);
@@ -106,7 +106,7 @@ public:
     Coord_t maxx = 0;
     Coord_t maxy = 0;
     for(const CutPtr cut : cuts()) {
-        Box b = cut->findBoundingBox();
+        Box b = find_bounding_box(*cut.get());
         minx = std::min(b.min_corner.x , minx);
         miny = std::min(b.min_corner.y , miny);
         maxx = std::max(b.max_corner.x , maxx);

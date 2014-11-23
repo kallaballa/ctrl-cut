@@ -144,25 +144,6 @@ public:
     this->clear();
     Route_t::operator=(other);
   }
-
-  Box findBoundingBox() {
-    Box b;
-    Coord_t minx = std::numeric_limits<Coord_t>::max();
-    Coord_t miny = std::numeric_limits<Coord_t>::max();
-    Coord_t maxx = 0;
-    Coord_t maxy = 0;
-    Point translate = Route_t::get(CutSettings::CPOS);
-    for(const Path& pt : *this) {
-      for(const Point& p : pt) {
-        minx = std::min(p.x + translate.x, minx);
-        miny = std::min(p.y + translate.y, miny);
-        maxx = std::max(p.x + translate.x, maxx);
-        maxy = std::max(p.y + translate.y, maxy);
-      }
-    }
-
-    return Box(minx, miny, maxx, maxy);
-  }
 };
 
 typedef CutImpl<std::vector, std::allocator> Cut;
@@ -175,5 +156,6 @@ inline MultiSegmentView<const Cut> segments(const CutPtr& cut) {
 
 std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input);
 std::vector<CutPtr> load_cuts(DocumentSettings& ds, const std::string &filename);
+Box find_bounding_box(Cut& cut);
 
 #endif /* CUT_H_ */

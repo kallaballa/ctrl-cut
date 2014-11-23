@@ -30,6 +30,7 @@ class CtrlCutScene : public QGraphicsScene
 public:
   QList<class AbstractCtrlCutItem *> itemClipboard;
   QList<Settings *> settingsClipboard;
+  QPointF mousePos;
 
   CtrlCutScene(QObject *parent = 0);
   ~CtrlCutScene() {}
@@ -54,6 +55,7 @@ signals:
 
 protected:
    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+   void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
    virtual void drawBackground(QPainter *painter, const QRectF &rect);
 private:

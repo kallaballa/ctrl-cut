@@ -84,3 +84,22 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, const std::string &filename)
   std::ifstream infile(filename.c_str(), std::ios_base::in);
   return load_cuts(ds, infile);
 }
+
+Box find_bounding_box(Cut& cut) {
+  Box b;
+  Coord_t minx = std::numeric_limits<Coord_t>::max();
+  Coord_t miny = std::numeric_limits<Coord_t>::max();
+  Coord_t maxx = 0;
+  Coord_t maxy = 0;
+  Point translate = cut.get(CutSettings::CPOS);
+  for(const Path& pt : cut) {
+    for(const Point& p : pt) {
+      minx = std::min(p.x + translate.x, minx);
+      miny = std::min(p.y + translate.y, miny);
+      maxx = std::max(p.x + translate.x, maxx);
+      maxy = std::max(p.y + translate.y, maxy);
+    }
+  }
+
+  return Box(minx, miny, maxx, maxy);
+}
