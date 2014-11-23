@@ -174,7 +174,7 @@ bool ps_to_eps(FILE *ps_file, FILE *eps_file, uint32_t resolution)
       // Redefine stroke to also print the coordinates
       fprintf(eps_file,
               "/stroke { " // define stroke
-              "(R)=== mark currentcolor counttomark -1 1 { -1 roll 20 string cvs print ( ) print} for flush pop (\n) === "
+              "(R)=== mark currentcolor counttomark -1 1 { -1 roll 20 string cvs print (,) print} for flush pop (\n) === "
               "currentlinewidth " // Put current line width on stack
               "matrix currentmatrix " // Get current matrix
               "0 get mul %s lt " // Check linewidth (hackish; only checks the matrix x axis scale)
