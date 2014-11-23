@@ -335,9 +335,33 @@ void PasteCommand::undo() {
 }
 void PasteCommand::redo() {
   if(itemsAdded.empty()) {
+    CutItem* ci;
+    EngraveItem* ei;
+
+    std::vector<Box> boxes;
     foreach (AbstractCtrlCutItem *item, this->scene->itemClipboard) {
       itemsAdded.append(item->clone());
+      if((ci = dynamic_cast<CutItem* >(item))) {
+        boxes.push_back(find_bounding_box(*ci->cut.get()));
+      } else if((ei = dynamic_cast<EngraveItem* >(item))) {
+        boxes.push_back(find_bounding_box(*ei->engraving.get()));
+      }
     }
+
+    Box itemsAddedBox = find_bounding_box(boxes);
+    Point mousePos(this->scene->mousePos.x(), this->scene->mousePos.y());
+    Point center(itemsAddedBox.min_corner.x + (itemsAddedBox.width() / 2), itemsAddedBox.min_corner.y + (itemsAddedBox.height() / 2));
+
+    foreach (AbstractCtrlCutItem *item, itemsAdded) {
+      QPointF itemPos = item->pos();
+      QPointF newPos = QPointF(
+          itemPos.x() + mousePos.x - itemsAddedBox.min_corner.x - (itemsAddedBox.width() / 2),
+          itemPos.y() + mousePos.y - itemsAddedBox.min_corner.y - (itemsAddedBox.height() / 2)
+      );
+      item->setPos(newPos);
+      item->commit();
+    }
+    this->scene->update();
   }
 
   foreach (AbstractCtrlCutItem *item, itemsAdded) {

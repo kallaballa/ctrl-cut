@@ -78,7 +78,7 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   this->currentResolution = this->ci->cut->get(DS::RESOLUTION);
 
   MainWindow* mainw = qobject_cast<MainWindow*>(this->parentWidget()->parentWidget());
-  Box bbox = ci->cut->findBoundingBox();
+  Box bbox = find_bounding_box(*ci->cut.get());
   double width = Distance(bbox.width(),PX,this->currentResolution).in(this->currentUnit);
   double height = Distance(bbox.height(),PX,this->currentResolution).in(this->currentUnit);
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
@@ -179,7 +179,7 @@ void ObjectPropertyWidget::enableEngraveItem(EngraveItem* ei) {
   mainw->direction->show();
   mainw->directionLabel->show();
 
-  Box bbox = ei->engraving->findBoundingBox();
+  Box bbox = find_bounding_box(*ei->engraving.get());
   double posX = Distance(pos.x,PX,this->currentResolution).in(this->currentUnit);
   double posY = Distance(pos.y,PX,this->currentResolution).in(this->currentUnit);
   double width = Distance(bbox.width(),PX,this->currentResolution).in(this->currentUnit);

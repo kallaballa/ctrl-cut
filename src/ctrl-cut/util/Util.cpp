@@ -24,6 +24,7 @@ void delete_temp_files() {
 void delete_temp_files_handler(int param) {
   std::cerr << "Caught SIGINT!" << std::endl;
   delete_temp_files();
+  exit(1);
 }
 
 void install_signal_handlers() {

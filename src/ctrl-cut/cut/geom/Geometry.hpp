@@ -281,6 +281,22 @@ public:
   }
 };
 
+inline Box find_bounding_box(const std::vector<Box> boxes) {
+  Coord_t minx = std::numeric_limits<Coord_t>::max();
+  Coord_t miny = std::numeric_limits<Coord_t>::max();
+  Coord_t maxx = 0;
+  Coord_t maxy = 0;
+
+  for(const Box& b: boxes) {
+      minx = std::min(b.min_corner.x , minx);
+      miny = std::min(b.min_corner.y , miny);
+      maxx = std::max(b.max_corner.x , maxx);
+      maxy = std::max(b.max_corner.y , maxy);
+  }
+
+  return Box(minx, miny, maxx, maxy);
+}
+
 BOOST_GEOMETRY_REGISTER_BOX(Box, Point, min_corner, max_corner)
 
 inline bool intersects(Box b1, Box b2) {
