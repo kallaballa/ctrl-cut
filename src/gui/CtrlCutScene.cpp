@@ -100,6 +100,12 @@ void CtrlCutScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   }
 }
 
+void CtrlCutScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+  QGraphicsScene::mouseMoveEvent(event);
+  //record mouse postions
+  this->mousePos = QPointF(event->scenePos().x(), event->scenePos().y());
+}
+
 void CtrlCutScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   QPointF mousePos(event->buttonDownScenePos(Qt::LeftButton).x(),
       event->buttonDownScenePos(Qt::LeftButton).y());

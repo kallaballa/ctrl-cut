@@ -100,6 +100,7 @@ SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cut/operations/Merge.cpp \
            ./cut/operations/Chop.cpp \
            ./svg/SvgPlot.cpp \
+           ./engrave/Engrave.cpp \
            ./engrave/dither/DitherBayer.cpp \
            ./engrave/dither/DitherFloydSteinberg.cpp \
            ./engrave/dither/DitherBurke.cpp \
