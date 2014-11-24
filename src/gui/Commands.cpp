@@ -348,6 +348,7 @@ void PasteCommand::redo() {
       }
     }
 
+    //move items to current mouse location
     Box itemsAddedBox = find_bounding_box(boxes);
     Point mousePos(this->scene->mousePos.x(), this->scene->mousePos.y());
     Point center(itemsAddedBox.min_corner.x + (itemsAddedBox.width() / 2), itemsAddedBox.min_corner.y + (itemsAddedBox.height() / 2));
