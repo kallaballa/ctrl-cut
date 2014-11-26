@@ -68,7 +68,7 @@ PJL_STRING(PCL_POS_X, "\x1B*p%dX")
 PJL_STRING(PCL_POS_Y, "\x1B*p%dY")
 
 /* PCL section end */
-PJL_STRING(PCL_SECTION_END, "\x1B%1B")
+PJL_STRING(HPGL_START, "\x1B%1B")
 
 /* Reset PCL */
 PJL_STRING(PCL_RESET, "\x1B\x45")

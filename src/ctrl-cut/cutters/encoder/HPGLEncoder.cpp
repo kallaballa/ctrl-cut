@@ -39,6 +39,7 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encodee) {
         out << HPGL_END;
         out << SEP;
       }
+      out << HPGL_START;
       out << V_INIT << SEP;
       out << format(V_POWER) % power_set << SEP;
       out << format(V_SPEED) % speed_set << SEP;
