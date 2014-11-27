@@ -6,6 +6,20 @@
 
 #include "Cut.hpp"
 
+    #include<sstream>
+    template <typename T>
+    std::string to_string(T value)
+    {
+      //create an output string stream
+      std::ostringstream os ;
+
+      //throw the value into the string stream
+      os << value ;
+
+      //convert the string stream into a string and return
+      return os.str() ;
+    }
+
 std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
   std::string line;
   char first;
@@ -47,7 +61,7 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
         break;
       case 'R': // color change
         if (sscanf(line.c_str() + 1, "%f,%f,%f", &r, &g, &b) == 3) {
-          string key = std::to_string(r) + std::to_string(g)+ std::to_string(b);
+          string key = to_string(r) + to_string(g)+ to_string(b);
           auto it = cuts.find(key);
           if(it == cuts.end()) {
             current = CutPtr(new Cut(ds));
