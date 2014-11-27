@@ -55,7 +55,7 @@ void Dither::carryOver(const uint32_t x, const uint32_t y, const int8_t carryove
 
 BitmapImage Dither::dither(Point translate) {
   Pixel<uint8_t> pix;
-  uint8_t byteAlignOff = (8 - ((int)std::round(translate.x)) % 8) % 8;
+  uint8_t byteAlignOff = (8 - ((int)round(translate.x)) % 8) % 8;
   uint32_t scanlineBreak = (this->img.width() - byteAlignOff);
   uint8_t scanlineRem = scanlineBreak % 8;
   scanlineBreak -= scanlineRem;
