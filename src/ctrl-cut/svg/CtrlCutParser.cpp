@@ -53,7 +53,7 @@ protected:
   Point parseTransform(const std::string& input) {
     boost::regex re;
     boost::cmatch matches;
-    re = "translate[(]\\s*(\\d*)\\s*,\\s*(\\d*)\\s*[)]";
+    re = "translate[(]\\s*(-?\\d*)\\s*,\\s*(-?\\d*)\\s*[)]";
 
     if (boost::regex_match(input.c_str(), matches, re)) {
       if(matches.size() == 3) {

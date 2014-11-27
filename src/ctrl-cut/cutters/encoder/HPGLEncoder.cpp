@@ -17,8 +17,6 @@ void HPGLEncoder::encode(std::ostream &out, Cut& encodee) {
   bool firstOperation = true;
   bool writingPolyline = false;
 
-  int cnt = 0;
-
   int power_set = encodee.get(CutSettings::CPOWER);
   int speed_set = encodee.get(CutSettings::CSPEED);
   int freq_set = encodee.get(CutSettings::FREQUENCY);
