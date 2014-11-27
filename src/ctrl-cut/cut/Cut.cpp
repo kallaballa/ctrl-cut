@@ -72,7 +72,8 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
 
   std::vector<CutPtr> result;
   for(auto pair : cuts) {
-    result.push_back(pair.second);
+    if(!pair.second->empty())
+      result.push_back(pair.second);
   }
   return result;
 }

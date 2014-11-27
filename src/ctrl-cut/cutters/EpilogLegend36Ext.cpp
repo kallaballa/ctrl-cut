@@ -158,8 +158,6 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
         out << "LT";
     }*/
 
-    out << PCL_SECTION_END;
-
     /* We're going to perform a vector print. */
     for(CutPtr cutp : doc.cuts()) {
       Cut& cut = *cutp;
@@ -169,7 +167,7 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
       HPGLEncoder::encode(out,translated);
     }
   }
-  out << PCL_SECTION_END << HPGL_PEN_UP;
+  out << HPGL_START << HPGL_PEN_UP;
   out << PCL_RESET;
   out << PJL_FOOTER;
 
