@@ -9,7 +9,6 @@ Makefile
 *.o
 *.dylib
 *.so
-*.svg
 *.cut
 src/ctrl-cut/libctrl-cut.so*
 src/gui/gui
