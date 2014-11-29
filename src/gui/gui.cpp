@@ -50,6 +50,7 @@ int main(int argc, char **argv)
     nd.loadFrom(MainWindow::instance()->guiConfig);
     if (nd.exec() == QDialog::Accepted) {
       MainWindow::instance()->getScene()->newJob(nd.getResolution(),nd.getWidth(),nd.getHeight());
+      MainWindow::instance()->objectProperties->setDocument(MainWindow::instance()->getScene()->getDocumentHolder()->doc);
       nd.saveTo(MainWindow::instance()->guiConfig);
     } else {
       exit(0);
