@@ -5,7 +5,7 @@
  */
 #include "Explode.hpp"
 #include "util/Logger.hpp"
-#include "cut/geom/algorithms/Append.hpp"
+#include "cut/geom/algorithms/Add.hpp"
 #include <CGAL/Cartesian.h>
 #include <CGAL/MP_Float.h>
 #include <CGAL/Quotient.h>
@@ -36,7 +36,7 @@ void explode(const Route& src, Route& sink) {
     double y1 = CGAL::to_double(subseg.source()[1]);
     double x2 = CGAL::to_double(subseg.target()[0]);
     double y2 = CGAL::to_double(subseg.target()[1]);
-    append(sink, Segment(Point(x1,y1), Point(x2,y2)));
+    add(sink, Segment(Point(x1,y1), Point(x2,y2)));
   }
   LOG_DEBUG(sink.size());
 }
