@@ -25,8 +25,7 @@ protected:
   }
 
   virtual void on_comment(const Glib::ustring& text){
-    //inkscape preserves the generator comment, so we can't use this anymore
-    //    svgFix.findGenerator(text);
+    svgFix.findGenerator(text);
   }
 
   virtual void on_cdata_block(const Glib::ustring& text) {
@@ -64,7 +63,7 @@ void SvgFix::writeSvg(const Glib::ustring& name, const SaxParser::AttributeList&
 
 
 void SvgFix::findGenerator(const Glib::ustring& text) {
-  if(text.find("Inkscape") != string::npos) {
+  if(text.find("Created with Inkscape") != string::npos) {
     this->generator = SvgFix::Inkscape;
     // Inkscape uses 90dpi as default resolution for the coordinates
     // in the svg but doesn't use a viewbox to make it scale correctly.
