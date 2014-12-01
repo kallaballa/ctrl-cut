@@ -44,7 +44,6 @@ public:
   const static Key<bool> AUTO_FOCUS;
   const static Key<AirAssist> AIR_ASSIST;
   const static Key<Center> CENTER;
-  const static Key<uint16_t> SCREEN;
 
   const static Key<bool> ENABLE_ENGRAVING;
   const static Key<bool> ENABLE_CUT;
