@@ -16,7 +16,7 @@
 void clip(Route& src, Route& sink, const Box& bounds) {
   LOG_DEBUG(src.size());
 
-  for(const SegmentPtr segPtr : segments(src)) {
+  for (const SegmentPtr segPtr : segments(src)) {
     Segment& seg = *segPtr.get();
     double width = bounds.width();
     double height = bounds.height();
@@ -29,65 +29,67 @@ void clip(Route& src, Route& sink, const Box& bounds) {
     Point intersection;
     Segment clipped = seg;
 
-    if (clipped.first.x < 0 || clipped.second.x < 0) {
-      // out of bounds;
-      if (clipped.first.x < 0 && clipped.second.x < 0) {
-        continue;
+    if (clipped.first.x < 0 || clipped.second.x < 0
+        || clipped.first.y < 0 || clipped.second.y < 0
+        || clipped.first.x > width - 1 || clipped.second.x > width - 1
+        || clipped.first.y > height - 1 || clipped.second.y > height - 1) {
+      if (clipped.first.x < 0 || clipped.second.x < 0) {
+        // out of bounds;
+        if (clipped.first.x < 0 && clipped.second.x < 0) {
+          continue;
+        }
+
+        if (intersects(clipped, leftBedBorder, intersection) == ALIGN_INTERSECT) {
+          if (clipped.first.x >= clipped.second.x)
+            clipped.second = clipped.first;
+
+          clipped.first = intersection;
+          intersection = Point();
+        }
       }
 
-      if (intersects(clipped, leftBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.x >= clipped.second.x)
-          clipped.second = clipped.first;
+      if (clipped.first.y < 0 || clipped.second.y < 0) {
+        if (clipped.first.y < 0 && clipped.second.y < 0) {
+          continue;
+        }
 
-        clipped.first = intersection;
-        intersection = Point();
+        if (intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
+          if (clipped.first.y >= clipped.second.y)
+            clipped.second = clipped.first;
+
+          clipped.first = intersection;
+
+          intersection = Point();
+        }
+      }
+
+      if (greater_than(clipped.first.x, width - 1) || greater_than(clipped.second.x, width - 1)) {
+        if (greater_than(clipped.first.x, width - 1) && greater_than(clipped.second.x, width - 1)) {
+          continue;
+        }
+
+        if (intersects(clipped, rightBedBorder, intersection) == ALIGN_INTERSECT) {
+          if (clipped.first.x <= clipped.second.x)
+            clipped.second = clipped.first;
+
+          clipped.first = intersection;
+
+          intersection = Point();
+        }
+      }
+
+      if (clipped.first.y > height - 1 || clipped.second.y > height - 1) {
+        if (clipped.first.y > height - 1 && clipped.second.y > height - 1) {
+          continue;
+        }
+        if (intersects(clipped, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
+          if (clipped.first.y <= clipped.second.y)
+
+            clipped.second = clipped.first;
+          clipped.first = intersection;
+        }
       }
     }
-
-    if (clipped.first.y < 0 || clipped.second.y < 0) {
-      if (clipped.first.y < 0 && clipped.second.y < 0) {
-        continue;
-      }
-
-      if (intersects(clipped, topBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.y >= clipped.second.y)
-          clipped.second = clipped.first;
-
-        clipped.first = intersection;
-
-        intersection = Point();
-      }
-    }
-
-    if (greater_than(clipped.first.x, width - 1)
-        || greater_than(clipped.second.x, width - 1)) {
-      if (greater_than(clipped.first.x, width - 1)
-          && greater_than(clipped.second.x, width - 1)) {
-        continue;
-      }
-
-      if (intersects(clipped, rightBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.x <= clipped.second.x)
-          clipped.second = clipped.first;
-
-        clipped.first = intersection;
-
-        intersection = Point();
-      }
-    }
-
-    if (clipped.first.y > height - 1 || clipped.second.y > height - 1) {
-      if (clipped.first.y > height - 1 && clipped.second.y > height - 1) {
-        continue;
-      }
-      if (intersects(clipped, bottomBedBorder, intersection) == ALIGN_INTERSECT) {
-        if (clipped.first.y <= clipped.second.y)
-
-          clipped.second = clipped.first;
-        clipped.first = intersection;
-      }
-    }
-
     add(sink, clipped);
   }
   LOG_DEBUG(sink.size());
