@@ -197,7 +197,7 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
     document.viewbox.max_corner.x = document.width.in(PX);
     document.viewbox.max_corner.y = document.height.in(PX);
   } else {
-    // neither an explicit viewbox nor dimensions where found. nothing to fix here.
+    // neither an explicit viewbox nor dimensions were found. nothing to fix here.
     writeSvg(">");
     return;
   }
