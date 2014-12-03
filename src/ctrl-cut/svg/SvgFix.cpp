@@ -50,7 +50,6 @@ protected:
 
 
 void SvgFix::writeSvg(const string& s) {
-  std::cerr << s << std::endl;
   *out << s;
 }
 
@@ -161,9 +160,6 @@ bool inkscape_version_greater(string one, string two) {
 void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
 
-  //a document that was created with one tool and edited with inkscape
-  bool inkscapeMutant = generator != Inkscape && !this->inkscapeVersion.empty();
-
   string strViewBox;
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
     Attribute attr = *it;
@@ -222,7 +218,6 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
   writeSvg(document.make_attriburestring("width", boost::lexical_cast<string>(document.width.in(PX))));
   writeSvg(document.make_attriburestring("height", boost::lexical_cast<string>(document.height.in(PX))));
   writeSvg(document.make_viewboxstring(document.viewbox) + ">");
-
 }
 
 void SvgFix::work() {
