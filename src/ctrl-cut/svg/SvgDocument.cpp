@@ -8,6 +8,7 @@
 #include "SvgDocument.hpp"
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
+#include "CtrlCutException.hpp"
 
 const double SvgDocument::SVG_DEFAULT_RES = 72;
 const double SvgDocument::INKSCAPE_DEFAULT_RES = 90;
@@ -64,7 +65,7 @@ Distance SvgDocument::parseDistance(string dimension) {
     for (;isspace(c) && it != dimension.end(); it++) c = *it;
 
     // collect unit
-    for (;isalpha(c); c = *(++it)) {
+    for (;isalpha(c) || c == '%'; c = *(++it)) {
       sUnit << c;
       if(it == dimension.end())
         break;
@@ -82,9 +83,11 @@ Distance SvgDocument::parseDistance(string dimension) {
         return Distance(val,IN, this->dpi);
       } else if(unit == "mm") {
         return Distance(val,MM, this->dpi);
-      } else if(unit == "px")
+      } else if(unit == "px") {
         return Distance(val,PX, this->dpi);
-      else
+      } else if(unit == "%") {
+        return Distance(-1,PX, this->dpi);
+      } else
         assert(false);
     } else {
       return Distance(val,PX, this->dpi);
@@ -93,9 +96,27 @@ Distance SvgDocument::parseDistance(string dimension) {
     assert(false);
 }
 
-const string SvgDocument::make_viewboxstring(const double& x, const double& y, const Distance& w, const Distance& h) const {
+Box SvgDocument::parseViewBox(string strViewbox) {
+  std::vector<std::string> tokens1;
+  boost::split(tokens1, strViewbox, boost::is_any_of("\""));
+  if(tokens1.size() != 3)
+    CtrlCutException::malformedDocument("Invalid viewBox detected");
+
+  std::vector<std::string> tokens2;
+  boost::split(tokens2, tokens1[1], boost::is_any_of(" "));
+  if(tokens2.size() != 4)
+    CtrlCutException::malformedDocument("Invalid viewBox detected");
+
+  Coord_t x = boost::lexical_cast<Coord_t>(tokens2[0]);
+  Coord_t y = boost::lexical_cast<Coord_t>(tokens2[1]);
+  Coord_t wRealPX = boost::lexical_cast<Coord_t>(tokens2[2]);
+  Coord_t hRealPX = boost::lexical_cast<Coord_t>(tokens2[3]);
+  return Box(x,y, wRealPX, hRealPX);
+}
+
+const string SvgDocument::make_viewboxstring(const Box& box) const {
   stringstream sVB;
-  sVB << " viewBox=\"" << x << " " << y << " " << w.in(PX) << " " <<  h.in(PX) << "\"";
+  sVB << " viewBox=\"" << box.min_corner.x << " " << box.min_corner.y << " " << box.max_corner.x << " " <<  box.max_corner.y << "\"";
   return sVB.str();
 }
 

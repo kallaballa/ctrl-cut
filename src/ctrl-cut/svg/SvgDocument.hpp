@@ -15,6 +15,7 @@
 #include <fstream>
 #include <libxml++/libxml++.h>
 #include "util/Measurement.hpp"
+#include "cut/geom/Geometry.hpp"
 
 using std::getline;
 using std::istream;
@@ -39,12 +40,13 @@ public:
   Distance y;
   Distance width;
   Distance height;
+  Box viewbox;
   double dpi;
 
   Unit parseUnit(const string unit);
   Distance parseDistance(string dimension);
-
-  const string make_viewboxstring(const double& x, const double& y, const Distance& w, const Distance& h) const;
+  Box parseViewBox(string strViewbox);
+  const string make_viewboxstring(const Box& box) const;
   const string make_attriburestring(const Attribute& attr) const;
   const string make_attriburestring(const string& name, const string& value) const;
 

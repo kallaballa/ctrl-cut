@@ -5,7 +5,6 @@
  */
 
 #include "cut/geom/Geometry.hpp"
-#include "CtrlCutException.hpp"
 #include "util/2D.hpp"
 #include "SvgFix.hpp"
 #include <boost/algorithm/string.hpp>
@@ -51,6 +50,7 @@ protected:
 
 
 void SvgFix::writeSvg(const string& s) {
+  std::cerr << s << std::endl;
   *out << s;
 }
 
@@ -161,63 +161,68 @@ bool inkscape_version_greater(string one, string two) {
 void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
 
-  string viewBox;
+  //a document that was created with one tool and edited with inkscape
+  bool inkscapeMutant = generator != Inkscape && !this->inkscapeVersion.empty();
+
+  string strViewBox;
   for (AttributeList::const_iterator it = properties.begin(); it != properties.end(); it++) {
     Attribute attr = *it;
 
-    if (viewBox.empty() && attr.name == "viewBox") {
-        viewBox = document.make_attriburestring(attr);
+    if (strViewBox.empty() && attr.name == "viewBox") {
+        strViewBox = document.make_attriburestring(attr);
     } else {
       if (attr.name == "width") {
         document.width = document.parseDistance(attr.value);
-        if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
-          attr.value = boost::lexical_cast<string>(document.width.in(PX));
+        if(document.width.value != -1) {
+          if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
+            attr.value = boost::lexical_cast<string>(document.width.in(PX));
+          }
         }
       }
       else if (attr.name == "height") {
         document.height = document.parseDistance(attr.value);
-        if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
-          attr.value = boost::lexical_cast<string>(document.height.in(PX));
+        if (document.height.value != -1) {
+          if (this->generator != Inkscape && !this->inkscapeVersion.empty()) {
+            attr.value = boost::lexical_cast<string>(document.height.in(PX));
+          }
         }
+      } else {
+        writeSvg(document.make_attriburestring(attr));
       }
-      writeSvg(document.make_attriburestring(attr));
     }
   }
 
-  // generate a viewBox in pixels reflecting the resolution
-  if(generator != Inkscape && !this->inkscapeVersion.empty()) {
-  /*  std::vector<std::string> tokens1;
-    boost::split(tokens1, viewBox, boost::is_any_of("\""));
-    if(tokens1.size() != 3)
-      CtrlCutException::malformedDocument("Invalid viewBox detected");
-
-    std::vector<std::string> tokens2;
-    boost::split(tokens2, tokens1[1], boost::is_any_of(" "));
-    if(tokens2.size() != 4)
-      CtrlCutException::malformedDocument("Invalid viewBox detected");
-    double dpiFactor = (90.0/72.0);
-    Coord_t x = boost::lexical_cast<Coord_t>(tokens2[0]) * dpiFactor;
-    Coord_t y = boost::lexical_cast<Coord_t>(tokens2[1]) * dpiFactor;
-    Distance w = Distance(boost::lexical_cast<Coord_t>(tokens2[2]) * dpiFactor, PX, document.width.resolution);
-    Distance h = Distance(boost::lexical_cast<Coord_t>(tokens2[3]) * dpiFactor, PX, document.height.resolution);
-
-    viewBox = document.make_viewboxstring(x, y, w, h);*/
-
-  } else if(generator == Inkscape && viewBox.empty()) {
-    // inkscape uses a default resoluton of 90 dpi while rsvg assumes 72 dpi
-    Distance w = Distance(document.width.in(PX), PX, document.width.resolution);
-    Distance h = Distance(document.height.in(PX), PX, document.height.resolution);
-
-    if(inkscape_version_greater(inkscapeVersion, "0.48.4")) {
-      w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
-      h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
-    }
-
-    viewBox = document.make_viewboxstring(0, 0, w, h);
-  } else if(viewBox.empty()){
-    viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
+  //fabricate a viewbox
+  if(!strViewBox.empty()) {
+    document.viewbox = document.parseViewBox(strViewBox);
+  } else if(document.width.value != -1 && document.height.value != -1) {
+    document.viewbox.min_corner.x = 0;
+    document.viewbox.min_corner.y = 0;
+    document.viewbox.max_corner.x = document.width.in(PX);
+    document.viewbox.max_corner.y = document.height.in(PX);
+  } else {
+    // neither an explicit viewbox nor dimensions where found. nothing to fix here.
+    writeSvg(">");
+    return;
   }
-  writeSvg(viewBox + ">");
+
+  // we for sure have now a viewbox, let's see if we have to fabricate dimensions
+  if((document.width.value == -1 || document.height.value == -1)) {
+    document.width = Distance(document.viewbox.max_corner.x, PX, document.dpi);
+    document.height = Distance(document.viewbox.max_corner.y, PX, document.dpi);
+  }
+
+  // we might have to fix inkscape resolution bug
+  if(generator == Inkscape && inkscape_version_greater(inkscapeVersion, "0.48.4")) {
+    Distance w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
+    Distance h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
+    document.viewbox = Box(0, 0, w.in(PX), h.in(PX));
+  }
+
+  writeSvg(document.make_attriburestring("width", boost::lexical_cast<string>(document.width.in(PX))));
+  writeSvg(document.make_attriburestring("height", boost::lexical_cast<string>(document.height.in(PX))));
+  writeSvg(document.make_viewboxstring(document.viewbox) + ">");
+
 }
 
 void SvgFix::work() {
