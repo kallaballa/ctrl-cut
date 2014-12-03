@@ -10,6 +10,7 @@
 #include "SvgFix.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include "util/Logger.hpp"
 
 class SvgSax : public SaxParser
 {
@@ -121,6 +122,42 @@ void SvgFix::findInkscapeVersion(const Glib::ustring& name, const SaxParser::Att
   }
 }
 
+
+std::vector<int> parse_inkscape_version(string v) {
+  std::vector<int> result;
+  std::vector<std::string> fields;
+  boost::split(fields, v, boost::is_any_of(". "));
+  if(fields.size() < 3) {
+    LOG_WARN_MSG("Malformed inkscape version detected", v);
+    while(fields.size() < 3) {
+      fields.push_back("0");
+    }
+  }
+
+  for(size_t i = 0; i < 3; ++i) {
+    try {
+      result.push_back(boost::lexical_cast<int>(fields[i]));
+    } catch(std::exception& ex) {
+      LOG_WARN_MSG("Malformed inkscape version detected", v);
+      result.push_back(0);
+    }
+  }
+
+  return result;
+}
+
+bool inkscape_version_greater(string one, string two) {
+  auto v1 = parse_inkscape_version(one);
+  auto v2 = parse_inkscape_version(two);
+
+  for(size_t i = 0; i < 3; ++i) {
+    if(v1[i] > v2[i])
+      return true;
+  }
+
+  return false;
+}
+
 void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeList& properties) {
   writeSvg("<" + name);
 
@@ -134,13 +171,13 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
       if (attr.name == "width") {
         document.width = document.parseDistance(attr.value);
         if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
-          attr.value = boost::lexical_cast<string>(document.width.in(PX)* 1.42);
+          attr.value = boost::lexical_cast<string>(document.width.in(PX));
         }
       }
       else if (attr.name == "height") {
         document.height = document.parseDistance(attr.value);
         if(this->generator != Inkscape && !this->inkscapeVersion.empty()) {
-          attr.value = boost::lexical_cast<string>(document.height.in(PX) * 1.42);
+          attr.value = boost::lexical_cast<string>(document.height.in(PX));
         }
       }
       writeSvg(document.make_attriburestring(attr));
@@ -168,9 +205,15 @@ void SvgFix::fixViewbox(const Glib::ustring& name, const SaxParser::AttributeLis
 
   } else if(generator == Inkscape && viewBox.empty()) {
     // inkscape uses a default resoluton of 90 dpi while rsvg assumes 72 dpi
-      Distance w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
-      Distance h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
-      viewBox = document.make_viewboxstring(0, 0, w, h);
+    Distance w = Distance(document.width.in(PX), PX, document.width.resolution);
+    Distance h = Distance(document.height.in(PX), PX, document.height.resolution);
+
+    if(inkscape_version_greater(inkscapeVersion, "0.48.4")) {
+      w = Distance(document.width.in(PX) * (90.0/72.0), PX, document.width.resolution);
+      h = Distance(document.height.in(PX) * (90.0/72.0), PX, document.height.resolution);
+    }
+
+    viewBox = document.make_viewboxstring(0, 0, w, h);
   } else if(viewBox.empty()){
     viewBox = document.make_viewboxstring(0, 0, document.width, document.height);
   }
