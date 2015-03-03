@@ -15,16 +15,18 @@ include(common.pri)
 DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
 
 HEADERS += ./cutters/encoder/PclEncoder.hpp \
-           ./cutters/encoder/HPGLEncoder.hpp \
+           ./cutters/encoder/HPGL_Legend36Ext_Encoder.hpp \
+           ./cutters/encoder/HPGL_Fusion_Encoder.hpp \
            ./FileParser.hpp \
            ./Document.hpp \
            ./util/Eps.hpp \
            ./util/2D.hpp \
            ./util/Measurement.hpp \
            ./util/Logger.hpp \
-           ./util/PJL.hpp \
            ./util/Util.hpp \
-           ./cutters/EpilogLegend36Ext.hpp \
+           ./cutters/epilog/encoder/PJL.hpp \
+           ./cutters/epilog/Legend36Ext.hpp \
+           ./cutters/epilog/Fusion.hpp \
            ./cut/operations/Explode.hpp \
            ./cut/operations/Reduce.hpp \
 	   			 ./cut/Cut.hpp \
@@ -79,15 +81,17 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./svg/SvgFix.hpp \
 	   ./svg/CtrlCutParser.hpp
 
-SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
-           ./cutters/encoder/PclEncoder.cpp \
+SOURCES += ./cutters/epilog/encoder/HPGL_Legend36Ext_Encoder.cpp \
+           ./cutters/epilog/encoder/HPGL_Fusion_Encoder.cpp \
+           ./cutters/epilog/encoder/PclEncoder.cpp \
            ./PostscriptParser.cpp \
            ./util/Util.cpp \
 					 ./util/2D.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
-	   ./cutters/EpilogLegend36Ext.cpp \
+           ./cutters/epilog/Legend36Ext.cpp \
+           ./cutters/epilog/Fusion.cpp \
            ./cut/Cut.cpp \
 					 ./cut/operations/Deonion.cpp \
            ./cut/operations/NearestPathSorting.cpp \

@@ -3,12 +3,15 @@
  * See LICENSE file
  * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
  */
+#include <cutters/epilog/encoder/HPGL_Legend36Ext_Encoder.hpp>
+#define PJL_PARAM
+#include <cutters/epilog/encoder/PJL.hpp>
+
+#include <cutters/epilog/Legend36Ext.hpp>
 #include <vector>
 #include "Document.hpp"
-#include "EpilogLegend36Ext.hpp"
 #include "config/CutSettings.hpp"
 #include "util/Measurement.hpp"
-#include "encoder/HPGLEncoder.hpp"
 #include "encoder/PclEncoder.hpp"
 #include "CtrlCutException.hpp"
 #include "cut/operations/Translate.hpp"
@@ -164,7 +167,8 @@ void EpilogLegend36Ext::write(const Document& doc, std::ostream &out) {
       Cut translated = make_from(cut);
       Point pos = cut.get(CutSettings::CPOS);
       translateTo(cut,translated, pos);
-      HPGLEncoder::encode(out,translated);
+      HPGL_Legend36Ext_Encoder hpgl;
+      hpgl.encode(out,translated);
     }
   }
   out << HPGL_START << HPGL_PEN_UP;

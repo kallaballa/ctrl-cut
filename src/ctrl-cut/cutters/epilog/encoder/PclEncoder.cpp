@@ -5,13 +5,13 @@
  */
 
 
-#include "util/PJL.hpp"
 #include "util/2D.hpp"
 #include "engrave/image/MMapMatrix.hpp"
 #include "config/EngraveSettings.hpp"
 #include "PclEncoder.hpp"
 #include "engrave/dither/Dither.hpp"
 #include <boost/format.hpp>
+#include <cutters/epilog/encoder/PJL.hpp>
 #include <math.h>
 
 using boost::format;

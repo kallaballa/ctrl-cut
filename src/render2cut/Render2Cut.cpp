@@ -4,12 +4,12 @@
  * Copyright (C) 2011 Amir Hassan <amir@viel-zu.org> and Marius kintel <kintel@kintel.net>
  */
 
+#include <cutters/epilog/Fusion.hpp>
 #include "util/Logger.hpp"
 #include "Document.hpp"
 #include "cut/Cut.hpp"
 #include "CupsGetOpt.hpp"
 #include "svg/SvgWriter.hpp"
-#include "cutters/EpilogLegend36Ext.hpp"
 
 int main(int argc, char *argv[]) {
   typedef DocumentSettings DS;

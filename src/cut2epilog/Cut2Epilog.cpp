@@ -10,8 +10,8 @@
 #include "cut/Cut.hpp"
 #include "CtrlCutException.hpp"
 #include "svg/CtrlCutParser.hpp"
-#include "cutters/EpilogLegend36Ext.hpp"
 #include <boost/filesystem.hpp>
+#include <cutters/epilog/Fusion.hpp>
 
 namespace bfs = boost::filesystem;
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   doc.optimize();
 
   std::ofstream oEpilog(epilogFile);
-  EpilogLegend36Ext cutter;
+  EpilogFusion cutter;
   cutter.write(doc,oEpilog);
 
   clock_t end = clock() - start;

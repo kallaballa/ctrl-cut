@@ -14,7 +14,6 @@
 #include "StreamUtils.hpp"
 #include "GroupItem.hpp"
 #include "helpers/GraphicsItems.hpp"
-#include "cutters/EpilogLegend36Ext.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"
 #include "CtrlCutScene.hpp"
@@ -30,6 +29,7 @@
 #include <algorithm>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
+#include <cutters/epilog/Fusion.hpp>
 #include "helpers/Qt.hpp"
 
 MainWindow *MainWindow::inst = NULL;
@@ -446,7 +446,7 @@ void MainWindow::on_filePrintAction_triggered()
     doc.mergeCuts();
     doc.optimize();
 
-    EpilogLegend36Ext cutter;
+    EpilogFusion cutter;
     cutter.write(doc,ostream);
     tmpfile.flush();
 
@@ -474,7 +474,7 @@ void MainWindow::on_extraSendToFileAction_triggered()
   doc.mergeCuts();
   doc.optimize();
 
-  EpilogLegend36Ext cutter;
+  EpilogFusion cutter;
   cutter.write(doc,os);
 }
 

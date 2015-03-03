@@ -153,4 +153,55 @@ PJL_STRING(HPGL_PEN_DOWN, "PD")
 /* HPGL section end */
 PJL_STRING(HPGL_END, "\x1B%0B")
 
+
+/*
+ *
+ * EPILOG FUSION COMMANDS
+ *
+ *
+ */
+
+/**
+ * PCL COMMANDS
+ * **/
+/* Maybe a version string? e.g.: 1536 */
+PJL_STRING(PCL_UNKNOWN_FUSION_1, "\x1B&v%dA")
+
+/* Maybe a build number? e.g.: 130001300003220 */
+PJL_STRING(PCL_UNKNOWN_FUSION_2, "\x1B&y%sS")
+
+/* Date. e.g.: 20150224165614 (=2015-02-24 16:56:14)*/
+PJL_STRING(PCL_DATE, "\x1B&y%sD")
+
+/* e.g.: 0 */
+PJL_STRING(PCL_UNKNOWN_FUSION_3, "\x1B&y%dV")
+
+/* e.g.: 0 */
+PJL_STRING(PCL_UNKNOWN_FUSION_4, "\x1B&y%dL")
+
+/* e.g.: 0 */
+PJL_STRING(PCL_UNKNOWN_FUSION_5, "\x1B&y%dT")
+
+/**
+ * PCL RASTER COMMANDS
+ * **/
+
+/* e.g.: 0 */
+PJL_STRING(R_UNKNOWN_FUSION_1, "\x1B&z%dC")
+
+/* e.g.: 50 */
+PJL_STRING(R_UNKNOWN_FUSION_2, "\x1B&y%dR")
+
+/**
+ * PCL VECTOR COMMANDS
+ * **/
+
+/* Initialize vector mode */
+
+/* e.g.: 0 */
+PJL_STRING(V_UNKNOWN_FUSION_1, "XS%d")
+
+/* e.g.: 1 */
+PJL_STRING(V_UNKNOWN_FUSION_2, "XP%d")
+
 #endif /* PCL_H_ */
