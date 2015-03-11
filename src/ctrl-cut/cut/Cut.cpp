@@ -32,7 +32,7 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
     if (isalpha(first)) {
       switch (first) {
       case 'M': // move to
-        if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
+        if (sscanf(line.c_str() + 1, "%d,%d", &x, &y) == 2) {
           lx = x;
           ly = y;
           mx = x;
@@ -42,7 +42,7 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
       case 'C': // close
         if (lx != mx || ly != my) {
           segmentCnt++;
-          add(*current.get(), Segment(Point(lx,ly),Point(mx,my)));
+          append(*current.get(), Segment(Point(lx,ly),Point(mx,my)));
         }
         break;
       case 'R': // color change
@@ -59,7 +59,7 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
       case 'L': // line to
         if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
           segmentCnt++;
-          add(*current.get(), Segment(Point(lx,ly),Point(x,y)));
+          append(*current.get(), Segment(Point(lx,ly),Point(x,y)));
           lx = x;
           ly = y;
         }

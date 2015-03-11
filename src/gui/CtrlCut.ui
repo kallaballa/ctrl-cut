@@ -185,6 +185,9 @@
        </item>
        <item row="5" column="1">
         <widget class="QComboBox" name="airAssistBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -247,6 +250,9 @@
        </item>
        <item row="3" column="1">
         <widget class="QComboBox" name="center">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
          </property>
@@ -482,7 +488,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>50</width>
+           <width>55</width>
            <height>16777215</height>
           </size>
          </property>
@@ -532,7 +538,7 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>50</width>
+           <width>55</width>
            <height>16777215</height>
           </size>
          </property>
@@ -571,26 +577,20 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="minimumSize">
-          <size>
-           <width>70</width>
-           <height>0</height>
-          </size>
-         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="suffix">
-          <string>Hz</string>
+          <string>%</string>
          </property>
          <property name="minimum">
           <number>1</number>
          </property>
          <property name="maximum">
-          <number>5000</number>
+          <number>100</number>
          </property>
          <property name="value">
-          <number>5000</number>
+          <number>100</number>
          </property>
         </widget>
        </item>
@@ -617,6 +617,11 @@
          <item>
           <property name="text">
            <string>TSP</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pass-through</string>
           </property>
          </item>
         </widget>

@@ -135,6 +135,9 @@ void ObjectPropertyWidget::enableCutItem(CutItem* ci) {
   case CS::TSP:
     strSort = "TSP";
     break;
+  case CS::PASS_THROUGH:
+    strSort = "Pass-through";
+    break;
   default:
     assert(false && "Unhandled cut optimize setting");
     break;
@@ -339,6 +342,9 @@ void ObjectPropertyWidget::on_sort_update(int s) {
         break;
     case 1:
       this->ci->cut->put(CS::SORT, CS::TSP);
+        break;
+    case 2:
+      this->ci->cut->put(CS::SORT, CS::PASS_THROUGH);
         break;
     }
   }

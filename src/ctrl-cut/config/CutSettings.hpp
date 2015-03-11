@@ -21,7 +21,8 @@ public:
     SIMPLE,
     INNER_OUTER,
     SHORTEST_PATH,
-    TSP
+    TSP,
+    PASS_THROUGH
   };
 
   static Key<std::string> CUUID;
@@ -91,6 +92,8 @@ public:
       return "Shortest Path";
     case TSP:
       return "TSP";
+    case PASS_THROUGH:
+      return "Pass-though";
 
       break;
     }
@@ -106,6 +109,8 @@ public:
       return SHORTEST_PATH;
     } else if(name == "TSP") {
       return TSP;
+    } else if(name == "Pass-through") {
+      return PASS_THROUGH;
     } else
       assert(false);
     return SIMPLE;

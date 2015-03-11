@@ -120,6 +120,8 @@ CupsOptions CupsOptions::parseSettings(DocumentSettings& ds, cups_option_t *opti
       ds.put(CS::SORT, CS::SHORTEST_PATH);
     else if (v == "TSP")
       ds.put(CS::SORT, CS::TSP);
+    else if (v == "Pass-through")
+      ds.put(CS::SORT, CS::PASS_THROUGH);
     else {
       LOG_WARN_MSG("Illegal value for VectorOptimize", v);
     }

@@ -39,7 +39,7 @@
          <widget class="QComboBox" name="modelCombo">
           <item>
            <property name="text">
-            <string>Epilog Legend 36ext</string>
+            <string>Epilog Fusion</string>
            </property>
           </item>
          </widget>

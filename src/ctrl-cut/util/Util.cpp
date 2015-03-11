@@ -5,6 +5,7 @@
  */
 
 #include "Util.hpp"
+#include <iostream>
 #include <boost/filesystem.hpp>
 #include <csignal>
 #include <set>

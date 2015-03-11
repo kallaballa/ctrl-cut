@@ -303,6 +303,9 @@ protected:
       case 3:
         currentCut->put(CS::SORT, CS::TSP);
         break;
+      case 4:
+        currentCut->put(CS::SORT, CS::PASS_THROUGH);
+        break;
       }
     } else {
       CtrlCutException::malformedDocument("Unknown layer type encountered: " + type);

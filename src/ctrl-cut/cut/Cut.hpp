@@ -52,6 +52,10 @@ public:
   }
 
   void normalize() {
+    // do nothing in pass-through mode
+    if(this->get(CutSettings::SORT) == CutSettings::PASS_THROUGH)
+      return;
+
     typedef CutImpl<Tcontainer, Tallocator> CutPtr;
     typedef DocumentSettings DS;
     Distance width = this->get(DS::WIDTH);
@@ -81,6 +85,10 @@ public:
   }
 
   void sort() {
+    // do nothing in pass-through mode
+    if(this->get(CutSettings::SORT) == CutSettings::PASS_THROUGH)
+      return;
+
     typedef CutImpl<Tcontainer, Tallocator> CutPtr;
     string filename = this->get(DocumentSettings::FILENAME);
     CutPtr planar_faces = make_from(*this);
