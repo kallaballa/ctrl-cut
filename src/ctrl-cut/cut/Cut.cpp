@@ -32,7 +32,7 @@ std::vector<CutPtr> load_cuts(DocumentSettings& ds, std::istream &input) {
     if (isalpha(first)) {
       switch (first) {
       case 'M': // move to
-        if (sscanf(line.c_str() + 1, "%d,%d", &x, &y) == 2) {
+        if (sscanf(line.c_str() + 1, "%d,%d", &y, &x) == 2) {
           lx = x;
           ly = y;
           mx = x;
