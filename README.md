@@ -24,6 +24,11 @@ other backends as well.
 Please get in touch if you want to help out by developing, testing,
 documenting or supplying information about other laser cutters.
 
+Packages
+--------
+
+https://software.opensuse.org/download.html?project=home%3Aelchaschab&package=ctrl-cut-inkscape
+
 License
 -------
 
