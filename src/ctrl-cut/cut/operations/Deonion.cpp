@@ -70,8 +70,8 @@ void walkTheEdge(Route& skins, UniqueSegmentGraph& graph, const Edge lastEdge, c
     if(!concat(skins, seg))
       append(skins,seg);
 
-    graph.index.erase(seg.first);
-    graph.index.erase(seg.second);
+    // graph.index.erase(seg.first);
+    // graph.index.erase(seg.second);
     walkTheEdge(skins, graph, nextEdge, get_opposite(graph, nextEdge, outV));
   }
 

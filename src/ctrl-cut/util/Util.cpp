@@ -9,6 +9,7 @@
 #include <csignal>
 #include <set>
 #include <cstdlib>
+#include <iostream>
 
 std::set<std::string> temp_file_names;
 
