@@ -70,8 +70,8 @@ void walkTheEdge(Route& skins, UniqueSegmentGraph& graph, const Edge lastEdge, c
     if(!concat(skins, seg))
       append(skins,seg);
 
-    // graph.index.erase(seg.first);
-    // graph.index.erase(seg.second);
+    //graph.index.erase(seg.first);
+    //graph.index.erase(seg.second);
     walkTheEdge(skins, graph, nextEdge, get_opposite(graph, nextEdge, outV));
   }
 
@@ -129,7 +129,7 @@ void traverse_onion(const Route& src, Route& skins)
     if(!concat(skins, steapest_seg))
       append(skins,steapest_seg);
 
-    g.index.erase(g.index.begin());
+  //  g.index.erase(g.index.begin());
 
     if(next_point.y < most_left_point.y || (next_point.y == most_left_point.y && next_point.x > most_left_point.x)) {
       walkTheEdge(skins, g, steapest, next_vertex);
