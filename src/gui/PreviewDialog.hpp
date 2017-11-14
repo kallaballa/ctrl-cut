@@ -9,8 +9,9 @@
 #include <QDialog>
 #include <QProgressDialog>
 #include "ui_PreviewDialog.h"
+#ifndef Q_MOC_RUN
 #include "Document.hpp"
-
+#endif
 
 class PreviewDialog : public QDialog, private Ui::Dialog
 {

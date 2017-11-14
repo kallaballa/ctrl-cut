@@ -30,7 +30,7 @@ macx {
   LIBS += -framework CoreFoundation
 }
 
-DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL
+DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API PCLINT_USE_SDL BOOST_CONFIG_ALLOW_DEPRECATED
 
 FORMS += CtrlCut.ui NewDialog.ui ImportDialog.ui PreviewDialog.ui SendDialog.ui
 

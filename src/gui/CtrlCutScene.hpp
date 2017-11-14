@@ -17,11 +17,13 @@
 #include <QGraphicsItem>
 #include <qevent.h>
 #include <memory>
+#ifndef Q_MOC_RUN
 #include "helpers/DocumentHolder.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "util/Measurement.hpp"
 #include "Document.hpp"
 #include "config/Settings.hpp"
+#endif
 
 class CtrlCutScene : public QGraphicsScene
 {

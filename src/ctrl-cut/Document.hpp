@@ -22,9 +22,10 @@
 #include "stdint.h"
 #include <iostream>
 
+#ifndef Q_MOC_RUN
 #include <boost/thread.hpp>
 #include <boost/format.hpp>
-
+#endif
 using std::string;
 
 class Document{

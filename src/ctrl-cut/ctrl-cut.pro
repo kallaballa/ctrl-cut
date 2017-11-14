@@ -12,7 +12,7 @@ INCLUDEPATH +=
 
 include(common.pri)
 
-DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API
+DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API BOOST_CONFIG_ALLOW_DEPRECATED
 
 HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./cutters/encoder/HPGLEncoder.hpp \
