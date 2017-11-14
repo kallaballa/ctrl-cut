@@ -51,17 +51,17 @@ public:
     auto propMap = get(&DistanceProperty::distance, this->graph);
 
     typedef _WeightedGraph::edge_iterator EdgeIterator;
-    std::pair<EdgeIterator, EdgeIterator> edges = boost::edges(graph);
     std:: cerr << this->graph.m_edges.size() << std::endl;
-    EdgeIterator edge;
-    for (edge = edges.first; edge != edges.second; ++edge) {
-      std::cerr << boost::get(propMap, *edge) << std::endl;
+    EdgeIterator ei, ei_end;
+    for (tie(ei, ei_end) = boost::edges(graph); ei != ei_end; ++ei) {
+    	if(boost::get(propMap, *ei) <= 0)
+    		std::cerr << "#####" << boost::get(propMap, *ei) << std::endl;
     }
 
     boost::metric_tsp_approx_from_vertex(
         this->graph,
         *boost::vertices(graph).first,
-        get(&DistanceProperty::distance, this->graph),
+        propMap,
         boost::make_tsp_tour_visitor(
             make_function_output_iterator(rb)));
     this->sink->erase(sink->end() - 1);
