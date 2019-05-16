@@ -1,4 +1,4 @@
 libxml++ {
   message("Configuring libxml++...")
-  PKGCONFIG += libxml++-2.6
+  PKGCONFIG += libxml++-3.0
 }
