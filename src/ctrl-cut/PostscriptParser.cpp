@@ -199,7 +199,7 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
   code = gsapi_init_with_args(minst, gsargc, (char **)gsargv);
 
   int code1 = gsapi_exit(minst);
-  if ((code == 0) || (code == e_Quit)) {
+  if ((code == 0) || (code == gs_error_Quit)) {
     code = code1;
   }
 
@@ -207,7 +207,7 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
     delete[] gsargv;
   gsapi_delete_instance(minst);
 
-  if ((code == 0) || (code == e_Quit)) {
+  if ((code == 0) || (code == gs_error_Quit)) {
     return true;
   }
   return false;
