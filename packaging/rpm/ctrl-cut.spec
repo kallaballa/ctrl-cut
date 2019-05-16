@@ -24,7 +24,7 @@ Group: Hardware/Other
 URL: https://github.com/Metalab/ctrl-cut
 Packager: Amir Hassan <amir@viel-zu.org>
 %if %{defined suse_version}
-BuildRequires: hicolor-icon-theme update-desktop-files boost_1_66_0-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel cups-devel
+BuildRequires: hicolor-icon-theme update-desktop-files libboost_filesystem1_66_0-devel libboost_system1_66_0-devel ghostscript-library ghostscript-devel libqt4-devel libqt4-x11 libQtWebKit-devel libpng16-devel cairo-devel glib2-devel ImageMagick-devel libMagick++-devel libxml++-devel librsvg-devel libX11-devel cgal-devel cups-devel
 PreReq: /bin/chmod ncurses-utils
 Requires: libboost_filesystem1_66_0 libboost_system1_66_0 ghostscript libqt4 libqt4-x11 libQtWebKit4 libpng16-16 libcairo2 libMagick++-7_Q16HDRI4 libMagickCore-7_Q16HDRI6 libxml++-3.0 librsvg-2-2 libX11-6 libCGAL13
 %else
