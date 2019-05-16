@@ -54,7 +54,6 @@ include(rsvg.pri)
 include(cairo-ps.pri)
 include(png.pri)
 include(gio.pri)
-include(libxml++.pri)
 include(Magick++.pri)
 include(libctrl-cut.pri)
 
