@@ -655,7 +655,6 @@ void MainWindow::saveGuiConfig() {
 void MainWindow::loadGuiConfig() {
   using boost::property_tree::ptree;
   ptree config;
-  using boost::property_tree::ptree;
 
   QFile file(QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config");
   string filename = (QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString();
