@@ -24,4 +24,7 @@ src/pclint/pclint
 src/gui/gui.app
 src/render2cut/render2cut
 src/cut2epilog/cut2epilog
+src/import2cut/import2cut
+
+.qmake.stash
 
