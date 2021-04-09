@@ -36,13 +36,15 @@ void RdEncoder::encode(std::ostream &out, Cut& encodee) {
   int power = encodee.get(CutSettings::CPOWER);
   int speed = encodee.get(CutSettings::CSPEED);
 
-  writeSetPower(out, Laser::LaserOne | Power::PowerMin, 0);
-  writeSetPower(out, Laser::LaserOne | Power::PowerMax, power);
-  writeSetSpeed(out, speed);
+  writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMin, 0, 0);
+  writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMax, 0, power);
+
+  writeSetSpeedLayer(out, 0, speed);
+  writeSetLayer(out, 0);
 
   SegmentPtr lastSegPtr = nullptr; 
   for(const SegmentPtr segPtr : segments(encodee)) {
-    if (lastSegPtr == nullptr || !lastSegPtr->connectsTo(*segPtr)) {
+    if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
       auto p1 = pointAsIntPair(segPtr->first);
       auto p2 = pointAsIntPair(segPtr->second);
       writeMoveAbsolute(out, p1.first * 1000, p1.second * 1000);
@@ -50,9 +52,9 @@ void RdEncoder::encode(std::ostream &out, Cut& encodee) {
     } else {
       auto p2 = pointAsIntPair(segPtr->second);
       writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
-    } 
+    }
+    lastSegPtr = segPtr;
   }
-
 }
 
 std::vector<char> RdEncoder::encodeInt(int64_t integer, int64_t length) {
@@ -71,91 +73,104 @@ std::pair<int32_t, int32_t> RdEncoder::pointAsIntPair(Point p) {
 }
 
 
-void RdEncoder::writeInstructionAbsolute(std::ostream &out, uint8_t instruction, int32_t x, int32_t y) {
-  out << instruction;
-  auto encX = encodeInt(x, ABSCOORD_LEN);
-  auto encY = encodeInt(y, ABSCOORD_LEN);
-  out.write(&encX[0], encX.size());
-  out.write(&encY[0], encY.size());
+void RdEncoder::writeHeader(std::ostream &out) {
+  // unknown header data(?)
+  out << '\xd8';
+  out << '\x12';
+  out << '\xd8';
+  out << '\x00';
+
+  // similar to "SetBoundingCoords" 
+  out << '\xe7';
+  out << '\x06';
+
+  writeInt(out, 0, ABSCOORD_LEN);
+  writeInt(out, 0, ABSCOORD_LEN);
 }
 
-void RdEncoder::writeInstructionRelative(std::ostream &out, uint8_t instruction, int16_t x, int16_t y) {
-  out << instruction;
-  auto encX = encodeInt(x, RELCOORD_LEN);
-  auto encY = encodeInt(y, RELCOORD_LEN);
-  out.write(&encX[0], encX.size());
-  out.write(&encY[0], encY.size());
+void RdEncoder::writeFooter(std::ostream &out) {
+  // similar to "SetBoundingCoords" 
+  out << '\xe7';
+  out << '\x00';
 
+  // similar to first header byte
+  out << '\xd7';
 }
 
-void RdEncoder::writeInstructionSingleRelative(std::ostream &out, uint8_t instruction, int16_t c) {
-  out << instruction;
-  auto encC = encodeInt(c, RELCOORD_LEN);
-  out.write(&encC[0], encC.size());
+void RdEncoder::writeInt(std::ostream &out, int64_t i, int64_t length) {
+  std::vector<char> enc = encodeInt(i, length);
+  out.write(&enc[0], enc.size());
 }
-
 
 void RdEncoder::writeMoveAbsolute(std::ostream &out, int32_t x, int32_t y) {
-  writeInstructionAbsolute(out, MOVE_ABS, x, y);
+  out << MOVE_ABS;
+  writeInt(out, x, ABSCOORD_LEN);
+  writeInt(out, y, ABSCOORD_LEN);
 }
 
 void RdEncoder::writeMoveRelative(std::ostream &out, int16_t x, int16_t y) {
-  writeInstructionRelative(out, MOVE_REL, x, y);
+  out << MOVE_REL;
+  writeInt(out, x, RELCOORD_LEN);
+  writeInt(out, y, RELCOORD_LEN);
 }
 
 void RdEncoder::writeMoveRelativeX(std::ostream &out, int16_t x) {
-  writeInstructionSingleRelative(out, MOVE_REL_X, x);
+  out << MOVE_REL_X;
+  writeInt(out, x, RELCOORD_LEN);
 }
 
 void RdEncoder::writeMoveRelativeY(std::ostream &out, int16_t y) {
-  writeInstructionSingleRelative(out, MOVE_REL_Y, y);
+  out << MOVE_REL_Y;
+  writeInt(out, y, RELCOORD_LEN);
 }
 
 
 void RdEncoder::writeCutAbsolute(std::ostream &out, int32_t x, int32_t y) {
-  writeInstructionAbsolute(out, CUT_ABS, x, y);
+  out << CUT_ABS;
+  writeInt(out, x, ABSCOORD_LEN);
+  writeInt(out, y, ABSCOORD_LEN);
 }
 
 void RdEncoder::writeCutRelative(std::ostream &out, int16_t x, int16_t y) {
-  writeInstructionRelative(out, CUT_REL, x, y);
+  out << CUT_REL;
+  writeInt(out, x, RELCOORD_LEN);
+  writeInt(out, y, RELCOORD_LEN);
 }
 
 void RdEncoder::writeCutRelativeX(std::ostream &out, int16_t x) {
-  writeInstructionSingleRelative(out, CUT_REL_X, x);
+  out << CUT_REL_X;
+  writeInt(out, x, RELCOORD_LEN);
 }
 
 void RdEncoder::writeCutRelativeY(std::ostream &out, int16_t y) {
-  writeInstructionSingleRelative(out, CUT_REL_Y, y);
+  out << CUT_REL_Y;
+  writeInt(out, y, RELCOORD_LEN);
 }
 
 
 void RdEncoder::writeSetPower(std::ostream &out, uint8_t selectorByte, int16_t power) {
   out << SET_POWER;
   out << selectorByte;
-  auto encPower = encodeInt(power, POWERVAL_LEN);
-  out.write(&encPower[0], encPower.size());
+  writeInt(out, power, POWERVAL_LEN);
 }
 
 void RdEncoder::writeSetPowerLayer(std::ostream &out, uint8_t selectorByte, uint8_t layer, int16_t power) {
   out << SET_POWER;
   out << selectorByte + SET_POWER_LAYER_LSOFFS;
   out << layer;
-  auto encPower = encodeInt(power, POWERVAL_LEN);
-  out.write(&encPower[0], encPower.size());
+  writeInt(out, power, POWERVAL_LEN);
 }
 
 
 void RdEncoder::writeSetSpeed(std::ostream &out, int32_t speed) {
   out << SET_SPEED_GLOBAL;
-  auto encSpeed = encodeInt(speed, SPEEDVAL_LEN);
-  out.write(&encSpeed[0], encSpeed.size());
+  writeInt(out, speed, SPEEDVAL_LEN);
 }
 
 void RdEncoder::writeSetSpeedLayer(std::ostream &out, uint8_t layer, int32_t speed) {
   out << SET_SPEED_LAYER;
   out << layer; 
-  auto encSpeed = encodeInt(speed, SPEEDVAL_LEN);
-  out.write(&encSpeed[0], encSpeed.size());
+  writeInt(out, speed, SPEEDVAL_LEN);
 }
 
 
@@ -186,9 +201,7 @@ void RdEncoder::writeSetLayerColor(std::ostream &out, uint8_t layer, uint8_t r, 
 void RdEncoder::writeSetBoundingCoords(std::ostream &out, uint8_t selectorByte, int32_t x, int32_t y) {
   out << SET_BOUNDING_COORDS;
   out << selectorByte;
-  auto encX = encodeInt(x, ABSCOORD_LEN);
-  auto encY = encodeInt(y, ABSCOORD_LEN);
-  out.write(&encX[0], encX.size());
-  out.write(&encY[0], encY.size());
+  writeInt(out, x, ABSCOORD_LEN);
+  writeInt(out, y, ABSCOORD_LEN);
 }
 

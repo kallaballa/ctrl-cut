@@ -30,3 +30,6 @@ src/import2cut/import2cut
 .qmake.stash
 
 .vscode/
+
+*.rd
+*.rld
