@@ -55,7 +55,7 @@ std::vector<char> RdEncoder::encodeInt(int64_t integer, int64_t length) {
   std::vector<char> bytes(length);
 
   for(int i=0; i<length; i++) {
-      bytes.push_back((integer >> (i * 7)) & 0x7F);
+      bytes[i] = (integer >> (i * 7)) & '\x7F';
   }
 
   return bytes;
