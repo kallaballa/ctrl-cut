@@ -139,6 +139,10 @@ public:
     return ! (*this == other);
   }
 
+  bool connectsTo(const Segment& other) const {
+    return (this->first == other.second);
+  }
+
   Segment swap() const {
     return Segment(second,first);
   }

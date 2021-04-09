@@ -15,6 +15,7 @@
 #include "GroupItem.hpp"
 #include "helpers/GraphicsItems.hpp"
 #include "cutters/EpilogLegend36Ext.hpp"
+#include "cutters/Brm90130.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"
 #include "CtrlCutScene.hpp"
@@ -447,7 +448,7 @@ void MainWindow::on_filePrintAction_triggered()
     doc.optimize();
 
     EpilogLegend36Ext cutter;
-    cutter.write(doc,ostream);
+    cutter.write(doc, ostream);
     tmpfile.flush();
 
 
