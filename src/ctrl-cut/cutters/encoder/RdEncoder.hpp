@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
 #include "cut/Cut.hpp"
 
 class RdEncoder {
@@ -30,7 +31,8 @@ public:
     AirBlower = '\x01',
   };
 
-  inline static std::vector<char> encodeInt(int64_t integer, int64_t length) ;
+  inline static std::vector<char> encodeInt(int64_t integer, int64_t length);
+  inline static std::pair<int, int> pointAsIntPair(Point p);
 
   inline static void writeInstructionAbsolute(std::ostream &out, uint8_t instruction, int32_t x, int32_t y);
   inline static void writeInstructionRelative(std::ostream &out, uint8_t instruction, int16_t x, int16_t y);

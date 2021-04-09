@@ -1,4 +1,5 @@
 #include "RdEncoder.hpp"
+#include <math.h>
 
 #define ABSCOORD_LEN 5
 #define RELCOORD_LEN 2
@@ -35,17 +36,20 @@ void RdEncoder::encode(std::ostream &out, Cut& encodee) {
   int power = encodee.get(CutSettings::CPOWER);
   int speed = encodee.get(CutSettings::CSPEED);
 
-  writeSetPower(out, Laser::LaserOne | Power::PowerMin, power);
+  writeSetPower(out, Laser::LaserOne | Power::PowerMin, 0);
   writeSetPower(out, Laser::LaserOne | Power::PowerMax, power);
   writeSetSpeed(out, speed);
 
   SegmentPtr lastSegPtr = nullptr; 
   for(const SegmentPtr segPtr : segments(encodee)) {
     if (lastSegPtr == nullptr || !lastSegPtr->connectsTo(*segPtr)) {
-      writeMoveAbsolute(out, segPtr->first.x, segPtr->first.y);
-      writeCutAbsolute(out, segPtr->second.x, segPtr->second.y);
+      auto p1 = pointAsIntPair(segPtr->first);
+      auto p2 = pointAsIntPair(segPtr->second);
+      writeMoveAbsolute(out, p1.first * 1000, p1.second * 1000);
+      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
     } else {
-      writeCutAbsolute(out, segPtr->second.x, segPtr->second.y);
+      auto p2 = pointAsIntPair(segPtr->second);
+      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
     } 
   }
 
@@ -55,11 +59,17 @@ std::vector<char> RdEncoder::encodeInt(int64_t integer, int64_t length) {
   std::vector<char> bytes(length);
 
   for(int i=0; i<length; i++) {
-      bytes[i] = (integer >> (i * 7)) & '\x7F';
+      bytes[length-i-1] = (integer >> (i * 7)) & '\x7F';
   }
 
   return bytes;
 }
+
+
+std::pair<int32_t, int32_t> RdEncoder::pointAsIntPair(Point p) {
+  return std::make_pair(round(p.x), round(p.y));
+}
+
 
 void RdEncoder::writeInstructionAbsolute(std::ostream &out, uint8_t instruction, int32_t x, int32_t y) {
   out << instruction;

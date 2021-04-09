@@ -11,20 +11,19 @@ typedef CutSettings C_SET;
 
 char scramble(char p) {
   char a = p & 0x7E | p >> 7 & 0x01 | p << 7 & 0x80;
-	char b = a ^ MAGIC;
+  char b = a ^ MAGIC;
   char s = (b + 1) & 0xFF;
   return s; 
 }
 
-class scrabled_streambuf : public std::streambuf
-{
+class scrabled_streambuf : public std::streambuf {
     public:
       scrabled_streambuf(std::streambuf &real)
         : realBuffer(real) {}
 
     protected:
       int overflow(int ch) {
-        int sch = scramble(ch);
+        int sch = ch;// scramble(ch);
         realBuffer.sputc(sch);
         return sch;
       }
