@@ -8,9 +8,7 @@
 
 class RdEncoder {
 
-public:
-  static void encode(std::ostream &out, Cut& model);
-  
+public:  
   enum Laser {
     LaserOne = '\x00',
     LaserTwo = '\x20',
@@ -30,6 +28,8 @@ public:
     NoDevices = '\x00',
     AirBlower = '\x01',
   };
+
+  static void encode(std::ostream &out, Cut& model);
 
   inline static std::pair<int, int> pointAsIntPair(Point p);
   inline static std::vector<char> encodeInt(int64_t integer, int64_t length);
@@ -57,11 +57,9 @@ public:
   inline static void writeSetSpeed(std::ostream &out, int32_t speed);
   inline static void writeSetSpeedLayer(std::ostream &out, uint8_t layer, int32_t speed);
 
-  
   inline static void writeSetLayer(std::ostream &out, uint8_t layer);
   inline static void writeSetMaximumLayer(std::ostream &out, uint8_t maximumLayer);
   inline static void writeSetLayerColor(std::ostream &out, uint8_t layer, uint8_t r, uint8_t g, uint8_t b);
-
 
 };
 

@@ -44,14 +44,14 @@ void RdEncoder::encode(std::ostream &out, Cut& encodee) {
 
   SegmentPtr lastSegPtr = nullptr; 
   for(const SegmentPtr segPtr : segments(encodee)) {
+    Point pr = segPtr->second - segPtr->first;
+    auto relPair = pointAsIntPair(pr);
     if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
       auto p1 = pointAsIntPair(segPtr->first);
-      auto p2 = pointAsIntPair(segPtr->second);
       writeMoveAbsolute(out, p1.first * 1000, p1.second * 1000);
-      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
+      writeCutRelative(out, relPair.first * 1000, relPair.second * 1000);
     } else {
-      auto p2 = pointAsIntPair(segPtr->second);
-      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
+      writeCutRelative(out, relPair.first * 1000, relPair.second * 1000);
     }
     lastSegPtr = segPtr;
   }

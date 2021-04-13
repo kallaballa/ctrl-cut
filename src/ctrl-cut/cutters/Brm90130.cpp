@@ -27,7 +27,6 @@ class scrabled_streambuf : public std::streambuf {
         realBuffer.sputc(sch);
         return sch;
       }
-      
 
     private:
         std::streambuf &realBuffer;
