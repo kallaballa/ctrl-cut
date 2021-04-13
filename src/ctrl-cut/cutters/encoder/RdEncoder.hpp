@@ -47,7 +47,7 @@ public:
   inline static void writeMoveRelativeY(std::ostream &out, int16_t y);
 
   inline static void writeCutAbsolute(std::ostream &out, int32_t x, int32_t y);
-  inline static void writeCutRelative(std::ostream &out, int16_t x, int16_t y);
+  inline static void writeCutRelative(std::ostream &out, int32_t x, int32_t y);
   inline static void writeCutRelativeX(std::ostream &out, int16_t x);
   inline static void writeCutRelativeY(std::ostream &out, int16_t y);
 

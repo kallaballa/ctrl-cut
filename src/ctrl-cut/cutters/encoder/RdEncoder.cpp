@@ -1,4 +1,5 @@
 #include "RdEncoder.hpp"
+#include "../../cut/operations/Chop.hpp"
 #include <math.h>
 
 #define ABSCOORD_LEN 5
@@ -42,19 +43,20 @@ void RdEncoder::encode(std::ostream &out, Cut& encodee) {
   writeSetSpeedLayer(out, 0, speed);
   writeSetLayer(out, 0);
 
-#if false
+  // Route chopped;
+  // chop(encodee, chopped, .05);
+
+#if true
   SegmentPtr lastSegPtr = nullptr;
   for (const SegmentPtr segPtr : segments(encodee)) {
-    if (lastSegPtr != nullptr && lastSegPtr->second != segPtr->first)
-       segPtr->swap();
-    Point pr = segPtr->second - segPtr->first;
+    Point pr = (segPtr->second * 1000) - (segPtr->first * 1000);
     auto relPair = pointAsIntPair(pr);
     if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
-      auto p1 = pointAsIntPair(segPtr->first);
-      writeMoveAbsolute(out, p1.first * 1000, p1.second * 1000);
-      writeCutRelative(out, relPair.first * 1000, relPair.second * 1000);
+      auto p1 = pointAsIntPair(segPtr->first * 1000);
+      writeMoveAbsolute(out, p1.first, p1.second);
+      writeCutRelative(out, relPair.first, relPair.second);
     } else {
-      writeCutRelative(out, relPair.first * 1000, relPair.second * 1000);
+      writeCutRelative(out, relPair.first, relPair.second);
     }
     lastSegPtr = segPtr;
   }
@@ -87,7 +89,7 @@ std::vector<char> RdEncoder::encodeInt(int64_t integer, int64_t length) {
 
 
 std::pair<int32_t, int32_t> RdEncoder::pointAsIntPair(Point p) {
-  return std::make_pair(round(p.x), round(p.y));
+  return {round(p.x), round(p.y)};
 }
 
 
@@ -117,7 +119,7 @@ void RdEncoder::writeFooter(std::ostream &out) {
 
 void RdEncoder::writeInt(std::ostream &out, int64_t i, int64_t length) {
   std::vector<char> enc = encodeInt(i, length);
-  out.write(&enc[0], enc.size());
+  out.write(enc.data(), enc.size());
 }
 
 void RdEncoder::writeMoveAbsolute(std::ostream &out, int32_t x, int32_t y) {
@@ -149,7 +151,7 @@ void RdEncoder::writeCutAbsolute(std::ostream &out, int32_t x, int32_t y) {
   writeInt(out, y, ABSCOORD_LEN);
 }
 
-void RdEncoder::writeCutRelative(std::ostream &out, int16_t x, int16_t y) {
+void RdEncoder::writeCutRelative(std::ostream &out, int32_t x, int32_t y) {
   out << CUT_REL;
   writeInt(out, x, RELCOORD_LEN);
   writeInt(out, y, RELCOORD_LEN);

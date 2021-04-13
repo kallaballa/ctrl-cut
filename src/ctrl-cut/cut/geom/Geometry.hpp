@@ -63,7 +63,7 @@ public:
   }
 
   bool operator==(const Point&  other) const {
-    return this->x == other.x && this->y == other.y;
+    return (this->x == other.x) && (this->y == other.y);
   }
 
   bool operator!=(const Point&  other) const {
@@ -76,6 +76,10 @@ public:
 
   Point operator+(const Point&  other) const {
     return Point(this->x + other.x, this->y + other.y);
+  }
+
+  Point operator*(Coord_t other) const {
+    return Point(this->x * other, this->y * other);
   }
 
   void operator=(const Point&  other) {

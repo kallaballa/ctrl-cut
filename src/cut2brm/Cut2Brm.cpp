@@ -28,6 +28,7 @@ int main(int argc, char *argv[]) {
   setbuf(stderr, NULL);
 
   Document doc;
+  doc.put(DocumentSettings::RESOLUTION, 120000);
   Document::CutList newCuts;
   Document::EngraveList newEngravings;
   string cutFile(argv[1]);
