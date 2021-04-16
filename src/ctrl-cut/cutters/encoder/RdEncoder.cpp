@@ -1,5 +1,4 @@
 #include "RdEncoder.hpp"
-#include "../../cut/operations/Chop.hpp"
 #include <math.h>
 
 #define ABSCOORD_LEN 5
@@ -7,6 +6,8 @@
 #define POWERVAL_LEN 2
 #define SPEEDVAL_LEN 5
 #define COLORVAL_LEN 4
+
+#define MAX_RELCOORD_VAL_MM 8.192
 
 #define MOVE_ABS '\x88'
 #define MOVE_REL '\x89'
@@ -33,48 +34,33 @@
 #define SET_BOUNDING_COORDS '\xE7'
 
 
-void RdEncoder::encode(std::ostream &out, Cut& encodee) {
-  int power = encodee.get(CutSettings::CPOWER);
-  int speed = encodee.get(CutSettings::CSPEED);
 
+void RdEncoder::encodeCut(std::ostream &out, Route& encodee, uint32_t power, uint32_t speed) {
   writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMin, 0, 0);
   writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMax, 0, power);
 
   writeSetSpeedLayer(out, 0, speed);
   writeSetLayer(out, 0);
 
-  // Route chopped;
-  // chop(encodee, chopped, .05);
-
-#if true
   SegmentPtr lastSegPtr = nullptr;
   for (const SegmentPtr segPtr : segments(encodee)) {
-    Point pr = (segPtr->second * 1000) - (segPtr->first * 1000);
-    auto relPair = pointAsIntPair(pr);
     if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
-      auto p1 = pointAsIntPair(segPtr->first * 1000);
-      writeMoveAbsolute(out, p1.first, p1.second);
-      writeCutRelative(out, relPair.first, relPair.second);
+      auto firstPair = pointAsIntPair(segPtr->first * 1000); // TODO: to um
+      writeMoveAbsolute(out, firstPair.first, firstPair.second);
+    }
+
+    Point relPoint = segPtr->second - segPtr->first;
+
+    if (abs(relPoint.x) > MAX_RELCOORD_VAL_MM || abs(relPoint.y) > MAX_RELCOORD_VAL_MM) {
+      auto secondPair = pointAsIntPair(segPtr->second * 1000); // TODO: to um
+      writeCutAbsolute(out, secondPair.first, secondPair.second);
     } else {
+      auto relPair = pointAsIntPair(relPoint * 1000); // TODO: to um
       writeCutRelative(out, relPair.first, relPair.second);
     }
+
     lastSegPtr = segPtr;
   }
-#else 
-  SegmentPtr lastSegPtr = nullptr; 
-  for(const SegmentPtr segPtr : segments(encodee)) {
-    if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
-      auto p1 = pointAsIntPair(segPtr->first);
-      auto p2 = pointAsIntPair(segPtr->second);
-      writeMoveAbsolute(out, p1.first * 1000, p1.second * 1000);
-      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
-    } else {
-      auto p2 = pointAsIntPair(segPtr->second);
-      writeCutAbsolute(out, p2.first * 1000, p2.second * 1000);
-    }
-    lastSegPtr = segPtr;
-  }
-#endif
 }
 
 std::vector<char> RdEncoder::encodeInt(int64_t integer, int64_t length) {

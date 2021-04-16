@@ -1,10 +1,10 @@
-#ifndef HPGL_ENCODER_H_
-#define HPGL_ENCODER_H_
+#ifndef RD_ENCODER_H_
+#define RD_ENCODER_H_
 
 #include <iostream>
 #include <vector>
 #include <utility>
-#include "cut/Cut.hpp"
+#include "cut/geom/Route.hpp"
 
 class RdEncoder {
 
@@ -29,7 +29,7 @@ public:
     AirBlower = '\x01',
   };
 
-  static void encode(std::ostream &out, Cut& model);
+  static void encodeCut(std::ostream &out, Route& encodee, uint32_t power, uint32_t speed);
 
   inline static std::pair<int, int> pointAsIntPair(Point p);
   inline static std::vector<char> encodeInt(int64_t integer, int64_t length);
@@ -63,4 +63,4 @@ public:
 
 };
 
-#endif /* HPGL_ENCODER_H_ */
+#endif /* RD_ENCODER_H_ */

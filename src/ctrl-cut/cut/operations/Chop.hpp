@@ -9,5 +9,6 @@
 #include "cut/geom/Route.hpp"
 
 void chop(const Route& src, Route& sink, double maxLength);
+void chop(const Route& src, Route& sink, int maxAmplitudeXum, int maxAmplitudeYum);
 
 #endif

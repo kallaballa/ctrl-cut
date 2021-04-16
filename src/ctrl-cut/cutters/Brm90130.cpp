@@ -1,6 +1,7 @@
 #include "Brm90130.hpp"
 #include "encoder/RdEncoder.hpp"
 #include "config/CutSettings.hpp"
+#include "../cut/operations/Chop.hpp"
 
 #define MAGIC 0x33
 
@@ -36,6 +37,7 @@ class scrabled_streambuf : public std::streambuf {
 void Brm90130::write(const Document &doc, std::ostream &out) {
     bool enableEngraving = doc.get(D_SET::ENABLE_ENGRAVING) && !doc.engravings().empty();
     bool enableCut = doc.get(D_SET::ENABLE_CUT) && !doc.cuts().empty();
+ 
     D_SET::AirAssist airAssist = doc.get(D_SET::AIR_ASSIST);
 
     auto buf = out.rdbuf();
@@ -71,7 +73,15 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
 
       for(CutPtr cutp : doc.cuts()) {
         Cut& cut = *cutp;
-        RdEncoder::encode(sout, cut);
+
+        int power = cut.get(C_SET::CPOWER);
+        int speed = cut.get(C_SET::CSPEED);
+
+        // Chopping to the exact length where we should switch to relative cuts
+        Route chopped;
+        chop(cut, chopped, 8191, 8191);
+
+        RdEncoder::encodeCut(sout, chopped, power, speed);
       }
 
       if (airAssist == D_SET::AirAssist::CUT_ONLY) {

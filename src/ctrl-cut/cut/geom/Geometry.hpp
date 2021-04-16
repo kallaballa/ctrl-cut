@@ -148,7 +148,7 @@ public:
   }
 
   Segment swap() const {
-    return Segment(second,first);
+    return Segment(second, first);
   }
 
   /*!
