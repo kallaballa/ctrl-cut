@@ -42,6 +42,11 @@
             <string>Epilog Legend 36ext</string>
            </property>
           </item>
+          <item>
+            <property name="text">
+            <string>BRM 90130</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>

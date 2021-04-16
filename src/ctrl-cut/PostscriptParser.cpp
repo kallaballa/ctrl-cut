@@ -186,7 +186,7 @@ bool PostscriptParser::execute_ghostscript(const std::vector<std::string> &argst
     gsargv[i] = argstrings[i].c_str();
     LOG_DEBUG(gsargv[i]);
   }
-  void *minst;
+  void *minst = NULL;
   int code = gsapi_new_instance(&minst, NULL);
   if (code < 0) {
     LOG_ERR_MSG("gsapi_new_instance() failed", code);

@@ -16,6 +16,7 @@ DEFINES += ETLOG DEBUG=4 USE_GHOSTSCRIPT_API BOOST_CONFIG_ALLOW_DEPRECATED
 
 HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./cutters/encoder/HPGLEncoder.hpp \
+           ./cutters/encoder/RdEncoder.hpp \
            ./FileParser.hpp \
            ./Document.hpp \
            ./util/Eps.hpp \
@@ -25,6 +26,7 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
            ./util/PJL.hpp \
            ./util/Util.hpp \
            ./cutters/EpilogLegend36Ext.hpp \
+           ./cutters/Brm90130.hpp \
            ./cut/operations/Explode.hpp \
            ./cut/operations/Reduce.hpp \
 	   			 ./cut/Cut.hpp \
@@ -81,13 +83,15 @@ HEADERS += ./cutters/encoder/PclEncoder.hpp \
 
 SOURCES += ./cutters/encoder/HPGLEncoder.cpp \
            ./cutters/encoder/PclEncoder.cpp \
+           ./cutters/encoder/RdEncoder.cpp \
            ./PostscriptParser.cpp \
            ./util/Util.cpp \
 					 ./util/2D.cpp \
            ./util/Measurement.cpp \
            ./util/Logger.cpp \
            ./util/Eps.cpp \
-	   ./cutters/EpilogLegend36Ext.cpp \
+           ./cutters/EpilogLegend36Ext.cpp \
+           ./cutters/Brm90130.cpp \
            ./cut/Cut.cpp \
 					 ./cut/operations/Deonion.cpp \
            ./cut/operations/NearestPathSorting.cpp \
