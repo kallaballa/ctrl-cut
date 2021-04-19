@@ -78,8 +78,8 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
         int speed = cut.get(C_SET::CSPEED);
 
         // Chopping to the exact length where we should switch to relative cuts
-        Route chopped;
-        chop(cut, chopped, 8191, 8191);
+        // Route chopped;
+        // chop(cut, chopped, 8191, 8191);
 
         RdEncoder::encodeCut(sout, chopped, power, speed);
       }
