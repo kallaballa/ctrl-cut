@@ -81,7 +81,7 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
         // Route chopped;
         // chop(cut, chopped, 8191, 8191);
 
-        RdEncoder::encodeCut(sout, chopped, power, speed);
+        RdEncoder::encodeCut(sout, cut, power, speed);
       }
 
       if (airAssist == D_SET::AirAssist::CUT_ONLY) {
