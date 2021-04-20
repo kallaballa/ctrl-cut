@@ -143,7 +143,7 @@ public:
 
 typedef RouteImpl<std::vector, std::allocator> Route;
 
-BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(Route)
+BOOST_GEOMETRY_REGISTER_MULTI_LINESTRING(Route);
 
 inline MultiSegmentView<const Route> segments(const Route& route) {
   return MultiSegmentView<const Route>(route);

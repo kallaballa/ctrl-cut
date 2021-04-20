@@ -22,7 +22,7 @@ macx {
 }
 
 CONFIG(debug, debug|release) {
-QMAKE_CXXFLAGS_DEBUG += -g3 -O0 -ggdb
+QMAKE_CXXFLAGS_DEBUG += -g3 -O0 -ggdb -Wc++0x-compat
 message("DEBUG!")
 DEFINES += CGAL_DISABLE_ROUNDING_MATH_CHECK=ON
 } else {
@@ -33,7 +33,7 @@ message("RELEASE!")
 }
 
 CONFIG += link_pkgconfig
-QMAKE_CXXFLAGS += -std=c++14 -Wno-long-long -frounding-math
+QMAKE_CXXFLAGS += -std=c++11 -Wno-long-long -frounding-math
 
 
 macx { # FIXME: Should really test for clang
@@ -43,7 +43,7 @@ macx { # FIXME: Should really test for clang
   QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 }
 
-#linux:QMAKE_CXXFLAGS += -pedantic-errors
+linux:QMAKE_CXXFLAGS += -pedantic-errors
 
 include(CGAL.pri)
 include(boost.pri)
