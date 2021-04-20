@@ -15,6 +15,7 @@
 #include "GroupItem.hpp"
 #include "helpers/GraphicsItems.hpp"
 #include "cutters/EpilogLegend36Ext.hpp"
+#include "cutters/Brm90130.hpp"
 #include "MainWindow.hpp"
 #include "Document.hpp"
 #include "CtrlCutScene.hpp"
@@ -447,7 +448,7 @@ void MainWindow::on_filePrintAction_triggered()
     doc.optimize();
 
     EpilogLegend36Ext cutter;
-    cutter.write(doc,ostream);
+    cutter.write(doc, ostream);
     tmpfile.flush();
 
 
@@ -655,7 +656,6 @@ void MainWindow::saveGuiConfig() {
 void MainWindow::loadGuiConfig() {
   using boost::property_tree::ptree;
   ptree config;
-  using boost::property_tree::ptree;
 
   QFile file(QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config");
   string filename = (QDir::homePath() + QDir::separator() + ".ctrl-cut" + QDir::separator() + "config").toStdString();

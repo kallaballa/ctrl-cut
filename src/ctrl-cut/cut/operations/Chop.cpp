@@ -7,6 +7,7 @@
 #include "util/Logger.hpp"
 #include "cut/geom/Geometry.hpp"
 #include "cut/geom/algorithms/Algorithms.hpp"
+#include <cassert>
 
 void chop(const Route& src, Route& sink, double maxLength) {
   for(SegmentPtr seg : segments(src)) {
@@ -29,6 +30,36 @@ void chop(const Route& src, Route& sink, double maxLength) {
     }
   }
 
+  LOG_INFO_STR("chop");
+  LOG_DEBUG(sink.size());
+}
+
+void chop(const Route& src, Route& sink, int maxAmplitudeXum, int maxAmplitudeYum) {
+  double maxAmplitudeX = maxAmplitudeXum / 1000.;
+  double maxAmplitudeY = maxAmplitudeYum / 1000.;
+  
+  for (SegmentPtr seg : segments(src)) {
+    Point d = seg->second - seg->first;
+
+    if ((std::fabs(d.x) > maxAmplitudeX) || (std::fabs(d.y) > maxAmplitudeY)) {
+      double ratX = std::fabs(d.x) / maxAmplitudeX;
+      double ratY = std::fabs(d.y) / maxAmplitudeY;
+
+      double maxRat = std::max(ratX, ratY);
+
+      Point lastPoint = seg->first;
+      Point currentPoint;
+      for (size_t i = 0; i < maxRat; i++) {
+        currentPoint.x = (seg->first.x + (d.x * i / maxRat));
+        currentPoint.y = (seg->first.y + (d.y * i / maxRat));
+        add(sink, Segment(lastPoint, currentPoint));
+        lastPoint = currentPoint;
+      }
+      add(sink, Segment(lastPoint, seg->second));
+    } else {
+      add(sink, *seg);
+    }
+  }
   LOG_INFO_STR("chop");
   LOG_DEBUG(sink.size());
 }
