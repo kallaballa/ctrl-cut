@@ -46,9 +46,14 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
 
     RdEncoder::writeHeader(sout);
 
+    //Find the global bounding box
+    Box bGlobal = doc.findDocumentBox();
+
     // TODO: Units and Stuff
-    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, 0, 0);
-    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, 1300 * 1000, 900 * 1000);
+    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, bGlobal.min_corner.x, bGlobal.min_corner.y);
+    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, bGlobal.max_corner.x, bGlobal.max_corner.y);
+//    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, 0, 0);
+//    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, 1300 * 1000, 900 * 1000);
 
     if (airAssist == D_SET::AirAssist::GLOBAL) {
       RdEncoder::writeDeviceFlags(sout, RdEncoder::AirBlower);
