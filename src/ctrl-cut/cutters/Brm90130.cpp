@@ -52,30 +52,28 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
     // TODO: Units and Stuff
     RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, bGlobal.min_corner.x, bGlobal.min_corner.y);
     RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, bGlobal.max_corner.x, bGlobal.max_corner.y);
-//    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, 0, 0);
-//    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, 1300 * 1000, 900 * 1000);
+    // RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, 0, 0);
+    // RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, 1300 * 1000, 900 * 1000);
 
-    if (airAssist == D_SET::AirAssist::GLOBAL) {
-      RdEncoder::writeDeviceFlags(sout, RdEncoder::AirBlower);
-    }
+    // nobody knows what this does
+    sout << '\xe7';
+    sout << '\x04';
+    sout << '\x00';
+    sout << '\x01';
+    sout << '\x00';
+    sout << '\x01';
+    RdEncoder::writeInt(sout, 0, 5);
+    RdEncoder::writeInt(sout, 0, 5);
 
+    sout << '\xe7';
+    sout << '\x05';
+    sout << '\x00';
     if (enableEngraving) {
-        if (airAssist == D_SET::AirAssist::RASTER_ONLY) {
-          RdEncoder::writeDeviceFlags(sout, RdEncoder::AirBlower);
-        }
-
         // TODO: Implement Engraving
 
-        if (airAssist == D_SET::AirAssist::RASTER_ONLY) {
-          RdEncoder::writeDeviceFlags(sout, RdEncoder::NoDevices);
-        }
     }
 
     if (enableCut) {
-      if (airAssist == D_SET::AirAssist::CUT_ONLY) {
-          RdEncoder::writeDeviceFlags(sout, RdEncoder::AirBlower);
-      }
-
       for(CutPtr cutp : doc.cuts()) {
         Cut& cut = *cutp;
 
@@ -86,11 +84,7 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
         // Route chopped;
         // chop(cut, chopped, 8191, 8191);
 
-        RdEncoder::encodeCut(sout, cut, power, speed);
-      }
-
-      if (airAssist == D_SET::AirAssist::CUT_ONLY) {
-        RdEncoder::writeDeviceFlags(sout, RdEncoder::NoDevices);
+        RdEncoder::encodeLayer(sout, cut, 100.00, 100000);
       }
     }
 
