@@ -55,6 +55,8 @@ int NewDialog::getResolution() {
     return 600;
   case 4:
     return 1200;
+  case 5:
+    return 6000;
   }
   assert(false);
   return -1;

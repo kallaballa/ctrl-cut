@@ -74,17 +74,17 @@ void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPerce
   SegmentPtr lastSegPtr = nullptr;
   for (const SegmentPtr segPtr : segments(encodee)) {
     if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
-      auto firstPair = pointAsIntPair(segPtr->first * 1000); // TODO: to um
+      auto firstPair = pointAsIntPair(segPtr->first); // TODO: to um
       writeMoveAbsolute(out, firstPair.first, firstPair.second);
     }
 
     Point relPoint = segPtr->second - segPtr->first;
 
     if (std::fabs(relPoint.x) > MAX_RELCOORD_VAL_MM || std::fabs(relPoint.y) > MAX_RELCOORD_VAL_MM) {
-      auto secondPair = pointAsIntPair(segPtr->second * 1000); // TODO: to um
+      auto secondPair = pointAsIntPair(segPtr->second); // TODO: to um
       writeCutAbsolute(out, secondPair.first, secondPair.second);
     } else {
-      auto relPair = pointAsIntPair(relPoint * 1000); // TODO: to um
+      auto relPair = pointAsIntPair(relPoint); // TODO: to um
       writeCutRelative(out, relPair.first, relPair.second);
     }
 
