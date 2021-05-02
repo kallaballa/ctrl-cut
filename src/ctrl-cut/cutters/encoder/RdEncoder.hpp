@@ -12,6 +12,9 @@ public:
   enum Laser {
     LaserOne = '\x00',
     LaserTwo = '\x20',
+
+    LaserOneLayer = '\x30',
+    LaserTwoLayer = '\x40',
   };
 
   enum Power {
@@ -22,14 +25,17 @@ public:
   enum BoundingCoords {
     BoundingMin = '\x03',
     BoundingMax = '\x07',
+
   };
   
   enum Devices {
     NoDevices = '\x00',
     AirBlower = '\x01',
+    Unknown1 = '\x10',
+    Unknown2 = '\x02',
   };
 
-  static void encodeCut(std::ostream &out, Route& encodee, uint32_t power, uint32_t speed);
+  static void encodeLayer(std::ostream &out, Route& encodee, double powerPercent, uint32_t speed);
 
   inline static std::pair<int, int> pointAsIntPair(Point p);
   inline static std::vector<char> encodeInt(int64_t integer, int64_t length);
@@ -51,8 +57,8 @@ public:
   inline static void writeCutRelativeX(std::ostream &out, int16_t x);
   inline static void writeCutRelativeY(std::ostream &out, int16_t y);
 
-  inline static void writeSetPower(std::ostream &out, uint8_t selectorByte, int16_t power);
-  inline static void writeSetPowerLayer(std::ostream &out, uint8_t selectorByte, uint8_t layer, int16_t power);
+  inline static void writeSetPower(std::ostream &out, char selectorByte, int16_t power);
+  inline static void writeSetPowerLayer(std::ostream &out, char selectorByte, uint8_t layer, int16_t power);
 
   inline static void writeSetSpeed(std::ostream &out, int32_t speed);
   inline static void writeSetSpeedLayer(std::ostream &out, uint8_t layer, int32_t speed);

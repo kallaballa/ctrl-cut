@@ -1,4 +1,6 @@
 #include "RdEncoder.hpp"
+#include <bits/stdint-uintn.h>
+#include <cmath>
 #include <math.h>
 
 #define ABSCOORD_LEN 5
@@ -8,6 +10,7 @@
 #define COLORVAL_LEN 4
 
 #define MAX_RELCOORD_VAL_MM 8.192
+#define MAX_POWER_VAL 16383
 
 #define MOVE_ABS '\x88'
 #define MOVE_REL '\x89'
@@ -28,19 +31,45 @@
 #define SET_DEVICE_FLAGS "\xCA\x01"
 
 #define SET_LAYER "\xCA\x02"
-#define SET_LAYER_COLOR "\xCA\x62"
+#define SET_LAYER_COLOR "\xCA\x06"
 #define SET_LAYER_MAX "\xCA\x22"
 
 #define SET_BOUNDING_COORDS '\xE7'
 
 
 
-void RdEncoder::encodeCut(std::ostream &out, Route& encodee, uint32_t power, uint32_t speed) {
-  writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMin, 0, 0);
-  writeSetPowerLayer(out, Laser::LaserOne | Power::PowerMax, 0, power);
-
+void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPercent, uint32_t speed) {
+  uint32_t power = round(MAX_POWER_VAL * (powerPercent / 100.));
   writeSetSpeedLayer(out, 0, speed);
+  writeSetPowerLayer(out, Laser::LaserOneLayer | Power::PowerMin, 0, power);
+  writeSetPowerLayer(out, Laser::LaserTwoLayer | Power::PowerMin, 0, power);
+  writeSetPowerLayer(out, Laser::LaserOneLayer | Power::PowerMax, 0, power);
+  writeSetPowerLayer(out, Laser::LaserTwoLayer | Power::PowerMax, 0, power);
+  writeSetLayerColor(out, 0, 255, 0, 0);
+  writeSetMaximumLayer(out, 0);
+  writeDeviceFlags(out, RdEncoder::NoDevices);
+
   writeSetLayer(out, 0);
+  writeDeviceFlags(out, RdEncoder::Unknown1);
+  writeDeviceFlags(out, RdEncoder::Unknown1 | RdEncoder::Unknown2 | RdEncoder::AirBlower);
+
+  writeSetSpeed(out, speed);
+
+  // shrug
+  out << "\xC6\x12";
+  writeInt(out, 0, 5);
+
+  out << "\xC6\x13";
+  writeInt(out, 0, 5);
+
+  writeSetPower(out, Laser::LaserOne | Power::PowerMin, power);
+  writeSetPower(out, Laser::LaserTwo | Power::PowerMin, power);
+  writeSetPower(out, Laser::LaserOne | Power::PowerMax, power);
+  writeSetPower(out, Laser::LaserTwo | Power::PowerMax, power);
+
+  out << "\xCA\x03\x03";
+  out << "\xCA\x10";
+  out << '\x00';
 
   SegmentPtr lastSegPtr = nullptr;
   for (const SegmentPtr segPtr : segments(encodee)) {
@@ -86,7 +115,7 @@ void RdEncoder::writeHeader(std::ostream &out) {
   out << '\xd8';
   out << '\x00';
 
-  // similar to "SetBoundingCoords" 
+  // feeding, apparently 
   out << '\xe7';
   out << '\x06';
 
@@ -154,15 +183,15 @@ void RdEncoder::writeCutRelativeY(std::ostream &out, int16_t y) {
 }
 
 
-void RdEncoder::writeSetPower(std::ostream &out, uint8_t selectorByte, int16_t power) {
+void RdEncoder::writeSetPower(std::ostream &out, char selectorByte, int16_t power) {
   out << SET_POWER;
   out << selectorByte;
   writeInt(out, power, POWERVAL_LEN);
 }
 
-void RdEncoder::writeSetPowerLayer(std::ostream &out, uint8_t selectorByte, uint8_t layer, int16_t power) {
+void RdEncoder::writeSetPowerLayer(std::ostream &out, char selectorByte, uint8_t layer, int16_t power) {
   out << SET_POWER;
-  out << selectorByte + SET_POWER_LAYER_LSOFFS;
+  out << selectorByte;
   out << layer;
   writeInt(out, power, POWERVAL_LEN);
 }
@@ -199,9 +228,7 @@ void RdEncoder::writeSetMaximumLayer(std::ostream &out, uint8_t maximumLayer) {
 void RdEncoder::writeSetLayerColor(std::ostream &out, uint8_t layer, uint8_t r, uint8_t g, uint8_t b) {
   out << SET_LAYER_COLOR;
   out << layer;
-  out << b;
-  out << g;
-  out << r;
+  writeInt(out, b << 16 | g << 8 | r, 5);
 }
 
 void RdEncoder::writeSetBoundingCoords(std::ostream &out, uint8_t selectorByte, int32_t x, int32_t y) {
