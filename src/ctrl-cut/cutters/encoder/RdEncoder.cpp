@@ -80,7 +80,7 @@ void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPerce
 
     Point relPoint = segPtr->second - segPtr->first;
 
-    if (abs(relPoint.x) > MAX_RELCOORD_VAL_MM || abs(relPoint.y) > MAX_RELCOORD_VAL_MM) {
+    if (std::fabs(relPoint.x) > MAX_RELCOORD_VAL_MM || std::fabs(relPoint.y) > MAX_RELCOORD_VAL_MM) {
       auto secondPair = pointAsIntPair(segPtr->second * 1000); // TODO: to um
       writeCutAbsolute(out, secondPair.first, secondPair.second);
     } else {
