@@ -20,7 +20,7 @@ public:
   Unit getUnit();
   Distance getWidth();
   Distance getHeight();
-  int getResolution();
+  double getResolution();
   void loadFrom(GuiConfig& config);
   void saveTo(GuiConfig& config);
 

@@ -102,7 +102,7 @@ void SvgWriter::write(const CutPtr cut, const string& style) {
       % cut->get(CS::CPOWER)
       % cut->get(CS::FREQUENCY)
       % cut->get(CS::SORT)
-      % translate.x % translate.y
+      % std::round(translate.x) % std::round(translate.y)
       << std::endl;
 
   write(static_cast<const Route&>(*cut));
@@ -123,7 +123,7 @@ void SvgWriter::write(const EngravingPtr engraving, const string& style) {
       % engraving->get(ES::EPOWER)
       % engraving->get(ES::DIRECTION)
       % engraving->get(ES::DITHERING)
-      % translate.x % translate.y
+      % std::round(translate.x) % std::round(translate.y)
       << std::endl;
 
   GrayscaleImage img = engraving->getImage();

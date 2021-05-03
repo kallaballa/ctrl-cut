@@ -11,7 +11,7 @@ typedef CutSettings C_SET;
 
 
 inline char scramble(char p) {
-  char a = p & 0x7E | p >> 7 & 0x01 | p << 7 & 0x80;
+  char a = (p & 0x7E) | (p >> 7 & 0x01) | (p << 7 & 0x80);
   char b = a ^ MAGIC;
   char s = (b + 1) & 0xFF;
   return s; 
@@ -50,8 +50,8 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
     Box bGlobal = doc.findDocumentBox();
 
     // TODO: Units and Stuff
-    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, bGlobal.min_corner.x, bGlobal.min_corner.y);
-    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, bGlobal.max_corner.x, bGlobal.max_corner.y);
+    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, BRM90130_BED_WIDTH - bGlobal.min_corner.x, bGlobal.min_corner.y);
+    RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, BRM90130_BED_WIDTH - bGlobal.max_corner.x, bGlobal.max_corner.y);
     // RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMin, 0, 0);
     // RdEncoder::writeSetBoundingCoords(sout, RdEncoder::BoundingMax, 1300 * 1000, 900 * 1000);
 
@@ -80,11 +80,11 @@ void Brm90130::write(const Document &doc, std::ostream &out) {
         int power = cut.get(C_SET::CPOWER);
         int speed = cut.get(C_SET::CSPEED);
 
-        // Chopping to the exact length where we should switch to relative cuts
-        // Route chopped;
-        // chop(cut, chopped, 8191, 8191);
+		//Chopping to the exact length where we should switch to relative cuts
+		Route chopped;
+		chop(cut, chopped, 100, 100);
 
-        RdEncoder::encodeLayer(sout, cut, 100.00, 100000);
+		RdEncoder::encodeLayer(sout, cut, power, speed);
       }
     }
 

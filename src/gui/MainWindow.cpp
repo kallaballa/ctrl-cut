@@ -665,7 +665,7 @@ void MainWindow::loadGuiConfig() {
       read_ini(is, config);
       guiConfig.driver = (LaserCutter::Driver) config.get<int>("Driver");
       guiConfig.unit = (Unit) config.get<int>("Unit");
-      guiConfig.resolution = config.get<size_t>("Resolution");
+      guiConfig.resolution = config.get<double>("Resolution");
       guiConfig.bedWidth = config.get<double>("BedWidth");
       guiConfig.bedHeight = config.get<double>("BedHeight");
       guiConfig.networkAddress = config.get<string>("NetworkAddress");

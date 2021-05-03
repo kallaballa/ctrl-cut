@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>357</width>
-    <height>221</height>
+    <height>189</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,35 +39,7 @@
          <widget class="QComboBox" name="modelCombo">
           <item>
            <property name="text">
-            <string>Epilog Legend 36ext</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>BRM 90130</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Resolution</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="resolutionCombo">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>6000 DPI</string>
            </property>
           </item>
          </widget>
@@ -116,7 +88,7 @@
            </size>
           </property>
           <property name="text">
-           <string>36</string>
+           <string>1300</string>
           </property>
           <property name="maxLength">
            <number>8</number>
@@ -198,7 +170,7 @@
            </size>
           </property>
           <property name="text">
-           <string>24</string>
+           <string>900</string>
           </property>
           <property name="maxLength">
            <number>8</number>

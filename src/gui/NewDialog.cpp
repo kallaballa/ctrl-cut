@@ -42,24 +42,8 @@ Distance NewDialog::getHeight() {
   return Distance(h, getUnit(), getResolution());
 }
 
-int NewDialog::getResolution() {
-  int index = this->resolutionCombo->currentIndex();
-  switch (index) {
-  case 0:
-    return 75;
-  case 1:
-    return 150;
-  case 2:
-    return 300;
-  case 3:
-    return 600;
-  case 4:
-    return 1200;
-  case 5:
-    return 6000;
-  }
-  assert(false);
-  return -1;
+double NewDialog::getResolution() {
+    return 25400;
 }
 
 void NewDialog::loadFrom(GuiConfig& config) {
@@ -81,14 +65,6 @@ void NewDialog::loadFrom(GuiConfig& config) {
   for (size_t i = 0; i < this->unit->count(); ++i) {
     if (this->unit->itemText(i).toStdString() == strUnit) {
       this->unit->setCurrentIndex(i);
-      break;
-    }
-  }
-
-  size_t res = config.resolution;
-  for(size_t i = 0; i < resolutionCombo->count(); ++i) {
-    if(resolutionCombo->itemText(i).toStdString() == (std::to_string(res) + " DPI")) {
-      resolutionCombo->setCurrentIndex(i);
       break;
     }
   }

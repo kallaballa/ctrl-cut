@@ -8,7 +8,7 @@
 
 const double Distance::MM_TO_INCH = 25.4;
 
-const Distance Distance::convert(const Unit& target, const uint16_t dpi) const {
+const Distance Distance::convert(const Unit& target, const double dpi) const {
   double spx = -1;
 
   Distance convertee(-1, target, dpi);

@@ -296,7 +296,7 @@ bool PostscriptParser::parse(FILE *input_file)
   argstrings.push_back("-dNOPAUSE");
 
   argstrings.push_back(str(format("-r%d") % resolution));
-  argstrings.push_back(str(format("-g%ux%u") % width % height));
+  argstrings.push_back(str(format("-g%ux%u") % off_t(std::round(width)) % off_t(std::round(height))));
 
   if (!loadEngraving) {
     argstrings.push_back("-sDEVICE=nullpage");

@@ -6,6 +6,9 @@
 #include <utility>
 #include "cut/geom/Route.hpp"
 
+constexpr int32_t BRM90130_BED_WIDTH = 1300000;
+constexpr int32_t BRM90130_BED_HEIGHT = 900000;
+
 class RdEncoder {
 
 public:  
@@ -35,7 +38,7 @@ public:
     Unknown2 = '\x02',
   };
 
-  static void encodeLayer(std::ostream &out, Route& encodee, double powerPercent, uint32_t speed);
+  static void encodeLayer(std::ostream &out, Route& encodee, double powerPercent, double speedPercent);
 
   inline static std::pair<int, int> pointAsIntPair(Point p);
   inline static std::vector<char> encodeInt(int64_t integer, int64_t length);

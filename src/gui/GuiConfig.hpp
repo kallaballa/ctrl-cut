@@ -11,10 +11,10 @@
 
 struct GuiConfig {
   LaserCutter::Driver driver = LaserCutter::EPILOG_LEGEND;
-  Unit unit = IN;
-  size_t resolution = 600;
-  double bedWidth = 36;
-  double bedHeight = 24;
+  Unit unit = MM;
+  double resolution = 25400;
+  double bedWidth = 1300;
+  double bedHeight = 900;
   string networkAddress;
   string version;
 };

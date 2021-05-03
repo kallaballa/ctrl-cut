@@ -15,7 +15,7 @@ const DocumentSettings::Key<string> DocumentSettings::TITLE = "title";
 const DocumentSettings::Key<string> DocumentSettings::DATA_DIR = "dataDir";
 const DocumentSettings::Key<string> DocumentSettings::FILENAME = "filename";
 
-const DocumentSettings::Key<uint16_t> DocumentSettings::RESOLUTION = "resolution";
+const DocumentSettings::Key<double> DocumentSettings::RESOLUTION = "resolution";
 const DocumentSettings::Key<Distance> DocumentSettings::WIDTH = "width";
 const DocumentSettings::Key<Distance> DocumentSettings::HEIGHT = "height";
 const DocumentSettings::Key<bool> DocumentSettings::AUTO_FOCUS = "autoFocus";
@@ -35,14 +35,14 @@ DocumentSettings::DocumentSettings() : Settings() {
   this->put(AUTO_FOCUS, true);
   this->put(AIR_ASSIST, GLOBAL);
   this->put(CENTER, CENTER_NONE);
-  this->put(RESOLUTION, 75);
+  this->put(RESOLUTION, 39.3700787401);
   this->put(ENABLE_CUT, true);
   this->put(ENABLE_ENGRAVING, true);
   this->put(LOAD_CUT, true);
   this->put(LOAD_ENGRAVING, false);
 
-  this->put(WIDTH, Distance(2700,PX,75));
-  this->put(HEIGHT, Distance(1800,PX,75));
+  this->put(WIDTH, Distance(1300,MM,39.3700787401));
+  this->put(HEIGHT, Distance(900,MM,39.3700787401));
   //FIXME dont do empty defaults
   this->put(TITLE, "");
   this->put(USER, "");

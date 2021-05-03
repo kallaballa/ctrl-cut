@@ -11,6 +11,8 @@
 
 #define MAX_RELCOORD_VAL_MM 8.192
 #define MAX_POWER_VAL 16383
+//FIXME we need to find out the maximum speed of the machine to scale the speed correctly
+#define MAX_SPEED_VAL 1000
 
 #define MOVE_ABS '\x88'
 #define MOVE_REL '\x89'
@@ -38,8 +40,9 @@
 
 
 
-void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPercent, uint32_t speed) {
+void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPercent, double speedPercent) {
   uint32_t power = round(MAX_POWER_VAL * (powerPercent / 100.));
+  uint32_t speed = round(MAX_SPEED_VAL * (speedPercent / 100.));
   writeSetSpeedLayer(out, 0, speed);
   writeSetPowerLayer(out, Laser::LaserOneLayer | Power::PowerMin, 0, power);
   writeSetPowerLayer(out, Laser::LaserTwoLayer | Power::PowerMin, 0, power);
@@ -74,18 +77,18 @@ void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPerce
   SegmentPtr lastSegPtr = nullptr;
   for (const SegmentPtr segPtr : segments(encodee)) {
     if (lastSegPtr == nullptr || !segPtr->connectsTo(*lastSegPtr)) {
-      auto firstPair = pointAsIntPair(segPtr->first); // TODO: to um
-      writeMoveAbsolute(out, firstPair.first, firstPair.second);
+      auto firstPair = pointAsIntPair(segPtr->first);
+      writeMoveAbsolute(out, BRM90130_BED_WIDTH - firstPair.first, firstPair.second);
     }
 
     Point relPoint = segPtr->second - segPtr->first;
 
     if (std::fabs(relPoint.x) > MAX_RELCOORD_VAL_MM || std::fabs(relPoint.y) > MAX_RELCOORD_VAL_MM) {
-      auto secondPair = pointAsIntPair(segPtr->second); // TODO: to um
-      writeCutAbsolute(out, secondPair.first, secondPair.second);
+      auto secondPair = pointAsIntPair(segPtr->second);
+      writeCutAbsolute(out, BRM90130_BED_WIDTH - secondPair.first, secondPair.second);
     } else {
-      auto relPair = pointAsIntPair(relPoint); // TODO: to um
-      writeCutRelative(out, relPair.first, relPair.second);
+      auto relPair = pointAsIntPair(relPoint);
+      writeCutRelative(out, BRM90130_BED_WIDTH - relPair.first, relPair.second);
     }
 
     lastSegPtr = segPtr;
@@ -139,6 +142,7 @@ void RdEncoder::writeInt(std::ostream &out, int64_t i, int64_t length) {
 
 void RdEncoder::writeMoveAbsolute(std::ostream &out, int32_t x, int32_t y) {
   out << MOVE_ABS;
+  std::cerr << x << std::endl;
   writeInt(out, x, ABSCOORD_LEN);
   writeInt(out, y, ABSCOORD_LEN);
 }
@@ -162,12 +166,14 @@ void RdEncoder::writeMoveRelativeY(std::ostream &out, int16_t y) {
 
 void RdEncoder::writeCutAbsolute(std::ostream &out, int32_t x, int32_t y) {
   out << CUT_ABS;
+  std::cerr << x << std::endl;
   writeInt(out, x, ABSCOORD_LEN);
   writeInt(out, y, ABSCOORD_LEN);
 }
 
 void RdEncoder::writeCutRelative(std::ostream &out, int32_t x, int32_t y) {
   out << CUT_REL;
+  std::cerr << x << std::endl;
   writeInt(out, x, RELCOORD_LEN);
   writeInt(out, y, RELCOORD_LEN);
 }

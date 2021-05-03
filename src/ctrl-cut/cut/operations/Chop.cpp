@@ -9,7 +9,7 @@
 #include "cut/geom/algorithms/Algorithms.hpp"
 #include <cassert>
 
-void chop(const Route& src, Route& sink, double maxLength) {
+void chop(const Route& src, Route& sink, Coord_t maxLength) {
   for(SegmentPtr seg : segments(src)) {
     if(double len = seg->length() > maxLength) {
       Point lastPoint = seg->first;
@@ -34,10 +34,7 @@ void chop(const Route& src, Route& sink, double maxLength) {
   LOG_DEBUG(sink.size());
 }
 
-void chop(const Route& src, Route& sink, int maxAmplitudeXum, int maxAmplitudeYum) {
-  double maxAmplitudeX = maxAmplitudeXum / 1000.;
-  double maxAmplitudeY = maxAmplitudeYum / 1000.;
-  
+void chop(const Route& src, Route& sink, Coord_t maxAmplitudeX, Coord_t maxAmplitudeY) {
   for (SegmentPtr seg : segments(src)) {
     Point d = seg->second - seg->first;
 

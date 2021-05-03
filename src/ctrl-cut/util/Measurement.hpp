@@ -27,12 +27,12 @@ public:
   static const double MM_TO_INCH;
   double value;
   Unit unit;
-  uint16_t resolution;
+  double resolution;
 
   Distance() : value(0), unit(PX), resolution(0) {};
-  Distance(double value, Unit unit, uint16_t resolution) : value(value), unit(unit), resolution(resolution) {};
+  Distance(double value, Unit unit, double resolution) : value(value), unit(unit), resolution(resolution) {};
   virtual ~Distance() {};
-  const Distance convert(const Unit& target, const uint16_t dpi) const;
+  const Distance convert(const Unit& target, const double dpi) const;
   double in(const Unit& target) const;
   void toJson(std::ostream& os) {
     os << "{ \"value\":" << value << ", \"unit\":";
