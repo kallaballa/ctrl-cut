@@ -174,10 +174,8 @@ void ImportCommand::undo() {
   }
 }
 void ImportCommand::redo() {
-  ImportDialog imd;
-  if (imd.exec() == QDialog::Accepted) {
-    bool loadVector = imd.isVectorDataEnabled();
-    bool loadRaster = imd.isRasterDataEnabled();
+    bool loadVector = true;
+    bool loadRaster = false;
     imported = this->scene->load(filename, loadVector, loadRaster);
     foreach(QGraphicsItem* item, this->scene->items()) {
       item->setSelected(false);
@@ -186,7 +184,6 @@ void ImportCommand::redo() {
     foreach(QGraphicsItem* item, imported) {
       item->setSelected(true);
     }
-  }
 }
 
 ZCommand::ZCommand(CtrlCutScene* scene, QUndoCommand *parent) :
