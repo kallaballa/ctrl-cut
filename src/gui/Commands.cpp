@@ -442,11 +442,13 @@ void MoveToOriginCommand::redo() {
   if(itemsMoved.empty()) {
     itemsMoved = this->scene->selectedItems();
 
-    qreal minx = std::numeric_limits<qreal>().max();
+    qreal maxx = std::numeric_limits<qreal>().min();
+    qreal maxrb = std::numeric_limits<qreal>().min();
     qreal miny = std::numeric_limits<qreal>().max();
     foreach (QGraphicsItem *item, itemsMoved) {
       const QPointF pos = item->pos();
-      minx = std::min(pos.x(), minx);
+      maxrb = std::max(item->boundingRect().right(), maxrb);
+      maxx = std::max(pos.x(), maxx);
       miny = std::min(pos.y(), miny);
     }
 
@@ -454,7 +456,7 @@ void MoveToOriginCommand::redo() {
     foreach (QGraphicsItem *item, itemsMoved) {
       const QPointF pos = item->pos();
       oldPositions.append(pos);
-      item->setPos(pos.x() - minx, pos.y() - miny);
+      item->setPos((this->scene->width() - maxrb), pos.y() - miny);
       newPositions.append(item->pos());
       if((acci = dynamic_cast<AbstractCtrlCutItem*>(item))) {
         acci->commit();
