@@ -142,7 +142,6 @@ void RdEncoder::writeInt(std::ostream &out, int64_t i, int64_t length) {
 
 void RdEncoder::writeMoveAbsolute(std::ostream &out, int32_t x, int32_t y) {
   out << MOVE_ABS;
-  std::cerr << x << std::endl;
   writeInt(out, x, ABSCOORD_LEN);
   writeInt(out, y, ABSCOORD_LEN);
 }
@@ -166,14 +165,12 @@ void RdEncoder::writeMoveRelativeY(std::ostream &out, int16_t y) {
 
 void RdEncoder::writeCutAbsolute(std::ostream &out, int32_t x, int32_t y) {
   out << CUT_ABS;
-  std::cerr << x << std::endl;
   writeInt(out, x, ABSCOORD_LEN);
   writeInt(out, y, ABSCOORD_LEN);
 }
 
 void RdEncoder::writeCutRelative(std::ostream &out, int32_t x, int32_t y) {
   out << CUT_REL;
-  std::cerr << x << std::endl;
   writeInt(out, x, RELCOORD_LEN);
   writeInt(out, y, RELCOORD_LEN);
 }
