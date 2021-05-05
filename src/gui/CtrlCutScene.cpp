@@ -240,7 +240,7 @@ void CtrlCutScene::drawBackground( QPainter * painter, const QRectF & rect ) {
     double lineHalfLength = Distance(100,MM,resolution).in(PX);
     painter->setPen(Qt::gray);
     painter->fillRect(QRect(QPoint(0, 0), QSize(width, height)), QBrush(Qt::gray));
-    painter->setPen(Qt::red);
+    painter->setPen(Qt::magenta);
     painter->drawLine(QLineF(width - lineHalfLength, 0, width + lineHalfLength, 0));
     painter->drawLine(QLineF(width, lineHalfLength, width, -lineHalfLength));
     painter->drawLine(QLineF(width + lineHalfLength, lineHalfLength, width - lineHalfLength, -lineHalfLength));
