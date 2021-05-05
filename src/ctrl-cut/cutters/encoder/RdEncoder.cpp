@@ -12,7 +12,7 @@
 #define MAX_RELCOORD_VAL_MM 8.192
 #define MAX_POWER_VAL 16383
 //FIXME we need to find out the maximum speed of the machine to scale the speed correctly
-#define MAX_SPEED_VAL 1000
+#define MAX_SPEED_VAL 300
 
 #define MOVE_ABS '\x88'
 #define MOVE_REL '\x89'
