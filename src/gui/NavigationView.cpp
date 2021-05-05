@@ -24,6 +24,7 @@ NavigationView::NavigationView(QWidget* parent) : QGraphicsView(parent)
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
   setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
   setDragMode(QGraphicsView::ScrollHandDrag);
+  scale(0.02, 0.02);
 }
  
 void NavigationView::wheelEvent(QWheelEvent* event)
@@ -34,7 +35,7 @@ void NavigationView::wheelEvent(QWheelEvent* event)
 void NavigationView::scaleView(double scaleFactor, QPointF center)
 {
   double factor = transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-  if (factor < 0.01 || factor > 1000) return;
+  if (factor < 0.001 || factor > 1000) return;
 
   // Before we scale, the point under the mouse is center
   scale(scaleFactor, scaleFactor);
