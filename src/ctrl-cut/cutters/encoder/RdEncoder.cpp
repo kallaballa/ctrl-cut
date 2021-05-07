@@ -3,46 +3,46 @@
 #include <cmath>
 #include <math.h>
 
-#define ABSCOORD_LEN 5
-#define RELCOORD_LEN 2
-#define POWERVAL_LEN 2
-#define SPEEDVAL_LEN 5
-#define COLORVAL_LEN 4
+constexpr size_t ABSCOORD_LEN  = 5;
+constexpr size_t RELCOORD_LEN  = 2;
+constexpr size_t POWERVAL_LEN  = 2;
+constexpr size_t SPEEDVAL_LEN  = 5;
+constexpr size_t COLORVAL_LEN  = 4;
 
-#define MAX_RELCOORD_VAL_MM 8.192
-#define MAX_POWER_VAL 16383
+constexpr double MAX_RELCOORD_VAL_MM  = 8.192;
+constexpr double MAX_POWER_VAL  = 16383;
 //FIXME we need to find out the maximum speed of the machine to scale the speed correctly
-#define MAX_SPEED_VAL 300
+constexpr double MAX_SPEED_VAL  = 100000;
 
-#define MOVE_ABS '\x88'
-#define MOVE_REL '\x89'
-#define MOVE_REL_X '\x8A'
-#define MOVE_REL_Y '\x8B'
+constexpr char MOVE_ABS  = '\x88';
+constexpr char MOVE_REL  = '\x89';
+constexpr char MOVE_REL_X  = '\x8A';
+constexpr char MOVE_REL_Y  = '\x8B';
 
-#define CUT_ABS '\xA8'
-#define CUT_REL '\xA9'
-#define CUT_REL_X '\xAA'
-#define CUT_REL_Y '\xAB'
+constexpr char CUT_ABS  = '\xA8';
+constexpr char CUT_REL  = '\xA9';
+constexpr char CUT_REL_X  = '\xAA';
+constexpr char CUT_REL_Y  = '\xAB';
 
-#define SET_POWER '\xC6'
-#define SET_POWER_LAYER_LSOFFS '\x20'
+constexpr char SET_POWER  = '\xC6';
+constexpr char SET_POWER_LAYER_LSOFFS  = '\x20';
 
-#define SET_SPEED_GLOBAL "\xC9\x02"
-#define SET_SPEED_LAYER "\xC9\x04"
+constexpr char* SET_SPEED_GLOBAL  = "\xC9\x02";
+constexpr char* SET_SPEED_LAYER  = "\xC9\x04";
 
-#define SET_DEVICE_FLAGS "\xCA\x01"
+constexpr char* SET_DEVICE_FLAGS  = "\xCA\x01";
 
-#define SET_LAYER "\xCA\x02"
-#define SET_LAYER_COLOR "\xCA\x06"
-#define SET_LAYER_MAX "\xCA\x22"
+constexpr char* SET_LAYER  = "\xCA\x02";
+constexpr char* SET_LAYER_COLOR  = "\xCA\x06";
+constexpr char* SET_LAYER_MAX  = "\xCA\x22";
 
-#define SET_BOUNDING_COORDS '\xE7'
+constexpr char SET_BOUNDING_COORDS = '\xE7';
 
 
 
 void RdEncoder::encodeLayer(std::ostream &out, Route& encodee, double powerPercent, double speedPercent) {
   uint32_t power = round(MAX_POWER_VAL * (powerPercent / 100.));
-  uint32_t speed = round(MAX_SPEED_VAL * (speedPercent / 100.));
+  int32_t speed = round(MAX_SPEED_VAL * (speedPercent / 100.));
   writeSetSpeedLayer(out, 0, speed);
   writeSetPowerLayer(out, Laser::LaserOneLayer | Power::PowerMin, 0, power);
   writeSetPowerLayer(out, Laser::LaserTwoLayer | Power::PowerMin, 0, power);
